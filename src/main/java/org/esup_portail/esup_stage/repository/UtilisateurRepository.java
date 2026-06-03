@@ -17,6 +17,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
     public UtilisateurRepository(EntityManager em) {
         super(em, Utilisateur.class, "u");
         this.predicateWhitelist = Arrays.asList("login", "nom", "prenom", "actif");
+        this.specificFilterWhitelist = Arrays.asList("utilisateur", "roles");
     }
 
     @Override

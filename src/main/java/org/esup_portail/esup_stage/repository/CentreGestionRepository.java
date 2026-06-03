@@ -16,13 +16,14 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
     public CentreGestionRepository(EntityManager em) {
         super(em, CentreGestion.class, "cg");
         this.predicateWhitelist = Arrays.asList("id", "nomCentre", "niveauCentre.libelle");
+        this.specificFilterWhitelist = Arrays.asList("personnel");
     }
 
     public boolean etablissementExists() {
         String queryString = "SELECT cg.id FROM CentreGestion cg WHERE cg.niveauCentre.libelle = 'ETABLISSEMENT'";
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         List<Integer> results = query.getResultList();
-        return results.size() > 0;
+        return results.isEmpty();
     }
 
     @Override

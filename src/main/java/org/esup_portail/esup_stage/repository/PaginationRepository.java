@@ -8,6 +8,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Parameter;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.PluralAttribute;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -30,15 +33,19 @@ public class PaginationRepository<T extends Exportable> {
 
     private static final Logger logger = LoggerFactory.getLogger(PaginationRepository.class);
     private static final int EXCEL_CELL_MAX_LENGTH = 30000;
+    private static final Set<String> FILTER_TYPES = Set.of("int", "boolean", "date", "date-min", "date-max", "list", "text", "string", "annee", "temEnServ", "autocomplete");
+    private static final String FILTER_PATH_PATTERN = "[A-Za-z]\\w*+(?:\\.[A-Za-z]\\w*+)*+";
 
     protected final EntityManager em;
     protected final Class<T> typeClass;
     protected final String alias;
     protected JSONObject filters;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
+    protected List<String> specificFilterWhitelist = new ArrayList<>();
     protected List<String> joins = new ArrayList<>();
     protected JsonObject headers;
     protected String fixJoins;
+    private Map<String, String> filterParameterNames = new LinkedHashMap<>();
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -54,28 +61,34 @@ public class PaginationRepository<T extends Exportable> {
     public Long count(String filters) {
         formatFilters(filters);
         String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
-        List<String> clauses = getClauses();
+        List<String> clauses = getNonBlankClauses();
         queryString += " " + String.join(" ", joins);
-        if (clauses.size() > 0) {
+        if (!clauses.isEmpty()) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
 
         TypedQuery<Long> query = em.createQuery(queryString, Long.class);
         setParameters(query);
 
-        logger.debug("Dynamic query string: " + queryString);
+        logger.debug("Dynamic query string: {}", queryString);
         Set<Parameter<?>> parameters = query.getParameters();
-        logger.debug("Parameters: {" + parameters.stream().map(p -> p.getName() + ": " + query.getParameterValue(p.getName())).collect(Collectors.joining(", ")) + "}");
-
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    "Parameters: {{{}}}",
+                    parameters.stream()
+                            .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
+                            .collect(Collectors.joining(", "))
+            );
+        }
         return query.getSingleResult();
     }
 
     public List<T> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
         formatFilters(filters);
         String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
-        List<String> clauses = getClauses();
+        List<String> clauses = getNonBlankClauses();
         queryString += " " + String.join(" ", joins);
-        if (clauses.size() > 0) {
+        if (!clauses.isEmpty()) {
             queryString += " WHERE " + String.join(" AND ", clauses);
         }
         if (predicate != null && predicateWhitelist.contains(predicate)) {
@@ -93,15 +106,25 @@ public class PaginationRepository<T extends Exportable> {
             query.setMaxResults(perPage);
         }
 
-        logger.debug("Dynamic query string: " + queryString);
+        logger.debug("Dynamic query string: {}", queryString);
         Set<Parameter<?>> parameters = query.getParameters();
-        logger.debug("Parameters: {" + parameters.stream().map(p -> p.getName() + ": " + query.getParameterValue(p.getName())).collect(Collectors.joining(", ")) + "}");
-
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    "Parameters: {{{}}}",
+                    parameters.stream()
+                            .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
+                            .collect(Collectors.joining(", "))
+            );
+        }
         return query.getResultList();
     }
 
     protected void formatFilters(String jsonString) {
         joins = new ArrayList<>();
+        filterParameterNames = new LinkedHashMap<>();
+        if (jsonString == null || jsonString.isBlank()) {
+            jsonString = "{}";
+        }
         filters = new JSONObject(jsonString);
     }
 
@@ -124,37 +147,34 @@ public class PaginationRepository<T extends Exportable> {
         List<String> clauses = new ArrayList<>();
         for (int i = 0; i < filters.length(); ++i) {
             String key = filters.names().getString(i);
-            String column = alias + "." + key;
             JSONObject condition = filters.getJSONObject(key);
             if (condition.has("specific") && condition.getBoolean("specific")) {
+                validateSpecificFilter(key);
                 addSpecificParameter(key, condition, clauses);
             } else {
-                String op;
-                switch (condition.getString("type")) {
-                    case "int":
-                    case "boolean":
-                    case "date":
-                        op = "=";
-                        break;
-                    case "date-min":
-                        op = ">=";
-                        break;
-                    case "date-max":
-                        op = "<=";
-                        break;
-                    case "list":
-                        op = "IN";
-                        break;
-                    default:
+                validateStandardFilter(key, condition);
+                String column = alias + "." + key;
+                String op = switch (condition.getString("type")) {
+                    case "int", "boolean", "date" -> "=";
+                    case "date-min" -> ">=";
+                    case "date-max" -> "<=";
+                    case "list" -> "IN";
+                    default -> {
                         column = "LOWER(" + column + ")";
-                        op = "LIKE";
-                        break;
-                }
-                String value = ":" + key.replace(".", "");
+                        yield "LIKE";
+                    }
+                };
+                String value = ":" + getParameterName(key);
                 clauses.add(column + " " + op + " " + value);
             }
         }
         return clauses;
+    }
+
+    private List<String> getNonBlankClauses() {
+        return getClauses().stream()
+                .filter(clause -> clause != null && !clause.isBlank())
+                .toList();
     }
 
     private void setParameters(Query query) {
@@ -166,16 +186,14 @@ public class PaginationRepository<T extends Exportable> {
             } else {
                 switch (condition.getString("type")) {
                     case "int":
-                        query.setParameter(key.replace(".", ""), condition.getInt("value"));
+                        query.setParameter(getParameterName(key), condition.getInt("value"));
                         break;
                     case "boolean":
-                        query.setParameter(key.replace(".", ""), condition.getBoolean("value"));
+                        query.setParameter(getParameterName(key), condition.getBoolean("value"));
                         break;
-                    case "date":
-                    case "date-min":
-                    case "date-max":
+                    case "date","date-min","date-max":
                         Date date = new Date(condition.getLong("value"));
-                        query.setParameter(key.replace(".", ""), date);
+                        query.setParameter(getParameterName(key), date);
                         break;
                     case "list":
                         List<Object> values = new ArrayList<>();
@@ -183,14 +201,65 @@ public class PaginationRepository<T extends Exportable> {
                         for (int j = 0; j < jsonArray.length(); ++j) {
                             values.add(jsonArray.get(j));
                         }
-                        query.setParameter(key.replace(".", ""), values);
+                        query.setParameter(getParameterName(key), values);
                         break;
                     default:
-                        query.setParameter(key.replace(".", ""), "%" + condition.getString("value").toLowerCase() + "%");
+                        query.setParameter(getParameterName(key), "%" + condition.getString("value").toLowerCase() + "%");
                         break;
                 }
             }
         }
+    }
+
+    private void validateSpecificFilter(String key) {
+        if (!specificFilterWhitelist.contains(key)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Filtre spécifique non autorisé : " + key);
+        }
+    }
+
+    private void validateStandardFilter(String key, JSONObject condition) {
+        if (!key.matches(FILTER_PATH_PATTERN)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Filtre invalide : " + key);
+        }
+        if (!condition.has("type") || !FILTER_TYPES.contains(condition.getString("type"))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de filtre invalide pour : " + key);
+        }
+        if (!condition.has("value")) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Valeur de filtre manquante pour : " + key);
+        }
+        validateFilterPath(key);
+    }
+
+    private void validateFilterPath(String key) {
+        String[] path = key.split("\\.");
+        ManagedType<?> managedType = em.getMetamodel().managedType(typeClass);
+        for (int i = 0; i < path.length; i++) {
+            Attribute<?, ?> attribute;
+            try {
+                attribute = managedType.getAttribute(path[i]);
+            } catch (IllegalArgumentException e) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Filtre non autorisé : " + key);
+            }
+            if (i < path.length - 1) {
+                Class<?> javaType = getAttributeJavaType(attribute);
+                try {
+                    managedType = em.getMetamodel().managedType(javaType);
+                } catch (IllegalArgumentException e) {
+                    throw new AppException(HttpStatus.BAD_REQUEST, "Filtre non autorisé : " + key);
+                }
+            }
+        }
+    }
+
+    private Class<?> getAttributeJavaType(Attribute<?, ?> attribute) {
+        if (attribute instanceof PluralAttribute<?, ?, ?> pluralAttribute) {
+            return pluralAttribute.getElementType().getJavaType();
+        }
+        return attribute.getJavaType();
+    }
+
+    private String getParameterName(String key) {
+        return filterParameterNames.computeIfAbsent(key, k -> "filter" + filterParameterNames.size());
     }
 
     public boolean exists(String libelle, int id) {
@@ -198,7 +267,7 @@ public class PaginationRepository<T extends Exportable> {
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("libelle", libelle);
         List<Integer> results = query.getResultList();
-        if (id == 0 && results.size() > 0) {
+        if (id == 0 && results.isEmpty()) {
             return true;
         }
 
@@ -276,6 +345,12 @@ public class PaginationRepository<T extends Exportable> {
             createSheet(wb, data, finalTitle, allColumns.entrySet());
         }
 
+        try{
+            wb.close();
+        }catch(Exception e){
+            logger.error("Une erreur est survenue lors de l’exportation Excel", e);
+        }
+
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             wb.write(bos);
             return bos.toByteArray();
@@ -345,16 +420,18 @@ public class PaginationRepository<T extends Exportable> {
             columns = headers;
         }
 
-        Set<Map.Entry<String, JsonElement>> entrySet = columns.entrySet();
+        Set<Map.Entry<String, JsonElement>> entrySet = columns!=null?columns.entrySet():null;
 
         StringBuilder sb = new StringBuilder();
 
         // Ajout du header
-        for (Map.Entry<String, JsonElement> entry : entrySet) {
-            JsonObject header = entry.getValue().getAsJsonObject();
-            sb.append("\"").append(header.get("title").getAsString()).append("\"").append(";");
+        if(entrySet!=null){
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                JsonObject header = entry.getValue().getAsJsonObject();
+                sb.append("\"").append(header.get("title").getAsString()).append("\"").append(";");
+            }
+            sb.append(newLine);
         }
-        sb.append(newLine);
 
         for (T entity : data) {
             for (Map.Entry<String, JsonElement> entry : entrySet) {

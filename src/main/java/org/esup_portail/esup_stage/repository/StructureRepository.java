@@ -11,12 +11,14 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class StructureRepository extends PaginationRepository<Structure> {
     public StructureRepository(EntityManager em) {
         super(em, Structure.class, "s");
         this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "numeroUAI", "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
+        this.specificFilterWhitelist = Arrays.asList("nafN1.code");
     }
 
     @Override
@@ -61,10 +63,10 @@ public class StructureRepository extends PaginationRepository<Structure> {
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("siret", siret);
         List<Integer> results = query.getResultList();
-        if (structure.getId() == 0 && results.size() > 0) {
+        if (structure.getId() == 0 && results.isEmpty()) {
             return true;
         }
 
-        return results.stream().anyMatch(i -> i != structure.getId());
+        return results.stream().anyMatch(i -> !Objects.equals(i, structure.getId()));
     }
 }

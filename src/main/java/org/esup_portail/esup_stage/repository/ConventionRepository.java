@@ -18,6 +18,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             for (int i = 0; i < jsonArray.length(); ++i) {
                 clauseOr.add("(c.etape.id.code = :codeEtape" + i + " AND c.etape.id.codeUniversite = :codeUnivEtape" + i + " AND c.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.size() > 0) {
+            if (clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
@@ -118,7 +119,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         break;
                 }
             }
-            if (clauseAnd.size() > 0) {
+            if (clauseAnd.isEmpty()) {
                 clauses.add("(" + String.join(" AND ", clauseAnd) + ")");
             }
         }

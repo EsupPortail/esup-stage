@@ -16,6 +16,7 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
     public LangueConventionRepository(EntityManager em) {
         super(em, LangueConvention.class, "lc", "LEFT JOIN lc.templates template");
         this.predicateWhitelist = Arrays.asList("code", "libelle");
+        this.specificFilterWhitelist = Arrays.asList("typeConventionTemplate");
     }
 
     public boolean exists(LangueConvention langueConvention) {
@@ -23,7 +24,7 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
         TypedQuery<String> query = em.createQuery(queryString, String.class);
         query.setParameter("code", langueConvention.getCode());
         List<String> results = query.getResultList();
-        return results.size() > 0;
+        return results.isEmpty();
     }
 
     @Override

@@ -15,6 +15,7 @@ public class EtapeRepository extends PaginationRepository<Etape> {
     public EtapeRepository(EntityManager em) {
         super(em, Etape.class, "e");
         this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.specificFilterWhitelist = Arrays.asList("search");
     }
 
     @Override

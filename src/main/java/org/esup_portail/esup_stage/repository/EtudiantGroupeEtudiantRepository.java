@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -15,6 +16,7 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
 
     public EtudiantGroupeEtudiantRepository(EntityManager em) {
         super(em, EtudiantGroupeEtudiant.class, "ege");
+        this.specificFilterWhitelist = Arrays.asList("etape.id", "ufr.id");
     }
 
 
@@ -26,7 +28,7 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
             for (int i = 0; i < jsonArray.length(); ++i) {
                 clauseOr.add("(ege.convention.etape.id.code = :codeEtape" + i + " AND ege.convention.etape.id.codeUniversite = :codeUnivEtape" + i + " AND ege.convention.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.size() > 0) {
+            if (clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
