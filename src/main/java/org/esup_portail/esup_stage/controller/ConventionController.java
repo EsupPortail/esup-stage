@@ -123,7 +123,7 @@ public class  ConventionController {
         paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters)
                 .stream()
                 .map(ConventionListDto::from)
-                .collect(Collectors.toList()));
+                .toList());
         return paginatedResponse;
     }
 
@@ -364,17 +364,21 @@ public class  ConventionController {
 
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-            if (convention == null || Boolean.TRUE.equals(convention.getValidationConvention())) {
-                continue;
+
+            if (convention != null && !Boolean.TRUE.equals(convention.getValidationConvention())) {
+                boolean validationPedagogiqueRequise =
+                        Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique());
+                boolean validationPedagogiqueAbsente =
+                        !Boolean.TRUE.equals(convention.getValidationPedagogique());
+
+                if (validationPedagogiqueRequise && validationPedagogiqueAbsente) {
+                    idConventionsErreur.add(convention.getId());
+                } else {
+                    validationAdministrative(convention, configAlerteMailDto, ServiceContext.getUtilisateur(), true);
+                    conventionService.validationAutoDonnees(convention, ServiceContext.getUtilisateur());
+                    count++;
+                }
             }
-            if (Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique()) &&
-                    !Boolean.TRUE.equals(convention.getValidationPedagogique())) {
-                idConventionsErreur.add(convention.getId());
-                continue;
-            }
-            validationAdministrative(convention, configAlerteMailDto, ServiceContext.getUtilisateur(), true);
-            conventionService.validationAutoDonnees(convention, ServiceContext.getUtilisateur());
-            count++;
         }
 
         Map<String, String> response = new HashMap<>();
@@ -455,7 +459,7 @@ public class  ConventionController {
 
     @GetMapping("/{id}/pdf-convention")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id, @RequestParam(name = "isRecap", required = false) boolean isRecap) {
+    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id, @RequestParam(name = "isRecap", required = false) Boolean isRecap) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -796,7 +800,7 @@ public class  ConventionController {
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
 
         // Contrôle chevauchement de dates
-        return dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).size() > 0;
+        return dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).isEmpty();
     }
 
     private void validationPedagogique(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
@@ -917,12 +921,13 @@ public class  ConventionController {
     }
 
     @PostMapping("/{id}/periodes")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION,DroitEnum.MODIFICATION})
     public Convention updatePeriodes(@PathVariable("id") int id, @RequestBody PeriodesDto periodes) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         convention.setDureeExceptionnellePeriode(periodes.getPeriodes());
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
@@ -992,14 +997,25 @@ public class  ConventionController {
     /**
      * Contrôle de chevauchement de dates pour une convention donnée, en excluant la convention elle-même.
      * Lance une AppException si un chevauchement est détecté, sinon ne fait rien.
+     *
      * @param convention la convention pour laquelle vérifier le chevauchement
      * @param utilisateur l'utilisateur pour lequel vérifier le chevauchement (doit être un étudiant)
      */
     private void checkChevauchement(Convention convention, Utilisateur utilisateur) {
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !convention.getCentreGestion().isAutoriserChevauchement() ) {
-            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && !conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).isEmpty()) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
-            }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)
+                && !convention.getCentreGestion().isAutoriserChevauchement()
+                && convention.getDateDebutStage() != null
+                && convention.getDateFinStage() != null
+                && !conventionJpaRepository.findDatesChevauchent(
+                convention.getEtudiant().getIdentEtudiant(),
+                convention.getId(),
+                convention.getDateDebutStage(),
+                convention.getDateFinStage()
+        ).isEmpty()) {
+            throw new AppException(
+                    HttpStatus.BAD_REQUEST,
+                    "Les dates de début et fin de stage se chevauchent avec une de vos conventions"
+            );
         }
     }
 
