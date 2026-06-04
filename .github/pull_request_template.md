@@ -4,6 +4,8 @@
   Supprimez les lignes/options non pertinentes pour garder la PR lisible.
 -->
 
+Établissement / Personne déposant la PR : <!-- ex. Université de Lorraine — Prénom Nom -->
+
 ## Description / Objectif / Motivation / Contexte
 
 <!--
