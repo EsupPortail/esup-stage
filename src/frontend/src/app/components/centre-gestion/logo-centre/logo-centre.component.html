@@ -114,7 +114,7 @@
           <!-- Affichage du PDF -->
           <iframe
             *ngIf="pdfUrl && !pdfLoading && !pdfError"
-            [attr.src]="pdfUrl"
+            [src]="pdfUrl"
             type="application/pdf"
             class="pdf-viewer"
             frameborder="0"

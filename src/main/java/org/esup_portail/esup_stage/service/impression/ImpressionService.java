@@ -413,7 +413,9 @@ public class ImpressionService {
                 ImpressionContext impressionContext = previewConventionFactory.createPreviewContext(centreGestion, centreEtablissement);
 
                 // Traitement du template avec les données fictives
-                Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfigurer.getConfiguration());
+                Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+                freeMarkerConfig.setClassicCompatible(true);
+                Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfig);
                 StringWriter texte = new StringWriter();
                 template.process(impressionContext, texte);
                 htmlTexte = texte.toString();
