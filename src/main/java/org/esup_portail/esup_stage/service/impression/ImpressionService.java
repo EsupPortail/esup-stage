@@ -157,7 +157,8 @@ public class ImpressionService {
             }
             document.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Une erreur est survenue lors de la generation du PDF {}", filename, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         } finally {
             try {
                 if (fop != null) {
@@ -166,7 +167,7 @@ public class ImpressionService {
                     file.delete();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.warn("Impossible de fermer ou supprimer le fichier temporaire du PDF {}", tempFile, e);
             }
         }
     }
