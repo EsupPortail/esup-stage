@@ -3,8 +3,8 @@ package org.esup_portail.esup_stage.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.esup_portail.esup_stage.model.LangueConvention;
-import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -28,16 +28,16 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
     }
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("typeConventionTemplate")) {
             clauses.add("template.typeConvention.id = :" + key.replace(".", ""));
         }
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("typeConventionTemplate")) {
-            query.setParameter(key.replace(".", ""), parameter.getInt("value"));
+            query.setParameter(key.replace(".", ""), getJsonIntValue(parameter));
         }
     }
 }

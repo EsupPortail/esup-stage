@@ -1,5 +1,9 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -18,8 +22,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Exportable;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class PaginationRepository<T extends Exportable> {
 
     private static final Logger logger = LoggerFactory.getLogger(PaginationRepository.class);
+    protected static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final int EXCEL_CELL_MAX_LENGTH = 30000;
     private static final Set<String> FILTER_TYPES = Set.of("int", "boolean", "date", "date-min", "date-max", "list", "text", "string", "annee", "temEnServ", "autocomplete");
     private static final String FILTER_PATH_PATTERN = "[A-Za-z]\\w*+(?:\\.[A-Za-z]\\w*+)*+";
@@ -39,7 +42,7 @@ public class PaginationRepository<T extends Exportable> {
     protected final EntityManager em;
     protected final Class<T> typeClass;
     protected final String alias;
-    protected JSONObject filters;
+    protected JsonNode filters;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> specificFilterWhitelist = new ArrayList<>();
     protected List<String> joins = new ArrayList<>();
@@ -125,7 +128,14 @@ public class PaginationRepository<T extends Exportable> {
         if (jsonString == null || jsonString.isBlank()) {
             jsonString = "{}";
         }
-        filters = new JSONObject(jsonString);
+        try {
+            filters = JSON_MAPPER.readTree(jsonString);
+        } catch (JsonProcessingException e) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
+        }
+        if (filters == null || !filters.isObject()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
+        }
     }
 
     protected void addJoins(String join) {
@@ -145,16 +155,17 @@ public class PaginationRepository<T extends Exportable> {
 
     private List<String> getClauses() {
         List<String> clauses = new ArrayList<>();
-        for (int i = 0; i < filters.length(); ++i) {
-            String key = filters.names().getString(i);
-            JSONObject condition = filters.getJSONObject(key);
-            if (condition.has("specific") && condition.getBoolean("specific")) {
+        Iterator<String> keys = filters.fieldNames();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JsonNode condition = filters.get(key);
+            if (condition.has("specific") && condition.get("specific").asBoolean()) {
                 validateSpecificFilter(key);
                 addSpecificParameter(key, condition, clauses);
             } else {
                 validateStandardFilter(key, condition);
                 String column = alias + "." + key;
-                String op = switch (condition.getString("type")) {
+                String op = switch (condition.get("type").asText()) {
                     case "int", "boolean", "date" -> "=";
                     case "date-min" -> ">=";
                     case "date-max" -> "<=";
@@ -178,33 +189,29 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private void setParameters(Query query) {
-        for (int i = 0; i < filters.length(); ++i) {
-            String key = filters.names().getString(i);
-            JSONObject condition = filters.getJSONObject(key);
-            if (condition.has("specific") && condition.getBoolean("specific")) {
+        Iterator<String> keys = filters.fieldNames();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JsonNode condition = filters.get(key);
+            if (condition.has("specific") && condition.get("specific").asBoolean()) {
                 setSpecificParameterValue(key, condition, query);
             } else {
-                switch (condition.getString("type")) {
+                switch (condition.get("type").asText()) {
                     case "int":
-                        query.setParameter(getParameterName(key), condition.getInt("value"));
+                        query.setParameter(getParameterName(key), condition.get("value").asInt());
                         break;
                     case "boolean":
-                        query.setParameter(getParameterName(key), condition.getBoolean("value"));
+                        query.setParameter(getParameterName(key), condition.get("value").asBoolean());
                         break;
                     case "date","date-min","date-max":
-                        Date date = new Date(condition.getLong("value"));
+                        Date date = new Date(condition.get("value").asLong());
                         query.setParameter(getParameterName(key), date);
                         break;
                     case "list":
-                        List<Object> values = new ArrayList<>();
-                        JSONArray jsonArray = condition.getJSONArray("value");
-                        for (int j = 0; j < jsonArray.length(); ++j) {
-                            values.add(jsonArray.get(j));
-                        }
-                        query.setParameter(getParameterName(key), values);
+                        query.setParameter(getParameterName(key), getJsonArrayValues(condition));
                         break;
                     default:
-                        query.setParameter(getParameterName(key), "%" + condition.getString("value").toLowerCase() + "%");
+                        query.setParameter(getParameterName(key), "%" + condition.get("value").asText().toLowerCase() + "%");
                         break;
                 }
             }
@@ -217,11 +224,11 @@ public class PaginationRepository<T extends Exportable> {
         }
     }
 
-    private void validateStandardFilter(String key, JSONObject condition) {
+    private void validateStandardFilter(String key, JsonNode condition) {
         if (!key.matches(FILTER_PATH_PATTERN)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtre invalide : " + key);
         }
-        if (!condition.has("type") || !FILTER_TYPES.contains(condition.getString("type"))) {
+        if (!condition.has("type") || !FILTER_TYPES.contains(condition.get("type").asText())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de filtre invalide pour : " + key);
         }
         if (!condition.has("value")) {
@@ -274,10 +281,60 @@ public class PaginationRepository<T extends Exportable> {
         return results.stream().anyMatch(i -> i != id);
     }
 
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
     }
 
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
+    }
+
+    protected String getJsonTextValue(JsonNode parameter) {
+        return parameter.get("value").asText();
+    }
+
+    protected int getJsonIntValue(JsonNode parameter) {
+        return parameter.get("value").asInt();
+    }
+
+    protected boolean getJsonBooleanValue(JsonNode parameter) {
+        return parameter.get("value").asBoolean();
+    }
+
+    protected List<Object> getJsonArrayValues(JsonNode parameter) {
+        List<Object> values = new ArrayList<>();
+        JsonNode value = parameter.get("value");
+        if (value == null || !value.isArray()) {
+            return values;
+        }
+        for (JsonNode item : value) {
+            values.add(toParameterValue(item));
+        }
+        return values;
+    }
+
+    private Object toParameterValue(JsonNode item) {
+        if (item.isTextual()) {
+            return item.asText();
+        }
+        if (item.isInt()) {
+            return item.asInt();
+        }
+        if (item.isLong()) {
+            return item.asLong();
+        }
+        if (item.isDouble() || item.isFloat() || item.isBigDecimal()) {
+            return item.asDouble();
+        }
+        if (item.isBoolean()) {
+            return item.asBoolean();
+        }
+        if (item.isNull()) {
+            return null;
+        }
+        return item.toString();
+    }
+
+    protected ObjectNode newJsonObjectNode() {
+        return JSON_MAPPER.createObjectNode();
     }
 
     protected void formatHeaders(String headerString) {

@@ -2,12 +2,10 @@ package org.esup_portail.esup_stage.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.esup_portail.esup_stage.model.Utilisateur;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
     }
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("utilisateur")) {
             clauses.add("(LOWER(u.login) LIKE :" + key.replace(".", "") + " OR LOWER(u.nom) LIKE :" + key.replace(".", "") + " OR LOWER(u.prenom) LIKE :" + key.replace(".", "") + ")");
         }
@@ -32,17 +30,12 @@ public class UtilisateurRepository extends PaginationRepository<Utilisateur> {
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("utilisateur")) {
-            query.setParameter(key.replace(".", ""), "%" + parameter.getString("value").toLowerCase() + "%");
+            query.setParameter(key.replace(".", ""), "%" + getJsonTextValue(parameter).toLowerCase() + "%");
         }
         if (key.equals("roles")) {
-            List<Object> values = new ArrayList<>();
-            JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int j = 0; j < jsonArray.length(); ++j) {
-                values.add(jsonArray.get(j));
-            }
-            query.setParameter(key.replace(".", ""), values);
+            query.setParameter(key.replace(".", ""), getJsonArrayValues(parameter));
         }
     }
 }

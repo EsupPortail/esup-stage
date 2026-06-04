@@ -2,8 +2,8 @@ package org.esup_portail.esup_stage.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.esup_portail.esup_stage.model.Etape;
-import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -19,16 +19,16 @@ public class EtapeRepository extends PaginationRepository<Etape> {
     }
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("search")) {
             clauses.add("(e.libelle LIKE :search OR CONCAT(e.id.code, '-', e.id.codeVersionEtape) LIKE :search)");
         }
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("search")) {
-            query.setParameter(key.replace(".", ""), "%" + parameter.getString("value") + "%");
+            query.setParameter(key.replace(".", ""), "%" + getJsonTextValue(parameter) + "%");
         }
     }
 }
