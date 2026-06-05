@@ -88,13 +88,18 @@ public class EtudiantController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !numEtudiant.equals(utilisateur.getNumEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
         if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
-            if(!etudiantSecurityService.isInscriptionInCentreGestionUtilisateur(inscriptions, etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur))){
+            List<Integer> idsCentresGestionUtilisateur = etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur);
+            List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, annee, false).stream()
+                    .filter(inscription -> inscription.getCentreGestion() != null && idsCentresGestionUtilisateur.contains(inscription.getCentreGestion().getId()))
+                    .toList();
+            if(inscriptions.isEmpty()){
                 logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
                 throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
             }
+            return inscriptions;
         }
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
         return inscriptions;
     }
 

@@ -32,16 +32,12 @@ import reactor.core.publisher.Mono;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
 public class ApogeeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApogeeService.class);
-    private static final long INSCRIPTIONS_CACHE_TTL_MS = 60_000;
     private final WebClient webClient;
-    private final ConcurrentMap<InscriptionsCacheKey, InscriptionsCacheEntry> inscriptionsCache = new ConcurrentHashMap<>();
     @Autowired
     ReferentielProperties referentielProperties;
     @Autowired
@@ -221,36 +217,24 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
-        InscriptionsCacheKey cacheKey = buildInscriptionsCacheKey(utilisateur, numEtudiant, anneeConvention);
-        InscriptionsCacheEntry cached = inscriptionsCache.get(cacheKey);
-        long now = System.currentTimeMillis();
-        if (cached != null && now - cached.createdAt() <= INSCRIPTIONS_CACHE_TTL_MS) {
-            return new ArrayList<>(cached.inscriptions());
-        }
-        if (cached != null) {
-            inscriptionsCache.remove(cacheKey, cached);
-        }
-
-        List<ConventionFormationDto> inscriptions = loadInscriptions(utilisateur, numEtudiant, anneeConvention);
-        long loadedAt = System.currentTimeMillis();
-        cleanExpiredInscriptionsCache(loadedAt);
-        inscriptionsCache.put(cacheKey, new InscriptionsCacheEntry(Collections.unmodifiableList(new ArrayList<>(inscriptions)), loadedAt));
-        return new ArrayList<>(inscriptions);
+        return getInscriptions(utilisateur, numEtudiant, anneeConvention, true);
     }
 
-    private List<ConventionFormationDto> loadInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention, boolean filtrerEligibilite) {
         String anneeEnCours = appConfigService.getAnneeUniv();
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
+        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+        int anneeReferenceInt = getAnneeReferenceInscriptions(anneeInscriptions, anneeEnCoursInt);
+        String anneeReference = String.valueOf(anneeReferenceInt);
 
         // Filtre la liste des années universitaire pour lesquels on doit rechercher les inscriptions
         // Pour les étudiants, pas d'autorisation sur l'année précédente
         // Pour les gestionnaire, au plus autorisation sur l'année précédente
-        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt).collect(Collectors.toList());
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt).collect(Collectors.toList());
         } else {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt || anneeEnCoursInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt || anneeReferenceInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
         }
         if (anneeConvention != null && !anneeConvention.isEmpty() && !anneeInscriptions.contains(anneeConvention)) {
             anneeInscriptions.add(anneeConvention);
@@ -315,7 +299,7 @@ public class ApogeeService {
             }
         }
 
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+        if (filtrerEligibilite && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 // On garde les formations dont le centre de gestion autorise la création d'une convention
                 inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
@@ -326,7 +310,7 @@ public class ApogeeService {
                 Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
                 // On autorise la création de convention sur l'année en cours et les années suivantes
                 int anneeInt = Integer.parseInt(i.getAnnee());
-                if (i.getAnnee().equals(anneeEnCours) || anneeInt > anneeEnCoursInt) {
+                if (i.getAnnee().equals(anneeReference) || anneeInt > anneeReferenceInt) {
                     return true;
                 }
                 if (!autorisationAnneePrecedente) {
@@ -336,7 +320,7 @@ public class ApogeeService {
                     if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                         return false;
                     } else {
-                        return (anneeEnCoursInt - 1) == anneeInt;
+                        return (anneeReferenceInt - 1) == anneeInt;
                     }
                 }
             }).collect(Collectors.toList());
@@ -345,31 +329,14 @@ public class ApogeeService {
         return inscriptions;
     }
 
-    private InscriptionsCacheKey buildInscriptionsCacheKey(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
-        return new InscriptionsCacheKey(numEtudiant, anneeConvention == null ? "" : anneeConvention, appConfigService.getAnneeUniv(), getInscriptionsCacheRoleScope(utilisateur));
-    }
-
-    private String getInscriptionsCacheRoleScope(Utilisateur utilisateur) {
-        if (utilisateur == null) {
-            return "ANONYMOUS";
-        }
-        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            return Role.ADM;
-        }
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            return Role.ETU;
-        }
-        return "NON_ADMIN";
-    }
-
-    private void cleanExpiredInscriptionsCache(long now) {
-        inscriptionsCache.entrySet().removeIf(entry -> now - entry.getValue().createdAt() > INSCRIPTIONS_CACHE_TTL_MS);
-    }
-
-    private record InscriptionsCacheKey(String numEtudiant, String anneeConvention, String anneeEnCours, String roleScope) {
-    }
-
-    private record InscriptionsCacheEntry(List<ConventionFormationDto> inscriptions, long createdAt) {
+    private int getAnneeReferenceInscriptions(List<String> anneeInscriptions, int anneeEnCoursInt) {
+        return anneeInscriptions.stream()
+                .mapToInt(Integer::parseInt)
+                .max()
+                .stream()
+                .map(maxAnneeInscription -> Math.min(anneeEnCoursInt, maxAnneeInscription))
+                .findFirst()
+                .orElse(anneeEnCoursInt);
     }
 
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
