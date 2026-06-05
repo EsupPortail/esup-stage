@@ -32,12 +32,16 @@ import reactor.core.publisher.Mono;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
 public class ApogeeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApogeeService.class);
+    private static final long INSCRIPTIONS_CACHE_TTL_MS = 60_000;
     private final WebClient webClient;
+    private final ConcurrentMap<InscriptionsCacheKey, InscriptionsCacheEntry> inscriptionsCache = new ConcurrentHashMap<>();
     @Autowired
     ReferentielProperties referentielProperties;
     @Autowired
@@ -217,6 +221,24 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
+        InscriptionsCacheKey cacheKey = buildInscriptionsCacheKey(utilisateur, numEtudiant, anneeConvention);
+        InscriptionsCacheEntry cached = inscriptionsCache.get(cacheKey);
+        long now = System.currentTimeMillis();
+        if (cached != null && now - cached.createdAt() <= INSCRIPTIONS_CACHE_TTL_MS) {
+            return new ArrayList<>(cached.inscriptions());
+        }
+        if (cached != null) {
+            inscriptionsCache.remove(cacheKey, cached);
+        }
+
+        List<ConventionFormationDto> inscriptions = loadInscriptions(utilisateur, numEtudiant, anneeConvention);
+        long loadedAt = System.currentTimeMillis();
+        cleanExpiredInscriptionsCache(loadedAt);
+        inscriptionsCache.put(cacheKey, new InscriptionsCacheEntry(Collections.unmodifiableList(new ArrayList<>(inscriptions)), loadedAt));
+        return new ArrayList<>(inscriptions);
+    }
+
+    private List<ConventionFormationDto> loadInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
         String anneeEnCours = appConfigService.getAnneeUniv();
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
@@ -321,6 +343,33 @@ public class ApogeeService {
         }
 
         return inscriptions;
+    }
+
+    private InscriptionsCacheKey buildInscriptionsCacheKey(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
+        return new InscriptionsCacheKey(numEtudiant, anneeConvention == null ? "" : anneeConvention, appConfigService.getAnneeUniv(), getInscriptionsCacheRoleScope(utilisateur));
+    }
+
+    private String getInscriptionsCacheRoleScope(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            return "ANONYMOUS";
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return Role.ADM;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            return Role.ETU;
+        }
+        return "NON_ADMIN";
+    }
+
+    private void cleanExpiredInscriptionsCache(long now) {
+        inscriptionsCache.entrySet().removeIf(entry -> now - entry.getValue().createdAt() > INSCRIPTIONS_CACHE_TTL_MS);
+    }
+
+    private record InscriptionsCacheKey(String numEtudiant, String anneeConvention, String anneeEnCours, String roleScope) {
+    }
+
+    private record InscriptionsCacheEntry(List<ConventionFormationDto> inscriptions, long createdAt) {
     }
 
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
