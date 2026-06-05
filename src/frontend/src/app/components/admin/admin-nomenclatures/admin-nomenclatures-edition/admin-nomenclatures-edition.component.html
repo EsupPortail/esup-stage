@@ -35,7 +35,7 @@
           </mat-form-field>
         </div>
         <div *ngIf="form.get('siretObligatoire')">
-          <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label><br>
+          <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label>
           <mat-radio-group formControlName="siretObligatoire">
             <mat-radio-button [value]=true>Oui</mat-radio-button>
             <mat-radio-button [value]=false>Non</mat-radio-button>
@@ -46,8 +46,8 @@
 
     <!-- Footer fixe -->
     <div class="modal-footer">
-      <button type="button" mat-flat-button color="warn" (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
-      <button mat-flat-button color="primary" (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
+      <button class="cancel-button" type="button" mat-flat-button (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+      <button class="valid-button" mat-flat-button (click)="save()">{{'BOUTON_VALIDER'|contenu}}</button>
     </div>
   </div>
 </div>

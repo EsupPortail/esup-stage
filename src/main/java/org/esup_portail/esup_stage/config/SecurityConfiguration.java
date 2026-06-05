@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-@Order(3)
+@Order(4)
 @Slf4j
 public class SecurityConfiguration {
 
@@ -96,6 +96,8 @@ public class SecurityConfiguration {
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setServiceProperties(serviceProperties());
         filter.setAuthenticationManager(new ProviderManager(Collections.singletonList(casAuthenticationProvider())));
+        filter.setAuthenticationFailureHandler((req, res, ex) -> casEntryPoint().commence(req, res, ex));
+        filter.setFilterProcessesUrl("/login/cas"); // explicite
         return filter;
     }
 
@@ -116,24 +118,39 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        /* Configure les autorisations d'accès */
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login/cas", "/api/version", "/error/**").permitAll()
-                /* Les autres requêtes doivent être authentifiées */
-                .anyRequest().authenticated());
-
-        // Gestion des exceptions d'authentification
-        http.exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(casEntryPoint()))
-                .addFilter(casAuthenticationFilter())  // Ajouter le filtre d'authentification CAS
-                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)  // Ajouter le filtre de déconnexion avant le filtre CAS
-                .addFilterBefore(logoutFilter(), LogoutFilter.class)  // Ajouter le filtre de déconnexion
+        http.authorizeHttpRequests(auth -> auth
+                        // Routes d'authentification
+                        .requestMatchers("/login/cas").permitAll()
+                        .requestMatchers("/api/version").permitAll()
+                        .requestMatchers("/api/contenus/**").permitAll()
+                        .requestMatchers("/api/config/theme").permitAll()
+                        .requestMatchers("/api/evaluation-tuteur/**").permitAll()
+                        .requestMatchers("/error/**").permitAll()
+                        .requestMatchers("/frontend/**").permitAll()
+                        .requestMatchers("/theme.css").permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler())
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getRequestURI().startsWith("/api/")) {
+                                response.setStatus(401);
+                            } else {
+                                response.sendRedirect("/login/cas");
+                            }
+                        })
+                )
+                .addFilter(casAuthenticationFilter())
+                .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
+                .addFilterBefore(logoutFilter(), LogoutFilter.class)
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf
-                    // Utilise un cookie accessible en JS (non HttpOnly)
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    // Spring 6+ : nécessaire pour forcer la génération du cookie
-                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-        );
+                        // Utilise un cookie accessible en JS (non HttpOnly)
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        // Spring 6+ : nécessaire pour forcer la génération du cookie
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                );
 
         return http.build();
     }

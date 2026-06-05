@@ -12,9 +12,10 @@ import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-cadre-stage',
-  templateUrl: './cadre-stage.component.html',
-  styleUrls: ['./cadre-stage.component.scss']
+    selector: 'app-cadre-stage',
+    templateUrl: './cadre-stage.component.html',
+    styleUrls: ['./cadre-stage.component.scss'],
+    standalone: false
 })
 export class CadreStageComponent implements OnInit, OnChanges {
 

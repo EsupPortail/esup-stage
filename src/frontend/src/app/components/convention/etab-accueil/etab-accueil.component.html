@@ -1,73 +1,11 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!etab" *ngIf="modifiable">
-    <mat-expansion-panel-header>
-      Recherchez l'établissement où le stage sera effectué
-    </mat-expansion-panel-header>
-    <div class="sirene-info-box" *ngIf="isSireneAcitve">
-      <div class="sirene-info-title">
-        <mat-icon color="info">info</mat-icon>
-        <span class="m-2">La recherche de l'établissement se fait via la base de <a href="https://annuaire-entreprises.data.gouv.fr/">l'annuaire national des entreprises</a> en renseignant :</span>
-      </div>
-      <div class="sirene-info-details">
-        <ul>
-          <li>soit au moins 2 champs de recherche (par ex : Raison sociale + Commune)</li>
-          <li>soit le SIRET de l'entreprise</li>
-        </ul>
-      </div>
-      En cas d’absence dans la liste, contactez votre gestionnaire de stage.
-    </div>
-    <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
-               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow"
-               [noResultText]="'Aucun établissement trouvé'">
-      <ng-container matColumnDef="raisonSociale">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>
-        <td mat-cell *matCellDef="let row">{{row.raisonSociale}}</td>
-      </ng-container>
-      <ng-container matColumnDef="numeroSiret">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro SIRET</th>
-        <td mat-cell *matCellDef="let row">{{row.numeroSiret}}</td>
-      </ng-container>
-      <ng-container matColumnDef="nafN5">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Activité</th>
-        <td mat-cell *matCellDef="let row">{{row.nafN5 ? row.nafN5.nafN1.libelle : ''}}</td>
-      </ng-container>
-      <ng-container matColumnDef="pays">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
-        <td mat-cell *matCellDef="let row">{{row.pays?.lib}}</td>
-      </ng-container>
-      <ng-container matColumnDef="commune">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
-        <td mat-cell *matCellDef="let row">{{row.commune}}</td>
-      </ng-container>
-      <ng-container matColumnDef="typeStructure">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type d'organisme</th>
-        <td mat-cell *matCellDef="let row">{{row.typeStructure?.libelle}}</td>
-      </ng-container>
-      <ng-container matColumnDef="statutJuridique">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Forme juridique</th>
-        <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
-      </ng-container>
-      <ng-container matColumnDef="numeroRNE">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro UAI</th>
-        <td mat-cell *matCellDef="let row">{{row.numeroUAI ? row.numeroUAI.libelle : ''}}</td>
-      </ng-container>
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <i class="fa fa-check"></i> Sélectionner
-          </button>
-        </td>
-      </ng-container>
-    </app-table>
-  </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="etab" [disabled]="!etab">
+
+  <mat-expansion-panel class="etab-search-panel" [expanded]="etab" [disabled]="!etab">
     <mat-expansion-panel-header>
       <mat-panel-title>Établissement d'accueil</mat-panel-title>
       <mat-panel-description>
         <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-building"></mat-icon>
+          <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-building"></mat-icon>
         </div>
       </mat-panel-description>
     </mat-expansion-panel-header>
@@ -118,19 +56,76 @@
           <div class="col-sm-9">{{etab.nafN5 ? (etab.nafN5.code + ' (' + etab.nafN5.libelle + ')') : ''}}</div>
         </div>
         <div class="row mt-3">
-          <div class="col-md-3">
-            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && modifiable" (click)="changeOnglet()">Changer d'établissement</button>
-          </div>
-          <div class="col-md-3">
-            <button mat-button mat-stroked-button color="primary" *ngIf="etab.id && !modif && modifiable && (canEdit() || (isCreatorEtab(etab) && !etab.temSiren))" (click)="edit()">Modifier ces informations</button>
+<!--          <div class="col-md-3">-->
+<!--            <button class="valid-button" mat-button mat-stroked-button *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>-->
+<!--          </div>-->
+          <div class="col-12 d-flex justify-content-center">
+            <span *ngIf="etab.id && !modif && modifiable && (canEdit() || (isCreatorEtab(etab) && !etab.temSiren))" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
+              <button class="valid-button" mat-button mat-stroked-button>
+                Modifier la fiche de cet établissement d'accueil
+              </button>
+            </span>
           </div>
         </div>
       </div>
       <div *ngIf="(modif && canEdit()) || (modif && canCreate())">
-        <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
+        <app-etab-accueil-form [etab]="etab" (submitted)="onFormSubmitted($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
     </div>
   </mat-expansion-panel>
 
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!etab" *ngIf="modifiable">
+    <mat-expansion-panel-header>
+      Recherchez l'établissement où le stage sera effectué
+    </mat-expansion-panel-header>
+
+
+    <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
+               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"
+               (matSortChange)="appTable ? appTable.sorting($event) : null" [actionButton]="canCreate() ? createButton : undefined" [selectedRow]="selectedRow"
+               confirmMessage= "{{'CONFIRM_MESSAGE_ETAB_ACCUEIL'|contenu}}"
+               [noResultText]="'Aucun établissement trouvé'">
+      <ng-container matColumnDef="raisonSociale">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Raison sociale</th>
+        <td mat-cell *matCellDef="let row">{{row.raisonSociale}}</td>
+      </ng-container>
+      <ng-container matColumnDef="numeroSiret">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro SIRET</th>
+        <td mat-cell *matCellDef="let row">{{row.numeroSiret}}</td>
+      </ng-container>
+      <ng-container matColumnDef="nafN5">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Activité</th>
+        <td mat-cell *matCellDef="let row">{{row.nafN5 ? row.nafN5.nafN1.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="pays">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
+        <td mat-cell *matCellDef="let row">{{row.pays?.lib}}</td>
+      </ng-container>
+      <ng-container matColumnDef="commune">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Commune</th>
+        <td mat-cell *matCellDef="let row">{{row.commune}}</td>
+      </ng-container>
+      <ng-container matColumnDef="typeStructure">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type d'organisme</th>
+        <td mat-cell *matCellDef="let row">{{row.typeStructure?.libelle}}</td>
+      </ng-container>
+      <ng-container matColumnDef="statutJuridique">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Forme juridique</th>
+        <td mat-cell *matCellDef="let row">{{row.statutJuridique ? row.statutJuridique.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="numeroRNE">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro UAI</th>
+        <td mat-cell *matCellDef="let row">{{row.numeroUAI ? row.numeroUAI.libelle : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button class="secondary-button" mat-button mat-stroked-button (click)="choose(row)">
+            <span class="fa fa-check" aria-hidden="true"></span> Sélectionner
+          </button>
+        </td>
+      </ng-container>
+    </app-table>
+  </mat-expansion-panel>
 
 </mat-accordion>

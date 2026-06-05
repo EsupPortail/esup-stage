@@ -3,10 +3,12 @@ package org.esup_portail.esup_stage.model;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
         name = "Etudiant",
@@ -51,6 +53,15 @@ public class Etudiant extends ObjetMetier implements Exportable {
 
     @Temporal(TemporalType.DATE)
     private Date dateNais;
+
+    @Column
+    private String prenomEtatCivil;
+
+    @Column
+    private String sexEtatCivil;
+
+    @Column(name = "prenom2")
+    private String prenom2;
 
     @Override
     public String getExportValue(String key) {

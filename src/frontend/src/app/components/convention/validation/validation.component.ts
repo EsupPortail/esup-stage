@@ -5,9 +5,10 @@ import { MessageService } from "../../../services/message.service";
 import { ConfirmComponent } from "../../confirm/confirm.component";
 
 @Component({
-  selector: 'app-validation',
-  templateUrl: './validation.component.html',
-  styleUrls: ['./validation.component.scss']
+    selector: 'app-validation',
+    templateUrl: './validation.component.html',
+    styleUrls: ['./validation.component.scss'],
+    standalone: false
 })
 export class ValidationComponent implements OnInit, OnChanges {
 

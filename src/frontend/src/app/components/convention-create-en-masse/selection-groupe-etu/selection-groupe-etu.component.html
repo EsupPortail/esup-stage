@@ -2,8 +2,8 @@
   <mat-card-content>
     <div class="mb-3">
       <form [formGroup]="form" (submit)="validate()" novalidate>
-        <div class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</div>
-        <div class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</div>
+        <h4 class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</h4>
+        <h4 class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row mb-2">
           <mat-form-field class="col-6" appearance="fill">
@@ -18,13 +18,13 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary" [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-flat-button [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
         </div>
       </form>
     </div>
 
     <div class="mb-3" *ngIf="groupeEtudiant && groupeEtudiant.etudiantGroupeEtudiants.length > 0">
-      <div class="text-title">Retirer des étudiants du groupe</div>
+      <h4 class="text-title">Retirer des étudiants du groupe</h4>
       <mat-divider class="mb-2"></mat-divider>
       <app-table [service]="etudiantGroupeEtudiantService" [columns]="groupeEtudiantColumns" [sortColumn]="sortColumn" [filters]="groupeEtudiantFilters" [sortOrder]="sortDirection"
                  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
@@ -81,7 +81,7 @@
     </div>
 
     <div class="mb-3">
-      <div class="text-title">Ajouter des étudiants au groupe</div>
+      <h4 class="text-title">Ajouter des étudiants au groupe</h4>
       <mat-divider class="mb-2"></mat-divider>
       <div class="table-filters">
         <form [formGroup]="formAddEtudiants" class="mt-2 mb-3" (submit)="search()">
@@ -131,7 +131,7 @@
           <div class="row">
             <div class="col-12 text-right">
               <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
+              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button class="ml-2 valid-button">Rechercher</button>
             </div>
           </div>
         </form>

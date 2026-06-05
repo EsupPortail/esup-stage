@@ -1,0 +1,1037 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-question-evaluation
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: idQuestionEvaluation
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_question_evaluation
+                    nullable: false
+              - column:
+                  name: codeQuestionEvaluation
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: texteQuestionEvaluation
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: typeQuestionEvaluation
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: paramsJson
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bisQuestion
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: true
+
+        - addUniqueConstraint:
+            tableName: QuestionEvaluation
+            columnNames: codeQuestionEvaluation
+            constraintName: uq_question_evaluation_code
+
+        - createIndex:
+            tableName: QuestionEvaluation
+            indexName: ix_question_evaluation_code
+            unique: false
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+
+  - changeSet:
+      id: 3.2.0-ajout-data-question-evaluation
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous rencontré des difficultés pour trouver un stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SINGLE_CHOICE
+              - column:
+                  name: paramsJson
+              - column: {
+                name: paramsJson,
+                value: '{"items":["Non, il est automatiquement proposé dans le cadre de la formation","Non, je l’ai trouvé assez facilement par moi-même","Oui j’ai eu des difficultés"]}'
+              }
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Combien de temps a duré votre recherche de stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SINGLE_CHOICE
+              - column: {
+                name: paramsJson,
+                value: '{"items":["1 jour à 1 semaine","2 semaines à 1 mois","1 mois à 3 mois","3 mois à 6 mois","+ de 6 mois"]}'
+              }
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI3
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Combien d'établissement(s) d'accueil avez-vous prospecté(s) ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SINGLE_CHOICE
+              - column:
+                  name: paramsJson
+                  value: '{"items":["1 à 5","6 à 10","11 à 20","20 et plus"]}'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI4
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Quels procédés de démarchage avez-vous utilisés ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: BOOLEAN_GROUP
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Mail","Téléphone","Courrier","Prospection directe"]}'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI5
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Comment avez-vous trouvé votre stage ? (récupération de l'information
+                    depuis la convention)
+              - column:
+                  name: typeQuestionEvaluation
+                  value: AUTO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI6
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Comment avez-vous déterminé le contenu de stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SINGLE_CHOICE
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Proposé par votre tuteur professionnel","Proposé par votre tuteur enseignant","Élaboré par vous-même","Négocié entre les parties"]}'
+
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI7
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous été accompagné(e) dans vos démarches ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUI8
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Les modalités d'évaluation de stage vous ont-elles été clairement
+                    présentées ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Comment qualifieriez-vous l'accueil de votre entreprise ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Comment qualifieriez-vous l'encadrement de votre stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII3
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Comment qualifieriez-vous votre adaptation au sein de l'établissement
+                    d'accueil ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII4
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Les conditions matérielles vous ont permis d’atteindre les objectifs
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_AGREEMENT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII5
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous exercé des responsabilités ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUII6
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Votre stage avait-il une dimension internationale ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII0
+              - column:
+                  name: texteQuestionEvaluation
+                  value: 'Votre sujet de stage était à l''origine :'
+              - column:
+                  name: typeQuestionEvaluation
+                  value: AUTO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: "L'avez-vous modifié ?"
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+              - column:
+                  name: bisQuestion
+                  value: Quel a été le nouveau sujet ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Selon vous, le stage a-t-il bien été en adéquation avec votre formation
+                    ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+              - column:
+                  name: bisQuestion
+                  value: 'Commentaire:'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII4
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Les missions confiées ont été ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SINGLE_CHOICE
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Très au-dessous de vos compétences","Au-dessous de vos compétences","A votre niveau de compétences","Au-dessus de vos compétences","Très au-dessus de vos compétences","Inatteignables"]}'
+
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII5
+              - column:
+                  name: texteQuestionEvaluation
+                  value: 'Ce stage vous a-t-il permis d''acquérir :'
+              - column:
+                  name: typeQuestionEvaluation
+                  value: BOOLEAN_GROUP
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Compétences techniques","Nouvelles méthodologies","Nouvelles connaissances théoriques"]}'
+
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII6
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Ce stage vous a permis de progresser dans la construction de votre
+                    projet personnel et professionnel
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_AGREEMENT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII7
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Ce stage vous paraît déterminant à cette étape de votre formation
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_AGREEMENT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII8
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Votre travail a-t-il abouti à une réorganisation du travail ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+              - column:
+                  name: bisQuestion
+                  value: Pouvez-vous en quelques lignes spécifier ce changement ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII9
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Allez-vous valoriser cette expérience dans une prochaine recherche
+                    d'emploi/stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+              - column:
+                  name: bisQuestion
+                  value: 'Commentaire:'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII10
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Votre travail va-t-il donner lieu à un dépôt de brevet ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII11
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous reçu une attestation de stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII12
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous rencontré des difficultés à percevoir votre gratification
+                    ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII14
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance
+                    ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII15
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Conseilleriez-vous cet établissement d'accueil à un autre étudiant
+                    ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ETUIII16
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Indiquez votre appréciation générale sur le stage
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSI1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Suivi avec le stagiaire (téléphone, mail, rencontre)
+              - column:
+                  name: typeQuestionEvaluation
+                  value: BOOLEAN_GROUP
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Téléphone","Mail","Rencontre"]}
+'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSI2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Suivi avec le tuteur professionnel (téléphone, mail, rencontre)
+              - column:
+                  name: typeQuestionEvaluation
+                  value: BOOLEAN_GROUP
+              - column:
+                  name: paramsJson
+                  value: '{"items":["Téléphone","Mail","Rencontre"]}'
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSI3
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Commentaire(s)  à  Suivi
+              - column:
+                  name: typeQuestionEvaluation
+                  value: TEXT
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Impression générale et présentation de l'étudiant
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Aptitude à cerner et situer le projet
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII3
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Aptitude à appliquer ses connaissances
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII4
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Maîtrise du sujet, argumentation, analyse
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII5
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Mise en évidence des éléments importants de l'étude
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII6
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Utilisation des moyens de communication
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII7
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Qualité de l'expression orale
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII8
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Capacité à intéresser l'auditoire
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII9
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Pertinence des réponses
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII10
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Respect du temps alloué
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENSII11
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Commentaire(s) complémentaire(s)  à  évaluation
+              - column:
+                  name: typeQuestionEvaluation
+                  value: TEXT
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT1
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Adaptation au milieu professionnel
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT2
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Intégration au groupe de travail
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT3
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Assiduité - ponctualité
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT5
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Intérêt pour l'établissement, les services, et les métiers
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT9
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Sens de l'organisation
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT11
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Capacité d'autonomie
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT12
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Initiative personnelle
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT13
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Implication
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT14
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Rigueur et précision dans le travail
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT4
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Aptitude à cerner et situer le projet
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT6
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Aptitude à appliquer ses connaissances
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT7
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Esprit d'observation et pertinence des remarques
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT8
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Esprit de synthèse
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT15
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Aptitude à la communication
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT16
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Les objectifs ont-ils été atteints ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_AGREEMENT_5
+              - column:
+                  name: bisQuestion
+                  value: Commentaire (facultatif)
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT17
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Appréciation générale de ce stage
+              - column:
+                  name: typeQuestionEvaluation
+                  value: SCALE_LIKERT_5
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT19
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Observations
+              - column:
+                  name: typeQuestionEvaluation
+                  value: TEXT
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT10
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Avez-vous remis au stagiaire une attestation de stage ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+        - insert:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: codeQuestionEvaluation
+                  value: ENT18
+              - column:
+                  name: texteQuestionEvaluation
+                  value: Seriez-vous prêt à accueillir un nouveau stagiaire ?
+              - column:
+                  name: typeQuestionEvaluation
+                  value: YES_NO
+              - column:
+                  name: bisQuestion
+                  value: Pour quelles raisons ?
+
+  - changeSet:
+      id: 3.2.0-ajout-colonnes-bis-question-bool
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionLowNotation
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bisQuestionTrue
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bisQuestionFalse
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: 3.2.0-maj-bis-question-flags
+      author: thouveno9
+      changes:
+        # ETU échelles : bis si note basse
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionLowNotation
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUII1','ETUII2','ETUII3','ETUIII6','ETUIII7','ETUIII15','ETUIII16')"
+
+        # YES/NO : bis si Oui
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionTrue
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUIII1','ETUIII8','ETUIII9')"
+
+        # YES/NO : bis si Non
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionFalse
+                  valueBoolean: true
+            where: "codeQuestionEvaluation IN ('ETUIII2')"
+
+  - changeSet:
+      id: 3.2.0-etui7-bis-oui-non
+      author: thouveno9
+      changes:
+        # Active les deux chemins bis (Oui et Non)
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionTrue
+                  valueBoolean: true
+              - column:
+                  name: bisQuestionFalse
+                  valueBoolean: true
+            where: "codeQuestionEvaluation = 'ETUI7'"
+
+        # Enrichit paramsJson pour contenir labels + options distinctes
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: paramsJson
+                  value: >-
+                    {
+                      "oui": {
+                        "label": "Si oui, par qui ?",
+                        "items": [
+                          "Proposé par votre tuteur professionnel",
+                          "Proposé par votre tuteur enseignant",
+                          "Élaboré par vous-même",
+                          "Négocié entre les parties",
+                          "Autre"
+                        ]
+                      },
+                      "non": {
+                        "label": "Si non, pourquoi ?",
+                        "items": [
+                          "Je n'ai pas eu besoin d'aide",
+                          "Je ne savais pas à qui m'adresser"
+                        ]
+                      }
+                    }
+            where: "codeQuestionEvaluation = 'ETUI7'"
+
+  - changeSet:
+      id: 3.2.0-ajout-param-ETUI5
+      author: thouveno9
+      changes:
+          - update:
+              tableName: QuestionEvaluation
+              columns:
+                - column:
+                    name: paramsJson
+                    value: '{"items":["Réponse à une offre de stage", "Candidature spontanée", "Réseau de connaissance", "Proposé par le département"]}'
+              where: "codeQuestionEvaluation = 'ETUI5'"

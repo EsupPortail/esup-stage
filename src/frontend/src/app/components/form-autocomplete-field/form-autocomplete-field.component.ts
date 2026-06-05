@@ -5,9 +5,10 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-form-autocomplete-field',
-  templateUrl: './form-autocomplete-field.component.html',
-  styleUrls: ['./form-autocomplete-field.component.scss']
+    selector: 'app-form-autocomplete-field',
+    templateUrl: './form-autocomplete-field.component.html',
+    styleUrls: ['./form-autocomplete-field.component.scss'],
+    standalone: false
 })
 export class FormAutocompleteFieldComponent implements OnInit {
 

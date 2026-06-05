@@ -8,9 +8,10 @@ import { ConfigService } from "./services/config.service";
 import { TechnicalService } from "./services/technical.service";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
 
@@ -168,6 +169,7 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
+    public vcRef: ViewContainerRef
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -186,10 +188,6 @@ export class AppComponent {
 
   isConnected() {
     return this.authService.userConnected;
-  }
-
-  getAppVersion(): string {
-    return this.authService.appVersion;
   }
 
   slideNavbar(): void {

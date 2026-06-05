@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-declaration-accessibilite
+      author: thouveno9
+      changes:
+        - update:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: texte
+                  value: >
+                    <h1>Déclaration d’accessibilité</h1>
+                    <p>Le site <strong>Esup-Stage</strong> est développé selon les recommandations du référentiel général d’amélioration de l’accessibilité (RGAA) afin d’être accessible à tous les usagers, quel que soit le matériel ou le logiciel utilisé pour naviguer sur Internet.</p>
+                    <p>Cette déclaration d’accessibilité s’applique au site :<br>[URL de votre instance]</p>
+
+                    <h2>État de conformité</h2>
+                    <p>Le site <strong>Esup-Stage</strong> est partiellement conforme avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.1.</p>
+
+                    <h2>Résultats des tests</h2>
+                    <ul>
+                      <li>84 % des critères du RGAA version 4 sont respectés</li>
+                      <li>Le taux moyen de conformité du site s’élève à 96 %</li>
+                    </ul>
+
+                    <h2>Établissement de cette déclaration d’accessibilité</h2>
+                    <p>Cette déclaration a été établie le 05/02/2026.</p>
+
+                    <h2>Technologies utilisées pour la réalisation de l’audit</h2>
+                    <ul>
+                      <li>HTML5</li>
+                      <li>CSS</li>
+                      <li>JavaScript</li>
+                      <li>Angular</li>
+                    </ul>
+
+                    <h2>Environnement de test</h2>
+                    <p>Les vérifications de restitution de contenus ont été réalisées sur la base des combinaisons fournies par la base de référence du RGAA :</p>
+                    <ul>
+                      <li>Firefox et NVDA</li>
+                    </ul>
+
+                    <h2>Outils pour évaluer l’accessibilité</h2>
+                    <ul>
+                      <li>HeadingsMap</li>
+                      <li>Outils de développement intégrés dans les navigateurs</li>
+                      <li>Color Contrast Analyser</li>
+                    </ul>
+
+                    <h2>Pages du site ayant fait l’objet de la vérification de conformité</h2>
+                    <ul>
+                      <li>Accueil</li>
+                      <li>Accessibilité</li>
+                      <li>Mentions légales</li>
+                      <li>Plan du site</li>
+                      <li>Tableau de bord</li>
+                      <li>Liste des centres de gestion</li>
+                      <li>Modification d’un centre de gestion</li>
+                      <li>Création d’une convention</li>
+                      <li>Gestion des établissements d’accueil</li>
+                      <li>Évaluation d’une convention</li>
+                      <li>Création de conventions en masse</li>
+                      <li>Gestion des tables des nomenclatures</li>
+                      <li>Templates de mails</li>
+                      <li>Templates de conventions</li>
+                      <li>Contenu</li>
+                    </ul>
+
+                    <h2>Contenus non accessibles</h2>
+                    <ul>
+                      <li>Les messages d’erreur sont annoncés comme des dialogues, ce qui peut nuire à la clarté du message pour les utilisateurs de lecteurs d’écran.</li>
+                    </ul>
+
+                    <h2>Retour d’information et contact</h2>
+                    <p>Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez nous contacter par courriel à l’adresse suivante :</p>
+                    <p>[email de contact]</p>
+                    <p>afin d’être orienté vers une alternative accessible ou d’obtenir le contenu sous une autre forme.</p>
+
+                    <h2>Voies de recours</h2>
+                    <p>Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou à une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.</p>
+                    <p>Plusieurs moyens sont à votre disposition :</p>
+                    <ul>
+                      <li>Un formulaire de contact</li>
+                      <li>La liste des délégués près de chez vous avec leurs informations de contact directes</li>
+                      <li>Un numéro de téléphone : <strong>09 69 39 00 00</strong>, du lundi au vendredi de 8 h 00 à 20 h 00 (coût d’un appel local)</li>
+                      <li>Une adresse postale disponible dans l’annuaire de l’administration</li>
+                    </ul>
+            where: codeContenu = 'CONTENU_PAGE_ACCESSIBILITE'

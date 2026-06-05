@@ -9,9 +9,10 @@ import { Droit } from "../../../constants/droit";
 import { MessageService } from "../../../services/message.service";
 
 @Component({
-  selector: 'app-admin-role',
-  templateUrl: './admin-role.component.html',
-  styleUrls: ['./admin-role.component.scss']
+    selector: 'app-admin-role',
+    templateUrl: './admin-role.component.html',
+    styleUrls: ['./admin-role.component.scss'],
+    standalone: false
 })
 export class AdminRoleComponent implements OnInit {
 

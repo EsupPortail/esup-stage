@@ -1,6 +1,14 @@
 a {
   color: white;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  &:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 .spacer {
@@ -9,11 +17,40 @@ a {
 
 .app-name {
   margin-left: 10px;
+  font-weight: 500;
 }
 
 #app-logo {
   height: 40px;
   margin-left: 10px;
+}
+
+.header-button-accessibility,
+.header-button-disconnect {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+}
+
+.header-button-accessibility {
+  font-size: 25px;
+  margin-right: 0.5rem;
+}
+
+.header-button-disconnect {
+  font-size: 21px;
+  margin-right: 0.5rem;
 }
 
 @media (max-width: 767px) {
@@ -25,5 +62,41 @@ a {
   #app-toolbar {
     height: 80px;
     font-size: 0.8rem;
+  }
+
+  .app-name {
+    font-size: 0.9rem;
+  }
+
+  .header-button-accessibility {
+    font-size: 22px;
+  }
+
+  .header-button-disconnect {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-button-accessibility,
+  .header-button-disconnect {
+    transition: none;
+  }
+}
+
+body.high-contrast {
+  .header-button-accessibility,
+  .header-button-disconnect {
+    &:focus-visible {
+      outline-width: 3px;
+    }
+  }
+}
+
+body.reduced-motion {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

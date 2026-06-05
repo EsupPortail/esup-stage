@@ -16,6 +16,22 @@
         </mat-form-field>
       </div>
     </form>
+    <div class="row mb-3" *ngIf="disableAutoSearch">
+      <div class="col-sm-12 col-md-6 text-left">
+        <button
+          type="button"
+          class="valid-button"
+          mat-button
+          mat-flat-button
+          (click)="runSearchGestionnaire()"
+          [disabled]="!hasPendingSearchGestionnaire">
+          Lancer la recherche
+        </button>
+        <span *ngIf="hasPendingSearchGestionnaire" class="pending-search-hint">
+          Modifications en attente
+        </span>
+      </div>
+    </div>
 
     <div class="alert alert-info" *ngIf="gestionnaires.length >= 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
     <table mat-table [dataSource]="gestionnaires | slice:0:10">
@@ -41,10 +57,10 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+          <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
+            <span *ngIf="true"><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
             <ng-template #notSelected>
-              <i class="fa fa-check-circle"></i> Sélectionner
+              <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
             </ng-template>
           </button>
         </td>
@@ -62,15 +78,15 @@
     <form [formGroup]="form" (submit)="save()">
       <div class="gest-info" style="margin-bottom: 15px">
         <div class="row">
-          <div class="col-sm-6"><b>Nom</b> &nbsp; {{this.form.get('nom')?.value}}</div>
-          <div class="col-sm-6"><b>Affectation</b> &nbsp; {{this.form.get('codeAffectation')?.value}}</div>
+          <div class="col-sm-6"><b>Nom</b> &nbsp; {{form.get('nom')?.value}}</div>
+          <div class="col-sm-6"><b>Affectation</b> &nbsp; {{form.get('codeAffectation')?.value}}</div>
         </div>
         <div class="row">
-          <div class="col-sm-6"><b>Prénom</b> &nbsp; {{this.form.get('prenom')?.value}}</div>
-          <div class="col-sm-6"><b>Type</b> &nbsp; {{this.form.get('typePersonne')?.value}}</div>
+          <div class="col-sm-6"><b>Prénom</b> &nbsp; {{form.get('prenom')?.value}}</div>
+          <div class="col-sm-6"><b>Type</b> &nbsp; {{form.get('typePersonne')?.value}}</div>
         </div>
         <div class="row">
-          <div class="col-sm-6"><b>Mail</b> &nbsp; {{this.form.get('mail')?.value}}</div>
+          <div class="col-sm-6"><b>Mail</b> &nbsp; {{form.get('mail')?.value}}</div>
         </div>
       </div>
 
@@ -97,9 +113,9 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-12">
-            <button type="button" #matMenuTrigger mat-raised-button color="primary"[matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
+            <button class="valid-button" type="button" #matMenuTrigger mat-raised-button [matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
             <mat-menu #menu="matMenu">
-              <button #menuItems class="toggle-all" type="button" mat-raised-button color="primary" style="margin: 8px" (click)="$event.stopPropagation(); toggleAll()">Activer/Désactiver toutes les alertes</button>
+              <button #menuItems class="toggle-all valid-button" type="button" mat-raised-button style="margin: 8px" (click)="$event.stopPropagation(); toggleAll()">Activer/Désactiver toutes les alertes</button>
               <mat-checkbox #menuItems *ngFor="let alerte of alertesMail" formControlName="{{alerte.id}}" class="checkbox-alertes"
                             (click)="$event.stopPropagation()" style="padding: 8px">
                 {{ alerte.libelle }}
@@ -116,7 +132,7 @@
       </div>
 
       <mat-dialog-actions>
-        <button mat-flat-button color="primary">{{'BOUTON_VALIDER'|contenu}}</button>
+        <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
       </mat-dialog-actions>
     </form>
   </mat-expansion-panel>
@@ -156,13 +172,14 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let row">
           <span>
-            <button mat-icon-button matTooltip="Modifier" color="primary" (click)="edit(row)"><i class="fa fa-pen"></i></button>
+            <button class="edit-button" mat-icon-button matTooltip="Modifier" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
           </span>
           <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce gestionnaire de ce centre ?'">
-            <button mat-icon-button matTooltip="Supprimer" color="warn"><i class="fa fa-trash"></i></button>
+            <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
           </span>
         </td>
       </ng-container>
     </app-table>
   </mat-expansion-panel>
 </mat-accordion>
+

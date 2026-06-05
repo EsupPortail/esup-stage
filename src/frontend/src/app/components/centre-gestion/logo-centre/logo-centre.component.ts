@@ -20,7 +20,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cropper') cropper?: ImageCropperComponent;
 
-  // --- Logo & formulaire
   logoFile: File | undefined;
   previewUrl: string | ArrayBuffer | null = null;
   currentFile: any;

@@ -114,7 +114,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   _onDestroy = new Subject<void>();
   autoUpdating = false;
   isSireneActive = false;
-  filterTypeContries!: 0 | 1 | 2  ;
+  filterTypeCountries!: 0 | 1 | 2  ;
   private lastNafListKey: string | number | null = null;
 
   form: any;
@@ -146,18 +146,18 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     })
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({ temEnServPays: { value: 'O', type: 'text' } })).subscribe((response: any) => {
         this.countries = response.data;
-        this.filterTypeContries = 0;
+        this.filterTypeCountries = 0;
 
         // Restriction étudiant : enlever la France si nécessaire
         if (this.authService.isEtudiant() && this.creationSeulementHorsFrance) {
           this.countries = this.countries.filter(c => c.libelle !== 'FRANCE');
-          this.filterTypeContries = 1;
+          this.filterTypeCountries = 1;
         }
 
         // Restriction étudiant : enlever les autres pays si nécessaire
         if(this.authService.isEtudiant() && this.creationSeulementFrance){
           this.countries = this.countries.filter(c => c.libelle == 'FRANCE');
-          this.filterTypeContries = 2;
+          this.filterTypeCountries = 2;
         }
 
         this.filteredCountries.next(this.countries.slice());
@@ -194,6 +194,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   public config: EditorConfig = {};
   public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -303,13 +304,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -355,16 +349,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -379,7 +363,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       },
 
       language: 'fr',
-      licenseKey: 'GPL',
       link: {
         addTargetToExternalLinks: true,
         defaultProtocol: 'https://',
@@ -401,55 +384,6 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
@@ -463,7 +397,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   ngOnChanges(changes: SimpleChanges): void {
     this.form = this.fb.group({
       raisonSociale: [this.etab.raisonSociale, [Validators.required, Validators.maxLength(150)]],
-      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern('[0-9]{14}')]],
+      numeroSiret: [this.etab.numeroSiret, [Validators.maxLength(14), Validators.pattern(REGEX.NUMSIRET)]],
       idEffectif: [this.etab.effectif ? this.etab.effectif.id : null],
       idTypeStructure: [this.etab.typeStructure ? this.etab.typeStructure.id : null, [Validators.required]],
       idStatutJuridique: [this.etab.statutJuridique?.id ?? null, [Validators.required]],
@@ -476,10 +410,10 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       libCedex: [this.etab.libCedex, [Validators.maxLength(20)]],
       idPays: [this.etab.pays?.id ?? null, [Validators.required]],
       mail: [this.etab.mail, [Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
-      siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern('^https?://(\\w([\\w\\-]{0,61}\\w)?\\.)+[a-zA-Z]{2,6}([/]{1}.*)?$')]],
+      telephone: [this.etab.telephone, [Validators.required, Validators.pattern(REGEX.PHONE), Validators.maxLength(50)]],
+      siteWeb: [this.etab.siteWeb, [Validators.maxLength(200), Validators.pattern(REGEX.SITEWEB)]],
       fax: [this.etab.fax, [Validators.maxLength(20)]],
-      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern('[0-9]{7}[a-zA-Z]')]],
+      numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern(REGEX.NUMRNE)]],
       verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
     this.toggleCommune();
@@ -779,6 +713,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.autoUpdating = false;
       }
     });
+  }
+
+  // Vérifie si le bouton de verrouillage doit être affiché
+  canToggleVerrouillage(): boolean {
+    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
   }
 
   canUpdateFromApi(): boolean {

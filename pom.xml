@@ -15,7 +15,7 @@
 	<description>Application ESUP-Stage</description>
 
 	<properties>
-		<revision>3.1.14</revision>
+		<revision>3.2.0</revision>
 		<sha1></sha1>
 		<changelist></changelist>
 
@@ -159,13 +159,13 @@
 		<dependency>
 			<groupId>com.googlecode.libphonenumber</groupId>
 			<artifactId>libphonenumber</artifactId>
-			<version>8.13.50</version>
+			<version>9.0.16</version>
 		</dependency>
 
         <dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
-			<version>4.30.0</version>
+			<version>5.0.1</version>
 		</dependency>
 
 		<dependency>
@@ -316,14 +316,14 @@
 		<dependency>
 			<groupId>jakarta.xml.ws</groupId>
 			<artifactId>jakarta.xml.ws-api</artifactId>
-			<version>3.0.1</version>
+			<version>4.0.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>6.6.2.Final</version>
-		</dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.33.Final</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.glassfish.metro</groupId>
@@ -334,6 +334,28 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jxls</groupId>
+			<artifactId>jxls-poi</artifactId>
+			<version>3.0.0</version>
+		</dependency>
     </dependencies>
 
 	<build>
