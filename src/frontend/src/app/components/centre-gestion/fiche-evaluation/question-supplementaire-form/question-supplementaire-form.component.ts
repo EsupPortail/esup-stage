@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-question-supplementaire-form',
-  templateUrl: './question-supplementaire-form.component.html',
-  styleUrls: ['./question-supplementaire-form.component.scss']
+    selector: 'app-question-supplementaire-form',
+    templateUrl: './question-supplementaire-form.component.html',
+    styleUrls: ['./question-supplementaire-form.component.scss'],
+    standalone: false
 })
 export class QuestionSupplementaireFormComponent implements OnInit {
 

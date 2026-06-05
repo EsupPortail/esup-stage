@@ -1,7 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -76,7 +77,7 @@ public class LdapController {
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
-    public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @Pattern(regexp = "[A-Za-z0-9]+") String login) {
+    public List<LdapUser> searchLdapUserByLogin(@Valid @RequestParam("login") @NotBlank @Size(max = 255) String login) {
         List<LdapUser> response = new ArrayList<>();
         LdapUser ldapUser = ldapService.searchByLogin(login);
         if (ldapUser != null) {

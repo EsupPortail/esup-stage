@@ -1,20 +1,23 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
 import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, takeUntil } from "rxjs/operators";
 import { ConfigService } from "../../../services/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { Subject } from "rxjs";
+import { AccessibilityService } from "../../../services/accessibility.service";
 
 @Component({
-  selector: 'app-param-centre',
-  templateUrl: './param-centre.component.html',
-  styleUrls: ['./param-centre.component.scss']
+    selector: 'app-param-centre',
+    templateUrl: './param-centre.component.html',
+    styleUrls: ['./param-centre.component.scss'],
+    standalone: false
 })
-export class ParamCentreComponent implements OnInit {
+export class ParamCentreComponent implements OnInit, OnDestroy {
 
   @Input() centreGestion: any;
   @Input() form!: FormGroup;
@@ -28,8 +31,18 @@ export class ParamCentreComponent implements OnInit {
   confidentialites: any[] = [];
   etablissementConfidentialite: any;
 
+  delegataireForm: FormGroup;
+  delegataires: any[] = [];
+  delegataire: any;
+
   validationLibelles: any = {};
   validationsActives: any[] = [];
+
+  disableAutoSearch: boolean = false;
+  hasPendingSearchViseur: boolean = false;
+  hasPendingSearchDelegataire: boolean = false;
+
+  private _destroy$ = new Subject<void>();
 
   @ViewChildren(MatExpansionPanel) pannels!: QueryList<MatExpansionPanel>;
 
@@ -42,14 +55,21 @@ export class ParamCentreComponent implements OnInit {
     private ldapService: LdapService,
     private enseignantService: EnseignantService,
     private configService: ConfigService,
+    private accessibilityService: AccessibilityService,
     ) {
-      this.viseurForm = this.fb.group({
-        nom: [null, []],
-        prenom: [null, []],
-      });
-    }
+    this.viseurForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+    this.delegataireForm = this.fb.group({
+      nom: [null, []],
+      prenom: [null, []],
+    });
+  }
 
   ngOnInit(): void {
+    this.loadDisableAutoSearchPref();
+
     this.configService.getConfigGenerale().subscribe((response: any) => {
       this.validationLibelles.validationPedagogique = response.validationPedagogiqueLibelle;
       this.validationLibelles.validationConvention = response.validationAdministrativeLibelle;
@@ -58,6 +78,13 @@ export class ParamCentreComponent implements OnInit {
       }
     });
     this.viseurForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      if (this.disableAutoSearch) {
+        this.hasPendingSearchViseur = this.hasViseurCriteria();
+        if (!this.hasPendingSearchViseur) {
+          this.enseignants = [];
+        }
+        return;
+      }
       this.search();
     });
     this.getConfidentialites();
@@ -79,9 +106,47 @@ export class ParamCentreComponent implements OnInit {
     this.form.get('qualiteViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
       if (this.form.get('qualiteViseur')?.dirty) {
         this.centreGestion.qualiteViseur = val;
-        this.update.emit(this.form.getRawValue());
       }
     });
+    this.form.get('qualiteDelegataireViseur')?.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
+      if (this.form.get('qualiteDelegataireViseur')?.dirty) {
+        this.centreGestion.qualiteDelegataireViseur = val;
+      }
+    });
+    this.delegataireForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      if (this.disableAutoSearch) {
+        this.hasPendingSearchDelegataire = this.hasDelegataireCriteria();
+        if (!this.hasPendingSearchDelegataire) {
+          this.delegataires = [];
+        }
+        return;
+      }
+      this.searchDelegataire();
+    });
+
+    this.accessibilityService.disableAutoSearch$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value) => {
+        const previous = this.disableAutoSearch;
+        this.disableAutoSearch = value;
+
+        if (this.disableAutoSearch && !previous) {
+          this.hasPendingSearchViseur = this.hasViseurCriteria();
+          this.hasPendingSearchDelegataire = this.hasDelegataireCriteria();
+        } else if (!this.disableAutoSearch && previous) {
+          if (this.hasPendingSearchViseur) {
+            this.runSearchViseur();
+          }
+          if (this.hasPendingSearchDelegataire) {
+            this.runSearchDelegataire();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   getConfidentialites() {
@@ -124,6 +189,12 @@ export class ParamCentreComponent implements OnInit {
       qualiteViseur: this.centreGestion.qualiteViseur,
       delaiAlerteConvention: this.centreGestion.delaiAlerteConvention,
       onlyMailCentreGestion: this.centreGestion.onlyMailCentreGestion,
+      autoriserChevauchement : this.centreGestion.autoriserChevauchement,
+      autoriserImpressionConventionApresCreationAvenant : this.centreGestion.autoriserImpressionConventionApresCreationAvenant,
+      nomDelegataireViseur: this.centreGestion.nomDelegataireViseur,
+      prenomDelegataireViseur: this.centreGestion.prenomDelegataireViseur,
+      mailDelegataireViseur: this.centreGestion.mailDelegataireViseur,
+      qualiteDelegataireViseur: this.centreGestion.qualiteDelegataireViseur,
     }, {
       emitEvent: false,
     });
@@ -149,7 +220,8 @@ export class ParamCentreComponent implements OnInit {
     if (!this.viseurForm.get('nom')?.value && !this.viseurForm.get('prenom')?.value) {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
-    }
+    this.hasPendingSearchViseur = false;
+  }
     this.enseignant = undefined;
     this.ldapService.searchUsersByName(this.viseurForm.value.nom, this.viseurForm.value.prenom).subscribe((response: any) => {
       this.enseignants = response;
@@ -160,20 +232,20 @@ export class ParamCentreComponent implements OnInit {
   }
 
   choose(row: any): void {
-      if (this.pannels) {
-        this.pannels.first.open();
+    if (this.pannels) {
+      this.pannels.first.open();
+    }
+    this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+      this.enseignant = response;
+      if (this.enseignant == null){
+        this.createEnseignant(row, 'viseur');
+      }else{
+        this.updateEnseignant(this.enseignant.id, row, 'viseur');
       }
-      this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
-        this.enseignant = response;
-        if (this.enseignant == null){
-          this.createEnseignant(row);
-        }else{
-          this.updateEnseignant(this.enseignant.id, row);
-        }
-      });
+    });
   }
 
-  createEnseignant(row: any): void {
+  createEnseignant(row: any, type: 'viseur' | 'delegataire'): void {
     const data = {
       "nom": row.sn.join(' '),
       "prenom": row.givenName.join(' '),
@@ -184,12 +256,17 @@ export class ParamCentreComponent implements OnInit {
     };
 
     this.enseignantService.create(data).subscribe((response: any) => {
-      this.enseignant = response;
-      this.setViseur(this.enseignant);
+      if (type === 'viseur') {
+        this.enseignant = response;
+        this.setViseur(this.enseignant);
+      } else {
+        this.delegataire = response;
+        this.setDelegataire(this.delegataire);
+      }
     });
   }
 
-  updateEnseignant(id: number, row: any): void {
+  updateEnseignant(id: number, row: any, type: 'viseur' | 'delegataire'): void {
     const data = {
       nom: row.sn.join(' '),
       prenom: row.givenName.join(' '),
@@ -200,8 +277,13 @@ export class ParamCentreComponent implements OnInit {
     };
 
     this.enseignantService.update(id, data).subscribe((response: any) => {
-      this.enseignant = response;
-      this.setViseur(this.enseignant);
+      if (type === 'viseur') {
+        this.enseignant = response;
+        this.setViseur(this.enseignant);
+      } else {
+        this.delegataire = response;
+        this.setDelegataire(this.delegataire);
+      }
     });
   }
 
@@ -233,6 +315,8 @@ export class ParamCentreComponent implements OnInit {
 
     this.form.markAsDirty();
     this.update.emit(this.form.getRawValue());
+
+    this.resetDelegataire() // reset aussi le délégataire, car lié au viseur
   }
 
   compareCode(option: any, value: any): boolean {
@@ -280,4 +364,135 @@ export class ParamCentreComponent implements OnInit {
     }
   }
 
+  searchDelegataire(): void {
+    if (!this.delegataireForm.get('nom')?.value && !this.delegataireForm.get('prenom')?.value) {
+      this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
+      return;
+    this.hasPendingSearchDelegataire = false;
+  }
+    this.delegataire = undefined;
+    this.ldapService.searchUsersByName(this.delegataireForm.value.nom, this.delegataireForm.value.prenom).subscribe((response: any) => {
+      this.delegataires = response;
+      if (this.delegataires.length === 1) {
+        this.chooseDelegataire(this.delegataires[0]);
+      }
+    });
+  }
+
+
+  chooseDelegataire(row: any): void {
+    if (!this.hasViseur()) {
+      this.messageService.setError(`Vous devez d'abord sélectionner un viseur avant de définir un délégataire`);
+      return;
+    }
+    if (this.pannels) {
+      this.pannels.first.open();
+    }
+    this.enseignantService.getByUid(row.supannAliasLogin).subscribe((response: any) => {
+      this.delegataire = response;
+      if (this.delegataire == null){
+        this.createEnseignant(row, 'delegataire');
+      }else{
+        this.updateEnseignant(this.delegataire.id, row, 'delegataire');
+      }
+    });
+  }
+
+  setDelegataire(enseignant: any) {
+    this.form.get('nomDelegataireViseur')?.setValue(enseignant.nom);
+    this.form.get('prenomDelegataireViseur')?.setValue(enseignant.prenom);
+    this.form.get('mailDelegataireViseur')?.setValue(enseignant.mail);
+    this.form.get('qualiteDelegataireViseur')?.reset();
+
+    this.centreGestion.nomDelegataireViseur = enseignant.nom;
+    this.centreGestion.prenomDelegataireViseur = enseignant.prenom;
+    this.centreGestion.mailDelegataireViseur = enseignant.mail;
+    this.centreGestion.qualiteDelegataireViseur = null;
+
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
+  }
+
+  resetDelegataire() {
+    this.form.get('nomDelegataireViseur')?.reset();
+    this.form.get('prenomDelegataireViseur')?.reset();
+    this.form.get('mailDelegataireViseur')?.reset();
+    this.form.get('qualiteDelegataireViseur')?.reset();
+
+    this.centreGestion.nomDelegataireViseur = null;
+    this.centreGestion.prenomDelegataireViseur = null;
+    this.centreGestion.mailDelegataireViseur = null;
+    this.centreGestion.qualiteDelegataireViseur = null;
+
+    this.form.markAsDirty();
+    this.update.emit(this.form.getRawValue());
+  }
+
+  isDisabledChoose(): boolean {
+    return !this.hasViseur();
+  }
+
+  hasViseur(): boolean {
+    return !!this.form.get('nomViseur')?.value;
+  }
+  runSearchViseur(): void {
+    if (!this.hasViseurCriteria()) {
+      this.hasPendingSearchViseur = false;
+      return;
+    }
+    this.search();
+  }
+
+  runSearchDelegataire(): void {
+    if (!this.hasDelegataireCriteria()) {
+      this.hasPendingSearchDelegataire = false;
+      return;
+    }
+    this.searchDelegataire();
+  }
+
+  private hasViseurCriteria(): boolean {
+    const nom = (this.viseurForm.get('nom')?.value || '').toString().trim();
+    const prenom = (this.viseurForm.get('prenom')?.value || '').toString().trim();
+    return nom.length > 0 || prenom.length > 0;
+  }
+
+  private hasDelegataireCriteria(): boolean {
+    const nom = (this.delegataireForm.get('nom')?.value || '').toString().trim();
+    const prenom = (this.delegataireForm.get('prenom')?.value || '').toString().trim();
+    return nom.length > 0 || prenom.length > 0;
+  }
+
+  private loadDisableAutoSearchPref(): void {
+    const saved = localStorage.getItem('accessibilityPreferences');
+    if (!saved) return;
+    try {
+      const prefs = JSON.parse(saved);
+      this.disableAutoSearch = !!prefs?.disableAutoSearch;
+    } catch {}
+  }
+
+  /**
+   * Déplace une validation vers le haut dans la liste (alternative accessible)
+   * @param index Index actuel de la validation
+   */
+  moveValidationUp(index: number): void {
+    if (index > 0) {
+      moveItemInArray(this.validationsActives, index, index - 1);
+      this.reorderValidations();
+    }
+  }
+
+  /**
+   * Déplace une validation vers le bas dans la liste (alternative accessible)
+   * @param index Index actuel de la validation
+   */
+  moveValidationDown(index: number): void {
+    if (index < this.validationsActives.length - 1) {
+      moveItemInArray(this.validationsActives, index, index + 1);
+      this.reorderValidations();
+    }
+  }
 }
+
+

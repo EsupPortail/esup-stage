@@ -1,0 +1,269 @@
+::ng-deep .accessibility-dialog-container {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    max-width: 500px;
+    width: 90vw;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  background-color: var(--primaryColor, #1976d2);
+  color: #fff;
+}
+
+.dialog-title-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dialog-header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dialog-header-icon {
+  font-size: 22px;
+}
+
+.dialog-close-button {
+  margin-left: auto;
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  .fa-solid {
+    font-size: 20px;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-content {
+  padding: 0;
+  margin: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.accessibility-section {
+  padding: 1.25rem 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 0.75rem;
+}
+
+.section-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+
+  button {
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.04);
+      transform: scale(1.1);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1976d2;
+      outline-offset: 2px;
+    }
+
+    .fa-solid {
+      font-size: 16px;
+    }
+  }
+}
+
+.font-size-value {
+  min-width: 70px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1976d2;
+  padding: 6px 12px;
+  background-color: rgba(25, 118, 210, 0.08);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.spacing-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.option-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  color: rgba(0, 0, 0, 0.87);
+  border-radius: 4px;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &:focus-visible {
+    background-color: rgba(25, 118, 210, 0.12);
+    outline: 2px solid #1976d2;
+    outline-offset: -2px;
+  }
+
+  &[aria-pressed="true"] {
+    background-color: rgba(25, 118, 210, 0.08);
+  }
+}
+
+.option-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .fa-solid {
+    font-size: 18px;
+  }
+
+  .fa-check-square {
+    color: #1976d2;
+  }
+
+  .fa-square {
+    color: rgba(0, 0, 0, 0.38);
+  }
+}
+
+.font-select {
+  width: 100%;
+}
+
+.reset-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-weight: 500;
+
+  .fa-solid {
+    font-size: 18px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #f44336;
+    outline-offset: 2px;
+  }
+}
+
+::ng-deep .mat-divider {
+  margin: 0;
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 767px) {
+  .dialog-title-text {
+    font-size: 1rem;
+  }
+
+  .accessibility-section {
+    padding: 1rem 1.25rem;
+  }
+
+  ::ng-deep .mat-mdc-dialog-title {
+    padding: 0.65rem 1rem;
+  }
+
+  .font-size-value {
+    min-width: 60px;
+    font-size: 1rem;
+    padding: 4px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-controls button,
+  .option-button,
+  .dialog-close-button {
+    transition: none;
+  }
+}
+
+body.high-contrast {
+  .dialog-close-button,
+  .option-button,
+  .reset-button {
+    &:focus-visible {
+      outline-width: 3px;
+    }
+  }
+
+  .font-size-value {
+    border: 1px solid #1976d2;
+  }
+
+  ::ng-deep .accessibility-dialog-container .mat-mdc-dialog-container {
+    border: 2px solid #000;
+  }
+}

@@ -42,14 +42,25 @@
           <mat-form-field class="col-12" appearance="fill">
             <mat-label>Téléphone</mat-label>
             <input matInput formControlName="tel" required />
-            <mat-error><app-form-error [field]="form.get('tel')"></app-form-error></mat-error>
+            <mat-error *ngIf="form.get('tel')?.touched && form.get('tel')?.invalid">
+              <ng-container *ngIf="form.get('tel')?.hasError('required')">Ce champ est obligatoire.</ng-container>
+              <ng-container *ngIf="form.get('tel')?.hasError('pattern')">Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX </ng-container>
+              <ng-container *ngIf="form.get('tel')?.hasError('maxlength')">50 caractères maximum.</ng-container>
+            </mat-error>
           </mat-form-field>
         </div>
         <div class="row input-group">
           <mat-form-field class="col-12" appearance="fill">
             <mat-label>Email</mat-label>
             <input matInput formControlName="mail" required />
-            <mat-error><app-form-error [field]="form.get('mail')"></app-form-error></mat-error>
+            <mat-error *ngIf="form.get('mail')?.touched && form.get('mail')?.invalid">
+              <ng-container *ngIf="form.get('mail')?.hasError('pattern')">
+                Adresse email invalide. Format attendu : exemple&#64;domaine.com
+              </ng-container>
+              <ng-container *ngIf="form.get('mail')?.hasError('maxlength')">
+                255 caractères maximum.
+              </ng-container>
+            </mat-error>
           </mat-form-field>
         </div>
         <div class="row input-group">

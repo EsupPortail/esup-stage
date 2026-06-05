@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Convention")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -456,6 +458,11 @@ public class Convention extends ObjetMetier implements Exportable {
     public boolean isDepasseDelaiValidation() {
         CentreGestion centreGestion = getCentreGestion();
         if (centreGestion != null) {
+            Integer delaiAlerte = centreGestion.getDelaiAlerteConvention();
+            if (delaiAlerte == null) {
+                delaiAlerte = 0;
+            }
+
             Date now = new Date();
             Calendar calendarNow = Calendar.getInstance();
             calendarNow.setTime(now);
@@ -469,7 +476,7 @@ public class Convention extends ObjetMetier implements Exportable {
             if (dateDebutStage != null) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(dateDebutStage);
-                calendar.add(Calendar.DAY_OF_MONTH, centreGestion.getDelaiAlerteConvention() * -1);
+                calendar.add(Calendar.DAY_OF_MONTH, delaiAlerte * -1);
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
                 calendar.set(Calendar.SECOND, 0);

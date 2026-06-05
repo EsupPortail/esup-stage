@@ -22,9 +22,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
-  selector: 'app-convention-etudiant',
-  templateUrl: './etudiant.component.html',
-  styleUrls: ['./etudiant.component.scss']
+    selector: 'app-convention-etudiant',
+    templateUrl: './etudiant.component.html',
+    styleUrls: ['./etudiant.component.scss'],
+    standalone: false
 })
 export class EtudiantComponent implements OnInit, OnChanges {
 
@@ -40,6 +41,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   centreGestion: any;
   sansElp: boolean = false;
   canEditTypeConvention: boolean = false;
+  isEditingFormation: boolean = false;
   private readonly apogeeForbiddenMessage = "Vous n'êtes pas autorisé à récupérer les informations Apogée de cet étudiant car vous n'êtes pas gestionnaire de sa composante ou de son étape. \n  Si cet accès est nécessaire, contactez un administrateur.";
   isLoadingApogeeInscriptions: boolean = false;
   hasLoadedApogeeInscriptions: boolean = false;
@@ -543,6 +545,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.validated.emit(response);
         });
       }
+      this.isEditingFormation = false;
     }
   }
 
@@ -622,5 +625,43 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   trustHtml(html: string){
     return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  isUserEtudiant(): boolean {
+    return this.authService.isEtudiant();
+  }
+
+  enableFormationEdit(): void {
+    this.isEditingFormation = true;
+    if (this.selectedNumEtudiant && this.inscriptions.length <= 1) {
+      this.etudiantService.getApogeeInscriptions(this.selectedNumEtudiant, this.convention ? this.convention.annee : null).subscribe((response: any) => {
+        let apogeeInscriptions: any[] = response || [];
+        apogeeInscriptions.sort((a, b) => a.annee < b.annee ? 1 : -1);
+
+        const currentInscription = this.formConvention.get('inscription')?.value;
+        if (currentInscription) {
+          const currentCodeEtp = String(currentInscription?.etapeInscription?.codeEtp ?? '').trim();
+          const currentAnnee = String(currentInscription?.annee ?? '').trim();
+
+          apogeeInscriptions = apogeeInscriptions.filter((i: any) => {
+            const codeEtp = String(i?.etapeInscription?.codeEtp ?? '').trim();
+            const annee = String(i?.annee ?? '').trim();
+            return !(codeEtp === currentCodeEtp && annee === currentAnnee);
+          });
+
+          apogeeInscriptions = [currentInscription, ...apogeeInscriptions];
+        }
+
+        this.inscriptions = apogeeInscriptions;
+
+        if (this.inscriptions.length === 0) {
+          this.isEditingFormation = false;
+          this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
+        }
+      });
+    } else if (this.inscriptions.length === 0) {
+      this.isEditingFormation = false;
+      this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
+    }
   }
 }

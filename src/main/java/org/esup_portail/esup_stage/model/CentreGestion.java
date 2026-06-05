@@ -179,6 +179,26 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private boolean envoiDocumentSigne = false;
 
+    @JsonView(Views.List.class)
+    @Column()
+    private boolean autoriserChevauchement = false;
+
+    @JsonView(Views.List.class)
+    @Column()
+    private boolean autoriserImpressionConventionApresCreationAvenant = false;
+
+    @Column
+    private String nomDelegataireViseur;
+
+    @Column
+    private String prenomDelegataireViseur;
+
+    @Column
+    private String qualiteDelegataireViseur;
+
+    @Column
+    private String mailDelegataireViseur;
+
     @Transient
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();
@@ -186,10 +206,6 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public boolean isOnlyMailCentreGestion() {
         return onlyMailCentreGestion;
-    }
-
-    public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {
-        this.onlyMailCentreGestion = onlyMailCentreGestion;
     }
 
     @Override

@@ -9,9 +9,10 @@ import {RoleService} from "../../../services/role.service";
 import {StructureService} from "../../../services/structure.service";
 
 @Component({
-  selector: 'app-config-generale',
-  templateUrl: './config-generale.component.html',
-  styleUrls: ['./config-generale.component.scss']
+    selector: 'app-config-generale',
+    templateUrl: './config-generale.component.html',
+    styleUrls: ['./config-generale.component.scss'],
+    standalone: false
 })
 export class ConfigGeneraleComponent implements OnInit {
 
@@ -36,6 +37,10 @@ export class ConfigGeneraleComponent implements OnInit {
     {code: 'validationAvenant', libelle: 'Validation d\'un avenant'},
     {code: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {code: 'changementEnseignant', libelle:' Changement d\'enseignant référent'},
+    {code: 'evalTuteurRemplie', libelle: 'Évaluation du tuteur remplie'},
+    {code: 'evalEnsRemplie', libelle: 'Évaluation de l’enseignant remplie'},
+    {code: 'evalEtuRemplie', libelle: 'Évaluation de l’étudiant remplie'},
+    {code: 'evalRemplies', libelle: 'Toutes les évaluations remplies'},
   ];
   alerteColumns = ['alertes', 'alerteEtudiant', 'alerteGestionnaire', 'alerteRespGestionnaire', 'alerteEnseignant'];
 

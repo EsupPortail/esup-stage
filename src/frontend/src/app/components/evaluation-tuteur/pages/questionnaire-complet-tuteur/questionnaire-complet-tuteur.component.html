@@ -1,0 +1,18 @@
+<div class="conteneur-questionnaire-complet-tuteur">
+  <div class="impression">
+    <div [innerHTML]="texteQuestionnaireCompletTuteur" class="text-questionnaire-complet-tuteur"></div>
+    <div class="btn">
+      <button class="valid-button" mat-raised-button (click)="imprimer()">
+        Imprimer le questionnaire <span class="fa-solid fa-print" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+  <div class="renouvellement">
+    <div [innerHTML]="texteDemanderRenouvellementTuteur" class="text-demander-renouvellement-tuteur"></div>
+    <div class="btn">
+      <button class="valid-button" mat-stroked-button (click)="renouvellement()">
+        Demander un renouvellement <span class="fa-solid fa-envelope" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</div>

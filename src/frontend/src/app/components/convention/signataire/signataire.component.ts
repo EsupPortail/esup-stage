@@ -16,9 +16,10 @@ import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-signataire',
-  templateUrl: './signataire.component.html',
-  styleUrls: ['./signataire.component.scss']
+    selector: 'app-signataire',
+    templateUrl: './signataire.component.html',
+    styleUrls: ['./signataire.component.scss'],
+    standalone: false
 })
 export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
 

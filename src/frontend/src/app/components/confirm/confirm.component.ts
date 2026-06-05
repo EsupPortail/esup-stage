@@ -2,9 +2,10 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output, TemplateR
 import { MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  selector: '[confirm]',
-  templateUrl: './confirm.component.html',
-  styleUrls: ['./confirm.component.scss']
+    selector: '[confirm]',
+    templateUrl: './confirm.component.html',
+    styleUrls: ['./confirm.component.scss'],
+    standalone: false
 })
 export class ConfirmComponent implements OnInit {
 

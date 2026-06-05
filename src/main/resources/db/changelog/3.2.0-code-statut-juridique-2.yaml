@@ -1,0 +1,230 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-code-statut-juridique-2-migration
+      author: thouveno9
+      comment: "Migration des codes juridiques du niveau 4 au niveau 2 + fusion EURL vers SARL + contrainte UNIQUE"
+      changes:
+        # Étape 1 : Créer un mapping temporaire avant la fusion
+        - sql:
+            sql: |
+              -- Étape 1 : Créer une table temporaire pour mapper les anciens IDs aux nouveaux
+              CREATE TABLE IF NOT EXISTS StatutJuridique_Mapping (
+                oldId INT,
+                newId INT,
+                libelleStatutJuridique VARCHAR(100),
+                code VARCHAR(2)
+              );
+            dbms: mysql,mariadb
+
+        # Étape 2 : Mettre à jour les codes des statuts à conserver
+        - sql:
+            sql: |
+              -- Étape 2 : Mettre à jour les codes des statuts (garder SARL comme référence pour EURL/SARL)
+              UPDATE StatutJuridique SET code = '54' WHERE libelleStatutJuridique = 'SARL';
+              UPDATE StatutJuridique SET code = '57' WHERE libelleStatutJuridique = 'SA';
+              UPDATE StatutJuridique SET code = '57' WHERE libelleStatutJuridique = 'SAS';
+              UPDATE StatutJuridique SET code = '52' WHERE libelleStatutJuridique = 'SNC';
+              UPDATE StatutJuridique SET code = '65' WHERE libelleStatutJuridique = 'SCP';
+              UPDATE StatutJuridique SET code = '57' WHERE libelleStatutJuridique = 'SASU';
+              UPDATE StatutJuridique SET code = '70' WHERE libelleStatutJuridique = 'public';
+            dbms: mysql,mariadb
+
+        # Étape 3 : Créer le mapping pour fusionner EURL vers SARL
+        - sql:
+            sql: |
+              -- Étape 3 : Créer le mapping EURL → SARL (EURL est un type de SARL)
+              INSERT INTO StatutJuridique_Mapping (oldId, newId, libelleStatutJuridique, code)
+              SELECT 
+                e.idStatutJuridique AS oldId,
+                s.idStatutJuridique AS newId,
+                e.libelleStatutJuridique,
+                '54' AS code
+              FROM StatutJuridique e
+              INNER JOIN StatutJuridique s ON s.libelleStatutJuridique = 'SARL'
+              WHERE e.libelleStatutJuridique = 'EURL';
+            dbms: mysql,mariadb
+
+        # Étape 4 : Identifier les autres doublons de codes (SAS/SA/SASU qui partagent '57')
+        - sql:
+            sql: |
+              -- Étape 4 : Créer le mapping pour les autres doublons de codes
+              INSERT INTO StatutJuridique_Mapping (oldId, newId, libelleStatutJuridique, code)
+              SELECT 
+                sj.idStatutJuridique AS oldId,
+                (SELECT MIN(idStatutJuridique) FROM StatutJuridique WHERE code = sj.code) AS newId,
+                sj.libelleStatutJuridique,
+                sj.code
+              FROM StatutJuridique sj
+              WHERE sj.idStatutJuridique != (SELECT MIN(idStatutJuridique) FROM StatutJuridique WHERE code = sj.code)
+              AND sj.libelleStatutJuridique NOT IN ('EURL', 'SARL');
+            dbms: mysql,mariadb
+
+        # Étape 5 : Réassigner les Structure qui pointent vers les doublons
+        - sql:
+            sql: |
+              -- Étape 5 : Rediriger les Structure vers le statut conservé
+              UPDATE Structure s
+              INNER JOIN StatutJuridique_Mapping m ON s.idStatutJuridique = m.oldId
+              SET s.idStatutJuridique = m.newId
+              WHERE s.idStatutJuridique IS NOT NULL;
+            dbms: mysql,mariadb
+
+        # Étape 6 : Supprimer les statuts qui ont été fusionnés
+        - sql:
+            sql: |
+              -- Étape 6 : Supprimer les statuts doublons (EURL et autres codes en doublon)
+              DELETE FROM StatutJuridique
+              WHERE idStatutJuridique IN (SELECT oldId FROM StatutJuridique_Mapping);
+            dbms: mysql,mariadb
+
+        # Étape 7 : Insérer les statuts manquants avec les bons codes
+        - sql:
+            sql: |
+              -- Étape 7 : Insérer les statuts manquants (Autre)
+              INSERT IGNORE INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Autre', '99', idTypeStructure, 'O' 
+              FROM TypeStructure 
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE libelleStatutJuridique = 'Autre')
+              LIMIT 1;
+            dbms: mysql,mariadb
+
+        # Étape 8 : Ajouter la contrainte UNIQUE sur le code
+        - addUniqueConstraint:
+            tableName: StatutJuridique
+            columnNames: code
+            constraintName: uk_statut_juridique_code
+            onFail: MARK_RAN
+
+        # Étape 9 : Nettoyer la table temporaire
+        - sql:
+            sql: "DROP TABLE StatutJuridique_Mapping;"
+            dbms: mysql,mariadb
+  - changeSet:
+      id: 3.2.0-ajout-statuts-juridiques-niveau2
+      author: thouveno9
+      comment: "Ajout des statuts juridiques avec codes niveau 2 INSEE (organismes publics + formes courantes)"
+      changes:
+        - sql:
+            sql: |
+              -- PERSONNES PHYSIQUES (Code 10)
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Entrepreneur individuel', '10', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '10' OR libelleStatutJuridique = 'Entrepreneur individuel');
+  
+              -- SOCIÉTÉS COMMERCIALES
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SNC', '52', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '52' OR libelleStatutJuridique = 'SNC');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SCS', '53', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '53' OR libelleStatutJuridique = 'SCS');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SARL', '54', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '54' OR libelleStatutJuridique = 'SARL');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SA à conseil d''administration', '55', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '55' OR libelleStatutJuridique = 'SA à conseil d''administration');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SA à directoire', '56', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '56' OR libelleStatutJuridique = 'SA à directoire');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SAS', '57', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '57' OR libelleStatutJuridique = 'SAS');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SE', '58', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '58' OR libelleStatutJuridique = 'SE');
+  
+              -- SOCIÉTÉS CIVILES
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SCI', '60', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '60' OR libelleStatutJuridique = 'SCI');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SCM', '61', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '61' OR libelleStatutJuridique = 'SCM');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'GIE', '62', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '62' OR libelleStatutJuridique = 'GIE');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'GEIE', '63', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '63' OR libelleStatutJuridique = 'GEIE');
+  
+              -- SOCIÉTÉS D'ASSURANCE
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SAM', '64', 5, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '64' OR libelleStatutJuridique = 'SAM');
+  
+              -- SOCIÉTÉS CIVILES PROFESSIONNELLES
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SCP', '65', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '65' OR libelleStatutJuridique = 'SCP');
+  
+              -- SOCIÉTÉS D'EXERCICE LIBÉRAL
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'SEL', '69', 3, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '69' OR libelleStatutJuridique = 'SEL');
+  
+              -- PERSONNES MORALES DE DROIT PUBLIC
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Administration de l''état', '71', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '71' OR libelleStatutJuridique = 'Administration de l''état');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Collectivité territoriale', '72', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '72' OR libelleStatutJuridique = 'Collectivité territoriale');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'EPA', '73', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '73' OR libelleStatutJuridique = 'EPA');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Autre personne morale de droit public administratif', '74', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '74' OR libelleStatutJuridique = 'Autre personne morale de droit public administratif');
+  
+              -- ORGANISMES PRIVÉS SPÉCIALISÉS
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Organisme de protection sociale', '81', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '81' OR libelleStatutJuridique = 'Organisme de protection sociale');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Organisme professionnel', '82', 2, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '82' OR libelleStatutJuridique = 'Organisme professionnel');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Organisme de recherche', '83', 1, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '83' OR libelleStatutJuridique = 'Organisme de recherche');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Syndicat de copropriété', '84', 2, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '84' OR libelleStatutJuridique = 'Syndicat de copropriété');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Association', '92', 2, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '92' OR libelleStatutJuridique = 'Association');
+  
+              INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
+              SELECT 'Congrégation', '93', 2, 'O'
+              WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '93' OR libelleStatutJuridique = 'Congrégation');
+
+            dbms: mysql,mariadb
+
+        - rollback:
+            - sql:
+                sql: |
+                  -- Rollback: supprimer uniquement les statuts insérés par ce changeset
+                  DELETE FROM StatutJuridique 
+                  WHERE code IN ('10','21','52','53','54','55','56','57','58','60','61','62','63','64','65','69','71','72','73','74','81','82','83','84','92','93')
+                  AND idStatutJuridique NOT IN (
+                    SELECT DISTINCT idStatutJuridique 
+                    FROM Structure 
+                    WHERE idStatutJuridique IS NOT NULL
+                  );
+                dbms: mysql,mariadb
