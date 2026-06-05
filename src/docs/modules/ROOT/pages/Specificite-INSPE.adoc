@@ -1,0 +1,23 @@
+= Spécificités pour les INSPÉ
+:sectnums:
+:sectnumlevels: 1
+:imagesdir: ../../images
+:reftext: Spécificités INSPÉ
+
+== Gestion des conventions en masse
+
+=== Type de convention INSPÉ
+
+Dans la nomenclature des types de conventions,
+il est possible de créer un type de convention
+avec un code commençant par `INSPE` (peu importe le libellé).
+
+=== Modèles de convention associés au type de convention INSPÉ
+
+.Les modèles de convention associés à ce type de convention
+* ne sont jamais associés aux inscriptions +
+→ les étudiants ne pourront pas les choisir.
+* peuvent être affectés à un groupe d'étudiant +
+(Cadre du stage > Modifier les informations du groupe).
+* les champs relatifs à la CPAM deviennent facultatifs dans les conventions en masses de ce type +
+(Cadre du stage > Action > 🖋️ Modifier).

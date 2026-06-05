@@ -12,3 +12,4 @@
 .Autres documents
 * xref:Processus-de-creation-d-un-utilisateur.adoc[]
 * xref:Gestion-des-conditions-dans-les-templates.adoc[]
+* xref:Specificite-INSPE.adoc[]
