@@ -7,6 +7,12 @@
   font-size: 12px;
 }
 
+.formation-display {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
 .edit-formation-button{
   width:24px;
   height:24px;
@@ -20,4 +26,8 @@
   height:16px;
   line-height:16px;
   margin-left:4px;
+}
+
+.edit-formation-spinner {
+  margin-left: 4px;
 }
