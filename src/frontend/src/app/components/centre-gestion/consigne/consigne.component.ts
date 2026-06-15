@@ -7,7 +7,7 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
-  ViewChild, ElementRef, ViewEncapsulation, AfterViewInit
+  ViewChild, ElementRef, ViewEncapsulation, AfterViewInit, OnDestroy
 } from '@angular/core';
 import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -91,7 +91,7 @@ import translations from 'ckeditor5/translations/fr.js';
     encapsulation: ViewEncapsulation.None,
     standalone: false
 })
-export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
+export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
@@ -104,6 +104,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
   form!: FormGroup;
   @ViewChild('editor', { static: false }) editorElement!: ElementRef;
+  private editorRenderFrame?: number;
 
   constructor(
     private fb: FormBuilder,
@@ -381,8 +382,19 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
       translations: [translations]
     };
 
-    this.isLayoutReady = true;
-    this.changeDetector.detectChanges();
+    this.editorRenderFrame = requestAnimationFrame(() => {
+      this.editorRenderFrame = requestAnimationFrame(() => {
+        this.isLayoutReady = true;
+        this.changeDetector.detectChanges();
+        this.editorRenderFrame = undefined;
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
   }
 
   deleteConsigne() {
