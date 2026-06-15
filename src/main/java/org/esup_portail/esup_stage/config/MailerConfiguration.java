@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.config;
 
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.TemplateExceptionHandler;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,8 @@ public class MailerConfiguration {
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setLogTemplateExceptions(false);
+        configuration.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
+        configuration.setAPIBuiltinEnabled(false);
         FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
         freeMarkerConfigurer.setConfiguration(configuration);
         return freeMarkerConfigurer;
