@@ -255,11 +255,11 @@ public class  ConventionController {
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
         Convention convention = conventionJpaRepository.findById(id);
-        // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, utilisateur);
         setSingleFieldData(convention, conventionSingleFieldDto, utilisateur);
         convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -593,8 +593,7 @@ public class  ConventionController {
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto, Utilisateur utilisateur) {
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
-        if (!conventionService.isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
+        if (!conventionService.isConventionModifiable(convention, utilisateur)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")) {
