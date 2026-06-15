@@ -89,12 +89,18 @@ public class EtudiantController {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
         if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
-            if(!etudiantSecurityService.isEtuInCentreGestionUtilisateur(utilisateur,numEtudiant)){
+            List<Integer> idsCentresGestionUtilisateur = etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur);
+            List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, annee, false).stream()
+                    .filter(inscription -> inscription.getCentreGestion() != null && idsCentresGestionUtilisateur.contains(inscription.getCentreGestion().getId()))
+                    .toList();
+            if(inscriptions.isEmpty()){
                 logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
                 throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
             }
+            return inscriptions;
         }
-        return apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, annee);
+        return inscriptions;
     }
 
     @GetMapping("/by-login/{login}")
