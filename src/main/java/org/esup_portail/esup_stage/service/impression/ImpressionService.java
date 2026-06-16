@@ -353,12 +353,12 @@ public class ImpressionService {
     }
 
     public String manageIfElse(String text) {
-        return text.replace("\\$IF", "<#if")
-                .replace("\\$EQUALS ", "==\\\"")
-                .replace(" \\$FI", ">")
-                .replace("\\$ELSE", "<#else>")
-                .replace("\\?\\?\\$", "\\?\\?>")
-                .replace("\\$ENDIF", "</#if>");
+        return text.replace("$IF", "<#if")
+                .replace("$EQUALS ", "==\"")
+                .replace(" $FI", ">")
+                .replace("$ELSE", "<#else>")
+                .replace("??$", "??>")
+                .replace("$ENDIF", "</#if>");
 
     }
 
