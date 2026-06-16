@@ -247,6 +247,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.hasLoadedApogeeInscriptions = false;
     this.apogeeInscriptionsLoadFailed = false;
     this.isFormationEditUnavailable = false;
+    this.etudiantService.clearCachedApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null, true);
 
     if (this.searchEtudiantPanel) {
       this.searchEtudiantPanel.expanded = false;
@@ -304,6 +305,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
         this.inscriptions = [inscription];
       } else {
         this.inscriptions = [];
+      }
+      if (this.modifiable && this.selectedNumEtudiant) {
+        this.loadApogeeInscriptions(this.selectedNumEtudiant);
       }
       return;
     }

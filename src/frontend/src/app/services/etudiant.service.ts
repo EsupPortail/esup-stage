@@ -41,7 +41,7 @@ export class EtudiantService implements PaginatedService<Etudiant> {
   }
 
   getCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
-    const cacheKey = `${numEtudiant}-${annee ? annee.split('/')[0] : ''}-${handleForbiddenLocally}`;
+    const cacheKey = this.getApogeeInscriptionsCacheKey(numEtudiant, annee, handleForbiddenLocally);
     const cachedRequest = this.apogeeInscriptionsCache.get(cacheKey);
     if (cachedRequest) {
       return cachedRequest;
@@ -57,6 +57,14 @@ export class EtudiantService implements PaginatedService<Etudiant> {
 
     this.apogeeInscriptionsCache.set(cacheKey, request$);
     return request$;
+  }
+
+  clearCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): void {
+    this.apogeeInscriptionsCache.delete(this.getApogeeInscriptionsCacheKey(numEtudiant, annee, handleForbiddenLocally));
+  }
+
+  private getApogeeInscriptionsCacheKey(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): string {
+    return `${numEtudiant}-${annee ? annee.split('/')[0] : ''}-${handleForbiddenLocally}`;
   }
 
   getByLogin(login: string): Observable<Etudiant> {
