@@ -20,6 +20,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { TitleService } from 'src/app/services/title.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import {REGEX} from "../../../utils/regex.utils";
+import { CadreStageConventionPayload } from "../../../models/cadre-stage-convention-payload.model";
 
 @Component({
     selector: 'app-convention-etudiant',
@@ -592,12 +593,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
       }
       if (!data.volumeHoraireFormationBool)
         data.volumeHoraireFormation = "200+";
+      const payload = CadreStageConventionPayload.from(data);
       if (!this.convention || !this.convention.id) {
-        this.conventionService.create(data).subscribe((response: any) => {
+        this.conventionService.create(payload).subscribe((response: any) => {
           this.validated.emit(response);
         });
       } else {
-        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {
+        this.conventionService.update(this.convention.id, payload).subscribe((response: any) => {
           this.validated.emit(response);
         });
       }
@@ -651,7 +653,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   }
 
   isFr() {
-    let pays = this.formConvention.get('paysEtudiant')?.value;
+    let pays = CadreStageConventionPayload.toFormString(this.formConvention.get('paysEtudiant')?.value) || '';
     return pays.toLowerCase() === 'france';
   }
 
