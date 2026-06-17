@@ -27,15 +27,18 @@ button.mat-menu-item:focus {
   outline: none;
 }
 
-i.empty {
+i.empty,
+mat-icon.empty {
   color: var(--dangerColor) !important;
 }
 
-i.inProgress {
+i.inProgress,
+mat-icon.inProgress {
   color: var(--warningColor) !important;
 }
 
-i.done {
+i.done,
+mat-icon.done {
   color: var(--successColor) !important;
 }
 

@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -20,6 +19,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.FileValidationService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
@@ -92,6 +92,9 @@ public class CentreGestionController {
     @Autowired
     AppliProperties appliProperties;
 
+    @Autowired
+    FileValidationService fileValidationService;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
@@ -115,7 +118,7 @@ public class CentreGestionController {
                 Collections.reverse(centresGestion);
         }
 
-        paginatedResponse.setData(centresGestion.stream().map(CentreGestionListDto::from).collect(Collectors.toList()));
+        paginatedResponse.setData(centresGestion.stream().map(CentreGestionListDto::from).toList());
         return paginatedResponse;
     }
 
@@ -200,10 +203,8 @@ public class CentreGestionController {
         }
         //conserve les criteregestion sélectionnés lors de la mise à jour
         CentreGestion centreGestionActuel = centreGestionJpaRepository.findById(centreGestion.getId());
-        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null) {
-            if(centreGestion.getCriteres().isEmpty()) {
-                centreGestion.setCriteres(centreGestionActuel.getCriteres());
-            }
+        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null && centreGestion.getCriteres().isEmpty()) {
+            centreGestion.setCriteres(centreGestionActuel.getCriteres());
         }
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
@@ -416,13 +417,10 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(value="logo",required = true) MultipartFile logo) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
-        String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
+        FileValidationService.ValidatedImage validatedLogo = fileValidationService.validateImage(logo);
+        String extension = validatedLogo.extension();
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
         String nomReel = logo.getOriginalFilename();
-        // Autorisation de l'upload d'images uniquement
-        if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-        }
 
         Fichier fichier = centreGestion.getFichier();
         if (fichier == null) {
@@ -436,7 +434,7 @@ public class CentreGestionController {
         try {
             String filename = this.getNomFichier(fichier.getId(), fichier.getNom());
             Path uploadLocation = Paths.get(this.getFilePath(filename));
-            Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(uploadLocation, validatedLogo.bytes());
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());

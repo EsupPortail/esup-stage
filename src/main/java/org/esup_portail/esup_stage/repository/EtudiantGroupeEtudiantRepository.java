@@ -1,13 +1,13 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.EtudiantGroupeEtudiant;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -15,25 +15,26 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
 
     public EtudiantGroupeEtudiantRepository(EntityManager em) {
         super(em, EtudiantGroupeEtudiant.class, "ege");
+        this.specificFilterWhitelist = Arrays.asList("etape.id", "ufr.id");
     }
 
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("etape.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(ege.convention.etape.id.code = :codeEtape" + i + " AND ege.convention.etape.id.codeUniversite = :codeUnivEtape" + i + " AND ege.convention.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.size() > 0) {
+            if (clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
         if (key.equals("ufr.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(ege.convention.ufr.id.code = :codeUfr" + i + " AND ege.convention.ufr.id.codeUniversite = :codeUnivUfr" + i + ")");
             }
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
@@ -41,22 +42,22 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("etape.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonEtapeId = jsonArray.getJSONObject(i);
-                query.setParameter("codeEtape" + i, jsonEtapeId.getString("code"));
-                query.setParameter("codeUnivEtape" + i, jsonEtapeId.getString("codeUniversite"));
-                query.setParameter("versionEtape" + i, jsonEtapeId.getString("codeVersionEtape"));
+            JsonNode jsonArray = parameter.get("value");
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                JsonNode jsonEtapeId = jsonArray.get(i);
+                query.setParameter("codeEtape" + i, jsonEtapeId.get("code").asText());
+                query.setParameter("codeUnivEtape" + i, jsonEtapeId.get("codeUniversite").asText());
+                query.setParameter("versionEtape" + i, jsonEtapeId.get("codeVersionEtape").asText());
             }
         }
         if (key.equals("ufr.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonUfrId = jsonArray.getJSONObject(i);
-                query.setParameter("codeUfr" + i, jsonUfrId.getString("code"));
-                query.setParameter("codeUnivUfr" + i, jsonUfrId.getString("codeUniversite"));
+            JsonNode jsonArray = parameter.get("value");
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                JsonNode jsonUfrId = jsonArray.get(i);
+                query.setParameter("codeUfr" + i, jsonUfrId.get("code").asText());
+                query.setParameter("codeUnivUfr" + i, jsonUfrId.get("codeUniversite").asText());
             }
         }
     }

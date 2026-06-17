@@ -13,6 +13,7 @@ import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
 import { PaysService } from "../../services/pays.service";
+import { environment } from "../../../environments/environment";
 
 @Component({
     selector: 'app-dashboard',
@@ -95,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadInitialData();
       },
       error: (error) => {
-        console.error('Error loading config:', error);
+        this.logError('Error loading config', error);
         this.messageService.setError('Error loading configuration');
       }
     });
@@ -138,7 +139,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       try {
         this.savedFilters = JSON.parse(filtersString);
       } catch (error) {
-        console.error('Error parsing saved filters:', error);
+        this.logError('Error parsing saved filters', error);
         this.savedFilters = [];
       }
     }
@@ -161,7 +162,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadComplementaryData();
       },
       error: (error) => {
-        console.error('Error loading années:', error);
+        this.logError('Error loading annees', error);
         this.messageService.setError('Error loading années');
       }
     });
@@ -208,7 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error loading complementary data:', error);
+        this.logError('Error loading complementary data', error);
         this.messageService.setError('Error loading data');
       }
     });
@@ -408,7 +409,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   changeAnnee(): void {
     if (!this.appTable || !this.anneeEnCours){
-      console.error("erreur lors du chargement du tableau")
+      this.logError("Erreur lors du chargement du tableau");
     }else if(this.appTable?.getFilters().annee?.value === "Toutes les années"){
       delete this.appTable.filterValues['annee'];
       this.appTable?.update();
@@ -513,7 +514,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private restoreFilters(): void {
     if (!this.appTable || !this.savedFilters) {
-      console.error("Required data not yet loaded");
+      this.logError("Required data not yet loaded");
       return;
     }
 
@@ -590,7 +591,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
         }
       } catch (error) {
-        console.error(`Error restoring filter ${key}:`, error);
+        this.logError(`Error restoring filter ${key}`, error);
       }
     });
 
@@ -614,9 +615,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.sortDirection = pagingConfig.sortOrder;
         this.appTable.setBackConfig(pagingConfig);
       } catch (error) {
-        console.error('Error parsing paging config:', error);
+        this.logError('Error parsing paging config', error);
       }
     }
+  }
+
+  private logError(message: string, error?: unknown): void {
+    const args: unknown[] = [message];
+    if (!environment.production && error !== undefined) {
+      args.push(error);
+    }
+    console.error(...args);
   }
 
   getValidationIconStatus(row: any): string {
