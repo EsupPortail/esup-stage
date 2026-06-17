@@ -9,16 +9,14 @@ import org.esup_portail.esup_stage.dto.MailerTestRequestDto;
 import org.esup_portail.esup_stage.dto.ReferentielTestRequestDto;
 import org.esup_portail.esup_stage.dto.SireneTestRequestDto;
 import org.esup_portail.esup_stage.dto.WebhookTestRequestDto;
-import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.model.AppProperty;
-import org.esup_portail.esup_stage.model.Utilisateur;
-import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AdminService;
 import org.esup_portail.esup_stage.service.proprety.AppProperyService;
 import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,26 +37,29 @@ public class AppPropertyController {
 
     @Autowired
     private AppProperyService appProperyService;
+    
+    @Autowired
+    private AdminService adminService;
 
     @GetMapping("/missing")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public Map<String, List<String>> getMissing() {
-        requireAdmin();
+        adminService.requireAdmin();
         return Map.of("missing", configMissingService.getMissingKeys());
     }
 
     @GetMapping("/properties")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public List<AppPropertyDto> getAllProperties() {
-        requireAdmin();
+        adminService.requireAdmin();
         List<AppProperty> properties = appProperyService.getAll();
-        return properties.stream().map(this::toDto).collect(Collectors.toList());
+        return properties.stream().map(this::toDto).toList();
     }
 
     @PutMapping("/properties")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public List<AppPropertyDto> updateProperties(@RequestBody List<AppPropertyDto> properties) {
-        requireAdmin();
+        adminService.requireAdmin();
         if (properties != null) {
             for (AppPropertyDto dto : properties) {
                 if (dto == null || !StringUtils.hasText(dto.getKey())) {
@@ -69,48 +70,48 @@ public class AppPropertyController {
         }
         return appProperyService.getAll().stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping("/test/mailer")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testMailer(@RequestBody MailerTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testMailer(request);
     }
 
     @PostMapping("/test/referentiel")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testReferentiel(@RequestBody ReferentielTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testReferentiel(request);
     }
 
     @PostMapping("/test/webhook")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testWebhook(@RequestBody WebhookTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testWebhook(request);
     }
 
     @PostMapping("/test/sirene")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testSirene(@RequestBody SireneTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testSirene(request);
     }
 
     @PostMapping("/test/docaposte")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testDocaposte(@RequestBody DocaposteTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testDocaposte(request);
     }
 
     @PostMapping("/test/esupsignature")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ConfigTestResultDto testEsupSignature(@RequestBody EsupSignatureTestRequestDto request) {
-        requireAdmin();
+        adminService.requireAdmin();
         return appProperyService.testEsupSignature(request);
     }
 
@@ -131,11 +132,4 @@ public class AppPropertyController {
         return dto;
     }
 
-    private Utilisateur requireAdmin() {
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (utilisateur == null || !UtilisateurHelper.isAdmin(utilisateur)) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Acces interdit");
-        }
-        return utilisateur;
-    }
 }

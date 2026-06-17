@@ -138,9 +138,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/frontend/**").permitAll()
                         .requestMatchers("/theme.css").permitAll()
                         .requestMatchers("/api/admin/maintenance/**").hasAuthority(Role.ADM)
+                        .requestMatchers("/api/admin/logs/**", "/admin/logs/**").hasAuthority(Role.ADM)
                         .requestMatchers("/api/maintenance/stream").authenticated()
-                        // Stream logs: restriction admin explicite
-                        .requestMatchers("/api/admin/logs/stream", "/admin/logs/stream").hasAuthority(Role.ADM)
                         // Protection API
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()

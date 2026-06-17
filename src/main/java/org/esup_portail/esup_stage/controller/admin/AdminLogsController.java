@@ -1,16 +1,14 @@
 package org.esup_portail.esup_stage.controller.admin;
 
-import lombok.Data;
 import org.esup_portail.esup_stage.controller.ApiController;
 import org.esup_portail.esup_stage.dto.FileContentDto;
 import org.esup_portail.esup_stage.dto.FileElementDto;
 import org.esup_portail.esup_stage.dto.LoggerLevelDto;
 import org.esup_portail.esup_stage.dto.LoggerUpdateRequest;
-import org.esup_portail.esup_stage.exception.AppException;
-import org.esup_portail.esup_stage.model.Utilisateur;
-import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
+import org.esup_portail.esup_stage.service.AdminService;
 import org.esup_portail.esup_stage.service.logs.ExportService;
 import org.esup_portail.esup_stage.service.logs.LogFileService;
 import org.esup_portail.esup_stage.service.logs.LogReaderService;
@@ -20,7 +18,6 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,12 +49,15 @@ public class AdminLogsController {
 
     @Autowired
     private ExportService exportService;
+    
+    @Autowired
+    private AdminService adminService;
 
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public SseEmitter stream() {
-        requireAdmin();
+        adminService.requireAdmin();
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         AtomicReference<UUID> streamId = new AtomicReference<>();
@@ -77,8 +77,9 @@ public class AdminLogsController {
     }
 
     @GetMapping()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<List<LoggerLevelDto>> getLoggers() {
-        requireAdmin();
+        adminService.requireAdmin();
         List<LoggerLevelDto> loggers = loggingSystem.getLoggerConfigurations()
                 .stream()
                 // .filter(config -> config.getName() != null &&
@@ -87,14 +88,15 @@ public class AdminLogsController {
                         config.getName(),
                         config.getConfiguredLevel() != null ? config.getConfiguredLevel().name() : null,
                         config.getEffectiveLevel() != null ? config.getEffectiveLevel().name() : null))
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.ok(loggers);
     }
 
     @PostMapping()
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public ResponseEntity<Void> updateLoggers(@RequestBody LoggerUpdateRequest request) {
-        requireAdmin();
+        adminService.requireAdmin();
         if (request.getPackageNames() == null || request.getLevel() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -115,53 +117,32 @@ public class AdminLogsController {
 
     /** Liste les fichiers/dossiers d'un chemin */
     @GetMapping("/list")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<List<FileElementDto>> listFolder(@RequestParam(name = "path", defaultValue = "") String path) throws IOException {
-        requireAdmin();
+        adminService.requireAdmin();
         return ResponseEntity.ok(logFileService.listFolder(path));
     }
 
-    /** Contenu paginÃ© d'un fichier log */
+    /** Contenu paginé d'un fichier log */
     @GetMapping("/content")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<FileContentDto> getContent(
             @RequestParam(name = "path") String path,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "pageSize", defaultValue = "500") int pageSize
     ) throws IOException {
-        requireAdmin();
+        adminService.requireAdmin();
         return ResponseEntity.ok(logReaderService.readPage(path, page, pageSize));
     }
 
-    /** CrÃ©e un sous-dossier */
-    @PostMapping("/folder")
-    public ResponseEntity<FileElementDto> createFolder(@RequestBody CreateFolderRequest req) throws IOException {
-        return ResponseEntity.ok(logFileService.createFolder(req.getParentPath(), req.getName()));
-    }
-
-    /** DÃ©place un fichier/dossier */
-    @PutMapping("/move")
-    public ResponseEntity<FileElementDto> moveElement(@RequestBody MoveRequest req) throws IOException {
-        return ResponseEntity.ok(logFileService.moveElement(req.getSourcePath(), req.getTargetFolderPath()));
-    }
-
-    /** Renomme un fichier/dossier */
-    @PutMapping("/rename")
-    public ResponseEntity<FileElementDto> renameElement(@RequestBody RenameRequest req) throws IOException {
-        return ResponseEntity.ok(logFileService.renameElement(req.getPath(), req.getNewName()));
-    }
-
-    /** Supprime un fichier/dossier */
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteElement(@RequestParam(name = "path") String path) throws IOException {
-        logFileService.deleteElement(path);
-        return ResponseEntity.noContent().build();
-    }
-
     /**
-     * Exporte un fichier unique en tÃ©lÃ©chargement direct (.log, .txt, etc.)
+     * Exporte un fichier unique en téléchargement direct (.log, .txt, etc.)
      * GET /api/files/export/single?path=/logs/app.log
      */
     @GetMapping("/export/single")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<Resource> exportSingle(@RequestParam(name = "path") String path) throws IOException {
+        adminService.requireAdmin();
         Resource resource = exportService.exportSingle(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1);
         return ResponseEntity.ok()
@@ -175,7 +156,9 @@ public class AdminLogsController {
      * GET /api/files/export/csv?path=/logs/app.log
      */
     @GetMapping("/export/csv")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportAsCsv(@RequestParam(name = "path") String path) throws IOException {
+        adminService.requireAdmin();
         byte[] csv = exportService.exportLogAsCsv(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1).replaceAll("\\.\\w+$", "") + ".csv";
         return ResponseEntity.ok()
@@ -184,9 +167,11 @@ public class AdminLogsController {
                 .body(csv);
     }
 
-    /** TÃ©lÃ©chargement interne (bouton "TÃ©lÃ©charger" de l'explorateur) */
+    /** Téléchargement interne (bouton "Télécharger" de l'explorateur) */
     @GetMapping("/download")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<Resource> downloadFile(@RequestParam(name = "path") String path) throws IOException {
+        adminService.requireAdmin();
         Resource resource = logFileService.getResource(path);
         String fileName = path.substring(path.lastIndexOf('/') + 1);
         return ResponseEntity.ok()
@@ -194,21 +179,5 @@ public class AdminLogsController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
-
-
-    private Utilisateur requireAdmin() {
-        Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (utilisateur == null || !UtilisateurHelper.isAdmin(utilisateur)) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Acces interdit");
-        }
-        return utilisateur;
-    }
-
-    @Data
-    public static class CreateFolderRequest { String parentPath; String name; }
-    @Data
-    public static class MoveRequest         { String sourcePath; String targetFolderPath; }
-    @Data
-    public static class RenameRequest       { String path; String newName; }
-
+    
 }
