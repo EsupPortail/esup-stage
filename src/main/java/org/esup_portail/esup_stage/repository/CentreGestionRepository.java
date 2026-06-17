@@ -23,7 +23,7 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
         String queryString = "SELECT cg.id FROM CentreGestion cg WHERE cg.niveauCentre.libelle = 'ETABLISSEMENT'";
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         List<Integer> results = query.getResultList();
-        return results.isEmpty();
+        return !results.isEmpty();
     }
 
     @Override
