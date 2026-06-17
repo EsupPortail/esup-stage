@@ -24,10 +24,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.IDN;
+import java.net.InetAddress;
+import java.net.URI;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
@@ -41,6 +49,14 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 @Service
 public class AppProperyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppProperyService.class);
+    private static final Duration OUTBOUND_CONNECT_TIMEOUT = Duration.ofSeconds(3);
+    private static final Duration OUTBOUND_READ_TIMEOUT = Duration.ofSeconds(5);
+    private static final Set<String> ALLOWED_OUTBOUND_SCHEMES = Set.of("http", "https");
+    private static final Set<String> BLOCKED_OUTBOUND_HOSTS = Set.of(
+            "localhost",
+            "localhost.localdomain",
+            "metadata.google.internal"
+    );
     private final AtomicBoolean decryptUnavailableLogged = new AtomicBoolean(false);
 
     @Autowired
@@ -55,7 +71,7 @@ public class AppProperyService {
     @Autowired
     private PropertyCryptoService propertyCryptoService;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = createRestTemplate();
 
     public List<AppProperty> getAll() {
         return appPropertyJpaRepository.findAll();
@@ -201,18 +217,22 @@ public class AppProperyService {
             return error("URI webhook manquante.");
         }
         try {
+            String url = validateOutboundUrl(request.getUri());
             HttpHeaders headers = new HttpHeaders();
             if (StringUtils.hasText(request.getToken())) {
                 headers.set("Authorization", "Bearer " + request.getToken());
             }
             ResponseEntity<String> resp = restTemplate.exchange(
-                    request.getUri(),
+                    url,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
                     String.class
             );
             if (resp.getStatusCode().is2xxSuccessful()) {
                 return success("Webhook joignable (ping OK).");
+            }
+            if (resp.getStatusCode().is3xxRedirection()) {
+                return error("Webhook non joignable : redirection non autorisée.");
             }
             return error("Webhook non joignable : " + resp.getStatusCode());
         } catch (Exception e) {
@@ -228,7 +248,10 @@ public class AppProperyService {
             return error("SIRET de test manquant.");
         }
         try {
-            String url = request.getUrl() + "/siret/" + request.getSiret();
+            String url = validateOutboundUrl(UriComponentsBuilder.fromUriString(request.getUrl())
+                    .pathSegment("siret", request.getSiret())
+                    .build()
+                    .toUriString());
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-INSEE-Api-Key-Integration", request.getToken());
             headers.set("Accept", "application/json");
@@ -236,6 +259,9 @@ public class AppProperyService {
             ResponseEntity<SirenResponse> resp = restTemplate.exchange(url, HttpMethod.GET, entity, SirenResponse.class);
             if (resp.getStatusCode().is2xxSuccessful()) {
                 return success("API Sirène OK (SIRET trouvé).");
+            }
+            if (resp.getStatusCode().is3xxRedirection()) {
+                return error("API Sirène en erreur : redirection non autorisée.");
             }
             return error("API Sirène en erreur : " + resp.getStatusCode());
         } catch (Exception e) {
@@ -293,17 +319,24 @@ public class AppProperyService {
     private ConfigTestResultDto pingUrl(String url, String label) {
         try {
             HttpHeaders headers = new HttpHeaders();
+            String safeUrl = validateOutboundUrl(url);
             ResponseEntity<String> resp = restTemplate.exchange(
-                    url,
+                    safeUrl,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
                     String.class
             );
+            if (resp.getStatusCode().is3xxRedirection()) {
+                return error(label + " indisponible : redirection non autorisée.");
+            }
             if (resp.getStatusCode().is5xxServerError()) {
                 return error(label + " indisponible : " + resp.getStatusCode());
             }
             return success(label + " joignable (" + resp.getStatusCode() + ").");
         } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode().is3xxRedirection()) {
+                return error(label + " indisponible : redirection non autorisée.");
+            }
             if (e.getStatusCode().is5xxServerError()) {
                 return error(label + " indisponible : " + e.getStatusCode());
             }
@@ -311,6 +344,98 @@ public class AppProperyService {
         } catch (Exception e) {
             return error("Erreur " + label + " : " + e.getMessage());
         }
+    }
+
+    private static RestTemplate createRestTemplate() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory() {
+            @Override
+            protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+                super.prepareConnection(connection, httpMethod);
+                connection.setInstanceFollowRedirects(false);
+            }
+        };
+        requestFactory.setConnectTimeout(OUTBOUND_CONNECT_TIMEOUT);
+        requestFactory.setReadTimeout(OUTBOUND_READ_TIMEOUT);
+        return new RestTemplate(requestFactory);
+    }
+
+    private static String validateOutboundUrl(String rawUrl) {
+        URI uri;
+        try {
+            uri = URI.create(rawUrl);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("URL invalide.", e);
+        }
+
+        String scheme = uri.getScheme();
+        if (!StringUtils.hasText(scheme) || !ALLOWED_OUTBOUND_SCHEMES.contains(scheme.toLowerCase(Locale.ROOT))) {
+            throw new IllegalArgumentException("URL invalide : schéma HTTP/HTTPS requis.");
+        }
+        if (StringUtils.hasText(uri.getRawUserInfo())) {
+            throw new IllegalArgumentException("URL invalide : identifiants interdits dans l'URL.");
+        }
+
+        String host = normalizeHost(uri.getHost());
+        if (!StringUtils.hasText(host)) {
+            throw new IllegalArgumentException("URL invalide : hôte manquant.");
+        }
+        if (BLOCKED_OUTBOUND_HOSTS.contains(host)) {
+            throw new IllegalArgumentException("URL interdite : destination interne ou metadata.");
+        }
+
+        InetAddress[] addresses;
+        try {
+            addresses = InetAddress.getAllByName(host);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("URL invalide : hôte introuvable.", e);
+        }
+        for (InetAddress address : addresses) {
+            if (isBlockedOutboundAddress(address)) {
+                throw new IllegalArgumentException("URL interdite : destination interne ou privée.");
+            }
+        }
+        return uri.toASCIIString();
+    }
+
+    private static String normalizeHost(String host) {
+        if (!StringUtils.hasText(host)) {
+            return null;
+        }
+        String asciiHost = IDN.toASCII(host.trim(), IDN.USE_STD3_ASCII_RULES).toLowerCase(Locale.ROOT);
+        if (asciiHost.endsWith(".")) {
+            return asciiHost.substring(0, asciiHost.length() - 1);
+        }
+        return asciiHost;
+    }
+
+    private static boolean isBlockedOutboundAddress(InetAddress address) {
+        if (address.isAnyLocalAddress()
+                || address.isLoopbackAddress()
+                || address.isLinkLocalAddress()
+                || address.isSiteLocalAddress()
+                || address.isMulticastAddress()) {
+            return true;
+        }
+
+        byte[] bytes = address.getAddress();
+        if (bytes.length == 4) {
+            int first = Byte.toUnsignedInt(bytes[0]);
+            int second = Byte.toUnsignedInt(bytes[1]);
+            return first == 0
+                    || first == 10
+                    || first == 127
+                    || (first == 100 && second >= 64 && second <= 127)
+                    || (first == 169 && second == 254)
+                    || (first == 172 && second >= 16 && second <= 31)
+                    || (first == 192 && second == 168)
+                    || (first == 198 && (second == 18 || second == 19))
+                    || first >= 224;
+        }
+        if (bytes.length == 16) {
+            int first = Byte.toUnsignedInt(bytes[0]);
+            return (first & 0xfe) == 0xfc;
+        }
+        return false;
     }
 
     private JavaMailSenderImpl buildJavaMailSender(MailerTestRequestDto request) {
