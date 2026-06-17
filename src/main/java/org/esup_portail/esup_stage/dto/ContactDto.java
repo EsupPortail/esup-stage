@@ -60,6 +60,25 @@ public class ContactDto {
     @JsonView(Views.List.class)
     private String loginModif;
 
+    public ContactDto(Contact contact) {
+        ContactDto dto = from(contact, false);
+        this.id = dto.id;
+        this.nom = dto.nom;
+        this.prenom = dto.prenom;
+        this.mail = dto.mail;
+        this.tel = dto.tel;
+        this.telephone = dto.telephone;
+        this.fax = dto.fax;
+        this.civilite = dto.civilite;
+        this.fonction = dto.fonction;
+        this.service = dto.service;
+        this.centreGestion = dto.centreGestion;
+        this.centreGestionnaire = dto.centreGestionnaire;
+        this.idCentreGestion = dto.idCentreGestion;
+        this.loginCreation = dto.loginCreation;
+        this.loginModif = dto.loginModif;
+    }
+
     public static ContactDto from(Contact contact, boolean hideSensitiveFields) {
         ContactDto dto = new ContactDto();
         dto.setId(contact.getId());

@@ -51,23 +51,15 @@ public class SecureInterceptor {
             throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
         }
 
-        Class<? extends org.esup_portail.esup_stage.security.permission.PermissionEvaluator> evaluatorClass =
-                authorized.evaluator();
+        Class<? extends PermissionEvaluator> evaluatorClass = authorized.evaluator();
         boolean hasCustomEvaluator = evaluatorClass != null
-                && !org.esup_portail.esup_stage.security.permission.PermissionEvaluator.class.equals(evaluatorClass);
-
-        if (!hasRight && hasCustomEvaluator) {
-            org.esup_portail.esup_stage.security.permission.PermissionEvaluator evaluator =
-                    context.getBean(evaluatorClass);
-            hasRight = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
-        }
+                && !PermissionEvaluator.class.equals(evaluatorClass);
 
         if (!hasRight) {
             throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
         }
 
-        Class<? extends PermissionEvaluator> evaluatorClass = authorized.evaluator();
-        if (!PermissionEvaluator.class.equals(evaluatorClass)) {
+        if (hasCustomEvaluator) {
             PermissionEvaluator evaluator = context.getBean(evaluatorClass);
             boolean hasPermission = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
             if (!hasPermission) {

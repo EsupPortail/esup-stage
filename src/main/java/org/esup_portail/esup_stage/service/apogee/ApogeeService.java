@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.service.apogee;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.dto.RegimeInscriptionDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -471,6 +473,21 @@ public class ApogeeService {
             return infoAdmEtudiant;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<RegimeInscriptionDto> getRegimesInscriptions() {
+        String response = call("/regimesInscriptions", new HashMap<>());
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> rawMap = mapper.readValue(response, new TypeReference<>() {});
+            return rawMap.entrySet().stream()
+                    .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
+                    .toList();
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regimesInscriptions: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

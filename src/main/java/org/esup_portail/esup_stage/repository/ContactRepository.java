@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Contact;
@@ -16,6 +17,7 @@ public class ContactRepository extends PaginationRepository<Contact> {
 
     public ContactRepository(EntityManager em) {
         super(em, Contact.class, "c");
+        this.specificFilterWhitelist.add(VISIBLE_FOR_CENTRES);
     }
 
     public Long countVisibleForCentres(List<Integer> centreIds, String filters) {
@@ -27,9 +29,9 @@ public class ContactRepository extends PaginationRepository<Contact> {
     }
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (VISIBLE_FOR_CENTRES.equals(key)) {
-            JSONArray centreIds = parameter.getJSONArray("value");
+            JsonNode centreIds = parameter.get("value");
             if (centreIds.isEmpty()) {
                 clauses.add("1 = 0");
                 return;
@@ -39,12 +41,12 @@ public class ContactRepository extends PaginationRepository<Contact> {
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (VISIBLE_FOR_CENTRES.equals(key)) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<Integer> values = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                values.add(jsonArray.getInt(i));
+            for (JsonNode item : jsonArray) {
+                values.add(item.asInt());
             }
             if (!values.isEmpty()) {
                 query.setParameter(VISIBLE_FOR_CENTRES, values);
