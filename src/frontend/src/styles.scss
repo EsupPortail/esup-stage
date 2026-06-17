@@ -79,6 +79,7 @@ body { margin: 0; font-family: var(--fontFamily); font-size: var(--fontSize); }
 .text-title {
   color: var(--primaryColor);
   font-weight: bold;
+  font-size: calc(var(--fontSize) * 1.1);
 }
 .text-danger {
   color: var(--dangerColor);
@@ -234,13 +235,16 @@ label.required::after {
 ckeditor {
   .ck.ck-editor__editable_inline {
     border: 1px solid var(--ck-color-toolbar-border);
+    min-height: 180px;
     max-height: 500px;
   }
 
   .ck-source-editing-area {
+    min-height: 180px;
     max-height: 500px;
 
     textarea {
+      min-height: 180px;
       overflow-y: auto;
     }
   }
@@ -439,7 +443,20 @@ button.mat-mdc-button-base.valid-button:disabled .mat-mdc-button-persistent-ripp
 
 button.mat-mdc-button-base.cancel-button:hover,
 button.mat-mdc-button-base.valid-button:hover {
-  filter: brightness(0.95);
+  filter: brightness(0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.20);
+}
+
+/* Focus visible for primary action buttons */
+button.mat-mdc-button-base.valid-button:focus-visible,
+button.mat-mdc-button-base.valid-button:focus,
+button.mat-mdc-button-base.valid-button.cdk-keyboard-focused,
+button.mat-mdc-button-base.cancel-button:focus-visible,
+button.mat-mdc-button-base.cancel-button:focus,
+button.mat-mdc-button-base.cancel-button.cdk-keyboard-focused {
+  outline: 2px solid #111827 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.35) !important;
 }
 
 button.mat-mdc-icon-button.delete-button,
@@ -479,40 +496,85 @@ button.mat-mdc-fab.delete-button .fa {
   --mdc-fab-container-color: var(--dangerColor);
 }
 
-button.mat-mdc-fab.secondary-button {
-  background-color: #fafafa;
-  color: var(--secondaryColor);
-  --mdc-fab-container-color: #fafafa;
-  border: 1px solid var(--secondaryColor);
-}
-
-button.mat-mdc-fab.secondary-button .mat-icon,
-button.mat-mdc-fab.secondary-button .fa {
-  color: var(--secondaryColor);
-}
-
-button.mat-mdc-button-base.secondary-button,
-button.mat-mdc-button-base.secondary-button .mat-mdc-button-persistent-ripple {
-  background-color: #fafafa;
-  color: var(--secondaryColor);
-}
-
+/* Bouton secondary moderne et élégant */
 button.mat-mdc-button-base.secondary-button,
 button.mat-mdc-outlined-button.secondary-button {
-  border: 1px solid var(--secondaryColor) !important;
+  background-color: #ffffff;
+  color: var(--secondaryColor);
+  border: 1.5px solid var(--secondaryColor) !important;
   --mdc-outlined-button-outline-color: var(--secondaryColor);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 8px 20px;
+  border-radius: 6px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.mat-mdc-button-base.secondary-button:hover,
+button.mat-mdc-outlined-button.secondary-button:hover {
+  background-color: var(--secondaryColor);
+  color: #ffffff;
+  border-color: var(--secondaryColor) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 button.mat-mdc-button-base.secondary-button .mdc-button__outline,
 button.mat-mdc-outlined-button.secondary-button .mdc-button__outline {
-  border-style: solid !important;
-  border-width: 1px !important;
-  border-color: var(--secondaryColor) !important;
+  border: none !important;
 }
 
 button.mat-mdc-button-base.secondary-button .mat-icon,
 button.mat-mdc-button-base.secondary-button .fa {
   color: var(--secondaryColor);
+  margin-left: 4px;
+  transition: color 0.25s ease;
+}
+
+button.mat-mdc-button-base.secondary-button:hover .mat-icon,
+button.mat-mdc-button-base.secondary-button:hover .fa {
+  color: #ffffff;
+}
+
+/* État actif */
+button.mat-mdc-button-base.secondary-button:active,
+button.mat-mdc-outlined-button.secondary-button:active {
+  transform: scale(0.98);
+}
+
+/* État disabled */
+button.mat-mdc-button-base.secondary-button:disabled,
+button.mat-mdc-outlined-button.secondary-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* FAB secondary */
+button.mat-mdc-fab.secondary-button {
+  background-color: #ffffff;
+  color: var(--secondaryColor);
+  --mdc-fab-container-color: #ffffff;
+  border: 1.5px solid var(--secondaryColor);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.mat-mdc-fab.secondary-button:hover {
+  background-color: var(--secondaryColor);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+button.mat-mdc-fab.secondary-button .mat-icon,
+button.mat-mdc-fab.secondary-button .fa {
+  color: var(--secondaryColor);
+  transition: color 0.3s ease;
+}
+
+button.mat-mdc-fab.secondary-button:hover .mat-icon,
+button.mat-mdc-fab.secondary-button:hover .fa {
+  color: #ffffff;
 }
 
 .action-buttons-container {
@@ -550,3 +612,30 @@ app-root {
   color: inherit;
 }
    /*========================= */
+
+/* style suplémentaire pour les mat-expansion-panel fermés */
+
+.etab-search-panel {
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.etab-search-panel:not(.mat-expanded) {
+  border-left: 2px solid var(--primaryColor);
+}
+
+.etab-search-panel:not(.mat-expanded):hover{
+  border-color: rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  border-left-color: #7a9fc0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.etab-search-panel:not(.mat-expanded) .mat-expansion-panel-header-title,
+.etab-search-panel:not(.mat-expanded) .mat-expansion-panel-header {
+  color: rgba(0, 0, 0, 0.78);
+  font-weight: 500;
+}
+        /*========================= */

@@ -13,6 +13,7 @@ import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
 import { PaysService } from "../../services/pays.service";
+import { environment } from "../../../environments/environment";
 
 @Component({
     selector: 'app-dashboard',
@@ -53,6 +54,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selected: any[] = [];
   validationLibelles: any = {};
+  private shouldAutoSearchOnReturn = false;
+  showButtonText = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -81,6 +84,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    const returnFlag = sessionStorage.getItem('dashboard-return-refresh');
+    this.shouldAutoSearchOnReturn = returnFlag === '1' || navigation?.trigger === 'popstate';
+
     this.configService.getConfigGenerale().subscribe({
       next: (response: any) => {
         this.initializeValidationLibelles(response);
@@ -91,10 +98,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadInitialData();
       },
       error: (error) => {
-        console.error('Error loading config:', error);
+        this.logError('Error loading config', error);
         this.messageService.setError('Error loading configuration');
       }
     });
+
+    const saved = localStorage.getItem('accessibilityPreferences');
+
+    if (saved) {
+      const preferences = JSON.parse(saved);
+      this.showButtonText = preferences.showButtonText ?? false;
+    }
   }
 
   private initializeValidationLibelles(response: any): void {
@@ -127,7 +141,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       try {
         this.savedFilters = JSON.parse(filtersString);
       } catch (error) {
-        console.error('Error parsing saved filters:', error);
+        this.logError('Error parsing saved filters', error);
         this.savedFilters = [];
       }
     }
@@ -150,7 +164,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadComplementaryData();
       },
       error: (error) => {
-        console.error('Error loading années:', error);
+        this.logError('Error loading annees', error);
         this.messageService.setError('Error loading années');
       }
     });
@@ -197,7 +211,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error loading complementary data:', error);
+        this.logError('Error loading complementary data', error);
         this.messageService.setError('Error loading data');
       }
     });
@@ -397,7 +411,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   changeAnnee(): void {
     if (!this.appTable || !this.anneeEnCours){
-      console.error("erreur lors du chargement du tableau")
+      this.logError("Erreur lors du chargement du tableau");
     }else if(this.appTable?.getFilters().annee?.value === "Toutes les années"){
       delete this.appTable.filterValues['annee'];
       this.appTable?.update();
@@ -468,6 +482,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToConvention(id: number): void {
+    sessionStorage.setItem('dashboard-return-refresh', '1');
     this.router.navigate([`/conventions/${id}`],)
   }
 
@@ -501,7 +516,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private restoreFilters(): void {
     if (!this.appTable || !this.savedFilters) {
-      console.error("Required data not yet loaded");
+      this.logError("Required data not yet loaded");
       return;
     }
 
@@ -578,12 +593,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
         }
       } catch (error) {
-        console.error(`Error restoring filter ${key}:`, error);
+        this.logError(`Error restoring filter ${key}`, error);
       }
     });
 
     if (this.appTable) {
       this.appTable.update();
+    }
+    if (this.shouldAutoSearchOnReturn && this.appTable?.disableAutoSearch) {
+      this.appTable.runSearch();
+      this.shouldAutoSearchOnReturn = false;
+      sessionStorage.removeItem('dashboard-return-refresh');
     }
     this.restorePagingConfig()
   }
@@ -597,9 +617,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.sortDirection = pagingConfig.sortOrder;
         this.appTable.setBackConfig(pagingConfig);
       } catch (error) {
-        console.error('Error parsing paging config:', error);
+        this.logError('Error parsing paging config', error);
       }
     }
+  }
+
+  private logError(message: string, error?: unknown): void {
+    const args: unknown[] = [message];
+    if (!environment.production && error !== undefined) {
+      args.push(error);
+    }
+    console.error(...args);
   }
 
   getValidationIconStatus(row: any): string {

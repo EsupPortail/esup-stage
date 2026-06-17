@@ -1,26 +1,29 @@
 package org.esup_portail.esup_stage.service.apogee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class EtudiantDiplomeEtapeSearch {
 
-    @NotNull
+    @NotBlank
     private String annee;
 
-    @NotNull
+    @NotBlank
+    private String codeComposante;
+
+    @NotBlank
     private String codeEtape;
 
-    @NotNull
+    @NotBlank
     private String versionEtape;
 
-    @NotNull
+    @NotBlank
     private String codeDiplome;
 
-    @NotNull
+    @NotBlank
     private String versionDiplome;
 
     private String codEtu;

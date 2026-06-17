@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
+import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -153,6 +154,7 @@ public class ConventionService {
         CentreGestion centreGestionEtab = getCentreGestionEtab();
         CentreGestion centreGestion = getCentreGestion(centreGestionEtab, conventionFormDto.getCodeComposante(), conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
         convention.setCentreGestion(centreGestion);
+        validateFormationEligible(utilisateur, conventionFormDto);
 
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
@@ -206,6 +208,21 @@ public class ConventionService {
         }
     }
 
+    private void validateFormationEligible(Utilisateur utilisateur, ConventionFormDto conventionFormDto) {
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, conventionFormDto.getNumEtudiant(), conventionFormDto.getAnnee());
+        boolean eligible = inscriptions.stream().anyMatch(inscription -> {
+            if (inscription.getEtapeInscription() == null) {
+                return false;
+            }
+            return Objects.equals(inscription.getAnnee(), conventionFormDto.getAnnee())
+                    && Objects.equals(inscription.getEtapeInscription().getCodeEtp(), conventionFormDto.getCodeEtape())
+                    && Objects.equals(inscription.getEtapeInscription().getCodVrsVet(), conventionFormDto.getCodeVersionEtape());
+        });
+        if (!eligible) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à créer une convention sur cette formation.");
+        }
+    }
+
     public TypeConvention getTypeConvention(int id) {
         TypeConvention typeConvention = typeConventionJpaRepository.findById(id);
         if (typeConvention == null) {
@@ -231,6 +248,9 @@ public class ConventionService {
             etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
             etape = new Etape();
             etape.setId(etapeId);
+            etape.setLibelle(libelleEtape);
+            etape = etapeJpaRepository.saveAndFlush(etape);
+        } else if ((etape.getLibelle() == null || etape.getLibelle().isEmpty()) && libelleEtape != null && !libelleEtape.isEmpty()) {
             etape.setLibelle(libelleEtape);
             etape = etapeJpaRepository.saveAndFlush(etape);
         }

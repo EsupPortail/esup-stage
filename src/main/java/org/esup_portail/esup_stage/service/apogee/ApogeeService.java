@@ -6,7 +6,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
-import org.esup_portail.esup_stage.dto.RegimeInscriptionDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -67,7 +66,7 @@ public class ApogeeService {
                 if (!Strings.isEmpty(value))
                     listParams.add(key + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8));
             });
-            if (listParams.isEmpty()) {
+            if (listParams.size() > 0) {
                 urlWithQuery += "?" + String.join("&", listParams);
             }
 
@@ -106,7 +105,7 @@ public class ApogeeService {
                     LdapSearchDto ldapSearchDto = new LdapSearchDto();
                     ldapSearchDto.setCodEtu(numEtudiant);
                     List<LdapUser> ldapEtudiant = ldapService.search("/etudiant", ldapSearchDto);
-                    if (ldapEtudiant != null && ldapEtudiant.isEmpty()) {
+                    if (ldapEtudiant != null && ldapEtudiant.size() > 0) {
                         etudiantRef.setMail(ldapEtudiant.get(0).getMail());
                     }
                 }
@@ -131,7 +130,7 @@ public class ApogeeService {
                 composante.setLibelle(entry.getValue().toString());
                 list.add(composante);
             }
-            if (list.isEmpty()) {
+            if (list.size() == 0) {
                 LOGGER.info("Aucune composante trouvée");
             }
             return list;
@@ -157,7 +156,7 @@ public class ApogeeService {
                 etapeApogee.setLibelle(entry.getValue().toString());
                 list.add(etapeApogee);
             }
-            if (list.isEmpty()) {
+            if (list.size() == 0) {
                 LOGGER.info("Aucune étape trouvée");
             }
             return list;
@@ -189,7 +188,7 @@ public class ApogeeService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             List<String> annees = Arrays.asList(mapper.readValue(response, String[].class));
-            if (annees.isEmpty()) {
+            if (annees.size() == 0) {
                 LOGGER.info("Aucune année trouvée");
             }
             return annees;
@@ -218,7 +217,14 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
-        List<String> anneesFiltrees = getAnneesFiltrees(utilisateur, numEtudiant, anneeConvention);
+        return getInscriptions(utilisateur, numEtudiant, anneeConvention, true);
+    }
+
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention, boolean filtrerEligibilite) {
+        List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
+        int anneeEnCoursInt = Integer.parseInt(appConfigService.getAnneeUniv());
+        int anneeReferenceInt = getAnneeReferenceInscriptions(anneeInscriptions, anneeEnCoursInt);
+        List<String> anneesFiltrees = getAnneesFiltrees(utilisateur, anneeInscriptions, anneeReferenceInt, anneeConvention);
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
 
         for (String annee : anneesFiltrees) {
@@ -231,28 +237,25 @@ public class ApogeeService {
             inscriptions.addAll(inscriptionsAnnee);
         }
 
-        return filterInscriptions(utilisateur, inscriptions);
+        return filtrerEligibilite ? filterInscriptions(utilisateur, inscriptions, anneeReferenceInt) : inscriptions;
     }
 
-    private List<String> getAnneesFiltrees(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
-        int anneeEnCoursInt = Integer.parseInt(appConfigService.getAnneeUniv());
-        List<String> annees = getAnneeInscriptions(numEtudiant);
-
-        annees = annees.stream()
-                .filter(a -> isAnneeAutorisee(a, anneeEnCoursInt, UtilisateurHelper.isRole(utilisateur, Role.ETU)))
+    private List<String> getAnneesFiltrees(Utilisateur utilisateur, List<String> annees, int anneeReferenceInt, String anneeConvention) {
+        List<String> anneesFiltrees = annees.stream()
+                .filter(a -> isAnneeAutorisee(a, anneeReferenceInt, UtilisateurHelper.isRole(utilisateur, Role.ETU)))
                 .collect(Collectors.toList());
 
-        if (anneeConvention != null && !anneeConvention.isEmpty() && !annees.contains(anneeConvention)) {
-            annees.add(anneeConvention);
+        if (anneeConvention != null && !anneeConvention.isEmpty() && !anneesFiltrees.contains(anneeConvention)) {
+            anneesFiltrees.add(anneeConvention);
         }
 
-        return annees;
+        return anneesFiltrees;
     }
 
-    private boolean isAnneeAutorisee(String annee, int anneeEnCoursInt, boolean isEtudiant) {
+    private boolean isAnneeAutorisee(String annee, int anneeReferenceInt, boolean isEtudiant) {
         int anneeInt = Integer.parseInt(annee);
-        boolean isCourranteOuFuture = anneeInt >= anneeEnCoursInt;
-        boolean isPrecedente = anneeInt == anneeEnCoursInt - 1;
+        boolean isCourranteOuFuture = anneeInt >= anneeReferenceInt;
+        boolean isPrecedente = anneeInt == anneeReferenceInt - 1;
         return isCourranteOuFuture || (!isEtudiant && isPrecedente);
     }
 
@@ -382,17 +385,16 @@ public class ApogeeService {
         }
     }
 
-    private List<ConventionFormationDto> filterInscriptions(Utilisateur utilisateur, List<ConventionFormationDto> inscriptions) {
+    private List<ConventionFormationDto> filterInscriptions(Utilisateur utilisateur, List<ConventionFormationDto> inscriptions, int anneeReferenceInt) {
         if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             return inscriptions;
         }
 
-        int anneeEnCoursInt = Integer.parseInt(appConfigService.getAnneeUniv());
         boolean isEtudiant = UtilisateurHelper.isRole(utilisateur, Role.ETU);
 
         return inscriptions.stream()
                 .filter(inscription -> isAutorisationEtudiantRespectee(inscription, isEtudiant))
-                .filter(inscription -> isAnneeCentreGestionAutorisee(inscription, anneeEnCoursInt, isEtudiant))
+                .filter(inscription -> isAnneeCentreGestionAutorisee(inscription, anneeReferenceInt, isEtudiant))
                 .toList();
     }
 
@@ -400,9 +402,9 @@ public class ApogeeService {
         return !isEtudiant || inscription.getCentreGestion().isAutorisationEtudiantCreationConvention();
     }
 
-    private boolean isAnneeCentreGestionAutorisee(ConventionFormationDto inscription, int anneeEnCoursInt, boolean isEtudiant) {
+    private boolean isAnneeCentreGestionAutorisee(ConventionFormationDto inscription, int anneeReferenceInt, boolean isEtudiant) {
         int anneeInscriptionInt = Integer.parseInt(inscription.getAnnee());
-        if (anneeInscriptionInt >= anneeEnCoursInt) {
+        if (anneeInscriptionInt >= anneeReferenceInt) {
             return true;
         }
 
@@ -410,9 +412,18 @@ public class ApogeeService {
             return false;
         }
 
-        return !isEtudiant && anneeInscriptionInt == anneeEnCoursInt - 1;
+        return !isEtudiant && anneeInscriptionInt == anneeReferenceInt - 1;
     }
 
+    private int getAnneeReferenceInscriptions(List<String> anneeInscriptions, int anneeEnCoursInt) {
+        return anneeInscriptions.stream()
+                .mapToInt(Integer::parseInt)
+                .max()
+                .stream()
+                .map(maxAnneeInscription -> Math.min(anneeEnCoursInt, maxAnneeInscription))
+                .findFirst()
+                .orElse(anneeEnCoursInt);
+    }
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
         if (codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()) {
             List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
@@ -460,32 +471,6 @@ public class ApogeeService {
             return infoAdmEtudiant;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
-        }
-    }
-
-    public List<RegimeInscriptionDto> getRegimesInscriptions() {
-        String response = call("/regimesInscriptions", new HashMap<>());
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            Map<String, String> rawMap = mapper.readValue(
-                    response,
-                    mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class)
-            );
-
-            List<RegimeInscriptionDto> result = rawMap.entrySet().stream()
-                    .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
-                    .toList();
-
-            if (result.isEmpty()) {
-                LOGGER.info("Aucune donnée trouvée");
-            }
-
-            return result;
-        } catch (JsonProcessingException e) {
-            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regInsList: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

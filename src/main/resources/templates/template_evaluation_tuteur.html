@@ -68,26 +68,9 @@
       </div>
     </#if>
 
-    <#if ficheEvaluation.questionEnt4>
-      <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT5")[0].texte} :</strong>
-          <#if reponse.reponseEnt4??>
-            <#if reponse.reponseEnt4 == 0>Excellent</#if>
-            <#if reponse.reponseEnt4 == 1>Très bien</#if>
-            <#if reponse.reponseEnt4 == 2>Bien</#if>
-            <#if reponse.reponseEnt4 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEnt4 == 4>Insuffisant</#if>
-          </#if>
-        </p>
-        <#if reponse.reponseEnt4bis?? && reponse.reponseEnt4bis != "">
-          <p><em>${reponse.reponseEnt4bis}</em></p>
-        </#if>
-      </div>
-    </#if>
-
     <#if ficheEvaluation.questionEnt5>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT9")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT5")[0].texte} :</strong>
           <#if reponse.reponseEnt5??>
             <#if reponse.reponseEnt5 == 0>Excellent</#if>
             <#if reponse.reponseEnt5 == 1>Très bien</#if>
@@ -102,60 +85,9 @@
       </div>
     </#if>
 
-    <#if ficheEvaluation.questionEnt6>
-      <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT11")[0].texte} :</strong>
-          <#if reponse.reponseEnt6??>
-            <#if reponse.reponseEnt6 == 0>Excellent</#if>
-            <#if reponse.reponseEnt6 == 1>Très bien</#if>
-            <#if reponse.reponseEnt6 == 2>Bien</#if>
-            <#if reponse.reponseEnt6 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEnt6 == 4>Insuffisant</#if>
-          </#if>
-        </p>
-        <#if reponse.reponseEnt6bis?? && reponse.reponseEnt6bis != "">
-          <p><em>${reponse.reponseEnt6bis}</em></p>
-        </#if>
-      </div>
-    </#if>
-
-    <#if ficheEvaluation.questionEnt7>
-      <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT12")[0].texte} :</strong>
-          <#if reponse.reponseEnt7??>
-            <#if reponse.reponseEnt7 == 0>Excellent</#if>
-            <#if reponse.reponseEnt7 == 1>Très bien</#if>
-            <#if reponse.reponseEnt7 == 2>Bien</#if>
-            <#if reponse.reponseEnt7 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEnt7 == 4>Insuffisant</#if>
-          </#if>
-        </p>
-        <#if reponse.reponseEnt7bis?? && reponse.reponseEnt7bis != "">
-          <p><em>${reponse.reponseEnt7bis}</em></p>
-        </#if>
-      </div>
-    </#if>
-
-    <#if ficheEvaluation.questionEnt8>
-      <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT13")[0].texte} :</strong>
-          <#if reponse.reponseEnt8??>
-            <#if reponse.reponseEnt8 == 0>Excellent</#if>
-            <#if reponse.reponseEnt8 == 1>Très bien</#if>
-            <#if reponse.reponseEnt8 == 2>Bien</#if>
-            <#if reponse.reponseEnt8 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEnt8 == 4>Insuffisant</#if>
-          </#if>
-        </p>
-        <#if reponse.reponseEnt8bis?? && reponse.reponseEnt8bis != "">
-          <p><em>${reponse.reponseEnt8bis}</em></p>
-        </#if>
-      </div>
-    </#if>
-
     <#if ficheEvaluation.questionEnt9>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT14")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT9")[0].texte} :</strong>
           <#if reponse.reponseEnt9??>
             <#if reponse.reponseEnt9 == 0>Excellent</#if>
             <#if reponse.reponseEnt9 == 1>Très bien</#if>
@@ -169,28 +101,10 @@
         </#if>
       </div>
     </#if>
-  </div>
-
-  <div>
-    <h3>II. Savoir faire du stagiaire</h3>
-
-    <#if ficheEvaluation.questionEnt10>
-      <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT4")[0].texte} </strong>
-          <#if reponse.reponseEnt10??>
-            <#if reponse.reponseEnt10 == true>Oui</#if>
-            <#if reponse.reponseEnt10 == false>Non</#if>
-          </#if>
-        </p>
-        <#if reponse.reponseEnt10bis?? && reponse.reponseEnt10bis != "">
-          <p><em>${reponse.reponseEnt10bis}</em></p>
-        </#if>
-      </div>
-    </#if>
 
     <#if ficheEvaluation.questionEnt11>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT6")[0].texte} </strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT11")[0].texte} :</strong>
           <#if reponse.reponseEnt11??>
             <#if reponse.reponseEnt11 == 0>Excellent</#if>
             <#if reponse.reponseEnt11 == 1>Très bien</#if>
@@ -207,7 +121,7 @@
 
     <#if ficheEvaluation.questionEnt12>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT7")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT12")[0].texte} :</strong>
           <#if reponse.reponseEnt12??>
             <#if reponse.reponseEnt12 == 0>Excellent</#if>
             <#if reponse.reponseEnt12 == 1>Très bien</#if>
@@ -224,7 +138,7 @@
 
     <#if ficheEvaluation.questionEnt13>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT8")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT13")[0].texte} :</strong>
           <#if reponse.reponseEnt13??>
             <#if reponse.reponseEnt13 == 0>Excellent</#if>
             <#if reponse.reponseEnt13 == 1>Très bien</#if>
@@ -241,7 +155,7 @@
 
     <#if ficheEvaluation.questionEnt14>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT15")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT14")[0].texte} :</strong>
           <#if reponse.reponseEnt14??>
             <#if reponse.reponseEnt14 == 0>Excellent</#if>
             <#if reponse.reponseEnt14 == 1>Très bien</#if>
@@ -258,11 +172,79 @@
   </div>
 
   <div>
-    <h3>III. Appréciation générale du stage</h3>
+    <h3>II. Savoir faire du stagiaire</h3>
+
+    <#if ficheEvaluation.questionEnt4>
+      <div class="evaluation-item">
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT4")[0].texte} :</strong>
+          <#if reponse.reponseEnt4??>
+            <#if reponse.reponseEnt4 == 0>Excellent</#if>
+            <#if reponse.reponseEnt4 == 1>Très bien</#if>
+            <#if reponse.reponseEnt4 == 2>Bien</#if>
+            <#if reponse.reponseEnt4 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnt4 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+        <#if reponse.reponseEnt4bis?? && reponse.reponseEnt4bis != "">
+          <p><em>${reponse.reponseEnt4bis}</em></p>
+        </#if>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnt6>
+      <div class="evaluation-item">
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT6")[0].texte} :</strong>
+          <#if reponse.reponseEnt6??>
+            <#if reponse.reponseEnt6 == 0>Excellent</#if>
+            <#if reponse.reponseEnt6 == 1>Très bien</#if>
+            <#if reponse.reponseEnt6 == 2>Bien</#if>
+            <#if reponse.reponseEnt6 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnt6 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+        <#if reponse.reponseEnt6bis?? && reponse.reponseEnt6bis != "">
+          <p><em>${reponse.reponseEnt6bis}</em></p>
+        </#if>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnt7>
+      <div class="evaluation-item">
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT7")[0].texte} :</strong>
+          <#if reponse.reponseEnt7??>
+            <#if reponse.reponseEnt7 == 0>Excellent</#if>
+            <#if reponse.reponseEnt7 == 1>Très bien</#if>
+            <#if reponse.reponseEnt7 == 2>Bien</#if>
+            <#if reponse.reponseEnt7 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnt7 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+        <#if reponse.reponseEnt7bis?? && reponse.reponseEnt7bis != "">
+          <p><em>${reponse.reponseEnt7bis}</em></p>
+        </#if>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnt8>
+      <div class="evaluation-item">
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT8")[0].texte} :</strong>
+          <#if reponse.reponseEnt8??>
+            <#if reponse.reponseEnt8 == 0>Excellent</#if>
+            <#if reponse.reponseEnt8 == 1>Très bien</#if>
+            <#if reponse.reponseEnt8 == 2>Bien</#if>
+            <#if reponse.reponseEnt8 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnt8 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+        <#if reponse.reponseEnt8bis?? && reponse.reponseEnt8bis != "">
+          <p><em>${reponse.reponseEnt8bis}</em></p>
+        </#if>
+      </div>
+    </#if>
 
     <#if ficheEvaluation.questionEnt15>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT16")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT15")[0].texte} :</strong>
           <#if reponse.reponseEnt15??>
             <#if reponse.reponseEnt15 == 0>Excellent</#if>
             <#if reponse.reponseEnt15 == 1>Très bien</#if>
@@ -276,16 +258,20 @@
         </#if>
       </div>
     </#if>
+  </div>
+
+  <div>
+    <h3>III. Appréciation générale du stage</h3>
 
     <#if ficheEvaluation.questionEnt16>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT17")[0].texte} :</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT16")[0].texte} :</strong>
           <#if reponse.reponseEnt16??>
-            <#if reponse.reponseEnt16 == 0>Excellent</#if>
-            <#if reponse.reponseEnt16 == 1>Très bien</#if>
-            <#if reponse.reponseEnt16 == 2>Bien</#if>
-            <#if reponse.reponseEnt16 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEnt16 == 4>Insuffisant</#if>
+            <#if reponse.reponseEnt16 == 0>Tout à fait d'accord</#if>
+            <#if reponse.reponseEnt16 == 1>Plutôt d'accord</#if>
+            <#if reponse.reponseEnt16 == 2>Sans avis</#if>
+            <#if reponse.reponseEnt16 == 3>Plutôt pas d'accord</#if>
+            <#if reponse.reponseEnt16 == 4>Pas du tout d'accord</#if>
           </#if>
         </p>
         <#if reponse.reponseEnt16bis?? && reponse.reponseEnt16bis != "">
@@ -296,6 +282,23 @@
 
     <#if ficheEvaluation.questionEnt17>
       <div class="evaluation-item">
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT17")[0].texte} :</strong>
+          <#if reponse.reponseEnt17??>
+            <#if reponse.reponseEnt17 == 0>Excellent</#if>
+            <#if reponse.reponseEnt17 == 1>Très bien</#if>
+            <#if reponse.reponseEnt17 == 2>Bien</#if>
+            <#if reponse.reponseEnt17 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEnt17 == 4>Insuffisant</#if>
+          </#if>
+        </p>
+        <#if reponse.reponseEnt17bis?? && reponse.reponseEnt17bis != "">
+          <p><em>${reponse.reponseEnt17bis}</em></p>
+        </#if>
+      </div>
+    </#if>
+
+    <#if ficheEvaluation.questionEnt19>
+      <div class="evaluation-item">
         <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT19")[0].texte} : </strong></p>
         <#if reponse.reponseEnt19?? && reponse.reponseEnt19 != "">
           <p>${reponse.reponseEnt19}</p>
@@ -303,22 +306,18 @@
       </div>
     </#if>
 
-    <#if ficheEvaluation.questionEnt18>
+    <#if ficheEvaluation.questionEnt10>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT18")[0].texte} :</strong>
-          <#if reponse.reponseEnt18??>
-            <#if reponse.reponseEnt18 == true>Oui</#if>
-            <#if reponse.reponseEnt18 == false>Non</#if>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT10")[0].texte} :</strong>
+          <#if reponse.reponseEnt10??>
+            <#if reponse.reponseEnt10 == true>Oui</#if>
+            <#if reponse.reponseEnt10 == false>Non</#if>
           </#if>
         </p>
-        <#if reponse.reponseEnt18bis?? && reponse.reponseEnt18bis != "">
-          <p><em>${reponse.reponseEnt18bis}</em></p>
-        </#if>
       </div>
     </#if>
 
-    <#-- le bloc ci-dessous gardait le même intitulé ; je remets le même code ENT18 puisque tes réponses pointent sur reponseEnt18 -->
-    <#if ficheEvaluation.questionEnt19>
+    <#if ficheEvaluation.questionEnt18>
       <div class="evaluation-item">
         <p><strong>- ${questionEvaluations?filter(q -> q.code == "ENT18")[0].texte} :</strong>
           <#if reponse.reponseEnt18??>

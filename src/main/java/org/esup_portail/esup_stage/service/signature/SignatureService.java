@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.service.signature;
 
 import lombok.extern.slf4j.Slf4j;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -27,13 +29,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Slf4j
@@ -332,9 +335,6 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (appSignature == AppSignatureEnum.EXTERNE) {
-            throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
-        }
 
         try {
             List<Historique> historiques = new ArrayList<>();
@@ -345,6 +345,9 @@ public class SignatureService {
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(convention.getDocumentId(), convention);
                     break;
+                case EXTERNE:
+                    webhookService.getHistoriqueExterne(convention);
+                    return;
             }
             setSignatureHistorique(convention, historiques);
         } catch (Exception e) {
@@ -368,9 +371,6 @@ public class SignatureService {
         if (appSignature == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La signature électronique n'est pas configurée");
         }
-        if (appSignature == AppSignatureEnum.EXTERNE) {
-            throw new AppException(HttpStatus.NO_CONTENT, "La récupération de l'historique sera faite automatiquement");
-        }
 
         try {
             List<Historique> historiques = new ArrayList<>();
@@ -381,6 +381,9 @@ public class SignatureService {
                 case ESUPSIGNATURE:
                     historiques = webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
                     break;
+                case EXTERNE:
+                    webhookService.getHistoriqueExterne(avenant);
+                    return;
             }
             setSignatureHistorique(avenant, historiques);
         } catch (Exception e) {
@@ -515,11 +518,31 @@ public class SignatureService {
     public void saveSignedFile(MetadataDto metadataDto, InputStream inputStream) {
         Path uploadLocation = Paths.get(getSignatureFilePath(metadataDto.getTitle()));
         try {
-            Files.copy(inputStream, uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            byte[] pdfBytes = validateSignedPdf(inputStream);
+            Files.write(uploadLocation, pdfBytes);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'enregistrement du PDF");
         }
+    }
+
+    private byte[] validateSignedPdf(InputStream inputStream) throws IOException {
+        byte[] pdfBytes = inputStream.readAllBytes();
+        if (pdfBytes.length < 5 || !"%PDF-".equals(new String(pdfBytes, 0, 5, StandardCharsets.US_ASCII))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit être un PDF valide");
+        }
+
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdfBytes)))) {
+            if (pdfDocument.getNumberOfPages() < 1) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit contenir au moins une page");
+            }
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.warn("Document signé invalide", e);
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit être un PDF valide");
+        }
+        return pdfBytes;
     }
 
     /**
@@ -549,11 +572,14 @@ public class SignatureService {
         log.info("Fin de updateAuto()");
     }
 
-    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Convention convention){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
+            if (appSignature == AppSignatureEnum.EXTERNE) {
+                webhookService.getHistoriqueExterne(convention);
+                return;
+            }
             historiques = switch (appSignature) {
                 case DOCAPOSTE -> signatureClient.getHistorique(convention.getDocumentId(), convention.getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(convention.getDocumentId(), convention);
@@ -613,11 +639,14 @@ public class SignatureService {
         }
     }
 
-    //TODO : mettre a jour le update pour aller chercher les données (pour toutes les app de signature)
     public void update(Avenant avenant){
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();
         try {
             List<Historique> historiques = new ArrayList<>();
+            if (appSignature == AppSignatureEnum.EXTERNE) {
+                webhookService.getHistoriqueExterne(avenant);
+                return;
+            }
             historiques = switch (appSignature) {
                 case DOCAPOSTE -> signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
                 case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());

@@ -87,7 +87,7 @@ public class EvaluationTuteurController {
     public ReponseEvaluation createReponseEntreprise(@RequestParam(name = "token") String token,
                                                      @PathVariable("id") int id,
                                                      @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
-        checkToken(token);
+        checkToken(token, id);
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         evaluationService.setReponseEvaluationEntrepriseData(reponseEvaluation, reponseEntrepriseFormDto);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
@@ -97,7 +97,7 @@ public class EvaluationTuteurController {
     public ReponseEvaluation updateReponseEntreprise(@RequestParam(name = "token") String token,
                                                      @PathVariable("id") int id,
                                                      @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
-        checkToken(token);
+        checkToken(token, id);
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseEvaluation non trouvé");
@@ -111,7 +111,7 @@ public class EvaluationTuteurController {
                                                              @PathVariable("idConvention") int idConvention,
                                                              @PathVariable("idQestion") int idQestion,
                                                              @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        checkToken(token);
+        checkToken(token, idConvention);
         ReponseSupplementaire reponseSupplementaire = evaluationService.initReponseSupplementaire(idConvention, idQestion);
         evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
         return reponseSupplementaireJpaRepository.saveAndFlush(reponseSupplementaire);
@@ -122,7 +122,7 @@ public class EvaluationTuteurController {
                                                              @PathVariable("idConvention") int idConvention,
                                                              @PathVariable("idQestion") int idQestion,
                                                              @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
-        checkToken(token);
+        checkToken(token, idConvention);
         ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
         if (reponseSupplementaire == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "ReponseSupplementaire non trouvé");
@@ -138,9 +138,8 @@ public class EvaluationTuteurController {
 
 
 
-        // 1) JWT
-        parseJwtOrThrow(token);
-
+        // 1) JWT + cohérence convention/token
+        checkToken(token, id);
         // 2) Récup réponse
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
@@ -152,6 +151,7 @@ public class EvaluationTuteurController {
         if (validToken == null) {
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide, expiré ou déjà utilisé");
         }
+        assertTokenMatchesConvention(validToken, id);
 
         // 4) Valider réponse
         reponseEvaluation.setValidationEntreprise(valid);
@@ -174,7 +174,7 @@ public class EvaluationTuteurController {
     public ResponseEntity<byte[]> generatePDF(@RequestParam(name = "token") String token,
                                               @PathVariable(name="id") Integer id) {
         // JWT + état "déjà utilisé"
-        checkUsedToken(token);
+        checkUsedToken(token, id);
 
         Convention convention = conventionJpaRepository.findById(id).orElse(null);
         if (convention == null) {
@@ -207,6 +207,7 @@ public class EvaluationTuteurController {
         if (evToken == null) {
             throw new AppException(HttpStatus.FORBIDDEN,"Token invalide");
         }
+        assertTokenMatchesConvention(evToken, id);
 
         Convention convention = conventionJpaRepository.findById(id).orElse(null);
         if (convention == null) {
@@ -217,7 +218,7 @@ public class EvaluationTuteurController {
         mailerService.sendAlerteValidation(
                 evToken.getContact().getMail(),
                 convention,
-                convention.getAvenants().getLast(),
+                null,
                 new Utilisateur(),
                 "RENOUVELLEMENT_EVAL_TUTEUR"
         );
@@ -225,7 +226,7 @@ public class EvaluationTuteurController {
 
     /* ==================== Helpers ==================== */
 
-    private void checkToken(String token){
+    private EvaluationTuteurToken checkToken(String token, Integer conventionId){
         // 1) JWT
         parseJwtOrThrow(token);
         // 2) Métier
@@ -234,15 +235,26 @@ public class EvaluationTuteurController {
             warnInvalid(token);
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
         }
+        assertTokenMatchesConvention(validToken, conventionId);
+        return validToken;
     }
 
-    private void checkUsedToken(String token){
+    private EvaluationTuteurToken checkUsedToken(String token, Integer conventionId){
         // 1) JWT
         parseJwtOrThrow(token);
         // 2) Métier: déjà utilisé & non révoqué & non expiré
         EvaluationTuteurToken validToken = evaluationService.validateUsedToken(token);
         if (validToken == null) {
             warnInvalid(token);
+            throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
+        }
+        assertTokenMatchesConvention(validToken, conventionId);
+        return validToken;
+    }
+
+    private void assertTokenMatchesConvention(EvaluationTuteurToken validToken, Integer conventionId) {
+        if (conventionId == null || validToken == null || validToken.getConvention() == null || validToken.getConvention().getId() != conventionId) {
+            logger.warn("Tentative d'accès avec token ne correspondant pas à la convention {}", conventionId);
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
         }
     }

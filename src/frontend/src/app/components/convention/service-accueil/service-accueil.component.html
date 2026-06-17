@@ -1,6 +1,6 @@
 <mat-accordion>
 
-  <mat-expansion-panel [expanded]="service" [disabled]="!service">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="service" [disabled]="!service">
     <mat-expansion-panel-header>
       <mat-panel-title>Service d'accueil</mat-panel-title>
     </mat-expansion-panel-header>
@@ -32,7 +32,7 @@
         </div>
       </div>
       <div *ngIf="modif && (canEdit() || isCreatorService(service) || (isNewService && canCreate()))">
-        <div class="text-title">Général</div>
+        <h4 class="text-title">Général</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col mb-2" appearance="fill">
@@ -41,7 +41,7 @@
             <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="text-title">Coordonnées</div>
+        <h4 class="text-title">Coordonnées</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -81,11 +81,9 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
         <div class="col-12 d-flex justify-content-center">
-          <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
-            <button class="valid-button" type="button" mat-button mat-stroked-button>
-              Modifier la fiche de ce service d'accueil
-            </button>
-          </span>
+          <button *ngIf="etab.id && !modif && canEdit()" (click)="edit()" class="valid-button" type="button" mat-button mat-stroked-button>
+            Modifier la fiche de ce service d'accueil
+          </button>
         </div>
         <div class="col-6">
           <button class="cancel-button" mat-button mat-stroked-button *ngIf="service.id && modif" (click)="cancelEdit()">{{'BOUTON_ANNULER'|contenu}}</button>
@@ -97,7 +95,7 @@
     </form>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="!service" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!service" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Choix du service dans lequel le stage sera effectué - Établissement d'accueil : {{etab.raisonSociale}}
     </mat-expansion-panel-header>
@@ -135,3 +133,4 @@
   </mat-expansion-panel>
 
 </mat-accordion>
+

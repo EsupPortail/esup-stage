@@ -253,13 +253,21 @@
   </ng-container>
 
   <ng-template #endBtn>
-    <span
-      (confirm)="nextOrFinish()"
-      [preset]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid) ? 'success' : 'warning'"
-      [confirmMessage]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid)
-        ? 'Tout est rempli. Valider définitivement ?'
-        : 'Certaines réponses manquent. Valider quand même ?'">
-      <button class="valid-button" mat-raised-button>Terminer</button>
-    </span>
+    @if (hasAtLeastOneResponse()){
+      <!-- Span actif avec confirmation -->
+      <span
+        *ngIf="hasAtLeastOneResponse()"
+        (confirm)="nextOrFinish()"
+        [preset]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid) ? 'success' : 'warning'"
+        [confirmMessage]="(reponseEntrepriseForm.valid && reponseSupplementaireEntrepriseForm.valid)? 'Tout est rempli. Valider définitivement ?': 'Certaines réponses manquent. Valider quand même ?'"
+      >
+        <button class="valid-button" mat-raised-button>Terminer</button>
+      </span>
+    } @else {
+      <!-- Span inactif sans confirmation -->
+      <span *ngIf="!hasAtLeastOneResponse()">
+        <button class="valid-button" mat-raised-button [disabled]="true">Terminer</button>
+      </span>
+    }
   </ng-template>
 </div>

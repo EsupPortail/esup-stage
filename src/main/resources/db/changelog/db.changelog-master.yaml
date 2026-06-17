@@ -280,6 +280,12 @@ databaseChangeLog:
         file: 3.1.11-naf2025.yaml
         relativeToChangelogFile: true
   - include:
+      file: 3.1.12-ajout-temoin-diffusible-sirene.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.1.13-role-droit-admin-service-et-contact.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 3.2.0-autoriser-chevauchement.yaml
       relativeToChangelogFile: true
   - include:
@@ -317,6 +323,15 @@ databaseChangeLog:
         relativeToChangelogFile: true
   - include:
         file: 3.2.0-accessibilite.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-declaration-accessibilite.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-fix-statut-juridique-modifiable.yaml
+        relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-fix-nomenclatures-modifiable-par-defaut.yaml
         relativeToChangelogFile: true
   - include:
       file: 3.2.0-ajout-bool-verrouillage-synchro-etab.yaml

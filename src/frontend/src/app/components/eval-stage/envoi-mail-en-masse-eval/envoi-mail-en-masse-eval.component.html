@@ -6,18 +6,12 @@
     </div>
 
     <div class="modal-content">
-      <div [formGroup]="form">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Type d'envoi</mat-label>
-          <mat-select formControlName="typeEnvoi">
-            <mat-option [value]="0">1er envoi</mat-option>
-            <mat-option [value]="1">Rappel</mat-option>
-          </mat-select>
-          <mat-error *ngIf="form.get('typeEnvoi')?.hasError('required') && form.get('typeEnvoi')?.touched">
-            Choisis un type d'envoi
-          </mat-error>
-        </mat-form-field>
 
+      <div class="template-preview">
+        <span><strong>Type d'envoi :</strong> {{ modeEnvoiLabel }}</span>
+      </div>
+
+      <div [formGroup]="form">
         <div class="radio-block" role="group" aria-label="Choix du destinataire">
           <label class="block-label">Destinataires</label>
           <mat-radio-group formControlName="typeFiche">
@@ -26,7 +20,7 @@
             <mat-radio-button [value]="2">Tuteur professionnel</mat-radio-button>
           </mat-radio-group>
           <mat-error *ngIf="form.get('typeFiche')?.hasError('required') && form.get('typeFiche')?.touched">
-            Choisis un destinataire
+            Choisissez un destinataire
           </mat-error>
         </div>
 
@@ -41,9 +35,33 @@
               <mat-divider></mat-divider>
               <div class="mail-body" [innerHTML]="templateMail?.texte"></div>
             </div>
+          } @else if (templateMailPremier || templateMailRappel) {
+            <div class="missing-params">
+              Suivant le cas, le destinataire recevra le modèle de premier envoi ou le modèle de rappel.
+            </div>
+
+            @if(templateMailPremier) {
+              <div class="mail-box">
+                <div class="mail-header">
+                  <span><strong>Premier envoi - Sujet :</strong> {{ templateMailPremier?.objet }}</span>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="mail-body" [innerHTML]="templateMailPremier?.texte"></div>
+              </div>
+            }
+
+            @if(templateMailRappel) {
+              <div class="mail-box">
+                <div class="mail-header">
+                  <span><strong>Rappel - Sujet :</strong> {{ templateMailRappel?.objet }}</span>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="mail-body" [innerHTML]="templateMailRappel?.texte"></div>
+              </div>
+            }
           } @else if (!loadingTemplate) {
-            @if(form.get('typeEnvoi')?.value == null || form.get('typeFiche')?.value == null) {
-              <div class="missing-params">Veuillez remplir les champs de paramètrage</div>
+            @if(form.get('typeFiche')?.value == null) {
+              <div class="missing-params">Veuillez remplir les champs de paramétrage</div>
             } @else {
               <div class="no-template">Aucun modèle disponible pour cette combinaison</div>
             }
@@ -57,7 +75,7 @@
       <button type="button" mat-stroked-button class="cancel-button" (click)="close()">
         {{'BOUTON_ANNULER'|contenu}}
       </button>
-      <button type="submit" mat-flat-button class="submit-button" (click)="send()" [disabled]="form.invalid">
+      <button type="submit" mat-flat-button class="submit-button" (click)="send()" [disabled]="form.invalid || sending">
         {{'BOUTON_VALIDER'|contenu}}
       </button>
     </div>

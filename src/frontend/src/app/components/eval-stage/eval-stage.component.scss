@@ -19,3 +19,18 @@
 .evaluation-list li {
   line-height: 1.4;
 }
+
+.eval-stage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.eval-stage-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 1rem;
+}

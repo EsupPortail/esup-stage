@@ -1,5 +1,5 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="contact" [disabled]="!contact">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="contact" [disabled]="!contact">
     <mat-expansion-panel-header>
       <mat-panel-title>{{"TITRE-PANEL-SIGNATAIRE"|contenu}}</mat-panel-title>
       <mat-panel-description>
@@ -98,7 +98,7 @@
       </div>
     </form>
   </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="!contact" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!contact" *ngIf="modifiable">
     <mat-expansion-panel-header>
       {{ "TITRE_SELECTION_SIGNATAIRE"| contenu }}
     </mat-expansion-panel-header>

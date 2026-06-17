@@ -151,7 +151,6 @@ public class TemplateMailController {
     public TemplateMail getByType(@PathVariable("type") String type, @RequestParam(name = "idConvention") Integer idConvention) {
         TemplateMail templateMail;
         Convention convention = null;
-        System.out.println("type = " + type + ", idConvention = " + idConvention);
         convention = conventionJpaRepository.findById(idConvention).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée"));
         switch (type) {
             case "0":

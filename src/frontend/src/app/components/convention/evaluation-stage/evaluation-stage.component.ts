@@ -21,6 +21,7 @@ import { QuestionsEvaluationService } from "../../../services/questions-evaluati
 import { ConfirmEnvoieMailComponent } from "./confirm-envoie-mail/confirm-envoie-mail.component";
 import { DbQuestion } from "../../../models/question-evaluation.model";
 import { TypeQuestionEvaluation } from "../../../constants/type-question-evaluation";
+import { MAX_LENTGH_INPUT } from "../../../constants/max-length-input";
 
 enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
 
@@ -31,6 +32,8 @@ enum FicheType { Etudiant = 0, Enseignant = 1, Entreprise = 2 }
     standalone: false
 })
 export class EvaluationStageComponent implements OnInit, OnDestroy {
+  readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
+
   // ---- Inputs / Outputs ----
   @Input() convention: any;
   @Output() conventionChange = new EventEmitter<any>();
@@ -523,9 +526,8 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
     if (code.startsWith('ENSII')) return s2!;
     if (code.startsWith('ENSI')) return s1;
     if (code.startsWith('ENT')) {
-      const num = parseInt(code.replace('ENT',''), 10);
-      if (num <= 9) return s1;
-      if (num <= 14) return s2!;
+      if (['ENT1', 'ENT2', 'ENT3', 'ENT5', 'ENT9', 'ENT11', 'ENT12', 'ENT13', 'ENT14'].includes(code)) return s1;
+      if (['ENT4', 'ENT6', 'ENT7', 'ENT8', 'ENT15'].includes(code)) return s2!;
       return s3!;
     }
     return s1;
@@ -748,6 +750,22 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
       ctrl.setValue(null);
       this.setRequired(this.reponseEtudiantForm, ['reponseEtuI5'], false);
     }
+  }
+
+  getLongTextControl(name: string): AbstractControl | null {
+    return [
+      this.reponseEtudiantForm,
+      this.reponseEnseignantForm,
+      this.reponseEntrepriseForm,
+      this.reponseSupplementaireEtudiantForm,
+      this.reponseSupplementaireEnseignantForm,
+      this.reponseSupplementaireEntrepriseForm,
+    ].map(form => form?.get(name)).find(control => !!control) ?? null;
+  }
+
+  isLongTextLimitReached(name: string): boolean {
+    const value = this.getLongTextControl(name)?.value;
+    return typeof value === 'string' && value.length >= this.MAX_LENTGH_INPUT.longText;
   }
 
 

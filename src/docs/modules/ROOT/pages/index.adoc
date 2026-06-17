@@ -45,7 +45,7 @@ solution commerciale compatible.
 
 * Intégration LDAP
 * Compatibilité Apogée
-* Pégase (Développement en cours)
+* Compatibilité Pégase
 
 === 📦 Partie du Consortium
 

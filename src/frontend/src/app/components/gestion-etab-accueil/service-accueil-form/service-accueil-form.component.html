@@ -8,7 +8,7 @@
     <!-- Contenu scrollable -->
     <div class="scrollable-content">
       <form [formGroup]="form" novalidate (submit)="save()">
-        <div class="text-title">Général</div>
+        <h4 class="text-title">Général</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-12 col-md-6 mb-2" appearance="fill">
@@ -17,7 +17,7 @@
             <mat-error><app-form-error [field]="form.get('nom')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
-        <div class="text-title">Coordonnées</div>
+        <h4 class="text-title">Coordonnées</h4>
         <mat-divider class="mb-2"></mat-divider>
         <fieldset class="w-100">
           <legend class="sr-only">Adresse</legend>
@@ -87,3 +87,4 @@
     </div>
   </div>
 </div>
+

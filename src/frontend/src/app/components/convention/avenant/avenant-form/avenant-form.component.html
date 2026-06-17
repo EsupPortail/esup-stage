@@ -2,12 +2,15 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Titre</mat-label>
-      <input matInput formControlName="titreAvenant" required />
+      <input matInput maxlength="{{MAX_LENTGH_INPUT.titreAvenant}}" formControlName="titreAvenant" required />
+      <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:var(--dangerColor);">
+        Limite de {{ MAX_LENTGH_INPUT.titreAvenant }} caractères atteinte
+      </mat-hint>
       <mat-error><app-form-error [field]="form.get('titreAvenant')"></app-form-error></mat-error>
     </mat-form-field>
   </div>
 
-  <div class="text-title">Sélectionnez un ou plusieurs motifs de création de l'avenant :</div>
+  <h4 class="text-title">Sélectionnez un ou plusieurs motifs de création de l'avenant :</h4>
   <mat-divider></mat-divider>
   <div class="row mt-3 mb-3">
     <mat-checkbox class="col-12" formControlName="rupture">Rupture de stage</mat-checkbox>
@@ -25,7 +28,7 @@
   </div>
 
   <div *ngIf="form.value.rupture">
-    <div class="text-title">Rupture de stage</div>
+    <h4 class="text-title">Rupture de stage</h4>
     <mat-divider></mat-divider>
     <div class="row mt-3 mb-3">
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -38,14 +41,17 @@
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Commentaire(s)</mat-label>
-        <textarea matInput formControlName="commentaireRupture"></textarea>
+        <textarea matInput maxlength="{{MAX_LENTGH_INPUT.longText}}" formControlName="commentaireRupture"></textarea>
+        <mat-hint *ngIf="isLongTextLimitReached('commentaireRupture')" style="color:var(--dangerColor);">
+          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+        </mat-hint>
         <mat-error><app-form-error [field]="form.get('commentaireRupture')"></app-form-error></mat-error>
       </mat-form-field>
     </div>
   </div>
 
   <div *ngIf="form.value.modificationSujet">
-    <div class="text-title">Modification du sujet de stage</div>
+    <h4 class="text-title">Modification du sujet de stage</h4>
     <mat-divider></mat-divider>
     <div class="row mt-3">
       <div class="col-sm-3 font-weight-bold">Sujet</div>
@@ -61,7 +67,7 @@
   </div>
 
   <div *ngIf="form.value.modificationPeriode">
-    <div class="text-title">Modification de la période de stage</div>
+    <h4 class="text-title">Modification de la période de stage</h4>
     <mat-divider></mat-divider>
     <div class="row mt-3">
       <div class="col-sm-3 font-weight-bold">Date de début du stage</div>
@@ -144,7 +150,7 @@
     </div>
   </div>
   <div *ngIf="form.value.modificationMontantGratification">
-    <div class="text-title">Modification du montant de la gratification</div>
+    <h4 class="text-title">Modification du montant de la gratification</h4>
     <mat-divider></mat-divider>
     <div class="row mt-3">
       <div class="col-sm-3 font-weight-bold">Gratification au cours du stage ?</div>
@@ -199,7 +205,7 @@
   </div>
 
   <div *ngIf="form.value.modificationLieu">
-    <div class="text-title">Modification du lieu de stage</div>
+    <h4 class="text-title">Modification du lieu de stage</h4>
     <mat-divider></mat-divider>
 
     <div class="mt-3 mb-3">Lieu de stage actuel :</div>
@@ -265,7 +271,7 @@
   </div>
 
   <div *ngIf="form.value.modificationSalarie">
-    <div class="text-title">Modification du tuteur professionnel</div>
+    <h4 class="text-title">Modification du tuteur professionnel</h4>
     <mat-divider></mat-divider>
 
     <div class="mt-3 mb-3">Tuteur professionnel actuel :</div>
@@ -342,7 +348,7 @@
   </div>
 
   <div *ngIf="form.value.modificationEnseignant">
-    <div class="text-title">Modification de l'enseignant référant</div>
+    <h4 class="text-title">Modification de l'enseignant référant</h4>
     <mat-divider></mat-divider>
     <div class="mt-3 mb-3">Enseignant actuel :</div>
     <div class="row mb-3">
@@ -416,12 +422,15 @@
   </div>
 
   <div *ngIf="form.value.modificationAutre">
-    <div class="text-title">Autre modification</div>
+    <h4 class="text-title">Autre modification</h4>
     <mat-divider></mat-divider>
     <div class="row mt-3 mb-3">
       <mat-form-field class="col mb-2" appearance="fill">
         <mat-label>Motif de la modification</mat-label>
-        <textarea matInput rows="10" formControlName="motifAvenant" required></textarea>
+        <textarea matInput maxlength="{{MAX_LENTGH_INPUT.longText}}" rows="10" formControlName="motifAvenant" required></textarea>
+        <mat-hint *ngIf="isLongTextLimitReached('motifAvenant')" style="color:var(--dangerColor);">
+          Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+        </mat-hint>
         <mat-error><app-form-error [field]="form.get('motifAvenant')"></app-form-error></mat-error>
       </mat-form-field>
     </div>

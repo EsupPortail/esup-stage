@@ -10,9 +10,7 @@ import { UfrService } from "../../services/ufr.service";
 import {EnvoiMailEnMasseEvalComponent} from "./envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ExportEvaluationComponent} from "./export-evaluation/export-evaluation.component";
-import {EvaluationService} from "../../services/evaluation.service";
 import { QuestionsEvaluationService } from "../../services/questions-evaluation.service";
-import { DbQuestion } from "../../models/question-evaluation.model";
 import {forkJoin} from "rxjs";
 
 

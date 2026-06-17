@@ -1,14 +1,18 @@
 package org.esup_portail.esup_stage.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Civilite;
+import lombok.NoArgsConstructor;
 import org.esup_portail.esup_stage.model.Contact;
 import org.esup_portail.esup_stage.model.Service;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ContactDto {
 
     @JsonView(Views.List.class)
@@ -48,6 +52,9 @@ public class ContactDto {
     private CentreGestion centreGestionnaire;
 
     @JsonView(Views.List.class)
+    private Integer idCentreGestion;
+
+    @JsonView(Views.List.class)
     private String loginCreation;
 
     @JsonView(Views.List.class)
@@ -63,6 +70,7 @@ public class ContactDto {
         dto.setService(contact.getService());
         dto.setCentreGestion(contact.getCentreGestion());
         dto.setCentreGestionnaire(contact.getCentreGestion());
+        dto.setIdCentreGestion(contact.getCentreGestion() != null ? contact.getCentreGestion().getId() : null);
         dto.setLoginCreation(contact.getLoginCreation());
         dto.setLoginModif(contact.getLoginModif());
 

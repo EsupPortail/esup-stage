@@ -42,7 +42,7 @@
     <span class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></span>
   </button>
 </div>
-<mat-sidenav-container *ngIf="!publicLayout; else publicLayoutContent">
+<mat-sidenav-container *ngIf="!publicLayout; else publicLayoutContent" autosize>
   <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
     <nav id="menu" class="app-menu" role="navigation" aria-label="menu principal">
       <ul class="menu-root">

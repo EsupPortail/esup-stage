@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.dto.ServiceDto;
 import org.esup_portail.esup_stage.dto.ServiceFormDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -58,55 +59,52 @@ public class ServiceController {
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Service> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<ServiceDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        PaginatedResponse<Service> paginatedResponse = new PaginatedResponse<>();
-        if (!isGestionnaire(utilisateur)) {
+        PaginatedResponse<ServiceDto> paginatedResponse = new PaginatedResponse<>();
+        List<Service> services;
+
+        if (isGestionnaire(utilisateur)) {
+            List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
+            if (centresDemandeur.isEmpty()) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+            }
+
+            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            paginatedResponse.setTotal(serviceRepository.countVisibleForCentres(centreIds, filters));
+            services = serviceRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters);
+        } else {
             paginatedResponse.setTotal(serviceRepository.count(filters));
-            paginatedResponse.setData(serviceRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
-            return paginatedResponse;
+            services = serviceRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
         }
 
-        List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
-        if (centresDemandeur.isEmpty()) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
-        }
-
-        List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
-        paginatedResponse.setTotal(serviceRepository.countVisibleForCentres(centreIds, filters));
-        paginatedResponse.setData(serviceRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(services.stream().map(this::buildServiceDto).toList());
         return paginatedResponse;
     }
 
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public Service getById(@PathVariable("id") int id) {
+    public ServiceDto getById(@PathVariable("id") int id) {
         Service service = serviceJpaRepository.findById(id);
         if (service == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouve");
         }
 
         assertCanViewService(service, ServiceContext.getUtilisateur());
-        return service;
+        return buildServiceDto(service);
     }
 
     @GetMapping("/getByStructure/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
-    public List<Service> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
+    public List<ServiceDto> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Service> services = serviceJpaRepository.findByStructure(id);
         if (services == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouve");
         }
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        /*
-        * Si idCentreGestion != -1, on est dans le cadre d'une convention
-        *
-        * Dans ce cas pour les utilisateurs gestionnaires, on ne renvoit que les services qui sont rattachés au centre de la convention ou
-          qui ont un centre de gestion avec code confidentialité égale à 0 ou au centre de gestion de type établissement
-        * */
         if (!isGestionnaire(utilisateur)) {
-            return services;
+            return services.stream().map(this::buildServiceDto).toList();
         }
 
         List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
@@ -114,13 +112,21 @@ public class ServiceController {
             throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
         }
 
-        List<Service> filteredServices = new ArrayList<>();
-        for (Service service : services) {
-            if (canViewService(centresDemandeur, service)) {
-                filteredServices.add(service);
+        List<Service> filteredServices = services.stream()
+                .filter(service -> canViewService(centresDemandeur, service))
+                .toList();
+
+        if (idCentreGestion != null && idCentreGestion != -1) {
+            CentreGestion centreGestionConvention = centreGestionJpaRepository.findById(idCentreGestion.intValue());
+            if (centreGestionConvention == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
             }
+            filteredServices = filteredServices.stream()
+                    .filter(service -> canUseServiceForConvention(service, centreGestionConvention))
+                    .toList();
         }
-        return filteredServices;
+
+        return filteredServices.stream().map(this::buildServiceDto).toList();
     }
 
     @PostMapping
@@ -131,13 +137,12 @@ public class ServiceController {
 
         Structure structure = structureJpaRepository.findById(serviceFormDto.getIdStructure());
         if (structure == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvée");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouve");
         }
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         CentreGestion centreGestion;
-        //Ajoute le centreGestion de l'utilisateur qui a créé le contact pour les utilisateurs gestionnaires.
-        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+        if (isGestionnaire(utilisateur)) {
             if (serviceFormDto.getIdCentreGestion() != null) {
                 centreGestion = centreGestionJpaRepository.findById(serviceFormDto.getIdCentreGestion().intValue());
             } else {
@@ -147,7 +152,7 @@ public class ServiceController {
             centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         }
         if (centreGestion == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
         }
 
         service.setCentreGestion(centreGestion);
@@ -161,8 +166,7 @@ public class ServiceController {
     public Service update(@PathVariable("id") int id, @Valid @RequestBody ServiceFormDto serviceFormDto) {
         Service service = serviceJpaRepository.findById(id);
         setServiceData(service, serviceFormDto);
-        service = serviceJpaRepository.saveAndFlush(service);
-        return service;
+        return serviceJpaRepository.saveAndFlush(service);
     }
 
     @DeleteMapping("/{id}")
@@ -170,7 +174,7 @@ public class ServiceController {
     public boolean delete(@PathVariable("id") int id) {
         Service service = serviceJpaRepository.findById(id);
         if (service == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouve");
         }
         if (contactJpaRepository.countContactWithService(service.getId()) > 0) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Des contacts existent sur ce service. La suppression n'est pas possible.");
@@ -182,11 +186,11 @@ public class ServiceController {
 
     private void setServiceData(Service service, ServiceFormDto serviceFormDto) {
         if (service == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Service non trouve");
         }
         Pays pays = paysJpaRepository.findById(serviceFormDto.getIdPays());
         if (pays == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Pays non trouve");
         }
         service.setNom(serviceFormDto.getNom());
         service.setVoie(serviceFormDto.getVoie());
@@ -218,6 +222,14 @@ public class ServiceController {
         return false;
     }
 
+    private boolean canUseServiceForConvention(Service service, CentreGestion centreGestionConvention) {
+        CentreGestion centreGestionService = service != null ? service.getCentreGestion() : null;
+        return centreGestionService != null
+                && (centreGestionService.getId() == centreGestionConvention.getId()
+                || confidentialiteService.isNoConfidentiality(centreGestionService)
+                || confidentialiteService.isCentreEtablissement(centreGestionService));
+    }
+
     private void assertCanViewService(Service service, Utilisateur utilisateur) {
         if (!isGestionnaire(utilisateur)) {
             return;
@@ -228,4 +240,17 @@ public class ServiceController {
         }
     }
 
+    private ServiceDto buildServiceDto(Service service) {
+        ServiceDto serviceDto = new ServiceDto();
+        serviceDto.setId(service.getId());
+        serviceDto.setNom(service.getNom());
+        serviceDto.setVoie(service.getVoie());
+        serviceDto.setCodePostal(service.getCodePostal());
+        serviceDto.setBatimentResidence(service.getBatimentResidence());
+        serviceDto.setCommune(service.getCommune());
+        serviceDto.setTelephone(service.getTelephone());
+        serviceDto.setPays(service.getPays());
+        serviceDto.setIdCentreGestion(service.getCentreGestion().getId());
+        return serviceDto;
+    }
 }

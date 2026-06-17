@@ -88,6 +88,17 @@
       </span>
       <span>Désactiver les animations</span>
     </button>
+
+    <button
+      class="option-button"
+      (click)="toggleShowButtonText()"
+      [attr.aria-pressed]="showButtonText"
+      type="button">
+      <span class="option-icon">
+        <span class="fa-solid" [class.fa-check-square]="showButtonText" [class.fa-square]="!showButtonText"></span>
+      </span>
+      <span>Afficher le texte des boutons</span>
+    </button>
   </div>
 
   <mat-divider></mat-divider>

@@ -77,7 +77,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     private nafN5Service: NafN5Service,
     private statutJuridiqueService: StatutJuridiqueService,
     private messageService: MessageService,
-    private authService: AuthService,
+    protected authService: AuthService,
     private centreGestionService: CentreGestionService,
     public matDialog: MatDialog,
 
@@ -154,7 +154,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   canEdit(): boolean {
     const hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.MODIFICATION]});
-    return !this.authService.isEtudiant() && hasRight;
+    return (!this.authService.isEtudiant() && !this.authService.isEnseignant()) && hasRight;
   }
 
   edit(row: any): void {
@@ -223,7 +223,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   refreshContacts(): void{
     if (this.service){
-      this.contactService.getByService(this.service.id, -1).subscribe((response: any) => {
+      this.contactService.getByServiceDetail(this.service.id, -1).subscribe((response: any) => {
         this.contacts = response.sort((a: any, b: any) => a.nom.localeCompare(b.nom));
       });
     }

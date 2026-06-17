@@ -1,43 +1,121 @@
 import { Injectable } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { environment } from "../../environments/environment";
-import { HttpClient } from "@angular/common/http";
-import { PaginatedService } from "./paginated.service";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import {PaginatedResponse, PaginatedService} from "./paginated.service";
+import { catchError, shareReplay } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
-export class EtudiantService implements PaginatedService {
+export class EtudiantService implements PaginatedService<Etudiant> {
+
+  private apogeeInscriptionsCache = new Map<string, Observable<any>>();
 
   constructor(private http: HttpClient) { }
 
-  getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
-    return this.http.get(environment.apiUrl + "/etudiants", {params: {page, perPage, predicate, sortOrder, filters}});
+  getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<PaginatedResponse<Etudiant>> {
+    return this.http.get<PaginatedResponse<Etudiant>>(environment.apiUrl + "/etudiants", {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
   exportData(format: string, headers: string, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + `/etudiants/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
-  getApogeeData(numEtudiant: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`);
+  getApogeeData(numEtudiant: string, handleForbiddenLocally: boolean = false): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-data`, {
+      headers: this.getApogeeForbiddenHeaders(handleForbiddenLocally),
+    });
   }
 
-  getApogeeInscriptions(numEtudiant: string, annee: string): Observable<any> {
+  getApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
     const a = annee ? annee.split('/')[0] : '';
-    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {params: {annee: a ?? null} });
+    return this.http.get(`${environment.apiUrl}/etudiants/${numEtudiant}/apogee-inscriptions`, {
+      params: {annee: a ?? null},
+      headers: this.getApogeeForbiddenHeaders(handleForbiddenLocally),
+    });
   }
 
-  getByLogin(login: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/etudiants/by-login/${login}`);
+  private getApogeeForbiddenHeaders(handleForbiddenLocally: boolean): HttpHeaders | undefined {
+    return handleForbiddenLocally ? new HttpHeaders({'X-Handle-Apogee-Forbidden-Locally': 'true'}) : undefined;
+  }
+
+  getCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): Observable<any> {
+    const cacheKey = this.getApogeeInscriptionsCacheKey(numEtudiant, annee, handleForbiddenLocally);
+    const cachedRequest = this.apogeeInscriptionsCache.get(cacheKey);
+    if (cachedRequest) {
+      return cachedRequest;
+    }
+
+    const request$ = this.getApogeeInscriptions(numEtudiant, annee, handleForbiddenLocally).pipe(
+      catchError((error) => {
+        this.apogeeInscriptionsCache.delete(cacheKey);
+        return throwError(() => error);
+      }),
+      shareReplay(1),
+    );
+
+    this.apogeeInscriptionsCache.set(cacheKey, request$);
+    return request$;
+  }
+
+  clearCachedApogeeInscriptions(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): void {
+    this.apogeeInscriptionsCache.delete(this.getApogeeInscriptionsCacheKey(numEtudiant, annee, handleForbiddenLocally));
+  }
+
+  private getApogeeInscriptionsCacheKey(numEtudiant: string, annee: string, handleForbiddenLocally: boolean = false): string {
+    return `${numEtudiant}-${annee ? annee.split('/')[0] : ''}-${handleForbiddenLocally}`;
+  }
+
+  getByLogin(login: string): Observable<Etudiant> {
+    return this.http.get<Etudiant>(`${environment.apiUrl}/etudiants/by-login/${login}`);
   }
 
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.nom} ${row.prenom}`;
   }
 
-  searchEtudiantsDiplomeEtape(filters: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/etudiants/diplome-etape`, filters);
+  searchEtudiantsDiplomeEtape(filters: EtudiantDiplomeEtapeSearch): Observable<EtudiantDiplomeEtapeResponse[]> {
+    return this.http.post<EtudiantDiplomeEtapeResponse[]>(`${environment.apiUrl}/etudiants/diplome-etape`, filters);
   }
 
+}
+export type EtudiantDiplomeEtapeSearch = {
+  annee: string;
+  codeComposante: string;
+  codeEtape: string;
+  versionEtape: string;
+  codeDiplome: string;
+  versionDiplome: string;
+  codEtu?: string;
+  nom?: string;
+  prenom?: string;
+}
+export type EtudiantDiplomeEtapeResponse = {
+  codEtu: string;
+  nom: string;
+  prenom: string;
+  dateNaissance: string;
+  numeroIne: string;
+  mail: string;
+  codeComposante: string;
+  libelleComposante: string;
+  codeDiplome: string;
+  versionDiplome: string;
+  codeEtape: string;
+  versionEtape: string;
+  libelleEtape: string;
+  annee: string;
+}
+export type Etudiant = {
+  id: number;
+  nom: string;
+  prenom: string;
+  mail: string;
+  codeUniversite: string;
+  identEtudiant: string;
+  nomMarital: string;
+  numEtudiant: string;
+  codeSexe: string;
+  dateNais: string;
 }

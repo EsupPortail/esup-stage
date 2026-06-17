@@ -27,15 +27,18 @@ button.mat-menu-item:focus {
   outline: none;
 }
 
-i.empty {
+i.empty,
+mat-icon.empty {
   color: var(--dangerColor) !important;
 }
 
-i.inProgress {
+i.inProgress,
+mat-icon.inProgress {
   color: var(--warningColor) !important;
 }
 
-i.done {
+i.done,
+mat-icon.done {
   color: var(--successColor) !important;
 }
 
@@ -54,8 +57,7 @@ i.done {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: auto;
-  padding: 0;
+  padding: 4px;
   line-height: 1;
   .fa {
     font-size: 16px;
@@ -69,4 +71,8 @@ i.done {
   font-weight: 500;
   line-height: 1.1;
   white-space: nowrap;
+}
+
+.btn-eye-single {
+  color: var(--primaryColor);
 }

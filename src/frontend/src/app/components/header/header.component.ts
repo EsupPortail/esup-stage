@@ -47,6 +47,7 @@ export class HeaderComponent implements OnInit {
       highContrast: false,
       reducedMotion: false,
       disableAutoSearch: false,
+      showButtonText: false,
       textSpacing: 'normal' as 'normal' | 'comfortable' | 'spacious',
       selectedFont: 'default'
     };
@@ -58,6 +59,7 @@ export class HeaderComponent implements OnInit {
         highContrast: preferences.highContrast ?? false,
         reducedMotion: preferences.reducedMotion ?? false,
         disableAutoSearch: preferences.disableAutoSearch ?? false,
+        showButtonText: preferences.showButtonText ?? false,
         textSpacing: preferences.textSpacing ?? 'normal',
         selectedFont: preferences.selectedFont ?? 'default'
       };

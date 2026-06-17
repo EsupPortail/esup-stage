@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
 
-    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(GroupeEtudiantController.class);
 
     @Autowired
     GroupeEtudiantRepository groupeEtudiantRepository;
@@ -96,7 +96,7 @@ public class GroupeEtudiantController {
     }
 
     @GetMapping
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<GroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
 
         PaginatedResponse<GroupeEtudiant> paginatedResponse = new PaginatedResponse<>();
@@ -300,7 +300,7 @@ public class GroupeEtudiantController {
 
 
     @PostMapping("/pdf-convention")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public ResponseEntity<byte[]> getConventionPDF(@Valid @RequestBody IdsListDto idsListDto) {
         ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
@@ -397,7 +397,7 @@ public class GroupeEtudiantController {
     }
 
     @PostMapping(value = "/import/{id}", consumes = "text/csv")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void importStructures(InputStream inputStream, @PathVariable("id") int groupeId) {
 
         logger.info("import start");
@@ -461,7 +461,8 @@ public class GroupeEtudiantController {
             }
             conventionJpaRepository.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Erreur lors de l'import des structures du groupe etudiant {}", groupeId, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
@@ -568,6 +569,8 @@ public class GroupeEtudiantController {
         conventionFormDto.setCodeComposante(etapeInscription.getCodeComposante());
         conventionFormDto.setCodeEtape(etapeInscription.getCodeEtp());
         conventionFormDto.setCodeVersionEtape(etapeInscription.getCodVrsVet());
+        conventionFormDto.setLibelleEtape(etapeInscription.getLibWebVet());
+        conventionFormDto.setLibelleComposante(etapeInscription.getLibComposante());
         conventionFormDto.setAnnee(inscription.getAnnee());
         conventionFormDto.setNumEtudiant(etudiant.getCodEtu());
 

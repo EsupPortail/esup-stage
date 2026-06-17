@@ -1,6 +1,6 @@
 <mat-accordion>
 
-  <mat-expansion-panel [expanded]="etab" [disabled]="!etab">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="etab" [disabled]="!etab">
     <mat-expansion-panel-header>
       <mat-panel-title>Établissement d'accueil</mat-panel-title>
       <mat-panel-description>
@@ -27,7 +27,7 @@
           <div class="col-sm-3 font-weight-bold">Effectif</div>
           <div class="col-sm-9">{{etab.effectif?.libelle}}</div>
         </div>
-        <div class="row">
+        <div class="row" *ngIf="etab?.pays?.id === 82 || (etab?.temSiren && etab?.numeroSiret)">
           <div class="col-sm-3 font-weight-bold">Numéro Siret</div>
           <div class="col-sm-9">{{etab.numeroSiret}}</div>
         </div>
@@ -60,7 +60,7 @@
 <!--            <button class="valid-button" mat-button mat-stroked-button *ngIf="etab.id" (click)="changeOnglet()">Changer d'établissement</button>-->
 <!--          </div>-->
           <div class="col-12 d-flex justify-content-center">
-            <span *ngIf="etab.id && !modif && canEdit()" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
+            <span *ngIf="etab.id && !modif && modifiable && (canEdit() || (isCreatorEtab(etab) && !etab.temSiren))" [confirmMessage]="'Attention : vous vous apprêtez à modifier la fiche de l\'établissement ' + etab.raisonSociale + ' . Pour sélectionner un autre établissement, veuillez cliquer sur le bouton de recherche d\'un établissement. '+ etab.raisonSociale + ' représente la raison sociale de l’établissement.'" (confirm)="edit()">
               <button class="valid-button" mat-button mat-stroked-button>
                 Modifier la fiche de cet établissement d'accueil
               </button>
@@ -69,15 +69,16 @@
         </div>
       </div>
       <div *ngIf="(modif && canEdit()) || (modif && canCreate())">
-        <app-etab-accueil-form [etab]="etab" (submitted)="choose($event)" (canceled)="modif = false"></app-etab-accueil-form>
+        <app-etab-accueil-form [etab]="etab" (submitted)="onFormSubmitted($event)" (canceled)="modif = false"></app-etab-accueil-form>
       </div>
     </div>
   </mat-expansion-panel>
 
-  <mat-expansion-panel [expanded]="!etab" *ngIf="modifiable">
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!etab" *ngIf="modifiable">
     <mat-expansion-panel-header>
       Recherchez l'établissement où le stage sera effectué
     </mat-expansion-panel-header>
+
 
     <app-table [service]="structureService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters"
                matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'"

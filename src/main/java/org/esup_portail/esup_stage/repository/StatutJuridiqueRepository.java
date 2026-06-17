@@ -11,6 +11,6 @@ public class StatutJuridiqueRepository extends PaginationRepository<StatutJuridi
 
     public StatutJuridiqueRepository(EntityManager em) {
         super(em, StatutJuridique.class, "sj");
-        this.predicateWhitelist = Arrays.asList("id", "libelle");
+        this.predicateWhitelist = Arrays.asList("id", "libelle", "code");
     }
 }

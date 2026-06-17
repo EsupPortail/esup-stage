@@ -3,7 +3,7 @@
     <form [formGroup]="form" novalidate>
       <div class="mt-3 mb-3">
 
-        <div class="text-title">Description du stage</div>
+        <h4 class="text-title">Description du stage</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -17,7 +17,10 @@
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Sujet</mat-label>
-            <textarea matInput formControlName="sujetStage" [required]="!enMasse"></textarea>
+            <textarea matInput formControlName="sujetStage" maxlength="{{ MAX_LENTGH_INPUT.longText }}" [required]="!enMasse"></textarea>
+            <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:var(--dangerColor);">
+              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+            </mat-hint>
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
 
@@ -26,7 +29,7 @@
             <textarea
               matInput
               formControlName="competences"
-              maxlength="{{ MAX.competences }}"
+              maxlength="{{ MAX_LENTGH_INPUT.competences }}"
               [required]="!enMasse"
               (focus)="focused = 'competences'"
               (blur)="focused = focused === 'competences' ? null : focused"
@@ -41,7 +44,7 @@
               *ngIf="!hasError('competences') && focused === 'competences'"
               [ngStyle]="{ color: counterColor('competences') }"
             >
-              {{ len('competences') }}/{{ MAX.competences }}
+              {{ len('competences') }}/{{ MAX_LENTGH_INPUT.competences }}
             </mat-hint>
           </mat-form-field>
 
@@ -50,7 +53,7 @@
             <textarea
               matInput
               formControlName="fonctionsEtTaches"
-              maxlength="{{ MAX.fonctionsEtTaches }}"
+              maxlength="{{ MAX_LENTGH_INPUT.fonctionsEtTaches }}"
               [required]="!enMasse"
               (focus)="focused = 'fonctionsEtTaches'"
               (blur)="focused = focused === 'fonctionsEtTaches' ? null : focused"
@@ -65,19 +68,22 @@
               *ngIf="!hasError('fonctionsEtTaches') && focused === 'fonctionsEtTaches'"
               [ngStyle]="{ color: counterColor('fonctionsEtTaches') }"
             >
-              {{ len('fonctionsEtTaches') }}/{{ MAX.fonctionsEtTaches }}
+              {{ len('fonctionsEtTaches') }}/{{ MAX_LENTGH_INPUT.fonctionsEtTaches }}
             </mat-hint>
           </mat-form-field>
 
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
-            <textarea matInput formControlName="details"></textarea>
-            <mat-error><app-form-error [field]="form.get('sujet')"></app-form-error></mat-error>
+            <textarea matInput formControlName="details" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+            <mat-hint *ngIf="isLongTextLimitReached('details')" style="color:var(--dangerColor);">
+              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+            </mat-hint>
+            <mat-error><app-form-error [field]="form.get('details')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
 
 
-        <div class="text-title">Dates / horaires</div>
+        <h4 class="text-title">Dates / horaires</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -111,7 +117,7 @@
             <mat-error *ngIf="!periodesInterruptionsValid">Veuillez ajouter une période d'interruption</mat-error>
           </div>
           <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
-            <div class="text-title">Périodes d'interruptions actuelles :</div>
+            <h4 class="text-title">Périodes d'interruptions actuelles :</h4>
             <table mat-table [dataSource]="interruptionsStage">
               <ng-container matColumnDef="dateDebutInterruption">
                 <th mat-header-cell *matHeaderCellDef>date de Debut</th>
@@ -153,8 +159,15 @@
           </mat-form-field>
           <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
             <mat-label>Nombre de jours de congés autorisés</mat-label>
-            <input type="text" step="any" matInput formControlName="nbConges" />
+            <input type="text" step="any" maxlength="{{MAX_LENTGH_INPUT.nbConges}}"  matInput formControlName="nbConges" (focus)="focused = 'nbConges'" (blur)="focused = focused === 'nbConges' ? null : focused"/>
             <mat-hint>ou modalités des congés et autorisations d'absence durant le stage</mat-hint>
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('nbConges') && focused === 'nbConges'"
+              [ngStyle]="{ color: counterColor('nbConges') }"
+            >
+              {{ len('nbConges') }}/{{ MAX_LENTGH_INPUT.nbConges }}
+            </mat-hint>
             <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
@@ -164,7 +177,7 @@
             <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
           </div>
           <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
-            <div class="text-title">Périodes de travail actuelles :</div>
+            <h4 class="text-title">Périodes de travail actuelles :</h4>
             <div class="scrollable-content">
               <div class="detail-section">
                 <table class="table">
@@ -231,13 +244,16 @@
           </mat-form-field>
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Commentaire sur le temps de travail</mat-label>
-            <textarea matInput formControlName="commentaireDureeTravail"></textarea>
+            <textarea matInput formControlName="commentaireDureeTravail" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+            <mat-hint *ngIf="isLongTextLimitReached('commentaireDureeTravail')" style="color:var(--dangerColor);">
+              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+            </mat-hint>
             <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
           </mat-form-field>
 
         </div>
 
-        <div class="text-title">Gratification</div>
+        <h4 class="text-title">Gratification</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <div class="col-sm-12 col-md-12 mb-2">
@@ -251,7 +267,7 @@
         <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration" *ngIf="form.value.gratificationStage">
         </div>
         <div *ngIf="form.value.gratificationStage">
-          <div class="text-title">Montant de la gratification</div>
+          <h4 class="text-title">Montant de la gratification</h4>
         </div>
         <div *ngIf="form.value.gratificationStage">
           <div class="row" style="align-items: baseline">
@@ -306,7 +322,7 @@
           </div>
         </div>
 
-        <div class="text-title">Divers</div>
+        <h4 class="text-title">Divers</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row" *ngIf="!enMasse">
           <div class="row col-sm-12 col-md-6">
@@ -342,18 +358,27 @@
           <div class="row col-sm-12 col-md-6">
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Modalité de suivi du stagiaire</mat-label>
-              <textarea matInput formControlName="modeEncadreSuivi"></textarea>
+              <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+              <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
+                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+              </mat-hint>
               <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
             </mat-form-field>
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Liste des avantages en nature</mat-label>
-              <textarea matInput formControlName="avantagesNature"></textarea>
+              <textarea matInput formControlName="avantagesNature" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+              <mat-hint *ngIf="isLongTextLimitReached('avantagesNature')" style="color:var(--dangerColor);">
+                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+              </mat-hint>
               <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
             </mat-form-field>
 
             <mat-form-field class="col-12 mb-2" appearance="fill">
               <mat-label>Travail exceptionnel</mat-label>
-              <textarea matInput formControlName="travailNuitFerie"></textarea>
+              <textarea matInput formControlName="travailNuitFerie" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+              <mat-hint *ngIf="isLongTextLimitReached('travailNuitFerie')" style="color:var(--dangerColor);">
+                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+              </mat-hint>
               <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
               <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
             </mat-form-field>
@@ -364,7 +389,10 @@
         <div class="row" *ngIf="enMasse">
           <mat-form-field class="col-6 mb-2" appearance="fill">
             <mat-label>Modalité de suivi du stagiaire</mat-label>
-            <textarea matInput formControlName="modeEncadreSuivi"></textarea>
+            <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+            <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
+              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+            </mat-hint>
             <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
@@ -373,3 +401,4 @@
     </form>
   </mat-card-content>
 </mat-card>
+

@@ -5,6 +5,7 @@ import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
+import org.esup_portail.esup_stage.config.filters.CsrfCookieFilter;
 import org.esup_portail.esup_stage.config.filters.MaintenanceModeFilter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.CasProperties;
@@ -22,14 +23,23 @@ import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @Order(4)
@@ -98,7 +108,6 @@ public class SecurityConfiguration {
         return filter;
     }
 
-
     @Bean
     public SingleSignOutFilter singleSignOutFilter() {
         SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
@@ -126,6 +135,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/maintenance/status").permitAll()
                         .requestMatchers("/maintenance", "/maintenance/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        .requestMatchers("/frontend/**").permitAll()
+                        .requestMatchers("/theme.css").permitAll()
                         .requestMatchers("/api/admin/maintenance/**").hasAuthority(Role.ADM)
                         .requestMatchers("/api/maintenance/stream").authenticated()
                         // Stream logs: restriction admin explicite
@@ -135,6 +146,7 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint((request, response, authException) -> {
                             if (request.getServletPath().startsWith("/api/")) {
                                 if (request.getSession(false) == null  || !request.isRequestedSessionIdValid()) {
@@ -150,16 +162,44 @@ public class SecurityConfiguration {
                 .addFilterBefore(maintenanceModeFilter, CasAuthenticationFilter.class)
                 .addFilter(casAuthenticationFilter())
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
-                .addFilterBefore(logoutFilter(), LogoutFilter.class);
+                .addFilterBefore(logoutFilter(), LogoutFilter.class)
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .sessionManagement(session -> session
+                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::migrateSession)
+                        .maximumSessions(1)
+                )
+                .csrf(csrf -> csrf
+                        // Utilise un cookie accessible en JS (non HttpOnly)
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        // Spring 6+ : nécessaire pour forcer la génération du cookie
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                );
 
         return http.build();
     }
 
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             response.sendRedirect(request.getContextPath() + "/error-401");
         };
+    }
+
+    /** Configuration CORS pour autoriser les requêtes depuis le frontend Angular en DEV */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // indispensable pour que les cookies passent
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

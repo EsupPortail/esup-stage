@@ -27,6 +27,9 @@ export class MessageService {
       case 'warning':
         this.title = 'Attention'
         break;
+      case 'accessDenied':
+        this.title = 'Accès refusé'
+        break;
     }
     this.message = message;
     if (!keep) {
@@ -45,6 +48,10 @@ export class MessageService {
 
   setWarning(message: string, keep: boolean = true): void {
     this.setMessage(message, 'warning', keep);
+  }
+
+  setAccessDenied(message: string, keep: boolean = true): void {
+    this.setMessage(message, 'accessDenied', keep);
   }
 
   getType(): string {

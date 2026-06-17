@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { PaginatedService } from "./paginated.service";
+import { templateMail } from '../models/template-mail.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,11 +40,11 @@ export class TemplateMailService implements PaginatedService {
     return `${row.id} - ${row.code}`;
   }
 
-  getTemplateMailByType(type: number,idConvention: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/template-mails/type/${type}?idConvention=${idConvention}`);
+  getTemplateMailByType(type: number, idConvention: number): Observable<templateMail> {
+    return this.http.get<templateMail>(`${environment.apiUrl}/template-mails/type/${type}?idConvention=${idConvention}`);
   }
 
-  getTemplateMailEvalStage(typeEnvoi: 1 | 2, typeFiche: 0 | 1 | 2) {
-    return this.http.get(`${environment.apiUrl}/template-mails/template?type=${typeFiche}&rappel=${typeEnvoi}`);
+  getTemplateMailEvalStage(typeEnvoi: 0 | 1, typeFiche: 0 | 1 | 2): Observable<templateMail> {
+    return this.http.get<templateMail>(`${environment.apiUrl}/template-mails/template?type=${typeFiche}&rappel=${typeEnvoi}`);
   }
 }

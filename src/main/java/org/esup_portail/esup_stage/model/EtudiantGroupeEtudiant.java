@@ -2,8 +2,10 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "EtudiantGroupeEtudiant", uniqueConstraints = {@UniqueConstraint(name = "uniq_EtudiantGroupeEtudiant_Etudiant_GroupeEtudiant", columnNames = {"idEtudiant", "idGroupeEtudiant"})})
 public class EtudiantGroupeEtudiant implements Exportable {
 
@@ -29,52 +31,12 @@ public class EtudiantGroupeEtudiant implements Exportable {
     @JoinColumn(name = "idMergedConvention")
     private Convention mergedConvention;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getEtudiantId() {
         return etudiant.getId();
     }
 
     public String getEtudiantNumEtudiant() {
         return etudiant.getNumEtudiant();
-    }
-
-    public Etudiant getEtudiant() {
-        return etudiant;
-    }
-
-    public void setEtudiant(Etudiant etudiant) {
-        this.etudiant = etudiant;
-    }
-
-    public GroupeEtudiant getGroupeEtudiant() {
-        return groupeEtudiant;
-    }
-
-    public void setGroupeEtudiant(GroupeEtudiant groupeEtudiant) {
-        this.groupeEtudiant = groupeEtudiant;
-    }
-
-    public Convention getConvention() {
-        return convention;
-    }
-
-    public void setConvention(Convention convention) {
-        this.convention = convention;
-    }
-
-    public Convention getMergedConvention() {
-        return mergedConvention;
-    }
-
-    public void setMergedConvention(Convention mergedConvention) {
-        this.mergedConvention = mergedConvention;
     }
 
     public String getExportValue(String key) {

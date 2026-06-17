@@ -16,6 +16,7 @@ import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
@@ -55,13 +56,22 @@ public class ReponseEvaluationController {
     @Autowired
     EvaluationService evaluationService;
 
+    @Autowired
+    ConventionService conventionService;
+
     @GetMapping("/getByConvention/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseEvaluation getByConvention(@PathVariable("id") int id) {
-        ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
-        return reponseEvaluation;
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        return convention.getReponseEvaluation();
     }
 
     @PostMapping("/{id}/etudiant/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseEvaluation createReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEtudiant(valid);
@@ -82,6 +92,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/etudiant/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseEvaluation updateReponseEtudiant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEtudiantFormDto reponseEtudiantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
@@ -103,6 +114,7 @@ public class ReponseEvaluationController {
     }
 
     @PostMapping("/{id}/enseignant/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ReponseEvaluation createReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEnseignant(valid);
@@ -123,6 +135,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/enseignant/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ReponseEvaluation updateReponseEnseignant(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEnseignantFormDto reponseEnseignantFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
@@ -146,6 +159,7 @@ public class ReponseEvaluationController {
     }
 
     @PostMapping("/{id}/entreprise/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ReponseEvaluation createReponseEntreprise(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
         ReponseEvaluation reponseEvaluation = evaluationService.initReponseEvaluation(id);
         reponseEvaluation.setValidationEntreprise(valid);
@@ -154,6 +168,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{id}/entreprise/valid/{valid}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public ReponseEvaluation updateReponseEntreprise(@PathVariable("id") int id, @PathVariable("valid") boolean valid, @Valid @RequestBody ReponseEntrepriseFormDto reponseEntrepriseFormDto) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findByConvention(id);
         if (reponseEvaluation == null) {
@@ -243,6 +258,7 @@ public class ReponseEvaluationController {
     }
 
     @DeleteMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public boolean delete(@PathVariable("id") int id) {
         ReponseEvaluation reponseEvaluation = reponseEvaluationJpaRepository.findById(id);
         if (reponseEvaluation == null) {
@@ -254,11 +270,13 @@ public class ReponseEvaluationController {
     }
 
     @GetMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseSupplementaire getReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion) {
         return reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
     }
 
     @PostMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseSupplementaire createReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
         ReponseSupplementaire reponseSupplementaire = evaluationService.initReponseSupplementaire(idConvention, idQestion);
         evaluationService.setReponseSupplementaireData(reponseSupplementaire, reponseSupplementaireFormDto);
@@ -266,6 +284,7 @@ public class ReponseEvaluationController {
     }
 
     @PutMapping("/{idConvention}/reponseSupplementaire/{idQestion}")
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ReponseSupplementaire updateReponseSupplementaire(@PathVariable("idConvention") int idConvention, @PathVariable("idQestion") int idQestion, @Valid @RequestBody ReponseSupplementaireFormDto reponseSupplementaireFormDto) {
         ReponseSupplementaire reponseSupplementaire = reponseSupplementaireJpaRepository.findByQuestionAndConvention(idConvention, idQestion);
         if (reponseSupplementaire == null) {

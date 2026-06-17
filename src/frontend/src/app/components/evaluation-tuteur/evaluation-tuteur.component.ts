@@ -55,7 +55,6 @@ export class EvaluationTuteurComponent implements OnInit {
         this.router.navigate(['/evaluation-tuteur', convention.id], {
           queryParams: { token: this.token }
         });
-        console.log("convention : ", this.convention)
       },
       error: (error) => {
         this.isLoading = false;

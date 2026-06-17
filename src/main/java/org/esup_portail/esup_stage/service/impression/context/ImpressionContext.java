@@ -1,8 +1,5 @@
 package org.esup_portail.esup_stage.service.impression.context;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +24,13 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
-    private ReponseEvaluationContext reponse = new ReponseEvaluationContext();
-    private FicheEvaluationContext ficheEvaluation = new FicheEvaluationContext();
+    private ReponseEvaluationContext reponseEvaluationContext = new ReponseEvaluationContext();
+    private FicheEvaluationContext ficheEvaluationContext = new FicheEvaluationContext();
     private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
     private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
+    private ReponseEvaluationContext reponse = reponseEvaluationContext;
+    private FicheEvaluationContext ficheEvaluation = ficheEvaluationContext;
 
     public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {
@@ -43,18 +42,27 @@ public class ImpressionContext {
             this.service = new ServiceContext(convention.getService());
             this.signataire = new SignataireContext(convention.getSignataire());
             this.structure = new StructureContext(convention.getStructure());
-            FicheEvaluation ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
-            this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
-            ReponseEvaluation reponseEvaluation = convention.getReponseEvaluation();
-            this.reponse = reponseEvaluation != null ? new ReponseEvaluationContext(reponseEvaluation) : new ReponseEvaluationContext();
-            for (QuestionSupplementaire question : questionSupplementaires) {
-                this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+            FicheEvaluation ficheEvaluation = convention.getCentreGestion() != null ? convention.getCentreGestion().getFicheEvaluation() : null;
+            if (ficheEvaluation != null) {
+                this.ficheEvaluationContext = new FicheEvaluationContext(ficheEvaluation);
+                this.ficheEvaluation = this.ficheEvaluationContext;
             }
-            for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
-                this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+            this.reponseEvaluationContext = new ReponseEvaluationContext(convention.getReponseEvaluation());
+            this.reponse = this.reponseEvaluationContext;
+            if (questionSupplementaires != null) {
+                for (QuestionSupplementaire question : questionSupplementaires) {
+                    this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
+                }
             }
-            for (QuestionEvaluation q : questionEvaluations) {
-                this.questionEvaluations.add(new QuestionEvaluationContext(q));
+            if (convention.getReponseSupplementaires() != null) {
+                for (ReponseSupplementaire reponse : convention.getReponseSupplementaires()) {
+                    this.reponsesSupplementaires.add(new ReponseSupplementaireContext(reponse));
+                }
+            }
+            if (questionEvaluations != null) {
+                for (QuestionEvaluation q : questionEvaluations) {
+                    this.questionEvaluations.add(new QuestionEvaluationContext(q));
+                }
             }
         }
         if (avenant != null) {
@@ -194,11 +202,21 @@ public class ImpressionContext {
 
             Boolean validationConvention = null;
             if (centreEtablissement != null) {
-                validationConvention = centreEtablissement.getValidationPedagogique() ? convention.getValidationPedagogique() : null;
-                validationConvention = centreEtablissement.getValidationConvention() ? Boolean.valueOf(validationConvention != null ?
-                        validationConvention && convention.getValidationConvention() : convention.getValidationConvention()) : validationConvention;
+                if (Boolean.TRUE.equals(centreEtablissement.getValidationPedagogique())) {
+                    validationConvention = convention.getValidationPedagogique();
+                }
+                if (Boolean.TRUE.equals(centreEtablissement.getValidationConvention())) {
+                    Boolean validationAdministrative = convention.getValidationConvention();
+                    if (validationConvention == null) {
+                        validationConvention = validationAdministrative;
+                    } else {
+                        validationConvention = Boolean.valueOf(
+                                Boolean.TRUE.equals(validationConvention) && Boolean.TRUE.equals(validationAdministrative)
+                        );
+                    }
+                }
             }
-            this.conventionValidee = validationConvention != null && validationConvention ? "Oui" : "Non";
+            this.conventionValidee = Boolean.TRUE.equals(validationConvention) ? "Oui" : "Non";
             this.codeCaisse = convention.getLibelleCPAM();
             for (PeriodeStage periode : convention.getPeriodeStage()) {
                 this.horaireIrregulier.add(new HoraireIrregulierContext(

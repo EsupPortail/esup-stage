@@ -37,6 +37,8 @@ export class EtabAccueilComponent implements OnInit {
   @Input() etab: any;
   modif: boolean = false;
   selectedRow: any = undefined;
+  isSireneAcitve: boolean = false;
+  nbMinResultats: number = 0;
 
   @Input() modifiable!: boolean;
 
@@ -108,6 +110,10 @@ export class EtabAccueilComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(res=>{
       this.currentUser = res;
     });
+    this.structureService.getSireneInfo().subscribe((response: any) => {
+      this.isSireneAcitve = response.isApiSireneActive;
+      this.nbMinResultats = response.nombreResultats;
+    });
   }
 
   canCreate(): boolean {
@@ -134,6 +140,15 @@ export class EtabAccueilComponent implements OnInit {
         }
         this.validated.emit(this.etab);
     })
+  }
+  onFormSubmitted(etab: any): void {
+    this.modif = false;
+    this.selectedRow = undefined;
+    this.etab = etab;
+    if (this.firstPanel) {
+      this.firstPanel.expanded = false;
+    }
+    this.validated.emit(this.etab);
   }
 
   initCreate(): void {

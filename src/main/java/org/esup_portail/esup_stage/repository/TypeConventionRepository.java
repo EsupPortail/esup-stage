@@ -14,14 +14,16 @@ public class TypeConventionRepository extends PaginationRepository<TypeConventio
     public TypeConventionRepository(EntityManager em) {
         super(em, TypeConvention.class, "tc");
         this.predicateWhitelist = Arrays.asList("id", "libelle", "codeCtrl");
+        this.specificFilterWhitelist = Arrays.asList("templatePDF");
     }
 
+    @Override
     public boolean exists(String codeCtrl, int id) {
         String queryString = "SELECT id FROM " + this.typeClass.getName() + " WHERE codeCtrl = :codeCtrl";
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("codeCtrl", codeCtrl);
         List<Integer> results = query.getResultList();
-        if (id == 0 && results.size() > 0) {
+        if (id == 0 && results.isEmpty()) {
             return true;
         }
 

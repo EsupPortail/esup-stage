@@ -1,9 +1,10 @@
-<div [class]="{error: getType() === 'error', success: getType() === 'success', warning: getType() === 'warning'}">
+<div [class]="{error: getType() === 'error', success: getType() === 'success', warning: getType() === 'warning', accessDenied: getType() === 'accessDenied'}">
   <h1 mat-dialog-title>
     <ng-container [ngSwitch]="getType()">
       <i *ngSwitchCase="'error'" class="fa fa-exclamation-triangle"></i>
       <i *ngSwitchCase="'success'" class="fa fa-check"></i>
       <i *ngSwitchCase="'warning'" class="fa fa-exclamation-circle"></i>
+      <i *ngSwitchCase="'accessDenied'" class="fa-solid fa-lock"></i>
     </ng-container>
     {{getTitle()}}
   </h1>

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { TemplateConventionService } from "../../../services/template-convention.service";
 import { ParamConventionService } from "../../../services/param-convention.service";
@@ -84,7 +84,7 @@ import translations from 'ckeditor5/translations/fr.js';
     encapsulation: ViewEncapsulation.None,
     standalone: false
 })
-export class TemplateConventionComponent implements OnInit, AfterViewInit {
+export class TemplateConventionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
@@ -104,6 +104,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
 
   createTabIndex = 1
   editTabIndex = 2;
+  activeEditorTabIndex = -1;
   data: any = {};
   form: FormGroup;
 
@@ -154,6 +155,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
+  private editorRenderFrame?: number;
   public ngAfterViewInit() : void {
     this.config = {
       licenseKey: 'GPL',
@@ -353,7 +355,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
     };
 
     this.isLayoutReady = true;
-    this.changeDetector.detectChanges();
+    this.renderEditorsForActiveTab(this.tabs?.selectedIndex ?? 0);
   }
 
   resetTitle(): void {
@@ -361,6 +363,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
+    this.renderEditorsForActiveTab(event.index);
     if (event.index !== this.editTabIndex) {
       this.resetTitle();
       this.data = {};
@@ -440,5 +443,25 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit {
       return option.code === value.code;
     }
     return false;
+  }
+
+  private renderEditorsForActiveTab(tabIndex: number): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
+    this.activeEditorTabIndex = -1;
+    this.editorRenderFrame = requestAnimationFrame(() => {
+      this.editorRenderFrame = requestAnimationFrame(() => {
+        this.activeEditorTabIndex = tabIndex;
+        this.changeDetector.detectChanges();
+        this.editorRenderFrame = undefined;
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
   }
 }

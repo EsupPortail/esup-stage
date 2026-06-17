@@ -1,17 +1,17 @@
 package org.esup_portail.esup_stage.webhook.esupsignature.service;
 
 import com.itextpdf.commons.utils.Base64;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.MetadataObservateurDto;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
-import org.esup_portail.esup_stage.enums.SignataireEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.*;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Steps;
@@ -27,6 +27,7 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,8 @@ public class WebhookService {
     private final WebClient webClient;
     @Autowired
     SignatureProperties signatureProperties;
+    @Autowired
+    FilenameSanitizerService filenameSanitizerService;
 
     private final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
@@ -51,9 +54,10 @@ public class WebhookService {
         this.webClient = builder.build();
     }
 
-    private static Resource geMultipartFile(String filename, byte[] bytes) {
+    private Resource geMultipartFile(String filename, byte[] bytes) {
         try {
-            Path tmpFile = Files.createTempFile(filename, ".pdf");
+            String safeFilename = filenameSanitizerService.sanitizeTempFilePrefix(filename);
+            Path tmpFile = Files.createTempFile(safeFilename, ".pdf");
             Files.write(tmpFile, bytes);
             return new FileSystemResource(tmpFile.toFile());
         } catch (Exception e) {
@@ -202,4 +206,52 @@ public class WebhookService {
         return historiques;
     }
 
+    /*
+    * Déclenche une demande de mise à jour sur l'application de signature
+     */
+    public void getHistoriqueExterne(Convention convention) {
+        String uri = signatureProperties.getWebhook().getUri() + "?conventionid=" + convention.getId();
+        try {
+            webClient.get()
+                    .uri(uri)
+                    .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                    .retrieve()
+                    .toEntity(String.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+            HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+            logger.error("Erreur HTTP lors du refresh historique EXTERNE (conventionId={}, uri={}, status={})", convention.getId(), uri, status, e);
+            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature");
+            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature");
+            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvé dans l'application de signature");
+            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature");
+        } catch (Exception e) {
+            logger.error("Erreur technique lors du refresh historique EXTERNE (conventionId={}, uri={})", convention.getId(), uri, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour de l'historique");
+        }
+    }
+
+    public void getHistoriqueExterne(Avenant avenant) {
+        String uri = signatureProperties.getWebhook().getUri() + "?avenantid=" + avenant.getId();
+        try {
+            webClient.get()
+                    .uri(uri)
+                    .header("Authorization", "Bearer " + signatureProperties.getWebhook().getToken())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+            HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+            logger.error("Erreur HTTP lors du refresh historique (avenantId={}, uri={}, status={})", avenant.getId(), uri, status, e);
+            if (status == HttpStatus.UNAUTHORIZED) throw new AppException(HttpStatus.UNAUTHORIZED, "Accès non autorisé à l'application de signature");
+            if (status == HttpStatus.FORBIDDEN) throw new AppException(HttpStatus.FORBIDDEN, "Accès interdit à l'application de signature");
+            if (status == HttpStatus.NOT_FOUND) throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé dans l'application de signature");
+            if (status == HttpStatus.INTERNAL_SERVER_ERROR) throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne de l'application de signature");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'appel à l'application de signature");
+        } catch (Exception e) {
+            logger.error("Erreur technique lors du refresh historique (avenantId={}, uri={})", avenant.getId(), uri, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique lors de la mise à jour de l'historique");
+        }
+    }
 }

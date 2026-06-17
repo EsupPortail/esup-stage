@@ -1,11 +1,14 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.CronTask;
 import org.esup_portail.esup_stage.repository.CronTaskJpaRepository;
 import org.esup_portail.esup_stage.repository.CronTaskRepository;
 import org.esup_portail.esup_stage.scheduler.CronScheduler;
+import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.crontask.CronTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,7 @@ public class CronTaskController {
     private CronScheduler cronScheduler;
 
     @GetMapping
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<CronTask> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters) {
         PaginatedResponse<CronTask> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(cronTaskRepository.count(filters));
@@ -37,6 +41,7 @@ public class CronTaskController {
     }
 
     @GetMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public CronTask get(@PathVariable("id") Integer id) {
         CronTask cronTask = cronTaskJpaRepository.findById(id).orElse(null);
         if (cronTask == null) {
@@ -46,6 +51,7 @@ public class CronTaskController {
     }
 
     @PutMapping("/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public CronTask update(@PathVariable("id") Integer id, @RequestBody CronTask cronTask) {
         CronTask cronTaskUpdated = cronTaskService.update(id, cronTask.getNom(), cronTask.getExpressionCron(), cronTask.isActive());
         if (cronTaskUpdated == null) {
@@ -56,11 +62,13 @@ public class CronTaskController {
     }
 
     @PostMapping("/reload")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public void reload() {
         cronScheduler.reloadTasks();
     }
 
     @PostMapping("/{id}/execute")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public void executeNow(@PathVariable("id") Integer id) {
         cronScheduler.executeTaskNow(id);
     }

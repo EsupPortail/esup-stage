@@ -1,5 +1,5 @@
 <div class="validation-card">
-  <h5 class="text-title">{{validationLibelles[validation] ?? 'Vérification administrative'}}</h5>
+  <h4 class="text-low-title text-title">{{validationLibelles[validation] ?? 'Vérification administrative'}}</h4>
   <div class="text-center info" [class.validate]="convention[validation]">
     <ng-container *ngIf="convention[validation]; else nonValid">
       <span class="fa fa-check" aria-hidden="true"></span> {{validationLibelles[validation] ?? 'Vérification administrative'}} effectuée.
@@ -15,3 +15,6 @@
     </ng-template>
   </div>
 </div>
+
+
+

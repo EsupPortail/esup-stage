@@ -15,6 +15,13 @@ public interface EvaluationTuteurTokenJpaRepository extends JpaRepository<Evalua
 
     EvaluationTuteurToken findByToken(String token);
 
-    @Query("SELECT t FROM EvaluationTuteurToken t WHERE t.contact.id = :tuteurId")
-    List<EvaluationTuteurToken> findByTuteurId(@Param("tuteurId") Integer tuteurId);
+    @Query("""
+            SELECT t
+            FROM EvaluationTuteurToken t
+            WHERE t.convention.id = :conventionId
+              AND t.contact.id = :tuteurId
+            ORDER BY t.createdAt DESC
+            """)
+    List<EvaluationTuteurToken> findByConventionIdAndTuteurId(@Param("conventionId") Integer conventionId,
+                                                              @Param("tuteurId") Integer tuteurId);
 }

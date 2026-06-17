@@ -47,11 +47,11 @@ export class RoleService implements PaginatedService {
     return `${row.id} - ${row.libelle}`;
   }
 
-  getDroitsRole(codeRole: String, appFonction: String): any {
-    return this.http.get(`${environment.apiUrl}/roles/droits`, {
+  getDroitsRole( codeRole: String, appFonction : String):any {
+    return this.http.get(environment.apiUrl + "/roles/droits", {
       params: {
-        role: codeRole.toString(),
-        appFonction: appFonction.toString()
+        role: `${codeRole}`,
+        appFonction: `${appFonction}`,
       }
     });
   }

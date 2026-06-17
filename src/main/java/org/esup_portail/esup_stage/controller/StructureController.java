@@ -291,7 +291,7 @@ public class StructureController {
     }
 
     @PutMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.MODIFICATION},evaluator = StructurePermissionEvaluator.class)
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.MODIFICATION},evaluator = StructurePermissionEvaluator.class)
     public StructureDto update(@PathVariable("id") int id, @Valid @RequestBody StructureFormDto structureFormDto) {
         Structure structure = structureJpaRepository.findById(id);
         if (structure == null) {
@@ -350,14 +350,14 @@ public class StructureController {
     }
 
     @PostMapping("/getOrCreate")
-    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public StructureDto getOrCreate(@Valid @RequestBody Structure structureBody) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Structure structure;
         if(structureBody.getId() != null) {
             structure = structureJpaRepository.findById(structureBody.getId()).orElse(null);
             if (structure != null && structure.getTemEnServStructure()) {
-                if(structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty() && !structure.isVerrouillageSynchroStructureSirene()) {
+                if (structure.getNumeroSiret() != null && !structure.getNumeroSiret().isEmpty() && !structure.isVerrouillageSynchroStructureSirene() && !appConfigService.getConfigGenerale().isDesactiverMajAutoEtabSelection()) {
                     String jsonStructure;
                     try{
                         jsonStructure = objectMapper.writeValueAsString(structure);
@@ -553,6 +553,7 @@ public class StructureController {
         throw new AppException(HttpStatus.FORBIDDEN, "Le centre de gestion propriétaire ne peut pas être forcé depuis le client");
     }
     @GetMapping("/sirene")
+    @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public SireneInfoDto getSireneInfo(){
         SireneInfoDto sireneInfoDto = new SireneInfoDto();
         sireneInfoDto.setIsApiSireneActive(sireneProperties.isApiSireneActive());
