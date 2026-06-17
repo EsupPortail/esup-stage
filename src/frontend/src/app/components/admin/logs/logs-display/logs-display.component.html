@@ -33,7 +33,7 @@
 
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-  <div class="log-content" [class.wrap]="wrapLines" (scroll)="scrolled.emit()">
+  <div #logContent class="log-content" [class.wrap]="wrapLines" (scroll)="scrolled.emit()">
     <div *ngFor="let line of filteredLines; trackBy: trackLine"
          class="log-line"
          [class]="'log-line ' + levelClass(line.level)">

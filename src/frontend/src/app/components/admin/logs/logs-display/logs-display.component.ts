@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 export interface CoreLogLine {
@@ -12,9 +12,12 @@ export interface CoreLogLine {
 @Component({
   selector: 'app-logs-display',
   templateUrl: './logs-display.component.html',
+  styleUrl: './logs-display.component.scss',
   standalone: false
 })
 export class LogsDisplayComponent implements OnChanges {
+  @ViewChild('logContent') private logContent?: ElementRef<HTMLDivElement>;
+
   // ── Données ──────────────────────────────────────────────────────────────
   @Input() lines: CoreLogLine[] = [];
   @Input() loading = false;
@@ -29,7 +32,7 @@ export class LogsDisplayComponent implements OnChanges {
   @Output() pageChange = new EventEmitter<'prev' | 'next'>();
 
   // ── Filtres ──────────────────────────────────────────────────────────────
-  readonly levels = ['ERROR', 'WARN', 'INFO', 'DEBUG'];
+  readonly levels = ['ERROR', 'WARN', 'INFO', 'DEBUG', 'UNKNOWN'];
   levelFilter: string[] = [];
   searchText = '';
 
@@ -81,10 +84,9 @@ export class LogsDisplayComponent implements OnChanges {
       const q = this.searchText.toLowerCase();
       result = result.filter(l => l.text.toLowerCase().includes(q));
     }
-    // Applique le highlight de recherche si la ligne n'en a pas déjà un
     this.filteredLines = result.map(l => ({
       ...l,
-      highlighted: l.highlighted ?? this.highlightSearch(l.text)
+      highlighted: this.highlightLine(l.text)
     }));
   }
 
@@ -100,8 +102,37 @@ export class LogsDisplayComponent implements OnChanges {
     return this.page !== null && this.totalPages !== null;
   }
 
-  private highlightSearch(text: string): SafeHtml {
+  isNearBottom(threshold = 30): boolean {
+    const element = this.logContent?.nativeElement;
+    if (!element) {
+      return true;
+    }
+    return (element.scrollHeight - element.scrollTop - element.clientHeight) <= threshold;
+  }
+
+  scrollToBottom(): void {
+    const element = this.logContent?.nativeElement;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }
+
+  private highlightLine(text: string): SafeHtml {
     let html = this.escapeHtml(text);
+
+    html = html.replace(
+      /(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)/g,
+      '<span class="log-date">$1</span>'
+    );
+    html = html.replace(/\b(ERROR|FATAL)\b/g, '<span class="log-level error">$1</span>');
+    html = html.replace(/\b(WARN|WARNING)\b/g, '<span class="log-level warn">$1</span>');
+    html = html.replace(/\b(INFO)\b/g, '<span class="log-level info">$1</span>');
+    html = html.replace(/\b(DEBUG)\b/g, '<span class="log-level debug">$1</span>');
+    html = html.replace(/\b(TRACE)\b/g, '<span class="log-level trace">$1</span>');
+    html = html.replace(/(\[[\w\-./: ]+\])/g, '<span class="log-thread">$1</span>');
+    html = html.replace(/([\w.]+Exception[\w.]*)/g, '<span class="log-exception">$1</span>');
+    html = html.replace(/(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/g, '<span class="log-ip">$1</span>');
+
     if (this.searchText) {
       const regex = new RegExp(`(${this.escapeRegex(this.searchText)})`, 'gi');
       html = html.replace(regex, '<mark>$1</mark>');

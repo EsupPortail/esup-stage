@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {LogsService, LogStreamLine, LogStreamStatus} from "../../../../services/logs.service";
@@ -12,7 +12,7 @@ import {FlatTreeControl} from "@angular/cdk/tree";
 import {DisplayedLogLine} from "../../../../models/displayed-log-line.model";
 import {Subscription} from "rxjs";
 import {AuthService} from "../../../../services/auth.service";
-import {CoreLogLine} from "../logs-display/logs-display.component";
+import {CoreLogLine, LogsDisplayComponent} from "../logs-display/logs-display.component";
 
 
 @Component({
@@ -22,7 +22,7 @@ import {CoreLogLine} from "../logs-display/logs-display.component";
   standalone: false
 })
 export class LogsLiveComponent implements OnInit, AfterViewInit, OnDestroy{
-  @ViewChild('logsViewport') logsViewport?: ElementRef<HTMLDivElement>;
+  @ViewChild(LogsDisplayComponent) logsDisplay?: LogsDisplayComponent;
   @ViewChild('sortLoggers') sortLoggers?: MatSort;
   @ViewChild('paginatorLoggers') paginatorLoggers?: MatPaginator;
 
@@ -316,9 +316,7 @@ export class LogsLiveComponent implements OnInit, AfterViewInit, OnDestroy{
   }
 
   onLogScroll(): void {
-    const vp = this.logsViewport?.nativeElement;
-    if (!vp) return;
-    this.autoScroll = (vp.scrollHeight - vp.scrollTop - vp.clientHeight) <= 30;
+    this.autoScroll = this.logsDisplay?.isNearBottom() ?? this.autoScroll;
   }
 
   reconnect(): void {
@@ -371,8 +369,7 @@ export class LogsLiveComponent implements OnInit, AfterViewInit, OnDestroy{
     this.pendingScroll = true;
     requestAnimationFrame(() => {
       this.pendingScroll = false;
-      const vp = this.logsViewport?.nativeElement;
-      if (vp && this.autoScroll) vp.scrollTop = vp.scrollHeight;
+      if (this.autoScroll) this.logsDisplay?.scrollToBottom();
     });
   }
 

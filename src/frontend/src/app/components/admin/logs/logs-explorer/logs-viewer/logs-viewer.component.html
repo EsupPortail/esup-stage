@@ -19,58 +19,6 @@
   </h2>
 
   <div mat-dialog-content class="log-viewer__content" [class.log-viewer__content--dialog]="isDialogMode">
-    <div class="log-viewer__topbar">
-      <div class="level-filters level-filters--inline">
-        <span class="filter-label">Niveaux :</span>
-        <button
-          *ngFor="let level of levels"
-          type="button"
-          class="level-chip"
-          [class]="'level-chip ' + level.toLowerCase()"
-          [class.inactive]="levelFilter.length > 0 && !levelFilter.includes(level)"
-          (click)="toggleLevelFilter(level)"
-        >
-          {{ level }}
-        </button>
-        <button type="button" class="level-chip all" *ngIf="levelFilter.length > 0" (click)="levelFilter = []; applyFilters()">
-          Tout afficher
-        </button>
-      </div>
-
-      <div class="log-viewer__controls">
-        <mat-form-field appearance="outline" class="log-search-field">
-          <mat-icon matPrefix>search</mat-icon>
-          <input
-            matInput
-            [(ngModel)]="searchText"
-            (ngModelChange)="applyFilters()"
-            placeholder="Rechercher dans la page courante..."
-          />
-          <button mat-icon-button matSuffix type="button" *ngIf="searchText" (click)="clearSearch()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-
-        <button mat-icon-button type="button" [matMenuTriggerFor]="exportMenu" matTooltip="Exporter ce fichier">
-          <mat-icon>download</mat-icon>
-        </button>
-
-        <mat-menu #exportMenu="matMenu">
-          <button mat-menu-item (click)="export('original')">
-            <mat-icon>description</mat-icon>
-            <span>Fichier original</span>
-          </button>
-
-          <button mat-menu-item (click)="export('csv')">
-            <mat-icon>table_chart</mat-icon>
-            <span>CSV</span>
-          </button>
-        </mat-menu>
-      </div>
-    </div>
-
-    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-
     <app-logs-display
       [lines]="coreLines"
       [loading]="loading"
@@ -94,18 +42,6 @@
         </mat-menu>
       </div>
     </app-logs-display>
-
-    <div class="pagination-bar" *ngIf="!loading && totalLines > 0">
-      <button mat-stroked-button type="button" (click)="prevPage()" [disabled]="page === 0">
-        <mat-icon>chevron_left</mat-icon>
-        <span>Precedent</span>
-      </button>
-      <span class="pagination-bar__label">Page {{ page + 1 }} / {{ totalPages }} - {{ currentPageSize | number }} lignes par page</span>
-      <button mat-stroked-button type="button" (click)="nextPage()" [disabled]="page + 1 >= totalPages">
-        <span>Suivant</span>
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-    </div>
   </div>
 </div>
 
