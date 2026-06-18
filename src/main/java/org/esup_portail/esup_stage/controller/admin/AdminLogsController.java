@@ -27,13 +27,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/admin/logs")
 public class AdminLogsController {
 
-    private static final int INITIAL_HISTORY_SIZE = 200;
+    private static final int INITIAL_HISTORY_SIZE = 500;
 
     @Autowired
     private LogTailerService logTailerService;

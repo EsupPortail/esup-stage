@@ -13,6 +13,7 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -246,13 +247,20 @@ public class LogTailerService {
     private boolean isClientDisconnectException(Throwable throwable) {
         Throwable current = throwable;
         while (current != null) {
+            String className = current.getClass().getName().toLowerCase(Locale.ROOT);
+            if (className.contains("clientabort") || className.contains("asyncrequestnotusable")) {
+                return true;
+            }
+
             String message = current.getMessage();
             if (message != null) {
-                String normalized = message.toLowerCase(Locale.ROOT);
+                String normalized = normalizeExceptionMessage(message);
                 if (normalized.contains("broken pipe")
                         || normalized.contains("connection reset by peer")
                         || normalized.contains("forcibly closed by the remote host")
                         || normalized.contains("une connexion etablie a ete abandonnee")
+                        || (normalized.contains("connexion") && normalized.contains("abandonn"))
+                        || normalized.contains("an established connection was aborted")
                         || normalized.contains("servletoutputstream failed to flush")) {
                     return true;
                 }
@@ -260,6 +268,12 @@ public class LogTailerService {
             current = current.getCause();
         }
         return false;
+    }
+
+    private String normalizeExceptionMessage(String message) {
+        String normalized = Normalizer.normalize(message, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return normalized.toLowerCase(Locale.ROOT);
     }
 
     private LogLineEvent parseLine(String rawLine, boolean historical) {
