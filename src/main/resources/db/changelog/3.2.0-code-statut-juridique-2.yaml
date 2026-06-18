@@ -102,6 +102,7 @@ databaseChangeLog:
   - changeSet:
       id: 3.2.0-ajout-statuts-juridiques-niveau2
       author: thouveno9
+      validCheckSum: ANY
       comment: "Ajout des statuts juridiques avec codes niveau 2 INSEE (organismes publics + formes courantes)"
       changes:
         - sql:
@@ -109,109 +110,134 @@ databaseChangeLog:
               -- PERSONNES PHYSIQUES (Code 10)
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Entrepreneur individuel', '10', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '10' OR libelleStatutJuridique = 'Entrepreneur individuel');
   
               -- SOCIÉTÉS COMMERCIALES
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SNC', '52', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '52' OR libelleStatutJuridique = 'SNC');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SCS', '53', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '53' OR libelleStatutJuridique = 'SCS');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SARL', '54', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '54' OR libelleStatutJuridique = 'SARL');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SA à conseil d''administration', '55', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '55' OR libelleStatutJuridique = 'SA à conseil d''administration');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SA à directoire', '56', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '56' OR libelleStatutJuridique = 'SA à directoire');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SAS', '57', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '57' OR libelleStatutJuridique = 'SAS');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SE', '58', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '58' OR libelleStatutJuridique = 'SE');
   
               -- SOCIÉTÉS CIVILES
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SCI', '60', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '60' OR libelleStatutJuridique = 'SCI');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SCM', '61', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '61' OR libelleStatutJuridique = 'SCM');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'GIE', '62', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '62' OR libelleStatutJuridique = 'GIE');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'GEIE', '63', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '63' OR libelleStatutJuridique = 'GEIE');
   
               -- SOCIÉTÉS D'ASSURANCE
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SAM', '64', 5, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '64' OR libelleStatutJuridique = 'SAM');
   
               -- SOCIÉTÉS CIVILES PROFESSIONNELLES
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SCP', '65', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '65' OR libelleStatutJuridique = 'SCP');
   
               -- SOCIÉTÉS D'EXERCICE LIBÉRAL
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'SEL', '69', 3, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '69' OR libelleStatutJuridique = 'SEL');
   
               -- PERSONNES MORALES DE DROIT PUBLIC
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Administration de l''état', '71', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '71' OR libelleStatutJuridique = 'Administration de l''état');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Collectivité territoriale', '72', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '72' OR libelleStatutJuridique = 'Collectivité territoriale');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'EPA', '73', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '73' OR libelleStatutJuridique = 'EPA');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Autre personne morale de droit public administratif', '74', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '74' OR libelleStatutJuridique = 'Autre personne morale de droit public administratif');
   
               -- ORGANISMES PRIVÉS SPÉCIALISÉS
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Organisme de protection sociale', '81', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '81' OR libelleStatutJuridique = 'Organisme de protection sociale');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Organisme professionnel', '82', 2, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '82' OR libelleStatutJuridique = 'Organisme professionnel');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Organisme de recherche', '83', 1, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '83' OR libelleStatutJuridique = 'Organisme de recherche');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Syndicat de copropriété', '84', 2, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '84' OR libelleStatutJuridique = 'Syndicat de copropriété');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Association', '92', 2, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '92' OR libelleStatutJuridique = 'Association');
   
               INSERT INTO StatutJuridique (libelleStatutJuridique, code, idTypeStructure, temEnServStatut)
               SELECT 'Congrégation', '93', 2, 'O'
+              FROM DUAL
               WHERE NOT EXISTS (SELECT 1 FROM StatutJuridique WHERE code = '93' OR libelleStatutJuridique = 'Congrégation');
 
             dbms: mysql,mariadb
