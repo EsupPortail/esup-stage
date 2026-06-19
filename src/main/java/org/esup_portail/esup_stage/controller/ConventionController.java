@@ -815,7 +815,7 @@ public class  ConventionController {
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
 
         // Contrôle chevauchement de dates
-        return dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).isEmpty();
+        return dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && !conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).isEmpty();
     }
 
     private void validationPedagogique(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {

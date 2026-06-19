@@ -1,0 +1,98 @@
+<div class="depot-documents">
+
+  <!-- Message global établissement, paramétré en config générale -->
+  <div class="depot-documents__message" *ngIf="message" [innerHTML]="message"></div>
+
+  <!-- Barre d'action -->
+  <div class="depot-documents__toolbar">
+    <div class="depot-documents__hint" *ngIf="canUpload">
+      Format accepté : PDF — taille maximale {{ tailleMaxMo }} Mo
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="canUpload"
+      [disabled]="uploading"
+      (click)="fileInput.click()">
+      <mat-icon>upload_file</mat-icon>
+      Ajouter un document
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      accept="application/pdf"
+      multiple
+      hidden
+      (change)="onFilesSelected($event)">
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="uploading"></mat-progress-bar>
+
+  <!-- Chargement -->
+  <div class="depot-documents__state" *ngIf="loading">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+
+  <!-- Liste vide -->
+  <div class="depot-documents__state" *ngIf="!loading && documents.length === 0">
+    <mat-icon>folder_off</mat-icon>
+    <p>Aucun document déposé.</p>
+  </div>
+
+  <!-- Liste des documents -->
+  <table
+    mat-table
+    [dataSource]="documents"
+    class="depot-documents__table"
+    *ngIf="!loading && documents.length > 0">
+
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef>Document</th>
+      <td mat-cell *matCellDef="let doc">
+        <button
+          type="button"
+          class="depot-documents__doc-link"
+          [disabled]="!canPreview"
+          [title]="canPreview ? 'Aperçu du document' : doc.nomReel"
+          (click)="openPreview(doc)">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span>{{ doc.nomReel }}</span>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="taille">
+      <th mat-header-cell *matHeaderCellDef>Taille</th>
+      <td mat-cell *matCellDef="let doc">{{ formatSize(doc.taille) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="depose">
+      <th mat-header-cell *matHeaderCellDef>Déposé par</th>
+      <td mat-cell *matCellDef="let doc">
+        <div>{{ doc.loginCreation }}</div>
+        <div class="depot-documents__date">{{ doc.dateCreation | date:'dd/MM/yyyy HH:mm' }}</div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let doc" class="depot-documents__actions">
+        <button mat-icon-button *ngIf="canPreview" matTooltip="Aperçu" (click)="openPreview(doc)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="canDownload" matTooltip="Télécharger" (click)="downloadDoc(doc)">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="canDelete" color="warn" matTooltip="Supprimer" (click)="deleteDoc(doc)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>

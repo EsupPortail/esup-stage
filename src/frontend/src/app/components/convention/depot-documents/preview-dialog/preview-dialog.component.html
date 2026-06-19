@@ -1,0 +1,41 @@
+<h2 mat-dialog-title class="preview-title">
+  <mat-icon>picture_as_pdf</mat-icon>
+  <span class="preview-title__name">{{ data.document.nomReel }}</span>
+</h2>
+
+<mat-dialog-content class="preview-content">
+
+  <div class="preview-state" *ngIf="loading">
+    <mat-spinner diameter="36"></mat-spinner>
+    <p>Chargement de l'aperçu…</p>
+  </div>
+
+  <div class="preview-state preview-state--error" *ngIf="!loading && previewFailed">
+    <mat-icon>error_outline</mat-icon>
+    <p>L'aperçu de ce document n'a pas pu être affiché.</p>
+    <button mat-stroked-button color="primary" (click)="download()">
+      <mat-icon>download</mat-icon>
+      Télécharger le document
+    </button>
+  </div>
+
+  <iframe
+    *ngIf="!loading && !previewFailed && safePdfUrl"
+    [src]="safePdfUrl"
+    class="preview-frame"
+    title="Aperçu du document">
+  </iframe>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" *ngIf="data.canDelete" (click)="delete()">
+    <mat-icon>delete</mat-icon>
+    Supprimer
+  </button>
+  <button mat-stroked-button (click)="download()">
+    <mat-icon>download</mat-icon>
+    Télécharger
+  </button>
+  <button mat-raised-button color="primary" (click)="close()">Fermer</button>
+</mat-dialog-actions>

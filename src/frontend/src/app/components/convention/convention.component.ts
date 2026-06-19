@@ -32,6 +32,7 @@ export class ConventionComponent implements OnInit {
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
     8: { statut: 0, init: false },
+    9: { statut: 0, init: false },
   }
 
   goToOnglet = 0;
@@ -133,14 +134,14 @@ export class ConventionComponent implements OnInit {
       this.setStatus(3,0);
     }
     if (this.convention.enseignant){
-      this.setStatus(5,2);
-    }else{
-      this.setStatus(5,0);
-    }
-    if (this.convention.signataire){
       this.setStatus(6,2);
     }else{
       this.setStatus(6,0);
+    }
+    if (this.convention.signataire){
+      this.setStatus(7,2);
+    }else{
+      this.setStatus(7,0);
     }
   }
 
@@ -152,7 +153,7 @@ export class ConventionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if (key != '7' && key != '8' && this.tabs[key].statut !== 2) {
+        if (key != '5' && key != '8' && key != '9' && this.tabs[key].statut !== 2) {
           this.allValid = false;
         }
     }
@@ -232,13 +233,20 @@ export class ConventionComponent implements OnInit {
     return this.authService.isEtudiant();
   }
 
+  canAccessDepotDocuments(): boolean {
+    return this.authService.isEtudiant()
+      || this.authService.isGestionnaire()
+      || this.authService.isAdmin()
+      || this.authService.isEnseignant();
+  }
+
   conventionValidated(convention: any): any {
     this.convention = convention;
     if (this.tabGroup) {
       if (this.isConventionValide()) {
         this.tabGroup.selectedIndex = 1;
       } else {
-        this.tabGroup.selectedIndex = 8;
+        this.tabGroup.selectedIndex = this.canAccessDepotDocuments() ? 9 : 8;
       }
     }
   }
