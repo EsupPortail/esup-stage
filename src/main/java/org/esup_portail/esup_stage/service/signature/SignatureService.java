@@ -200,7 +200,7 @@ public class SignatureService {
                     break;
             }
             if (signataireDto.getOrder() != 0) {
-                signataireDto.setPhone(conventionService.parseNumTel(phone));
+                signataireDto.setPhone(phone != null ? phone : "");
                 signataires.add(signataireDto);
             }
         });
