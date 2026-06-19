@@ -48,7 +48,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(c.etape.id.code = :codeEtape" + i + " AND c.etape.id.codeUniversite = :codeUnivEtape" + i + " AND c.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.isEmpty()) {
+            if (!clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
@@ -118,7 +118,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         break;
                 }
             }
-            if (clauseAnd.isEmpty()) {
+            if (!clauseAnd.isEmpty()) {
                 clauses.add("(" + String.join(" AND ", clauseAnd) + ")");
             }
         }
