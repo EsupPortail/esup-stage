@@ -1,0 +1,145 @@
+﻿databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-create-convention-document-etudiant
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: ConventionDocumentEtudiant
+            columns:
+              - column:
+                  name: idConventionDocumentEtudiant
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: idConvention
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ConventionDocumentEtudiant_Convention
+                    references: Convention(idConvention)
+              - column:
+                  name: nomDocument
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nomReel
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contentType
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: taille
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sha256
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginCreation
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateCreation
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginModif
+                  type: varchar(255)
+              - column:
+                  name: dateModif
+                  type: datetime
+        - createIndex:
+            tableName: ConventionDocumentEtudiant
+            indexName: idx_ConventionDocumentEtudiant_Convention
+            columns:
+              - column:
+                  name: idConvention
+
+  - changeSet:
+      id: 3.3.0-create-convention-document-etudiant-historique
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: ConventionDocumentEtudiantHistorique
+            columns:
+              - column:
+                  name: idConventionDocumentEtudiantHistorique
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: idConvention
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idDocumentEtudiant
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nomDocument
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nomReel
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contentType
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: taille
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sha256
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginDepot
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateDepot
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: loginSuppression
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateSuppression
+                  type: datetime
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: ConventionDocumentEtudiantHistorique
+            indexName: idx_ConventionDocumentEtudiantHistorique_Convention
+            columns:
+              - column:
+                  name: idConvention

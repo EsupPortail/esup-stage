@@ -18,6 +18,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.ConventionDocumentEtudiantService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -101,6 +102,9 @@ public class  ConventionController {
 
     @Autowired
     ConventionService conventionService;
+
+    @Autowired
+    ConventionDocumentEtudiantService conventionDocumentEtudiantService;
 
     @Autowired
     SignatureService signatureService;
@@ -516,6 +520,7 @@ public class  ConventionController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
         if (brouillon != null) {
+            conventionDocumentEtudiantService.deleteAllForConvention(brouillon);
             conventionJpaRepository.delete(brouillon);
         }
     }
@@ -547,6 +552,7 @@ public class  ConventionController {
         if (hasValidation) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention a déjà été validée et ne peut être supprimée");
         }
+        conventionDocumentEtudiantService.deleteAllForConvention(convention);
         conventionJpaRepository.delete(convention);
         return convention;
     }
