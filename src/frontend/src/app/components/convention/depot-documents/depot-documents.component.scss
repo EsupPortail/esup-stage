@@ -4,26 +4,94 @@
   gap: 16px;
   padding: 16px 0;
 
-  &__message {
-    background: #eef3f8;
-    border-left: 4px solid #1a3c61;
-    padding: 12px 16px;
+  &__message,
+  &__status {
     border-radius: 4px;
     font-size: 0.95rem;
     line-height: 1.5;
   }
 
-  &__toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+  &__message {
+    background: #eef3f8;
+    border-left: 4px solid #1a3c61;
+    padding: 12px 16px;
   }
 
-  &__hint {
-    color: #666;
-    font-size: 0.85rem;
+  &__status {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+
+    mat-icon {
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    &--success {
+      background: #edf7ed;
+      color: #1b5e20;
+      border-left: 4px solid #2e7d32;
+    }
+
+    &--error {
+      background: #fdecea;
+      color: #8a1f11;
+      border-left: 4px solid #c62828;
+    }
+
+    &--info {
+      background: #eef3f8;
+      color: #1a3c61;
+      border-left: 4px solid #1a3c61;
+    }
+  }
+
+  &__upload-zone {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    border: 2px dashed #9fb3c8;
+    border-radius: 6px;
+    background: #f8fafc;
+    transition: border-color 120ms ease, background-color 120ms ease;
+
+    &--active {
+      background: #eef6ff;
+      border-color: #1a3c61;
+    }
+
+    &--disabled {
+      opacity: 0.7;
+      cursor: progress;
+    }
+  }
+
+  &__upload-icon {
+    flex: 0 0 auto;
+    color: #1a3c61;
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+  }
+
+  &__upload-copy {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 180px;
+
+    strong {
+      color: #1f2933;
+      font-size: 1rem;
+    }
+
+    span,
+    small {
+      color: #52616f;
+    }
   }
 
   &__state {
@@ -35,8 +103,26 @@
     color: #888;
   }
 
+  &__table-wrapper {
+    max-height: calc(56px + (56px * 10));
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+
   &__table {
     width: 100%;
+
+    .mat-mdc-header-cell {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fff;
+    }
+
+    .mat-mdc-row {
+      min-height: 56px;
+    }
   }
 
   &__doc-link {
@@ -72,8 +158,19 @@
   }
 }
 
-@media (max-width: 600px) {
-  .depot-documents__table {
-    font-size: 0.85rem;
+@media (max-width: 700px) {
+  .depot-documents {
+    &__upload-zone {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    &__upload-icon {
+      display: none;
+    }
+
+    &__table {
+      font-size: 0.85rem;
+    }
   }
 }

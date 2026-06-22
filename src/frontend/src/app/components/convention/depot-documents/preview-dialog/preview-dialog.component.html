@@ -1,13 +1,42 @@
-<h2 mat-dialog-title class="preview-title">
-  <mat-icon>picture_as_pdf</mat-icon>
-  <span class="preview-title__name">{{ data.document.nomReel }}</span>
-</h2>
+<div mat-dialog-title class="preview-header">
+  <div class="preview-title">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span class="preview-title__name">{{ data.document.nomReel }}</span>
+  </div>
+
+  <div class="preview-actions">
+    <button
+      mat-icon-button
+      color="warn"
+      *ngIf="data.canDelete"
+      matTooltip="Supprimer"
+      aria-label="Supprimer le document"
+      (click)="delete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Télécharger"
+      aria-label="Télécharger le document"
+      (click)="download()">
+      <mat-icon>download</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      matTooltip="Fermer"
+      aria-label="Fermer la preview"
+      (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
 
 <mat-dialog-content class="preview-content">
 
   <div class="preview-state" *ngIf="loading">
     <mat-spinner diameter="36"></mat-spinner>
-    <p>Chargement de l'aperçu…</p>
+    <p>Chargement de l'aperçu...</p>
   </div>
 
   <div class="preview-state preview-state--error" *ngIf="!loading && previewFailed">
@@ -27,15 +56,3 @@
   </iframe>
 
 </mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button color="warn" *ngIf="data.canDelete" (click)="delete()">
-    <mat-icon>delete</mat-icon>
-    Supprimer
-  </button>
-  <button mat-stroked-button (click)="download()">
-    <mat-icon>download</mat-icon>
-    Télécharger
-  </button>
-  <button mat-raised-button color="primary" (click)="close()">Fermer</button>
-</mat-dialog-actions>

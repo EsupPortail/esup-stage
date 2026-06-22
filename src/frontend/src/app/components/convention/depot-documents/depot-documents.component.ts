@@ -1,20 +1,12 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ConventionDocumentService } from '../../../services/convention-documents.service';
-import {ConventionDocumentEtudiant, ConventionDocumentsResponse} from '../../../models/convention-document.model';
-import {DepotDocumentPreviewDialogComponent, PreviewDialogData} from './preview-dialog/preview-dialog.component';
+import { ConventionDocumentEtudiant, ConventionDocumentsResponse } from '../../../models/convention-document.model';
+import { DepotDocumentPreviewDialogComponent, PreviewDialogData } from './preview-dialog/preview-dialog.component';
 
-/**
- * Onglet "Dépôt de documents" d'une convention.
- *
- * Reste visible quel que soit l'état de validation/signature et n'entre
- * jamais dans le calcul de complétude (cf. spec). À insérer juste après
- * l'onglet "Stage" dans convention.component.html.
- *
- * Usage : <app-depot-documents [idConvention]="convention.idConvention"></app-depot-documents>
- */
+type DepotDocumentsStatusType = 'success' | 'error' | 'info';
+
 @Component({
   selector: 'app-depot-documents',
   standalone: false,
@@ -27,6 +19,8 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
   documents: ConventionDocumentEtudiant[] = [];
   message: SafeHtml | null = null;
+  statusMessage: string | null = null;
+  statusType: DepotDocumentsStatusType = 'info';
   tailleMaxMo = 10;
 
   canUpload = false;
@@ -36,13 +30,13 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
   loading = false;
   uploading = false;
+  dragOver = false;
 
   readonly displayedColumns = ['nom', 'taille', 'depose', 'actions'];
 
   constructor(
     private documentService: ConventionDocumentService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -58,13 +52,16 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     }
   }
 
-  loadDocuments(): void {
+  loadDocuments(clearStatus = true): void {
     this.loading = true;
+    if (clearStatus) {
+      this.clearStatusMessage();
+    }
     this.documentService.list(this.idConvention).subscribe({
       next: (response) => this.applyResponse(response),
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur lors du chargement des documents.', 'Fermer', { duration: 4000 });
+        this.setStatusMessage('Impossible de charger les fichiers.', 'error');
       }
     });
   }
@@ -80,52 +77,83 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     this.loading = false;
   }
 
-  /** Gère la sélection multiple : upload séquentiel, fichier par fichier (spec API : 1 fichier / requête). */
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const files = input.files;
-    if (!files || files.length === 0) {
+    this.uploadSelectedFiles(input.files);
+    input.value = '';
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.canUpload || this.uploading) {
       return;
     }
 
-    this.uploadFilesSequentially(Array.from(files), 0);
-    input.value = ''; // permet de re-sélectionner le même fichier plus tard
+    this.dragOver = true;
   }
 
-  private uploadFilesSequentially(files: File[], index: number): void {
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.canUpload || this.uploading) {
+      return;
+    }
+
+    this.dragOver = false;
+    this.uploadSelectedFiles(event.dataTransfer?.files ?? null);
+  }
+
+  private uploadSelectedFiles(fileList: FileList | null): void {
+    if (!fileList || fileList.length === 0) {
+      return;
+    }
+
+    this.clearStatusMessage();
+    this.uploading = true;
+    this.uploadFilesSequentially(Array.from(fileList), 0, 0, false);
+  }
+
+  private uploadFilesSequentially(files: File[], index: number, uploadedCount: number, hasError: boolean): void {
     if (index >= files.length) {
+      this.uploading = false;
+      if (uploadedCount > 0 && hasError) {
+        this.setStatusMessage(`${uploadedCount} document${uploadedCount > 1 ? 's' : ''} ajouté${uploadedCount > 1 ? 's' : ''}. Certains fichiers ont été refusés.`, 'info');
+      } else if (uploadedCount > 0) {
+        this.setStatusMessage(`${uploadedCount} document${uploadedCount > 1 ? 's' : ''} ajouté${uploadedCount > 1 ? 's' : ''}.`, 'success');
+      }
       return;
     }
 
     const file = files[index];
     const clientError = this.validateFileClientSide(file);
     if (clientError) {
-      this.snackBar.open(clientError, 'Fermer', { duration: 5000 });
-      this.uploadFilesSequentially(files, index + 1);
+      this.setStatusMessage(clientError, 'error');
+      this.uploadFilesSequentially(files, index + 1, uploadedCount, true);
       return;
     }
 
-    this.uploading = true;
     this.documentService.upload(this.idConvention, file).subscribe({
       next: (response) => {
         this.applyResponse(response);
-        this.uploading = false;
-        this.snackBar.open('Document ajouté.', 'Fermer', { duration: 3000 });
-        this.uploadFilesSequentially(files, index + 1);
+        this.uploadFilesSequentially(files, index + 1, uploadedCount + 1, hasError);
       },
       error: (err) => {
-        this.uploading = false;
-        const msg = err?.error?.message || 'Le fichier doit être un PDF valide et sécurisé.';
-        this.snackBar.open(msg, 'Fermer', { duration: 5000 });
-        this.uploadFilesSequentially(files, index + 1);
+        this.setStatusMessage(
+          err?.error?.message || 'Le fichier doit être un PDF valide et sécurisé.',
+          'error'
+        );
+        this.uploadFilesSequentially(files, index + 1, uploadedCount, true);
       }
     });
   }
 
-  /**
-   * Contrôle côté front, purement indicatif/confort utilisateur.
-   * La validation de sécurité réelle est entièrement backend (cf. spec).
-   */
   private validateFileClientSide(file: File): string | null {
     if (!/\.pdf$/i.test(file.name)) {
       return 'Le fichier doit être au format PDF.';
@@ -146,8 +174,11 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     }
 
     const ref = this.dialog.open(DepotDocumentPreviewDialogComponent, {
-      width: '720px',
-      maxWidth: '95vw',
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'depot-document-preview-dialog-panel',
       autoFocus: false,
       data: <PreviewDialogData>{
         idConvention: this.idConvention,
@@ -158,8 +189,8 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
     ref.afterClosed().subscribe(result => {
       if (result === 'deleted') {
-        this.snackBar.open('Document supprimé.', 'Fermer', { duration: 3000 });
-        this.loadDocuments();
+        this.setStatusMessage('Document supprimé.', 'success');
+        this.loadDocuments(false);
       }
     });
   }
@@ -175,24 +206,19 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
         URL.revokeObjectURL(url);
       },
       error: () => {
-        this.snackBar.open('Erreur lors du téléchargement du document.', 'Fermer', { duration: 4000 });
+        this.setStatusMessage('Erreur lors du téléchargement du document.', 'error');
       }
     });
   }
 
-  /**
-   * Appelé via (confirm) de la directive de confirmation maison, placée
-   * dans le template sur le bouton de suppression. La confirmation a
-   * donc déjà eu lieu avant l'appel de cette méthode.
-   */
   deleteDoc(doc: ConventionDocumentEtudiant): void {
     this.documentService.delete(this.idConvention, doc.id).subscribe({
       next: (response) => {
         this.applyResponse(response);
-        this.snackBar.open('Document supprimé.', 'Fermer', { duration: 3000 });
+        this.setStatusMessage('Document supprimé.', 'success');
       },
       error: () => {
-        this.snackBar.open('Erreur lors de la suppression du document.', 'Fermer', { duration: 4000 });
+        this.setStatusMessage('Erreur lors de la suppression du document.', 'error');
       }
     });
   }
@@ -205,5 +231,25 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
       return `${(bytes / 1024).toFixed(1)} Ko`;
     }
     return `${(bytes / (1024 * 1024)).toFixed(2)} Mo`;
+  }
+
+  getStatusIcon(): string {
+    if (this.statusType === 'success') {
+      return 'check_circle';
+    }
+    if (this.statusType === 'error') {
+      return 'error_outline';
+    }
+    return 'info';
+  }
+
+  private setStatusMessage(message: string, type: DepotDocumentsStatusType): void {
+    this.statusMessage = message;
+    this.statusType = type;
+  }
+
+  private clearStatusMessage(): void {
+    this.statusMessage = null;
+    this.statusType = 'info';
   }
 }

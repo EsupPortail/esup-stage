@@ -2,17 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConventionDocumentsResponse } from '../models/convention-document.model';
+import { environment } from '../../environments/environment';
 
-/**
- * Service Angular pour l'onglet "Dépôt de documents" d'une convention.
- *
- * NB : adapte `baseUrl` si ton application préfixe ses appels API
- * (ex: `${environment.appUrl}/conventions`).
- */
 @Injectable({ providedIn: 'root' })
 export class ConventionDocumentService {
 
-  private readonly baseUrl = '/conventions';
+  private readonly baseUrl = `${environment.apiUrl}/conventions`;
 
   constructor(private http: HttpClient) {}
 
