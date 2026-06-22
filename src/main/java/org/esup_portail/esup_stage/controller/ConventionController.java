@@ -661,6 +661,9 @@ public class  ConventionController {
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dureeExceptionnelle")) {
             convention.setDureeExceptionnelle(conventionSingleFieldDto.getValue().toString());
+            if (conventionSingleFieldDto.getDureeExceptionnellePeriode() != null) {
+                convention.setDureeExceptionnellePeriode(conventionSingleFieldDto.getDureeExceptionnellePeriode());
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")) {
             TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());
