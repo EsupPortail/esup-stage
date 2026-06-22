@@ -65,7 +65,7 @@ public class EvaluationTuteurController {
 
         parseJwtOrThrow(token);
 
-        EvaluationTuteurToken validToken = evaluationService.validateToken(token);
+        EvaluationTuteurToken validToken = evaluationService.getToken(token);
         if (validToken == null) {
             warnInvalid(token);
             throw new AppException(HttpStatus.FORBIDDEN, "Token invalide ou expiré");
