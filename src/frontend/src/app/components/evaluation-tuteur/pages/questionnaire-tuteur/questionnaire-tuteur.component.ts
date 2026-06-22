@@ -346,10 +346,12 @@ export class QuestionnaireTuteurComponent implements OnInit {
   terminer(): void {
     const valid = this.reponseEntrepriseForm.valid && this.reponseSupplementaireEntrepriseForm.valid;
     this.saveReponse();
-    this.evaluationTuteurService.validate(this.token, this.convention.id, valid).subscribe();
-    this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
-      relativeTo: this.route.parent,
-      replaceUrl: true,
+    this.evaluationTuteurService.validate(this.token, this.convention.id, valid).subscribe(() => {
+      this.router.navigate(['/evaluation-tuteur', this.convention.id, 'terminee'], {
+        relativeTo: this.route.parent,
+        replaceUrl: true,
+        queryParamsHandling: 'preserve',
+      });
     });
   }
 

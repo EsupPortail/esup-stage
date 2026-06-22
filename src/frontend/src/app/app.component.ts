@@ -6,6 +6,7 @@ import { Droit } from "./constants/droit";
 import { environment } from "../environments/environment";
 import { ConfigService } from "./services/config.service";
 import { TechnicalService } from "./services/technical.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -169,7 +170,8 @@ export class AppComponent {
     private configService: ConfigService,
     private el: ElementRef,
     private technicalService: TechnicalService,
-    public vcRef: ViewContainerRef
+    public vcRef: ViewContainerRef,
+    private router: Router
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -188,6 +190,10 @@ export class AppComponent {
 
   isConnected() {
     return this.authService.userConnected;
+  }
+
+  showFooter(): boolean {
+    return !this.router.url.split('?')[0].startsWith('/evaluation-tuteur');
   }
 
   slideNavbar(): void {
