@@ -52,6 +52,9 @@ public class ConventionDocumentEtudiantHistorique {
     @Column(nullable = false)
     private Date dateDepot;
 
+    @Column(nullable = false, length = 30)
+    private String typeAction;
+
     @Column(nullable = false)
     private String loginSuppression;
 
@@ -61,6 +64,9 @@ public class ConventionDocumentEtudiantHistorique {
 
     @PrePersist
     public void prePersist() {
+        if (typeAction == null) {
+            typeAction = "SUPPRESSION";
+        }
         if (dateSuppression == null) {
             dateSuppression = new Date();
         }

@@ -5,29 +5,30 @@
   </div>
 
   <div class="preview-actions">
-    <button
-      mat-icon-button
-      color="warn"
+    <span
       *ngIf="data.canDelete"
-      matTooltip="Supprimer"
-      aria-label="Supprimer le document"
-      (click)="delete()">
-      <mat-icon>delete</mat-icon>
-    </button>
+      (confirm)="delete()"
+      [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + data.document.nomReel + ' ?'">
+      <button
+        mat-icon-button
+        matTooltip="Supprimer"
+        aria-label="Supprimer le document">
+        <mat-icon class="preview-action-icon preview-action-icon--warn">delete</mat-icon>
+      </button>
+    </span>
     <button
       mat-icon-button
       matTooltip="Télécharger"
       aria-label="Télécharger le document"
       (click)="download()">
-      <mat-icon>download</mat-icon>
+      <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
     </button>
     <button
       mat-icon-button
-      color="primary"
       matTooltip="Fermer"
       aria-label="Fermer la preview"
       (click)="close()">
-      <mat-icon>close</mat-icon>
+      <mat-icon class="preview-action-icon preview-action-icon--primary">close</mat-icon>
     </button>
   </div>
 </div>
@@ -43,7 +44,7 @@
     <mat-icon>error_outline</mat-icon>
     <p>L'aperçu de ce document n'a pas pu être affiché.</p>
     <button mat-stroked-button color="primary" (click)="download()">
-      <mat-icon>download</mat-icon>
+      <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
       Télécharger le document
     </button>
   </div>

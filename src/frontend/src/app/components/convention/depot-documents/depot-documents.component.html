@@ -1,6 +1,13 @@
 <div class="depot-documents">
 
-  <div class="depot-documents__message" *ngIf="message" [innerHTML]="message"></div>
+  <ng-container *ngIf="'MESSAGE_DEPOT_DOCUMENTS_CONVENTION' | contenu as depotDocumentsMessage">
+    <div
+      class="depot-documents__message"
+      *ngIf="depotDocumentsMessage && depotDocumentsMessage.trim() && depotDocumentsMessage !== 'MESSAGE_DEPOT_DOCUMENTS_CONVENTION'">
+      <mat-icon class="depot-documents__message-icon">info</mat-icon>
+      <div class="depot-documents__message-content" [innerHTML]="depotDocumentsMessage"></div>
+    </div>
+  </ng-container>
 
   <div
     class="depot-documents__status"
@@ -10,6 +17,30 @@
     [class.depot-documents__status--info]="statusType === 'info'">
     <mat-icon>{{ getStatusIcon() }}</mat-icon>
     <span>{{ statusMessage }}</span>
+    <button
+      mat-icon-button
+      type="button"
+      class="depot-documents__status-close"
+      matTooltip="Fermer le message"
+      aria-label="Fermer le message"
+      (click)="dismissStatusMessages()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="depot-documents__upload-results" *ngIf="uploadResults.length > 0">
+    <div
+      class="depot-documents__upload-result"
+      *ngFor="let result of uploadResults"
+      [class.depot-documents__upload-result--success]="result.status === 'success'"
+      [class.depot-documents__upload-result--error]="result.status === 'error'"
+      [class.depot-documents__upload-result--info]="result.status === 'info'">
+      <mat-icon>{{ getUploadResultIcon(result) }}</mat-icon>
+      <div>
+        <strong>{{ result.fileName }}</strong>
+        <span>{{ result.message }}</span>
+      </div>
+    </div>
   </div>
 
   <section
@@ -96,14 +127,19 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let doc" class="depot-documents__actions">
           <button mat-icon-button *ngIf="canPreview" matTooltip="Aperçu" (click)="openPreview(doc)">
-            <mat-icon>visibility</mat-icon>
+            <mat-icon class="depot-documents__action-icon depot-documents__action-icon--primary">visibility</mat-icon>
           </button>
           <button mat-icon-button *ngIf="canDownload" matTooltip="Télécharger" (click)="downloadDoc(doc)">
-            <mat-icon>download</mat-icon>
+            <mat-icon class="depot-documents__action-icon depot-documents__action-icon--primary">download</mat-icon>
           </button>
-          <button mat-icon-button *ngIf="canDelete" color="warn" matTooltip="Supprimer" (click)="deleteDoc(doc)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <span
+            *ngIf="canDelete"
+            (confirm)="deleteDoc(doc)"
+            [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + doc.nomReel + ' ?'">
+            <button mat-icon-button matTooltip="Supprimer">
+              <mat-icon class="depot-documents__action-icon depot-documents__action-icon--warn">delete</mat-icon>
+            </button>
+          </span>
         </td>
       </ng-container>
 
@@ -113,3 +149,4 @@
   </div>
 
 </div>
+<div #replaceConfirm (confirm)="confirmReplace()" [confirmMessage]="replaceConfirmMessage"></div>

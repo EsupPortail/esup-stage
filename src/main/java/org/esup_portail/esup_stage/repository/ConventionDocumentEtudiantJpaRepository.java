@@ -8,4 +8,5 @@ import java.util.List;
 public interface ConventionDocumentEtudiantJpaRepository extends JpaRepository<ConventionDocumentEtudiant, Integer> {
     ConventionDocumentEtudiant findById(int id);
     List<ConventionDocumentEtudiant> findByConventionIdOrderByDateCreationDesc(int idConvention);
+    List<ConventionDocumentEtudiant> findByConventionIdAndNomReelOrderByDateCreationDesc(int idConvention, String nomReel);
 }

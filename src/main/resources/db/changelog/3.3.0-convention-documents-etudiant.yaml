@@ -1,4 +1,4 @@
-﻿databaseChangeLog:
+databaseChangeLog:
   - changeSet:
       id: 3.3.0-create-convention-document-etudiant
       author: thouveno9
@@ -143,3 +143,39 @@
             columns:
               - column:
                   name: idConvention
+  - changeSet:
+      id: 3.3.0-contenu-message-depot-documents-convention
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: MESSAGE_DEPOT_DOCUMENTS_CONVENTION
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: ""
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+
+  - changeSet:
+      id: 3.3.0-add-type-action-convention-document-etudiant-historique
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: ConventionDocumentEtudiantHistorique
+            columns:
+              - column:
+                  name: typeAction
+                  type: varchar(30)
+                  defaultValue: SUPPRESSION
+                  constraints:
+                    nullable: false

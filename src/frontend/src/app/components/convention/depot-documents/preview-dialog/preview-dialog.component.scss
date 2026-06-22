@@ -48,6 +48,16 @@
   gap: 2px;
 }
 
+.preview-action-icon {
+  &--primary {
+    color: var(--primaryColor);
+  }
+
+  &--warn {
+    color: #c62828;
+  }
+}
+
 .preview-content {
   display: flex;
   flex-direction: column;

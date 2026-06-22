@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConventionDocumentsResponse } from '../models/convention-document.model';
 import { environment } from '../../environments/environment';
@@ -9,7 +9,7 @@ export class ConventionDocumentService {
 
   private readonly baseUrl = `${environment.apiUrl}/conventions`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   list(idConvention: number): Observable<ConventionDocumentsResponse> {
     return this.http.get<ConventionDocumentsResponse>(
@@ -17,12 +17,14 @@ export class ConventionDocumentService {
     );
   }
 
-  upload(idConvention: number, file: File): Observable<ConventionDocumentsResponse> {
+  upload(idConvention: number, file: File, remplacer = false): Observable<ConventionDocumentsResponse> {
     const formData = new FormData();
+    const params = new HttpParams().set('remplacer', remplacer);
     formData.append('doc', file, file.name);
     return this.http.post<ConventionDocumentsResponse>(
       `${this.baseUrl}/${idConvention}/documents-etudiant`,
-      formData
+      formData,
+      { params }
     );
   }
 

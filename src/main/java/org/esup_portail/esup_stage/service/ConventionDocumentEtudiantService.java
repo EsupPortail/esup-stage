@@ -30,9 +30,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,6 +43,8 @@ public class ConventionDocumentEtudiantService {
 
     private static final Logger logger = LogManager.getLogger(ConventionDocumentEtudiantService.class);
     private static final int DEFAULT_MAX_SIZE_MO = 10;
+    private static final String ACTION_SUPPRESSION = "SUPPRESSION";
+    private static final String ACTION_REMPLACEMENT = "REMPLACEMENT";
 
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
@@ -72,7 +77,7 @@ public class ConventionDocumentEtudiantService {
     }
 
     @Transactional
-    public ConventionDocumentsResponseDto addDocument(int idConvention, MultipartFile doc) {
+    public ConventionDocumentsResponseDto addDocument(int idConvention, MultipartFile doc, boolean remplacer) {
         Convention convention = getConventionForWrite(idConvention);
         int maxSizeMo = getMaxSizeMo();
         FileValidationService.ValidatedPdf validatedPdf = fileValidationService.validatePdf(doc, maxSizeMo);
@@ -80,6 +85,11 @@ public class ConventionDocumentEtudiantService {
         String originalFilename = filenameSanitizerService.sanitize(doc.getOriginalFilename());
         if (!originalFilename.toLowerCase().endsWith(".pdf")) {
             originalFilename = originalFilename + ".pdf";
+        }
+
+        List<ConventionDocumentEtudiant> documentsExistants = documentRepository.findByConventionIdAndNomReelOrderByDateCreationDesc(convention.getId(), originalFilename);
+        if (!documentsExistants.isEmpty()) {
+            return replaceDocument(convention, documentsExistants.get(0), validatedPdf, remplacer);
         }
 
         ConventionDocumentEtudiant document = new ConventionDocumentEtudiant();
@@ -91,14 +101,23 @@ public class ConventionDocumentEtudiantService {
         document.setSha256(validatedPdf.sha256());
         document = documentRepository.saveAndFlush(document);
 
-        try {
-            Path documentPath = getDocumentPath(document);
-            Files.createDirectories(documentPath.getParent());
-            Files.write(documentPath, validatedPdf.bytes());
-        } catch (IOException e) {
-            logger.error("Erreur lors de l'upload du document étudiant", e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'upload du fichier");
+        writeDocumentFile(document, validatedPdf.bytes(), "Erreur lors de l'upload du fichier");
+
+        return buildResponse(convention);
+    }
+
+    private ConventionDocumentsResponseDto replaceDocument(Convention convention, ConventionDocumentEtudiant document, FileValidationService.ValidatedPdf validatedPdf, boolean remplacer) {
+        if (!remplacer) {
+            throw new AppException(HttpStatus.CONFLICT, "Un document avec ce nom existe déjà. Confirmez le remplacement pour modifier le document existant.");
         }
+
+        saveHistorique(convention, document, ACTION_REMPLACEMENT);
+        document.setContentType(validatedPdf.contentType());
+        document.setTaille((long) validatedPdf.bytes().length);
+        document.setSha256(validatedPdf.sha256());
+        document = documentRepository.saveAndFlush(document);
+
+        writeDocumentFile(document, validatedPdf.bytes(), "Erreur lors du remplacement du fichier");
 
         return buildResponse(convention);
     }
@@ -123,6 +142,20 @@ public class ConventionDocumentEtudiantService {
     private void deleteDocument(Convention convention, ConventionDocumentEtudiant document) {
         Path filePath = getDocumentPath(document);
 
+        saveHistorique(convention, document, ACTION_SUPPRESSION);
+
+        documentRepository.delete(document);
+        documentRepository.flush();
+
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            logger.error("Erreur lors de la suppression du document étudiant", e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la suppression du fichier");
+        }
+    }
+
+    private void saveHistorique(Convention convention, ConventionDocumentEtudiant document, String typeAction) {
         ConventionDocumentEtudiantHistorique historique = new ConventionDocumentEtudiantHistorique();
         historique.setIdConvention(convention.getId());
         historique.setIdDocumentEtudiant(document.getId());
@@ -133,16 +166,32 @@ public class ConventionDocumentEtudiantService {
         historique.setSha256(document.getSha256());
         historique.setLoginDepot(document.getLoginCreation());
         historique.setDateDepot(document.getDateCreation());
+        historique.setTypeAction(typeAction);
         historiqueRepository.save(historique);
+    }
 
-        documentRepository.delete(document);
-        documentRepository.flush();
-
+    private void writeDocumentFile(ConventionDocumentEtudiant document, byte[] bytes, String errorMessage) {
+        Path documentPath = getDocumentPath(document);
+        Path tempPath = null;
         try {
-            Files.deleteIfExists(filePath);
+            Files.createDirectories(documentPath.getParent());
+            tempPath = documentPath.resolveSibling(documentPath.getFileName() + "." + UUID.randomUUID() + ".tmp");
+            Files.write(tempPath, bytes);
+            try {
+                Files.move(tempPath, documentPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tempPath, documentPath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
-            logger.error("Erreur lors de la suppression du document étudiant", e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la suppression du fichier");
+            if (tempPath != null) {
+                try {
+                    Files.deleteIfExists(tempPath);
+                } catch (IOException deleteException) {
+                    logger.warn("Impossible de supprimer le fichier temporaire de document étudiant", deleteException);
+                }
+            }
+            logger.error(errorMessage, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
         }
     }
 

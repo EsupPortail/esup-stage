@@ -30,8 +30,11 @@ public class ConventionDocumentEtudiantController {
 
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
-    public ConventionDocumentsResponseDto addDocument(@PathVariable("idConvention") int idConvention, @RequestParam(value = "doc") MultipartFile doc) {
-        return conventionDocumentEtudiantService.addDocument(idConvention, doc);
+    public ConventionDocumentsResponseDto addDocument(
+            @PathVariable("idConvention") int idConvention,
+            @RequestParam(value = "doc") MultipartFile doc,
+            @RequestParam(value = "remplacer", defaultValue = "false") boolean remplacer) {
+        return conventionDocumentEtudiantService.addDocument(idConvention, doc, remplacer);
     }
 
     @GetMapping("/{idDocument}/preview")

@@ -1,11 +1,27 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ConventionDocumentService } from '../../../services/convention-documents.service';
 import { ConventionDocumentEtudiant, ConventionDocumentsResponse } from '../../../models/convention-document.model';
 import { DepotDocumentPreviewDialogComponent, PreviewDialogData } from './preview-dialog/preview-dialog.component';
+import { ConfirmComponent } from '../../confirm/confirm.component';
 
 type DepotDocumentsStatusType = 'success' | 'error' | 'info';
+type UploadResultStatus = 'success' | 'error' | 'info';
+
+interface UploadResult {
+  fileName: string;
+  status: UploadResultStatus;
+  message: string;
+}
+
+interface PendingReplacement {
+  files: File[];
+  index: number;
+  successCount: number;
+  skippedCount: number;
+  hasError: boolean;
+  file: File;
+}
 
 @Component({
   selector: 'app-depot-documents',
@@ -16,11 +32,13 @@ type DepotDocumentsStatusType = 'success' | 'error' | 'info';
 export class DepotDocumentsComponent implements OnInit, OnChanges {
 
   @Input() idConvention!: number;
+  @ViewChild('replaceConfirm') replaceConfirm!: ConfirmComponent;
 
   documents: ConventionDocumentEtudiant[] = [];
-  message: SafeHtml | null = null;
   statusMessage: string | null = null;
   statusType: DepotDocumentsStatusType = 'info';
+  uploadResults: UploadResult[] = [];
+  replaceConfirmMessage = '';
   tailleMaxMo = 10;
 
   canUpload = false;
@@ -34,10 +52,11 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
   readonly displayedColumns = ['nom', 'taille', 'depose', 'actions'];
 
+  private pendingReplacement: PendingReplacement | null = null;
+
   constructor(
-    private documentService: ConventionDocumentService,
-    private dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private readonly documentService: ConventionDocumentService,
+    private readonly dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +75,7 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     this.loading = true;
     if (clearStatus) {
       this.clearStatusMessage();
+      this.uploadResults = [];
     }
     this.documentService.list(this.idConvention).subscribe({
       next: (response) => this.applyResponse(response),
@@ -68,7 +88,6 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
   private applyResponse(response: ConventionDocumentsResponse): void {
     this.documents = response.documents;
-    this.message = response.message ? this.sanitizer.bypassSecurityTrustHtml(response.message) : null;
     this.tailleMaxMo = response.tailleMaxMo;
     this.canUpload = response.canUpload;
     this.canDelete = response.canDelete;
@@ -116,40 +135,77 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     }
 
     this.clearStatusMessage();
+    this.uploadResults = [];
     this.uploading = true;
-    this.uploadFilesSequentially(Array.from(fileList), 0, 0, false);
+    this.uploadFilesSequentially(Array.from(fileList), 0, 0, 0, false);
   }
 
-  private uploadFilesSequentially(files: File[], index: number, uploadedCount: number, hasError: boolean): void {
+  private uploadFilesSequentially(files: File[], index: number, successCount: number, skippedCount: number, hasError: boolean): void {
     if (index >= files.length) {
       this.uploading = false;
-      if (uploadedCount > 0 && hasError) {
-        this.setStatusMessage(`${uploadedCount} document${uploadedCount > 1 ? 's' : ''} ajouté${uploadedCount > 1 ? 's' : ''}. Certains fichiers ont été refusés.`, 'info');
-      } else if (uploadedCount > 0) {
-        this.setStatusMessage(`${uploadedCount} document${uploadedCount > 1 ? 's' : ''} ajouté${uploadedCount > 1 ? 's' : ''}.`, 'success');
-      }
+      this.setUploadSummary(files.length, successCount, skippedCount, hasError);
       return;
     }
 
     const file = files[index];
     const clientError = this.validateFileClientSide(file);
     if (clientError) {
-      this.setStatusMessage(clientError, 'error');
-      this.uploadFilesSequentially(files, index + 1, uploadedCount, true);
+      this.addUploadResult(file.name, 'error', clientError);
+      this.uploadFilesSequentially(files, index + 1, successCount, skippedCount, true);
       return;
     }
 
-    this.documentService.upload(this.idConvention, file).subscribe({
+    if (this.documents.some((doc) => doc.nomReel === file.name)) {
+      this.askReplaceConfirmation(files, index, successCount, skippedCount, hasError, file);
+      return;
+    }
+
+    this.uploadFile(files, index, successCount, skippedCount, hasError, false);
+  }
+
+  private askReplaceConfirmation(files: File[], index: number, successCount: number, skippedCount: number, hasError: boolean, file: File): void {
+    this.pendingReplacement = { files, index, successCount, skippedCount, hasError, file };
+    this.replaceConfirmMessage = `Un document nommé <strong>${this.escapeHtml(file.name)}</strong> existe déjà. Voulez-vous remplacer le document existant ?`;
+    this.replaceConfirm.onClick();
+    this.replaceConfirm.dialogRef.afterClosed().subscribe(() => {
+      if (this.pendingReplacement?.file !== file) {
+        return;
+      }
+      this.pendingReplacement = null;
+      this.addUploadResult(file.name, 'info', 'Remplacement annulé, document existant conservé.');
+      this.uploadFilesSequentially(files, index + 1, successCount, skippedCount + 1, hasError);
+    });
+  }
+
+  confirmReplace(): void {
+    if (!this.pendingReplacement) {
+      return;
+    }
+
+    const pending = this.pendingReplacement;
+    this.pendingReplacement = null;
+    this.uploadFile(pending.files, pending.index, pending.successCount, pending.skippedCount, pending.hasError, true);
+  }
+
+  private uploadFile(files: File[], index: number, successCount: number, skippedCount: number, hasError: boolean, remplacer: boolean): void {
+    const file = files[index];
+    this.documentService.upload(this.idConvention, file, remplacer).subscribe({
       next: (response) => {
         this.applyResponse(response);
-        this.uploadFilesSequentially(files, index + 1, uploadedCount + 1, hasError);
+        this.addUploadResult(file.name, 'success', remplacer ? 'Document modifié.' : 'Document ajouté.');
+        this.uploadFilesSequentially(files, index + 1, successCount + 1, skippedCount, hasError);
       },
       error: (err) => {
-        this.setStatusMessage(
-          err?.error?.message || 'Le fichier doit être un PDF valide et sécurisé.',
-          'error'
+        if (!remplacer && err?.status === 409) {
+          this.askReplaceConfirmation(files, index, successCount, skippedCount, hasError, file);
+          return;
+        }
+        this.addUploadResult(
+          file.name,
+          'error',
+          err?.error?.message || 'Le fichier doit être un PDF valide et sécurisé.'
         );
-        this.uploadFilesSequentially(files, index + 1, uploadedCount, true);
+        this.uploadFilesSequentially(files, index + 1, successCount, skippedCount, true);
       }
     });
   }
@@ -189,6 +245,7 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
 
     ref.afterClosed().subscribe(result => {
       if (result === 'deleted') {
+        this.uploadResults = [];
         this.setStatusMessage('Document supprimé.', 'success');
         this.loadDocuments(false);
       }
@@ -214,6 +271,7 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
   deleteDoc(doc: ConventionDocumentEtudiant): void {
     this.documentService.delete(this.idConvention, doc.id).subscribe({
       next: (response) => {
+        this.uploadResults = [];
         this.applyResponse(response);
         this.setStatusMessage('Document supprimé.', 'success');
       },
@@ -243,6 +301,53 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
     return 'info';
   }
 
+  dismissStatusMessages(): void {
+    this.clearStatusMessage();
+    this.uploadResults = [];
+  }
+
+  getUploadResultIcon(result: UploadResult): string {
+    if (result.status === 'success') {
+      return 'check_circle';
+    }
+    if (result.status === 'error') {
+      return 'error_outline';
+    }
+    return 'info';
+  }
+
+  private setUploadSummary(totalCount: number, successCount: number, skippedCount: number, hasError: boolean): void {
+    const rejectedCount = totalCount - successCount - skippedCount;
+    const successLabel = `${successCount} document${successCount > 1 ? 's' : ''} ajouté${successCount > 1 ? 's' : ''} ou modifié${successCount > 1 ? 's' : ''}`;
+
+    if (successCount > 0 && (rejectedCount > 0 || skippedCount > 0)) {
+      const details = [];
+      if (rejectedCount > 0) {
+        details.push(`${rejectedCount} refusé${rejectedCount > 1 ? 's' : ''}`);
+      }
+      if (skippedCount > 0) {
+        details.push(`${skippedCount} ignoré${skippedCount > 1 ? 's' : ''}`);
+      }
+      this.setStatusMessage(`${successLabel}, ${details.join(', ')}.`, hasError ? 'info' : 'success');
+      return;
+    }
+    if (successCount > 0) {
+      this.setStatusMessage(`${successLabel}.`, 'success');
+      return;
+    }
+    if (hasError) {
+      this.setStatusMessage('Aucun document ajouté ou modifié. Consultez le détail ci-dessous.', 'error');
+      return;
+    }
+    if (skippedCount > 0) {
+      this.setStatusMessage('Aucun document modifié.', 'info');
+    }
+  }
+
+  private addUploadResult(fileName: string, status: UploadResultStatus, message: string): void {
+    this.uploadResults = [...this.uploadResults, { fileName, status, message }];
+  }
+
   private setStatusMessage(message: string, type: DepotDocumentsStatusType): void {
     this.statusMessage = message;
     this.statusType = type;
@@ -251,5 +356,11 @@ export class DepotDocumentsComponent implements OnInit, OnChanges {
   private clearStatusMessage(): void {
     this.statusMessage = null;
     this.statusType = 'info';
+  }
+
+  private escapeHtml(value: string): string {
+    const div = document.createElement('div');
+    div.innerText = value;
+    return div.innerHTML;
   }
 }
