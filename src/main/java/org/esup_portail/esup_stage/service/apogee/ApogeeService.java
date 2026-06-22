@@ -376,12 +376,22 @@ public class ApogeeService {
     public InfosAdmEtu getInfosAdmEtudiant(String numEtud) {
         Map<String, String> params = new HashMap<>();
         params.put("numEtud", numEtud);
-        String response = call("/infosAdmEtu", params);
+        String response;
+        try {
+            response = call("/infosAdmEtu", params);
+        } catch (AppException e) {
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND) {
+                LOGGER.info("Aucune donnée administrative trouvée pour l'étudiant {}", numEtud);
+                return null;
+            }
+            throw e;
+        }
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             InfosAdmEtu infoAdmEtudiant = mapper.readValue(response, InfosAdmEtu.class);
             if (infoAdmEtudiant == null) {
-                LOGGER.info("Aucune donnée trouvée");
+                LOGGER.info("Aucune donnée administrative trouvée pour l'étudiant {}", numEtud);
             }
             return infoAdmEtudiant;
         } catch (JsonProcessingException e) {
