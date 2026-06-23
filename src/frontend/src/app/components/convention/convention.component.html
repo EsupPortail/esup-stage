@@ -92,7 +92,19 @@
   </mat-tab>
   <mat-tab #depotDocumentsTab [disabled]="!convention.id" *ngIf="canAccessDepotDocuments()">
     <ng-template mat-tab-label>
-      Dépôt de documents
+      <div class="tabTitle">
+        Dépôt de documents
+        <mat-progress-bar
+          mode="determinate"
+          [value]="100"
+          class="done"
+          role="progressbar"
+          aria-valuenow="100"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuetext="Dépôt de documents disponible"
+        ></mat-progress-bar>
+      </div>
     </ng-template>
     <app-depot-documents
       *ngIf="depotDocumentsTab.isActive || tabs[5].init"
