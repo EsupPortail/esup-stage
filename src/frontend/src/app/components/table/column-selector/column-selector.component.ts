@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'app-column-selector',
-  templateUrl: './column-selector.component.html',
-  styleUrls: ['./column-selector.component.scss']
+    selector: 'app-column-selector',
+    templateUrl: './column-selector.component.html',
+    styleUrls: ['./column-selector.component.scss'],
+    standalone: false
 })
 export class ColumnSelectorComponent {
   sheets: any[] = [];

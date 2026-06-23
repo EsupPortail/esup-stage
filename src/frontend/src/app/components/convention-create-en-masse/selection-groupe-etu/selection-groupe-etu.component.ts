@@ -16,9 +16,10 @@ import {
 import {map} from "rxjs/operators";
 
 @Component({
-  selector: 'app-selection-groupe-etu',
-  templateUrl: './selection-groupe-etu.component.html',
-  styleUrls: ['./selection-groupe-etu.component.scss']
+    selector: 'app-selection-groupe-etu',
+    templateUrl: './selection-groupe-etu.component.html',
+    styleUrls: ['./selection-groupe-etu.component.scss'],
+    standalone: false
 })
 export class SelectionGroupeEtuComponent implements OnInit, OnChanges {
 

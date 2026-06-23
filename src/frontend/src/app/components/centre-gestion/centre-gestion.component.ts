@@ -9,11 +9,14 @@ import { ConsigneService } from "../../services/consigne.service";
 import {REGEX} from "../../utils/regex.utils";
 import { CoordCentreComponent } from './coord-centre/coord-centre.component';
 import { Subscription } from 'rxjs';
+import { getProgressText } from '../../utils/text-progress-bar.utils';
+
 
 @Component({
-  selector: 'app-centre-gestion',
-  templateUrl: './centre-gestion.component.html',
-  styleUrls: ['./centre-gestion.component.scss'],
+    selector: 'app-centre-gestion',
+    templateUrl: './centre-gestion.component.html',
+    styleUrls: ['./centre-gestion.component.scss'],
+    standalone: false
 })
 export class CentreGestionComponent implements OnInit,OnDestroy {
 
@@ -49,6 +52,8 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
   paramCentreForm!: FormGroup;
   consigneCentre: any;
   signatureElectroniqueForm!: FormGroup;
+
+  protected readonly getProgressText = getProgressText;
 
   @ViewChild('matTabs') matTabs: MatTabGroup | undefined;
   @ViewChild('coordCentre') coordCentreComponent!: CoordCentreComponent;
@@ -205,7 +210,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     );
 
     this.subscriptions.push(
-      this.paramCentreForm.valueChanges.pipe(debounceTime(1000)).subscribe(val => {
+      this.paramCentreForm.valueChanges.pipe(debounceTime(1500)).subscribe(val => {
         this.setCentreGestionParamCentre();
         this.update();
       })
@@ -303,6 +308,12 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       qualiteViseur: [null, [Validators.maxLength(100)]],
       delaiAlerteConvention: [null, [Validators.required, Validators.min(0)]],
       onlyMailCentreGestion: [null],
+      autoriserChevauchement: [null],
+      autoriserImpressionConventionApresCreationAvenant: [null],
+      nomDelegataireViseur: [null],
+      prenomDelegataireViseur: [null],
+      mailDelegataireViseur: [null],
+      qualiteDelegataireViseur: [null],
     });
   }
 
@@ -327,6 +338,12 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.qualiteViseur = this.paramCentreForm.get('qualiteViseur')?.value;
     this.centreGestion.delaiAlerteConvention = this.paramCentreForm.get('delaiAlerteConvention')?.value;
     this.centreGestion.onlyMailCentreGestion = this.paramCentreForm.get('onlyMailCentreGestion')?.value;
+    this.centreGestion.autoriserChevauchement = this.paramCentreForm.get('autoriserChevauchement')?.value;
+    this.centreGestion.autoriserImpressionConventionApresCreationAvenant = this.paramCentreForm.get('autoriserImpressionConventionApresCreationAvenant')?.value;
+    this.centreGestion.nomDelegataireViseur = this.paramCentreForm.get('nomDelegataireViseur')?.value;
+    this.centreGestion.prenomDelegataireViseur = this.paramCentreForm.get('prenomDelegataireViseur')?.value;
+    this.centreGestion.mailDelegataireViseur = this.paramCentreForm.get('mailDelegataireViseur')?.value;
+    this.centreGestion.qualiteDelegataireViseur = this.paramCentreForm.get('qualiteDelegataireViseur')?.value;
   }
 
   setSignatureElectroniqueForm() {

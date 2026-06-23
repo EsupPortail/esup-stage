@@ -10,9 +10,10 @@ import { ConfirmComponent } from 'src/app/components/confirm/confirm.component';
 import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
-  selector: 'app-avenant-view',
-  templateUrl: './avenant-view.component.html',
-  styleUrls: ['./avenant-view.component.scss']
+    selector: 'app-avenant-view',
+    templateUrl: './avenant-view.component.html',
+    styleUrls: ['./avenant-view.component.scss'],
+    standalone: false
 })
 export class AvenantViewComponent implements OnInit {
 

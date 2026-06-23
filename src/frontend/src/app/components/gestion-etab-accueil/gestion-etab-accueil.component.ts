@@ -22,9 +22,10 @@ import {CalendrierComponent} from "../convention/stage/calendrier/calendrier.com
 import {ConfirmDeleteDialogComponent} from "./confirm-delete-dialog/confirm-delete-dialog.component";
 
 @Component({
-  selector: 'app-gestion-etab-accueil',
-  templateUrl: './gestion-etab-accueil.component.html',
-  styleUrls: ['./gestion-etab-accueil.component.scss']
+    selector: 'app-gestion-etab-accueil',
+    templateUrl: './gestion-etab-accueil.component.html',
+    styleUrls: ['./gestion-etab-accueil.component.scss'],
+    standalone: false
 })
 export class GestionEtabAccueilComponent implements OnInit {
 

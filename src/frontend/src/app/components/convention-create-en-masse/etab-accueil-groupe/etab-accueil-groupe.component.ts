@@ -11,9 +11,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-etab-accueil-groupe',
-  templateUrl: './etab-accueil-groupe.component.html',
-  styleUrls: ['./etab-accueil-groupe.component.scss']
+    selector: 'app-etab-accueil-groupe',
+    templateUrl: './etab-accueil-groupe.component.html',
+    styleUrls: ['./etab-accueil-groupe.component.scss'],
+    standalone: false
 })
 export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
 

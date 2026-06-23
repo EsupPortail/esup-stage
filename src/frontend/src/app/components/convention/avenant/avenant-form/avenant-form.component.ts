@@ -27,9 +27,10 @@ import { ConventionService } from 'src/app/services/convention.service';
 import {MAX_LENTGH_INPUT} from "../../../../constants/max-length-input";
 
 @Component({
-  selector: 'app-avenant-form',
-  templateUrl: './avenant-form.component.html',
-  styleUrls: ['./avenant-form.component.scss']
+    selector: 'app-avenant-form',
+    templateUrl: './avenant-form.component.html',
+    styleUrls: ['./avenant-form.component.scss'],
+    standalone: false
 })
 export class AvenantFormComponent implements OnInit {
 

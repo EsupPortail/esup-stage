@@ -20,7 +20,14 @@ export class EtudiantGroupeEtudiantService implements PaginatedService {
   }
 
   getMobileTitle(row: any): string {
-    return "";
+    const id = row?.convention?.id ?? '';
+    const prenom = row?.etudiant?.prenom ?? '';
+    const nom = row?.etudiant?.nom ?? '';
+    const fullName = `${prenom} ${nom}`.trim();
+    if (id && fullName) {
+      return `${id} - ${fullName}`;
+    }
+    return fullName || `${id}` || '';
   }
 
 }

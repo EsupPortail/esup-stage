@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.service.signature;
 
 import lombok.extern.slf4j.Slf4j;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
@@ -27,13 +29,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Slf4j
@@ -97,9 +100,11 @@ public class SignatureService {
     }
 
     public MetadataDto getPublicMetadata(Convention convention, Integer idAvenant) {
-        Avenant avenant = null;
+        Avenant avenant;
         if (idAvenant != null) {
             avenant = avenantJpaRepository.findById(idAvenant).orElse(null);
+        } else {
+            avenant = null;
         }
         MetadataDto metadata = new MetadataDto();
         metadata.setTitle("Convention_" + convention.getId() + "_" + convention.getEtudiant().getNom() + "_" + convention.getEtudiant().getPrenom());
@@ -137,6 +142,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case enseignant:
+                    if(avenant != null){
+                        if(avenant.getEnseignant() != null) {
+                            Enseignant enseignantAvenant = avenant.getEnseignant();
+                            signataireDto.setName(enseignantAvenant.getNom());
+                            signataireDto.setGivenname(enseignantAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(enseignantAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(enseignantAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Enseignant enseignant = convention.getEnseignant();
                     signataireDto.setName(enseignant.getNom());
                     signataireDto.setGivenname(enseignant.getPrenom());
@@ -145,6 +161,17 @@ public class SignatureService {
                     signataireDto.setOrder(s.getOrdre());
                     break;
                 case tuteur:
+                    if(avenant != null){
+                        if(avenant.getContact() != null) {
+                            Contact tuteurAvenant = avenant.getContact();
+                            signataireDto.setName(tuteurAvenant.getNom());
+                            signataireDto.setGivenname(tuteurAvenant.getPrenom());
+                            signataireDto.setMail(impressionService.getOtpDataEmail(tuteurAvenant.getMail()));
+                            phone = impressionService.getOtpDataPhoneNumber(tuteurAvenant.getTel());
+                            signataireDto.setOrder(s.getOrdre());
+                            break;
+                        }
+                    }
                     Contact tuteur = convention.getContact();
                     signataireDto.setName(tuteur.getNom());
                     signataireDto.setGivenname(tuteur.getPrenom());
@@ -162,9 +189,12 @@ public class SignatureService {
                     break;
                 case viseur:
                     CentreGestion centreGestion = convention.getCentreGestion();
-                    signataireDto.setName(centreGestion.getNomViseur());
-                    signataireDto.setGivenname(centreGestion.getPrenomViseur());
-                    signataireDto.setMail(impressionService.getOtpDataEmail(centreGestion.getMailViseur()));
+                    String mailViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getMailDelegataireViseur() : centreGestion.getMailViseur();
+                    String nomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getNomDelegataireViseur() : centreGestion.getNomViseur();
+                    String prenomViseur = centreGestion.getMailDelegataireViseur() != null && !centreGestion.getMailDelegataireViseur().isEmpty() ? centreGestion.getPrenomDelegataireViseur() : centreGestion.getPrenomViseur();
+                    signataireDto.setName(nomViseur);
+                    signataireDto.setGivenname(prenomViseur);
+                    signataireDto.setMail(impressionService.getOtpDataEmail(mailViseur));
                     phone = impressionService.getOtpDataPhoneNumber(centreGestion.getTelephone());
                     signataireDto.setOrder(s.getOrdre());
                     break;
@@ -282,7 +312,7 @@ public class SignatureService {
                 count++;
             }catch(Exception e){
                 logger.error("Une erreur est survenue lors du traitement de la convention {} : {}",id,e);
-                throw e;
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi en signature de la convention " + id);
             }
 
         }
@@ -488,11 +518,31 @@ public class SignatureService {
     public void saveSignedFile(MetadataDto metadataDto, InputStream inputStream) {
         Path uploadLocation = Paths.get(getSignatureFilePath(metadataDto.getTitle()));
         try {
-            Files.copy(inputStream, uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            byte[] pdfBytes = validateSignedPdf(inputStream);
+            Files.write(uploadLocation, pdfBytes);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'enregistrement du PDF");
         }
+    }
+
+    private byte[] validateSignedPdf(InputStream inputStream) throws IOException {
+        byte[] pdfBytes = inputStream.readAllBytes();
+        if (pdfBytes.length < 5 || !"%PDF-".equals(new String(pdfBytes, 0, 5, StandardCharsets.US_ASCII))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit être un PDF valide");
+        }
+
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdfBytes)))) {
+            if (pdfDocument.getNumberOfPages() < 1) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit contenir au moins une page");
+            }
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.warn("Document signé invalide", e);
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le document signé doit être un PDF valide");
+        }
+        return pdfBytes;
     }
 
     /**

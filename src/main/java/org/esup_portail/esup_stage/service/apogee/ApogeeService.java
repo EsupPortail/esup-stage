@@ -217,18 +217,24 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention) {
+        return getInscriptions(utilisateur, numEtudiant, anneeConvention, true);
+    }
+
+    public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention, boolean filtrerEligibilite) {
         String anneeEnCours = appConfigService.getAnneeUniv();
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
+        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+        int anneeReferenceInt = getAnneeReferenceInscriptions(anneeInscriptions, anneeEnCoursInt);
+        String anneeReference = String.valueOf(anneeReferenceInt);
 
         // Filtre la liste des années universitaire pour lesquels on doit rechercher les inscriptions
         // Pour les étudiants, pas d'autorisation sur l'année précédente
         // Pour les gestionnaire, au plus autorisation sur l'année précédente
-        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt).collect(Collectors.toList());
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt).collect(Collectors.toList());
         } else {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeEnCours) || Integer.parseInt(a) > anneeEnCoursInt || anneeEnCoursInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
+            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt || anneeReferenceInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
         }
         if (anneeConvention != null && !anneeConvention.isEmpty() && !anneeInscriptions.contains(anneeConvention)) {
             anneeInscriptions.add(anneeConvention);
@@ -293,7 +299,7 @@ public class ApogeeService {
             }
         }
 
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+        if (filtrerEligibilite && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 // On garde les formations dont le centre de gestion autorise la création d'une convention
                 inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
@@ -304,7 +310,7 @@ public class ApogeeService {
                 Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
                 // On autorise la création de convention sur l'année en cours et les années suivantes
                 int anneeInt = Integer.parseInt(i.getAnnee());
-                if (i.getAnnee().equals(anneeEnCours) || anneeInt > anneeEnCoursInt) {
+                if (i.getAnnee().equals(anneeReference) || anneeInt > anneeReferenceInt) {
                     return true;
                 }
                 if (!autorisationAnneePrecedente) {
@@ -314,13 +320,23 @@ public class ApogeeService {
                     if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                         return false;
                     } else {
-                        return (anneeEnCoursInt - 1) == anneeInt;
+                        return (anneeReferenceInt - 1) == anneeInt;
                     }
                 }
             }).collect(Collectors.toList());
         }
 
         return inscriptions;
+    }
+
+    private int getAnneeReferenceInscriptions(List<String> anneeInscriptions, int anneeEnCoursInt) {
+        return anneeInscriptions.stream()
+                .mapToInt(Integer::parseInt)
+                .max()
+                .stream()
+                .map(maxAnneeInscription -> Math.min(anneeEnCoursInt, maxAnneeInscription))
+                .findFirst()
+                .orElse(anneeEnCoursInt);
     }
 
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
@@ -353,6 +369,23 @@ public class ApogeeService {
             return apogeeMap;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public InfosAdmEtu getInfosAdmEtudiant(String numEtud) {
+        Map<String, String> params = new HashMap<>();
+        params.put("numEtud", numEtud);
+        String response = call("/infosAdmEtu", params);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            InfosAdmEtu infoAdmEtudiant = mapper.readValue(response, InfosAdmEtu.class);
+            if (infoAdmEtudiant == null) {
+                LOGGER.info("Aucune donnée trouvée");
+            }
+            return infoAdmEtudiant;
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
 
-    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(GroupeEtudiantController.class);
 
     @Autowired
     GroupeEtudiantRepository groupeEtudiantRepository;
@@ -461,7 +461,8 @@ public class GroupeEtudiantController {
             }
             conventionJpaRepository.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Erreur lors de l'import des structures du groupe etudiant {}", groupeId, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
@@ -536,7 +537,14 @@ public class GroupeEtudiantController {
         RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(etudiant.getAnnee())).findAny().orElse(null);
         TypeConvention typeConvention = null;
         if (regIns != null) {
-            typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
+            String licRegIns = regIns.getLicRegIns();
+            String codRegIns = regIns.getCodRegIns();
+            if (licRegIns != null && !licRegIns.isEmpty()) {
+                typeConvention = typeConventionJpaRepository.findByCodeCtrl(licRegIns);
+            }
+            if (typeConvention == null && codRegIns != null && !codRegIns.isEmpty()) {
+                typeConvention = typeConventionJpaRepository.findByCodeCtrl(codRegIns);
+            }
         }
         EtapeInscription etapeInscription = apogeeMap.getListeEtapeInscriptions().stream()
                 .filter(i -> i.getCodeComposante().equals(etudiant.getCodeComposante())
@@ -552,7 +560,12 @@ public class GroupeEtudiantController {
             typeConvention = typeCesure;
         }
         if (typeConvention == null) {
-            throw new AppException(HttpStatus.NO_CONTENT, "Type de convention non trouvé");
+            logger.error(
+                    "Type de convention non trouvé pour le regime d'inscription (codRegIns={}, licRegIns={})",
+                    regIns != null ? regIns.getCodRegIns() : "null",
+                    regIns != null ? regIns.getLicRegIns() : "null"
+            );
+            throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
         }
         CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
         ConventionFormationDto inscription = new ConventionFormationDto();

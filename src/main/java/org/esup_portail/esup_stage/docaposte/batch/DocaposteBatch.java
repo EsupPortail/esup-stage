@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Deprecated(forRemoval = true)
 public class DocaposteBatch {
 
     private static final Logger logger = LogManager.getLogger(DocaposteBatch.class);
@@ -25,7 +26,7 @@ public class DocaposteBatch {
      * Exécution tous les jours à 1h
      */
     @Transactional
-    @Scheduled(cron = "0 0 1 * * *")
+    @Deprecated(forRemoval = true)
     public void updateSignatureInfo() {
         logger.info("Start getting signature information");
         AppSignatureEnum appSignature = signatureProperties.getAppSignatureType();

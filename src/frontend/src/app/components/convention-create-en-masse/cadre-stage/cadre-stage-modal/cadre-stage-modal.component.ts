@@ -18,11 +18,13 @@ import * as FileSaver from "file-saver";
 import { Router } from "@angular/router";
 import {REGEX} from "../../../../utils/regex.utils";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import { CadreStageConventionPayload } from "../../../../models/cadre-stage-convention-payload.model";
 
 @Component({
-  selector: 'app-cadre-stage-modal',
-  templateUrl: './cadre-stage-modal.component.html',
-  styleUrls: ['./cadre-stage-modal.component.scss']
+    selector: 'app-cadre-stage-modal',
+    templateUrl: './cadre-stage-modal.component.html',
+    styleUrls: ['./cadre-stage-modal.component.scss'],
+    standalone: false
 })
 export class CadreStageModalComponent implements OnInit {
 
@@ -191,6 +193,7 @@ export class CadreStageModalComponent implements OnInit {
     if (this.formConvention.valid) {
       const data = {...this.formConvention.getRawValue()};
       delete data.inscription;
+      delete data.inscriptionElp;
       data.numEtudiant = this.selectedNumEtudiant;
       data.codeComposante = this.formConvention.value.inscription.etapeInscription.codeComposante;
       data.libelleComposante = this.formConvention.value.inscription.etapeInscription.libComposante;
@@ -203,8 +206,9 @@ export class CadreStageModalComponent implements OnInit {
       data.creditECTS = this.formConvention.value.inscriptionElp ? this.formConvention.value.inscriptionElp.nbrCrdElp : null;
 
       data.etudiantLogin = this.convention.etudiant.identEtudiant;
+      const payload = CadreStageConventionPayload.from(data);
 
-      this.conventionService.update(this.convention.id, data).subscribe((response: any) => {
+      this.conventionService.update(this.convention.id, payload).subscribe((response: any) => {
         this.dialogRef.close(response);
       });
     }

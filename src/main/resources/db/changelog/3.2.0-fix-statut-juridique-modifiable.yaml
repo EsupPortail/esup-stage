@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-fix-statut-juridique-modifiable
+      author: thouveno9
+      comment: "Rendre modifiables les statuts juridiques existants non modifiables"
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: StatutJuridique
+        - columnExists:
+            tableName: StatutJuridique
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: StatutJuridique
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
