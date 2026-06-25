@@ -29,8 +29,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   filters: any[] = [];
   validationsOptions: any[] = [
     { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
+    { id: 'verificationAdministrative', libelle: 'Vérifiée administrativement' },
     { id: 'validationConvention', libelle: 'Validée administrativement' },
     { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
+    { id: 'nonVerificationAdministrative', libelle: 'Non vérifiée administrativement' },
     { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
     { id: 'signe', libelle: 'Signé' },
     { id: 'enCours', libelle: 'En cours de signature' },
