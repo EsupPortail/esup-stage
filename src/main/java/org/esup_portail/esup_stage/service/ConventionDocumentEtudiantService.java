@@ -45,6 +45,7 @@ public class ConventionDocumentEtudiantService {
     private static final int DEFAULT_MAX_SIZE_MO = 10;
     private static final String ACTION_SUPPRESSION = "SUPPRESSION";
     private static final String ACTION_REMPLACEMENT = "REMPLACEMENT";
+    private static final int MAX_SIZE_MO = 100;
 
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
@@ -284,7 +285,11 @@ public class ConventionDocumentEtudiantService {
     }
 
     private int getMaxSizeMo(ConfigGeneraleDto config) {
-        return config.getTailleMaxDepotDocumentsMo() > 0 ? config.getTailleMaxDepotDocumentsMo() : DEFAULT_MAX_SIZE_MO;
+        int configuredMaxSizeMo = config.getTailleMaxDepotDocumentsMo();
+        if (configuredMaxSizeMo < 1 || configuredMaxSizeMo > MAX_SIZE_MO) {
+            return DEFAULT_MAX_SIZE_MO;
+        }
+        return configuredMaxSizeMo;
     }
 
     private Path getDocumentPath(ConventionDocumentEtudiant document) {
