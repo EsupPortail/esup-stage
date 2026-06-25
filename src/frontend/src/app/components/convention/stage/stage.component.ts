@@ -40,6 +40,7 @@ export class StageComponent implements OnInit {
     'sujetStage': [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.longText)],
     'competences': [Validators.required, Validators.maxLength(MAX_LENTGH_INPUT.competences)],
     'fonctionsEtTaches': [Validators.required,Validators.maxLength(MAX_LENTGH_INPUT.fonctionsEtTaches)],
+    'informationsComplementaires': [Validators.maxLength(MAX_LENTGH_INPUT.informationsComplementaires)],
     'details': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
     'commentaireDureeTravail': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
     'modeEncadreSuivi': [Validators.maxLength(MAX_LENTGH_INPUT.longText)],
@@ -181,6 +182,7 @@ export class StageComponent implements OnInit {
       competences: [this.convention.competences, this.fieldValidators['competences']],
       fonctionsEtTaches: [this.convention.fonctionsEtTaches, this.fieldValidators['fonctionsEtTaches']],
       details: [this.convention.details, this.fieldValidators['details']],
+      informationsComplementaires: [this.convention.informationsComplementaires, this.fieldValidators['informationsComplementaires']],
       // - Partie Dates / horaires
       dateDebutStage: [this.convention.dateDebutStage ? new Date(this.convention.dateDebutStage) : null, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage ? new Date(this.convention.dateFinStage) : null, [Validators.required]],

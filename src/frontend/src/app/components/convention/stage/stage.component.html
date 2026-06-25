@@ -397,6 +397,30 @@
           </mat-form-field>
         </div>
 
+        <div class="row mt-3">
+          <mat-form-field class="col-sm-12 col-md-6 mb-3" appearance="fill">
+            <mat-label>Informations complémentaires</mat-label>
+            <textarea
+              matInput
+              formControlName="informationsComplementaires"
+              maxlength="{{ MAX_LENTGH_INPUT.informationsComplementaires }}"
+              (focus)="focused = 'informationsComplementaires'"
+              (blur)="focused = focused === 'informationsComplementaires' ? null : focused"
+            ></textarea>
+
+            <mat-error *ngIf="hasError('informationsComplementaires')">
+              <app-form-error [field]="form.get('informationsComplementaires')"></app-form-error>
+            </mat-error>
+
+            <mat-hint
+              align="end"
+              *ngIf="!hasError('informationsComplementaires') && focused === 'informationsComplementaires'"
+              [ngStyle]="{ color: counterColor('informationsComplementaires') }"
+            >
+              {{ len('informationsComplementaires') }}/{{ MAX_LENTGH_INPUT.informationsComplementaires }}
+            </mat-hint>
+          </mat-form-field>
+        </div>
       </div>
     </form>
   </mat-card-content>

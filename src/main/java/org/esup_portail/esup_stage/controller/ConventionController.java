@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 public class  ConventionController {
 
     private static final Logger logger = LogManager.getLogger(ConventionController.class);
+    private static final int INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH = 1000;
 
     @Autowired
     ConventionRepository conventionRepository;
@@ -459,6 +460,20 @@ public class  ConventionController {
         return convention;
     }
 
+    private String getLimitedStringValue(ConventionSingleFieldDto conventionSingleFieldDto, int maxLength) {
+        Object value = conventionSingleFieldDto.getValue();
+        if (value == null) {
+            return null;
+        }
+        if (!(value instanceof String stringValue)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Valeur invalide pour le champ " + conventionSingleFieldDto.getField());
+        }
+        if (stringValue.length() > maxLength) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le champ " + conventionSingleFieldDto.getField() + " est limité à " + maxLength + " caractères");
+        }
+        return stringValue;
+    }
+
     @GetMapping("/{id}/historique-validations")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
@@ -638,6 +653,9 @@ public class  ConventionController {
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "details")) {
             convention.setDetails((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "informationsComplementaires")) {
+            convention.setInformationsComplementaires(getLimitedStringValue(conventionSingleFieldDto, INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH));
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutStage")) {
             Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue());

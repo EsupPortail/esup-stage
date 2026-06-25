@@ -343,6 +343,9 @@ databaseChangeLog:
       file: 3.3.0-ajout-protection-social-organisme-accueil-convention.yaml
       relativeToChangelogFile: true
   - include:
+      file: 3.3.0-ajout-informations-complementaires-convention.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 3.3.0-config-en-bdd.yaml
       relativeToChangelogFile: true
   - include:

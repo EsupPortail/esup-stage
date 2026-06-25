@@ -224,6 +224,9 @@ public class ConventionFormDto {
     private String nbConges;
     private String competences;
 
+    @Size(max = 1000)
+    private String informationsComplementaires;
+
     private int idUniteDureeGratification;
 
     @Size(max = 50)
