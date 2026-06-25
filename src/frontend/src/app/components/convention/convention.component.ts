@@ -190,7 +190,7 @@ export class ConventionComponent implements OnInit {
   }
 
   updateStage(data: any): void {
-    this.updateSingleField(data.field,data.value);
+    this.updateSingleField(data.field, data.value, data.dureeExceptionnellePeriode);
   }
 
   updateEnseignant(data: any): void {
@@ -205,11 +205,14 @@ export class ConventionComponent implements OnInit {
   }
 
 
-  updateSingleField(key: string, value: any): void {
-    const data = {
+  updateSingleField(key: string, value: any, dureeExceptionnellePeriode?: string): void {
+    const data: any = {
       "field":key,
       "value":value,
     };
+    if (dureeExceptionnellePeriode != null) {
+      data.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
+    }
     this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
       this.convention = response;
       this.majStatus();

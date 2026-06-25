@@ -28,8 +28,12 @@ export class EvaluationTuteurComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Récupérer le token depuis les query params uniquement
-    this.token = this.route.snapshot.queryParams['token'];
+    // Recuperer le token depuis l'URL ou la session de navigation.
+    this.token = this.getTokenFromUrl() || this.ctx.getStoredToken();
+    if (this.token) {
+      this.ctx.setToken(this.token);
+      this.ensureTokenInUrl();
+    }
     // Valider immédiatement le token et, si OK, naviguer vers l'accueil
     this.validateTokenAndRedirect();
   }
@@ -39,7 +43,7 @@ export class EvaluationTuteurComponent implements OnInit {
    */
   private validateTokenAndRedirect(): void {
     if (!this.token){
-      this.messageService.setError("Token manquant dans l'URL");
+      this.messageService.setError("Token manquant ou session expiree");
       return;
     }
 
@@ -52,14 +56,44 @@ export class EvaluationTuteurComponent implements OnInit {
         this.convention = convention;
         this.ctx.setToken(this.token);
         this.ctx.setConvention(convention);
-        this.router.navigate(['/evaluation-tuteur', convention.id], {
-          queryParams: { token: this.token }
-        });
+        if (this.isRootEvaluationUrl()) {
+          this.router.navigate(['/evaluation-tuteur', convention.id], {
+            queryParams: { token: this.token }
+          });
+        }
       },
       error: (error) => {
         this.isLoading = false;
+        this.ctx.setToken(null);
         console.error('Erreur lors de la validation du token:', error);
       }
     });
+  }
+
+  private getTokenFromUrl(): string | null {
+    const routeToken = this.route.snapshot.queryParamMap.get('token') || this.route.snapshot.queryParams['token'];
+    if (routeToken) return routeToken;
+
+    const searchToken = new URLSearchParams(window.location.search).get('token');
+    if (searchToken) return searchToken;
+
+    const hash = window.location.hash;
+    const queryIndex = hash.indexOf('?');
+    if (queryIndex === -1) return null;
+
+    return new URLSearchParams(hash.substring(queryIndex + 1)).get('token');
+  }
+
+  private ensureTokenInUrl(): void {
+    if (this.route.snapshot.queryParamMap.get('token')) return;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { token: this.token },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+  private isRootEvaluationUrl(): boolean {
+    return this.router.url.split('?')[0] === '/evaluation-tuteur';
   }
 }
