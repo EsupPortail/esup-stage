@@ -12,6 +12,8 @@ import { ConventionEvaluationTuteur } from '../models/convention-evaluation-tute
  */
 @Injectable({ providedIn: 'root' })
 export class EvaluationTuteurContextService {
+  private readonly tokenStorageKey = 'evaluation-tuteur-token';
+
   /**
    * Sujet interne qui conserve la dernière valeur du token.
    */
@@ -37,7 +39,16 @@ export class EvaluationTuteurContextService {
    * @param t Nouveau token (ou `null` pour réinitialiser).
    */
   setToken(t: string | null): void {
+    if (t) {
+      sessionStorage.setItem(this.tokenStorageKey, t);
+    } else {
+      sessionStorage.removeItem(this.tokenStorageKey);
+    }
     this.tokenSubject.next(t);
+  }
+
+  getStoredToken(): string | null {
+    return sessionStorage.getItem(this.tokenStorageKey);
   }
 
   /**

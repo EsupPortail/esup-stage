@@ -29,6 +29,7 @@ export class AccueilTuteurComponent implements OnInit {
     this.router.navigate(['questionnaire'],
       {
         relativeTo: this.route,
+        queryParamsHandling: 'preserve',
       });
   }
 }

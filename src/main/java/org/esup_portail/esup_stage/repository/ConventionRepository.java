@@ -48,7 +48,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(c.etape.id.code = :codeEtape" + i + " AND c.etape.id.codeUniversite = :codeUnivEtape" + i + " AND c.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.isEmpty()) {
+            if (!clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
@@ -99,11 +99,17 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                     case "validationConvention":
                         clauseAnd.add("c.validationConvention = TRUE");
                         break;
+                    case "verificationAdministrative":
+                        clauseAnd.add("c.verificationAdministrative = TRUE");
+                        break;
                     case "nonValidationPedagogique":
                         clauseAnd.add("c.validationPedagogique = FALSE");
                         break;
                     case "nonValidationConvention":
                         clauseAnd.add("c.validationConvention = FALSE");
+                        break;
+                    case "nonVerificationAdministrative":
+                        clauseAnd.add("c.verificationAdministrative = FALSE");
                         break;
                     case "signe":
                         clauseAnd.add("c.dateSignatureEnseignant IS NOT NULL AND c.dateSignatureEtudiant IS NOT NULL AND c.dateSignatureSignataire IS NOT NULL AND c.dateSignatureTuteur IS NOT NULL AND c.dateSignatureViseur IS NOT NULL");
@@ -118,7 +124,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         break;
                 }
             }
-            if (clauseAnd.isEmpty()) {
+            if (!clauseAnd.isEmpty()) {
                 clauses.add("(" + String.join(" AND ", clauseAnd) + ")");
             }
         }

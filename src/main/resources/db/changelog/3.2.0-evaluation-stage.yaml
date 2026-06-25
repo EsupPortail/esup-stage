@@ -201,3 +201,15 @@ databaseChangeLog:
             tableName: EvaluationTuteurToken
             columnName: Token
             newDataType: VARCHAR(1024)
+  - changeSet:
+      id: 3.2.3-fix-evaluation-tuteur-token-dates
+      author: thouveno9
+      changes:
+        - modifyDataType:
+            tableName: EvaluationTuteurToken
+            columnName: DateExpiration
+            newDataType: DATETIME
+        - modifyDataType:
+            tableName: EvaluationTuteurToken
+            columnName: DateCreation
+            newDataType: DATETIME
