@@ -16,13 +16,17 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
             SELECT c
             FROM Contact c
             WHERE c.id = :id
-              AND (
-                c.centreGestion.id IN :centreIds
-                OR c.centreGestion.codeConfidentialite IS NULL
-                OR c.centreGestion.codeConfidentialite.code = '0'
-              )
+              AND c.centreGestion.id IN :centreIds
             """)
     Contact findVisibleByIdForCentres(@Param("id") int id, @Param("centreIds") List<Integer> centreIds);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END
+            FROM Contact c
+            WHERE c.id = :id
+              AND c.centreGestion.id IN :centreIds
+            """)
+    boolean existsByIdAndCentreGestionIdIn(@Param("id") Integer id, @Param("centreIds") List<Integer> centreIds);
 
     @Query("SELECT c FROM Contact c WHERE c.service.id = :idService")
     List<Contact> findByService(@Param("idService") int idService);
@@ -35,6 +39,7 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
                 c.centreGestion.id IN :centreIds
                 OR c.centreGestion.codeConfidentialite IS NULL
                 OR c.centreGestion.codeConfidentialite.code = '0'
+                OR (c.centreGestion.codeConfidentialite.code = '2' AND c.centreGestion.codeConfidentialiteConventionOrpheline.code = '0')
               )
             """)
     List<Contact> findByServiceVisibleForCentres(@Param("idService") int idService, @Param("centreIds") List<Integer> centreIds);

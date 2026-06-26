@@ -95,7 +95,7 @@ public class ServiceController {
     }
 
     @GetMapping("/getByStructure/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC, AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<ServiceDto> getByStructure(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         List<Service> services = serviceJpaRepository.findByStructure(id);
         if (services == null) {
@@ -122,7 +122,7 @@ public class ServiceController {
                 throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
             }
             filteredServices = filteredServices.stream()
-                    .filter(service -> canUseServiceForConvention(service, centreGestionConvention))
+                    .filter(service -> canUseServiceForConvention(service, centreGestionConvention, centresDemandeur))
                     .toList();
         }
 
@@ -145,11 +145,15 @@ public class ServiceController {
         if (isGestionnaire(utilisateur)) {
             if (serviceFormDto.getIdCentreGestion() != null) {
                 centreGestion = centreGestionJpaRepository.findById(serviceFormDto.getIdCentreGestion().intValue());
+            } else if (structure.getCentreGestionProprietaire() != null) {
+                centreGestion = structure.getCentreGestionProprietaire();
             } else {
                 centreGestion = centreGestionJpaRepository.getCentreEtablissement();
             }
         } else {
-            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
+            centreGestion = structure.getCentreGestionProprietaire() != null
+                    ? structure.getCentreGestionProprietaire()
+                    : centreGestionJpaRepository.getCentreEtablissement();
         }
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
@@ -222,12 +226,19 @@ public class ServiceController {
         return false;
     }
 
-    private boolean canUseServiceForConvention(Service service, CentreGestion centreGestionConvention) {
+    private boolean canUseServiceForConvention(Service service, CentreGestion centreGestionConvention, List<CentreGestion> centresDemandeur) {
         CentreGestion centreGestionService = service != null ? service.getCentreGestion() : null;
         return centreGestionService != null
                 && (centreGestionService.getId() == centreGestionConvention.getId()
+                || isAttachedToCentre(centresDemandeur, centreGestionService)
                 || confidentialiteService.isNoConfidentiality(centreGestionService)
                 || confidentialiteService.isCentreEtablissement(centreGestionService));
+    }
+
+    private boolean isAttachedToCentre(List<CentreGestion> centresDemandeur, CentreGestion centreGestion) {
+        return centresDemandeur != null
+                && centreGestion != null
+                && centresDemandeur.stream().anyMatch(centreDemandeur -> centreDemandeur.getId() == centreGestion.getId());
     }
 
     private void assertCanViewService(Service service, Utilisateur utilisateur) {

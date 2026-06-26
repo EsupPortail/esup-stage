@@ -247,7 +247,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   openServiceFormModal(service: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {service: service, etab: this.data, countries: this.countries};
+    dialogConfig.data = {service: service, etab: this.data, countries: this.countries, idCentreGestion: this.getCurrentCentreGestionId(service)};
     const modalDialog = this.matDialog.open(ServiceAccueilFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -266,7 +266,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   openContactFormModal(contact: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '1000px';
-    dialogConfig.data = {contact: contact, service: this.service, civilites: this.civilites};
+    dialogConfig.data = {contact: contact, service: this.service, civilites: this.civilites, idCentreGestion: this.getCurrentCentreGestionId(contact ?? this.service)};
     const modalDialog = this.matDialog.open(ContactFormComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
@@ -426,5 +426,13 @@ export class GestionEtabAccueilComponent implements OnInit {
     });
     const selectedCentreId = await firstValueFrom(dialogRef.afterClosed());
     return selectedCentreId ?? null;
+  }
+
+  private getCurrentCentreGestionId(source?: any): number | null {
+    return source?.idCentreGestion
+      ?? source?.centreGestionnaire?.id
+      ?? source?.centreGestion?.id
+      ?? this.data?.centreGestionProprietaire?.id
+      ?? (this.gestionnaireCentres.length === 1 ? this.gestionnaireCentres[0].id : null);
   }
 }
