@@ -90,6 +90,9 @@ public class ConventionService {
     @Autowired
     private StructureService structureService;
 
+    @Autowired
+    HabilitationService habilitationService;
+
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
         if (
@@ -307,20 +310,41 @@ public class ConventionService {
     }
 
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
+        canViewEditConvention(convention, utilisateur, DroitEnum.LECTURE);
+    }
+
+    public void canViewEditConvention(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
+        }
+        if (hasCentreConventionRight(convention, utilisateur, droit)) {
+            return;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
             }
+            return;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+    }
+
+    private boolean hasCentreConventionRight(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
+        if (convention == null || convention.getCentreGestion() == null) {
+            return false;
+        }
+        try {
+            return habilitationService.hasCentreRight(utilisateur, convention.getCentreGestion().getId(), new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{droit});
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
@@ -344,7 +368,8 @@ public class ConventionService {
                 if (!UtilisateurHelper.isRole(utilisateur, Role.GES) && !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
                     // en fonction du paramétrage
                     try {
-                        modifiable = modifiable && UtilisateurHelper.isRole(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION});
+                        modifiable = modifiable && (UtilisateurHelper.isRole(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION})
+                                || hasCentreConventionRight(convention, utilisateur, DroitEnum.MODIFICATION));
                     } catch (Exception e) {
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
                     }

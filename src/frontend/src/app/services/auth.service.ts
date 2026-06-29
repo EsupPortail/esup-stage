@@ -107,7 +107,7 @@ export class AuthService {
     let hasRight = true;
     if (right.fonction && right.droits) {
       hasRight = false;
-      this.userConnected.roles.forEach((r: any) => {
+      this.getEffectiveRoles(right).forEach((r: any) => {
         r.roleAppFonctions.forEach((ha: any) => {
           if (ha.appFonction.code === right.fonction) {
             right.droits.forEach((d: any) => {
@@ -120,6 +120,18 @@ export class AuthService {
       });
     }
     return hasRight;
+  }
+
+  private getEffectiveRoles(right?: any): any[] {
+    const globalRoles = this.userConnected?.roles || [];
+    if (right?.fonction !== 'PARAM_CENTRE' && right?.fonction !== 'CONVENTION') {
+      return globalRoles;
+    }
+
+    const centreRoles = (this.userConnected?.centreRoles || [])
+      .map((centreRole: any) => centreRole.role)
+      .filter((role: any) => !!role);
+    return [...globalRoles, ...centreRoles];
   }
 
   async ensureAdminTechListLoaded(): Promise<void> {
@@ -189,7 +201,7 @@ export class AuthService {
   }
 
   isGestionnaire(): boolean {
-    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    return this.userConnected && (this.userConnected.roles || []).find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
   }
 
   isEnseignant(): boolean {
@@ -197,7 +209,7 @@ export class AuthService {
   }
 
   private hasAdminRole(): boolean {
-    return !!(this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
+    return !!(this.userConnected && (this.userConnected.roles || []).find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
   }
 
   isAdminTech(): boolean {

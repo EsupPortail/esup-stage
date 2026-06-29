@@ -111,6 +111,14 @@
             <input matInput formControlName="bureau" />
           </mat-form-field>
         </div>
+        <div class="row">
+          <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
+            <mat-label>Rôles sur ce centre</mat-label>
+            <mat-select formControlName="roles" multiple [compareWith]="compareRole">
+              <mat-option *ngFor="let role of roles" [value]="role">{{role|roleLibelle}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
         <div class="row mb-2">
           <div class="col-sm-12">
             <button class="valid-button" type="button" #matMenuTrigger mat-raised-button [matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
@@ -182,4 +190,3 @@
     </app-table>
   </mat-expansion-panel>
 </mat-accordion>
-

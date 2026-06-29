@@ -7,6 +7,7 @@ import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
 import { ConfigService } from "../../../services/config.service";
 import { UserService } from "../../../services/user.service";
+import { RoleService } from "../../../services/role.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
 import { debounceTime, takeUntil } from "rxjs/operators";
@@ -47,6 +48,7 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
   searchColumns = ['nomprenom', 'mail', 'departement', 'action'];
   gestionnaires: any[] = [];
   gestionnaire: any;
+  roles: any[] = [];
 
   disableAutoSearch: boolean = false;
   hasPendingSearchGestionnaire: boolean = false;
@@ -90,6 +92,7 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
     private civiliteService: CiviliteService,
     private configService: ConfigService,
     private userService: UserService,
+    private roleService: RoleService,
     private accessibilityService: AccessibilityService
   ) {
     this.form = this.fb.group({
@@ -129,6 +132,7 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
       evalEnsRemplie: [null, []],
       evalEtuRemplie: [null, []],
       evalRemplies: [null, []],
+      roles: [null, [Validators.required]],
     });
     this.searchForm = this.fb.group({
       nom: [null, []],
@@ -144,6 +148,9 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
     });
     this.configService.getConfigAlerteMail().subscribe((response: any) => {
       this.configAlertes = response;
+    });
+    this.roleService.findCentreAssignable().subscribe((response: any) => {
+      this.roles = response;
     });
     if (this.centreGestion.id) {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
@@ -202,6 +209,7 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
     this.setData(this.gestionnaire);
     this.userService.findOneByLogin(this.gestionnaire.supannAliasLogin).subscribe((response: any) => {
       selectedUser = response;
+      this.form.get('roles')?.setValue(this.getDefaultRoles());
       if (selectedUser != null) {
         if (selectedUser.roles.some((r: any) => r.code === "RESP_GES")) {
           this.selectedConfig = this.configAlertes.alerteRespGestionnaire;
@@ -250,6 +258,7 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
     this.gestionnaire = gestionnaire;
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
+    this.form.get('roles')?.setValue(this.gestionnaire.roles && this.gestionnaire.roles.length ? this.gestionnaire.roles : this.getDefaultRoles());
     this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
       if (gest != null && gest.roles.find((rol:any) => rol.code === Role.RESP_GES) !== undefined){
         for(let alerte of this.alertesMail) {
@@ -332,6 +341,13 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
     });
   }
 
+  compareRole(option: any, value: any): boolean {
+    if (option && value) {
+      return option.id === value.id;
+    }
+    return false;
+  }
+
   compare(option: any, value: any): boolean {
     if (option && value) {
       return option.id === value.id;
@@ -371,7 +387,14 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
       const prefs = JSON.parse(saved);
       this.disableAutoSearch = !!prefs?.disableAutoSearch;
     } catch {}
-  }hasAlertesMail(gestionnaire: any) {
+  }
+
+  getDefaultRoles(): any[] {
+    const role = this.roles.find((r: any) => r.code === Role.GES);
+    return role ? [role] : [];
+  }
+
+  hasAlertesMail(gestionnaire: any) {
     return !!(gestionnaire.creationConventionEtudiant
       || gestionnaire.modificationConventionEtudiant
       || gestionnaire.creationConventionGestionnaire
@@ -392,4 +415,3 @@ export class GestionnairesComponent implements OnInit, OnDestroy {
       || gestionnaire.evalRemplies);
   }
 }
-

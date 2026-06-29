@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.model.AppFonction;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.RoleAppFonction;
 import org.esup_portail.esup_stage.model.Utilisateur;
+import org.esup_portail.esup_stage.model.UtilisateurCentreGestionRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class UtilisateurDto {
     private Boolean actif;
     private String numEtudiant;
     private List<RoleDto> roles = new ArrayList<>();
+    private List<CentreRoleDto> centreRoles = new ArrayList<>();
 
     public static UtilisateurDto from(Utilisateur utilisateur) {
         if (utilisateur == null) {
@@ -36,9 +38,31 @@ public class UtilisateurDto {
         if (utilisateur.getRoles() != null) {
             dto.setRoles(utilisateur.getRoles().stream().map(RoleDto::from).toList());
         }
+        if (utilisateur.getCentreGestionRoles() != null) {
+            dto.setCentreRoles(utilisateur.getCentreGestionRoles().stream().map(CentreRoleDto::from).toList());
+        }
         return dto;
     }
 
+    @Data
+    public static class CentreRoleDto {
+        private int idCentreGestion;
+        private String nomCentre;
+        private RoleDto role;
+
+        public static CentreRoleDto from(UtilisateurCentreGestionRole utilisateurCentreGestionRole) {
+            if (utilisateurCentreGestionRole == null) {
+                return null;
+            }
+            CentreRoleDto dto = new CentreRoleDto();
+            if (utilisateurCentreGestionRole.getCentreGestion() != null) {
+                dto.setIdCentreGestion(utilisateurCentreGestionRole.getCentreGestion().getId());
+                dto.setNomCentre(utilisateurCentreGestionRole.getCentreGestion().getNomCentre());
+            }
+            dto.setRole(RoleDto.from(utilisateurCentreGestionRole.getRole()));
+            return dto;
+        }
+    }
     @Data
     public static class RoleDto {
         private int id;

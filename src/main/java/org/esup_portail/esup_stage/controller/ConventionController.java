@@ -18,6 +18,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -111,6 +112,9 @@ public class  ConventionController {
     @Autowired
     MailerService mailerService;
 
+    @Autowired
+    HabilitationService habilitationService;
+
 
 
     @GetMapping
@@ -161,14 +165,17 @@ public class  ConventionController {
         List<AnneeUniversitaireDto> results = new ArrayList<>();
         List<String> annees;
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            List<Integer> centreIds = getAuthorizedConventionCentreIds(DroitEnum.LECTURE);
             if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 annees = conventionJpaRepository.getGestionnaireAnnees(utilisateur.getUid());
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
                 annees = conventionJpaRepository.getEnseignantAnnees(utilisateur.getUid());
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 annees = conventionJpaRepository.getEtudiantAnnees(utilisateur.getUid());
+            } else if (!centreIds.isEmpty()) {
+                annees = conventionJpaRepository.getAnneesByCentreIds(centreIds);
             } else {
-                annees = conventionJpaRepository.getAnnees();
+                annees = Collections.emptyList();
             }
         } else {
             annees = conventionJpaRepository.getAnnees();
@@ -216,6 +223,7 @@ public class  ConventionController {
         convention.setNomenclature(new ConventionNomenclature());
         convention.setValidationCreation(false);
         conventionService.setConventionData(convention, conventionFormDto);
+        conventionService.canViewEditConvention(convention, utilisateur, DroitEnum.CREATION);
         convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
@@ -229,8 +237,9 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
         conventionService.setConventionData(convention, conventionFormDto);
+        conventionService.canViewEditConvention(convention, utilisateur, DroitEnum.MODIFICATION);
         convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
 
@@ -262,7 +271,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, utilisateur);
+        conventionService.canViewEditConvention(convention, utilisateur, DroitEnum.MODIFICATION);
         setSingleFieldData(convention, conventionSingleFieldDto, utilisateur);
         convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -281,6 +290,11 @@ public class  ConventionController {
             isEnseignant = true;
         } else if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
             conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
+        } else if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            List<Integer> centreIds = getAuthorizedConventionCentreIds(DroitEnum.VALIDATION);
+            conventions = centreIds.isEmpty()
+                    ? Collections.emptyList()
+                    : conventionJpaRepository.getConventionEnAttenteGestionnaireByCentreIds(appConfigService.getAnneeUnivLibelle(annee), centreIds);
         } else {
             conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
         }
@@ -324,6 +338,7 @@ public class  ConventionController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, utilisateur, DroitEnum.MODIFICATION);
 
         // Contrôle chevauchement de dates
         checkChevauchement(convention,utilisateur);
@@ -370,7 +385,7 @@ public class  ConventionController {
             if(convention == null){
                 throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
             }
-            conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+            conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
             if (!Boolean.TRUE.equals(convention.getValidationConvention())) {
                 boolean validationPedagogiqueRequise =
                         Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique());
@@ -408,7 +423,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
@@ -437,7 +452,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
@@ -466,7 +481,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
         return historiqueValidationJpaRepository.findByConvention(convention.getId());
     }
 
@@ -532,7 +547,7 @@ public class  ConventionController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
         // On n'autorise la suppression d'une convention si elle n'a aucune validation
         boolean hasValidation = convention.getCentreGestion().getValidationConvention() && convention.getValidationConvention();
         if (convention.getCentreGestion().getValidationConvention() && convention.getValidationConvention()) {
@@ -558,6 +573,7 @@ public class  ConventionController {
         idsListDto.getIds().forEach(id->{
                     Convention convention = conventionJpaRepository.findById(id).orElse(null);
                     assert convention != null;
+                    conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
                     convention.setLoginEnvoiSignature(Objects.requireNonNull(ServiceContext.getUtilisateur()).getLogin());
                     conventionJpaRepository.save(convention);
                 });
@@ -575,6 +591,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
         if (signatureProperties.getAppSignatureType() == AppSignatureEnum.DOCAPOSTE && convention.getCentreGestion().getCircuitSignature() == null) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion " + convention.getCentreGestion().getNomCentre() + " n'a pas de circuit de signature");
         }
@@ -591,6 +608,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.LECTURE);
         signatureService.update(convention);
         return convention;
     }
@@ -815,7 +833,7 @@ public class  ConventionController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant())) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
 
         // Contrôle chevauchement de dates
         return dateStageDto.getDateDebut() != null
@@ -916,11 +934,21 @@ public class  ConventionController {
                 jsonFilters.put("enseignant.uidEnseignant", currentUser);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
                 jsonFilters.put("etudiant.identEtudiant", currentUser);
+            } else {
+                Map<String, Object> centreIds = new HashMap<>();
+                centreIds.put("type", "list");
+                centreIds.put("value", getAuthorizedConventionCentreIds(DroitEnum.LECTURE));
+                centreIds.put("specific", true);
+                jsonFilters.put("centreGestion.ids", centreIds);
             }
 
             filters = jsonFilters.toString();
         }
         return filters;
+    }
+
+    private List<Integer> getAuthorizedConventionCentreIds(DroitEnum droit) {
+        return habilitationService.getAuthorizedCentreIds(ServiceContext.getUtilisateur(), new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{droit});
     }
 
     @GetMapping("/{id}/download-signed-doc")
@@ -952,7 +980,7 @@ public class  ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
         convention.setDureeExceptionnellePeriode(periodes.getPeriodes());
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
@@ -975,6 +1003,7 @@ public class  ConventionController {
         if (convention == null || (UtilisateurHelper.isRole(Objects.requireNonNull(utilisateur), Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, utilisateur, DroitEnum.MODIFICATION);
         convention.setEnseignant(enseignant);
         conventionJpaRepository.saveAndFlush(convention);
 

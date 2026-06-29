@@ -87,6 +87,9 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userUid AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
     List<Convention> getConventionEnAttenteGestionnaire(@Param("annee") String annee, @Param("userUid") String userUid);
 
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.centreGestion.id IN :idsCentreGestion AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    List<Convention> getConventionEnAttenteGestionnaireByCentreIds(@Param("annee") String annee, @Param("idsCentreGestion") Collection<Integer> idsCentreGestion);
+
     @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userUid AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
     List<Convention> getConventionEnAttenteEnseignant(@Param("annee") String annee, @Param("userUid") String userUid);
 
@@ -98,6 +101,9 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid AND c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getGestionnaireAnnees(@Param("uid") String uid);
+
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.centreGestion.id IN :idsCentreGestion AND c.creationEnMasse = FALSE ORDER BY c.annee")
+    List<String> getAnneesByCentreIds(@Param("idsCentreGestion") Collection<Integer> idsCentreGestion);
 
     @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :uid AND c.creationEnMasse = FALSE ORDER BY c.annee")
     List<String> getEnseignantAnnees(@Param("uid") String uid);

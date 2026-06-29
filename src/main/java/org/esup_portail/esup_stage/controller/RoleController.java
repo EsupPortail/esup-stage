@@ -14,6 +14,7 @@ import org.esup_portail.esup_stage.repository.AppFonctionJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
+import org.esup_portail.esup_stage.repository.UtilisateurCentreGestionRoleJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,9 @@ public class RoleController {
     @Autowired
     UtilisateurJpaRepository utilisateurJpaRepository;
 
+    @Autowired
+    UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository;
+
     @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
@@ -65,6 +69,12 @@ public class RoleController {
         return ResponseEntity.ok().body(csv.toString());
     }
 
+    @JsonView(Views.List.class)
+    @GetMapping("/centre-assignables")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public List<Role> getCentreAssignableRoles() {
+        return roleJpaRepository.findAssignableCentreRoles();
+    }
     @GetMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public Role getById(@PathVariable("id") int id) {
@@ -98,8 +108,8 @@ public class RoleController {
         if (role == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Role non trouvé");
         }
-        if (utilisateurJpaRepository.countUserWithRole(role.getId()) > 0) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Des utilisateurs sont affectés sur ce rôle. La suppression n'est pas possible.");
+        if (utilisateurJpaRepository.countUserWithRole(role.getId()) > 0 || utilisateurCentreGestionRoleJpaRepository.countUserCentreWithRole(role.getId()) > 0) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Des utilisateurs sont affectes sur ce role. La suppression n'est pas possible.");
         }
         roleJpaRepository.delete(role);
         roleJpaRepository.flush();

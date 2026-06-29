@@ -17,7 +17,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
-        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
     }
 
     @Override
@@ -35,6 +35,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("centreGestion.personnels")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
+        }
+        if (key.equals("centreGestion.ids")) {
+            clauses.add(getJsonArrayValues(parameter).isEmpty() ? "1 = 0" : "c.centreGestion.id IN :centreGestionIds");
         }
         if (key.equals("enseignant.uidEnseignant")) {
             clauses.add("c.enseignant.uidEnseignant = :" + key.replace(".", ""));
@@ -155,6 +158,9 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("centreGestion.personnels")) {
             query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
+        }
+        if (key.equals("centreGestion.ids") && !getJsonArrayValues(parameter).isEmpty()) {
+            query.setParameter("centreGestionIds", getJsonArrayValues(parameter));
         }
         if (key.equals("enseignant.uidEnseignant")) {
             query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
