@@ -29,6 +29,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
   enseignants: any[] = [];
   enseignant: any;
   confidentialites: any[] = [];
+  confidentialitesConventionOrpheline: any[] = [];
   etablissementConfidentialite: any;
 
   delegataireForm: FormGroup;
@@ -49,13 +50,13 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
   @Output() update = new EventEmitter<any>();
 
   constructor(
-    private centreGestionService: CentreGestionService,
-    private messageService: MessageService,
-    private fb: FormBuilder,
-    private ldapService: LdapService,
-    private enseignantService: EnseignantService,
-    private configService: ConfigService,
-    private accessibilityService: AccessibilityService,
+    private readonly centreGestionService: CentreGestionService,
+    private readonly messageService: MessageService,
+    private readonly fb: FormBuilder,
+    private readonly ldapService: LdapService,
+    private readonly enseignantService: EnseignantService,
+    private readonly configService: ConfigService,
+    private readonly accessibilityService: AccessibilityService,
     ) {
     this.viseurForm = this.fb.group({
       nom: [null, []],
@@ -152,8 +153,9 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
   getConfidentialites() {
     this.centreGestionService.getConfidentialites().subscribe((response: any) => {
       this.confidentialites = response;
+      this.confidentialitesConventionOrpheline = response.filter((confidentialite: any) => `${confidentialite.code}` !== '2');
       if (this.centreGestion.id && this.centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT') {
-        this.confidentialites.pop();
+        this.confidentialites = this.confidentialites.filter((confidentialite: any) => `${confidentialite.code}` !== '2');
       }
     });
   }
@@ -161,18 +163,36 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
   getEtablissementConfidentialite() {
     this.centreGestionService.getEtablissementConfidentialite().subscribe((response: any) => {
       this.etablissementConfidentialite = response;
-      if (this.centreGestion.id && this.centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && this.etablissementConfidentialite.code != 2) {
-        this.form.get('codeConfidentialite')?.disable();
-      }
+      this.applyConfidentialiteControlState();
     });
   }
 
+  private applyConfidentialiteControlState(): void {
+    const control = this.form.get('codeConfidentialite');
+    if (!control) {
+      return;
+    }
+
+    if (!this.centreGestion?.id || this.centreGestion?.niveauCentre?.libelle === 'ETABLISSEMENT') {
+      control.enable({ emitEvent: false });
+      return;
+    }
+
+    if (`${this.etablissementConfidentialite?.code}` === '2') {
+      control.enable({ emitEvent: false });
+    } else {
+      control.disable({ emitEvent: false });
+    }
+  }
   setFormData(): void {
-    this.form.setValue({
+    this.form.patchValue({
       codeConfidentialite: this.centreGestion.codeConfidentialite,
+      codeConfidentialiteConventionOrpheline: this.centreGestion.codeConfidentialiteConventionOrpheline,
       saisieTuteurProParEtudiant: this.centreGestion.saisieTuteurProParEtudiant,
       autoriserImpressionConvention: this.centreGestion.autoriserImpressionConvention,
       conditionValidationImpression: this.centreGestion.conditionValidationImpression,
+      autoriserImpressionAvenant: this.centreGestion.autoriserImpressionAvenant,
+      conditionValidationImpressionAvenant: this.centreGestion.conditionValidationImpressionAvenant,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
       validationPedagogique: this.centreGestion.validationPedagogique,
       verificationAdministrative: this.centreGestion.verificationAdministrative,
@@ -195,6 +215,8 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
       prenomDelegataireViseur: this.centreGestion.prenomDelegataireViseur,
       mailDelegataireViseur: this.centreGestion.mailDelegataireViseur,
       qualiteDelegataireViseur: this.centreGestion.qualiteDelegataireViseur,
+      activerSelectionAutomatiqueTemplateConvention: this.centreGestion.activerSelectionAutomatiqueTemplateConvention,
+      desactiverSelectionAutomatiqueTypeConvention: this.centreGestion.desactiverSelectionAutomatiqueTypeConvention ?? false,
     }, {
       emitEvent: false,
     });
@@ -208,6 +230,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
         return a.ordre - b.ordre;
       });
     }
+    this.applyConfidentialiteControlState();
   }
 
   toggleRecupInscription(): void {
@@ -326,6 +349,10 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  isConfidentialiteLibre(): boolean {
+    return `${this.form.get('codeConfidentialite')?.value?.code}` === '2';
+  }
+
   dropValidation(event: CdkDragDrop<string[]>): void {
     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     this.reorderValidations();
@@ -333,7 +360,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
 
   reorderValidations(): void {
     let ordre = 1;
-    this.validationsActives.map((v: any) => v.ordre = ordre++);
+    this.validationsActives.forEach((v: any) => v.ordre = ordre++);
     let lastOrdre = 0;
     this.validationsActives.forEach((v: any) => {
       this.form.get(v.id + 'Ordre')?.setValue(v.ordre);
@@ -350,7 +377,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
     const ordres = this.validationsActives.map((v: any) => v.ordre);
     let lastOrdre = 0;
     if (ordres.length > 0) {
-      lastOrdre = Math.max.apply(Math, ordres);
+      lastOrdre = Math.max(...ordres);
     }
     this.validationsActives.push({ id: validation, ordre: lastOrdre + 1, libelle: this.validationLibelles[validation] ?? 'Vérification administrative'})
     this.reorderValidations();

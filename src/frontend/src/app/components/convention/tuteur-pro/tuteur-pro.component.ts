@@ -185,8 +185,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
 
-        //ajout idCentreGestion à l'objet contact
-        data.idCentreGestion = this.centreGestion.id;
+        data.idCentreGestion = this.centreGestion?.id;
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;
@@ -251,8 +250,6 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
     return match ? match.id : null;
   }
-
-
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();

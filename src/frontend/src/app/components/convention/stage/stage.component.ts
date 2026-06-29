@@ -211,6 +211,7 @@ export class StageComponent implements OnInit {
       modeEncadreSuivi: [this.convention.modeEncadreSuivi, this.fieldValidators['modeEncadreSuivi']],
       avantagesNature: [this.convention.avantagesNature, this.fieldValidators['avantagesNature']],
       travailNuitFerie: [this.convention.travailNuitFerie, this.fieldValidators['travailNuitFerie']],
+      protectionSocialeOrganismeAccueil: [this.convention.protectionSocialeOrganismeAccueil],
     }, { emitEvent: false });
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {

@@ -1,3 +1,10 @@
+<form [formGroup]="confidentiliteForm" *ngIf="isConfidentialiteEditable()">
+  <div class="toggle-confidentialite">
+    <span>
+      <mat-slide-toggle formControlName="confidentialite" (change)="toggleConfidentialite()"> Confidentiel </mat-slide-toggle>
+    </span>
+  </div>
+</form>
 <form [formGroup]="form" novalidate (submit)="save()">
   <h4 class="text-title">Général</h4>
   <mat-divider class="etab-accueil-divider mb-2"></mat-divider>
@@ -131,7 +138,7 @@
     <div class="row">
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Voie</mat-label>
-        <input matInput formControlName="voie" required />
+        <input matInput formControlName="voie" required [placeholder]="getConfidentialPlaceholder('voie')" />
         <mat-error *ngIf="form.get('voie')?.touched && form.get('voie')?.invalid">
           <ng-container *ngIf="form.get('voie')?.hasError('required')">Ce champ est obligatoire.</ng-container>
           <ng-container *ngIf="form.get('voie')?.hasError('maxlength')">200 caractères maximum.</ng-container>
@@ -139,13 +146,13 @@
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Bâtiment / Résidence / Z.I</mat-label>
-        <input matInput formControlName="batimentResidence" />
+        <input matInput formControlName="batimentResidence" [placeholder]="getConfidentialPlaceholder('batimentResidence')" />
       </mat-form-field>
     </div>
     <div class="row">
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Libellé Cedex ou Localité de destination</mat-label>
-        <input matInput formControlName="libCedex" />
+        <input matInput formControlName="libCedex" [placeholder]="getConfidentialPlaceholder('libCedex')" />
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" subscriptSizing="dynamic">
         <mat-label>Pays</mat-label>
@@ -182,16 +189,26 @@
     </div>
     <div class="row">
       <div class="col-sm-12 col-md-6 mb-2" *ngIf="isFr()">
-        <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false"></app-form-autocomplete-field>
+        <div (focusout)="onBlur('codePostal')">
+          <ng-container *ngIf="isFieldConfidential('codePostal')">
+            <mat-form-field appearance="fill" style="display: block">
+              <mat-label>Code postal</mat-label>
+              <input matInput value="Confidentiel" readonly />
+            </mat-form-field>
+          </ng-container>
+          <ng-container *ngIf="!isFieldConfidential('codePostal')">
+            <app-form-autocomplete-field [service]="communeService" [field]="form.get('codePostal')" [fieldLabel]="'Code postal'" (updated)="updateCommune($event)" [startWith]="false" (click)="onFocus('codePostal')"></app-form-autocomplete-field>
+          </ng-container>
+        </div>
       </div>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill" *ngIf="!isFr()">
         <mat-label>code Postal</mat-label>
-        <input matInput formControlName="codePostal" required />
+        <input matInput formControlName="codePostal" required [type]="getInputType('codePostal')" [placeholder]="getConfidentialPlaceholder('codePostal')" (focus)="onFocus('codePostal')" (blur)="onBlur('codePostal')" />
         <mat-error *ngIf="form.get('codePostal')"></mat-error>
       </mat-form-field>
       <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
         <mat-label>Commune</mat-label>
-        <input matInput formControlName="commune" required />
+        <input matInput formControlName="commune" required [type]="getInputType('commune')" [placeholder]="getConfidentialPlaceholder('commune')" (focus)="onFocus('commune')" (blur)="onBlur('commune')" />
         <mat-error *ngIf="form.get('commune')"></mat-error>
       </mat-form-field>
     </div>
@@ -199,7 +216,7 @@
   <div class="row">
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Adresse mail</mat-label>
-      <input matInput formControlName="mail" />
+      <input matInput formControlName="mail" [type]="getInputType('mail','email')" [placeholder]="getConfidentialPlaceholder('mail')" (focus)="onFocus('mail')" (blur)="onBlur('mail')" />
       <mat-hint>Sous cette forme adresse&#64;domaine.fr</mat-hint>
       <mat-error *ngIf="form.get('mail')?.touched && form.get('mail')?.invalid">
         <ng-container *ngIf="form.get('mail')?.hasError('pattern')">
@@ -212,7 +229,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
-      <input matInput formControlName="telephone" required />
+      <input matInput formControlName="telephone" required [placeholder]="getConfidentialPlaceholder('telephone')" />
       <mat-error *ngIf="form.get('telephone')?.touched && form.get('telephone')?.invalid">
         <ng-container *ngIf="form.get('telephone')?.hasError('required')">Ce champ est obligatoire.</ng-container>
         <ng-container *ngIf="form.get('telephone')?.hasError('pattern')">Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX </ng-container>
@@ -229,7 +246,7 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Fax</mat-label>
-      <input matInput formControlName="fax" />
+      <input matInput formControlName="fax" [placeholder]="getConfidentialPlaceholder('fax')" />
     </mat-form-field>
   </div>
   <div class="button-row">
@@ -284,7 +301,7 @@
 
       <!-- Valider -->
       <div class="slot right-slot">
-        <button mat-button class="valid-button" mat-flat-button type="submit">{{ 'BOUTON_VALIDER' | contenu }}</button>
+        <button mat-button class="valid-button" mat-flat-button [disabled]="isSaveDisabled()" type="submit">{{ 'BOUTON_VALIDER' | contenu }}</button>
       </div>
     </div>
   </div>

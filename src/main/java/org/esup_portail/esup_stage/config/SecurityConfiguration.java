@@ -6,8 +6,10 @@ import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 import org.apereo.cas.client.validation.json.Cas30JsonServiceTicketValidator;
 import org.esup_portail.esup_stage.config.filters.CsrfCookieFilter;
+import org.esup_portail.esup_stage.config.filters.MaintenanceModeFilter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.CasProperties;
+import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +51,9 @@ public class SecurityConfiguration {
 
     @Autowired
     private CasProperties casProperties;
+
+    @Autowired
+    private MaintenanceModeFilter maintenanceModeFilter;
 
     @Bean
     public ServiceProperties serviceProperties() {
@@ -127,22 +132,33 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/contenus/**").permitAll()
                         .requestMatchers("/api/config/theme").permitAll()
                         .requestMatchers("/api/evaluation-tuteur/**").permitAll()
+                        .requestMatchers("/api/maintenance/status").permitAll()
+                        .requestMatchers("/maintenance", "/maintenance/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers("/frontend/**").permitAll()
                         .requestMatchers("/theme.css").permitAll()
+                        .requestMatchers("/api/admin/maintenance/**").hasAuthority(Role.ADM)
+                        .requestMatchers("/api/admin/logs/**", "/admin/logs/**").hasAuthority(Role.ADM)
+                        .requestMatchers("/api/maintenance/stream").authenticated()
+                        // Protection API
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint((request, response, authException) -> {
-                            if (request.getRequestURI().startsWith("/api/")) {
+                            if (request.getServletPath().startsWith("/api/")) {
+                                if (request.getSession(false) == null  || !request.isRequestedSessionIdValid()) {
+                                    response.setHeader("X-Auth-Reason", "idle");
+                                }
                                 response.setStatus(401);
                             } else {
-                                response.sendRedirect("/login/cas");
+                                response.sendRedirect(request.getContextPath() + "/login/cas");
                             }
                         })
                 )
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(maintenanceModeFilter, CasAuthenticationFilter.class)
                 .addFilter(casAuthenticationFilter())
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter(), LogoutFilter.class)
@@ -169,7 +185,7 @@ public class SecurityConfiguration {
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.sendRedirect("/error-401");
+            response.sendRedirect(request.getContextPath() + "/error-401");
         };
     }
 

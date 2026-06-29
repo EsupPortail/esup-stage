@@ -141,6 +141,12 @@ export class EtudiantComponent implements OnInit, OnChanges {
       this.formConvention.get('inscription')?.valueChanges.subscribe((inscription: any) => {
         if (inscription) {
           const inscriptionElpControl = this.formConvention.get('inscriptionElp');
+          const autoTypeConventionDisabled = !!inscription.centreGestion?.desactiverSelectionAutomatiqueTypeConvention;
+          const currentTypeConventionId = this.formConvention.get('idTypeConvention')?.value;
+          this.typeConventions = inscription.typeConventionsDisponibles || (inscription.typeConvention ? [inscription.typeConvention] : []);
+          const autoTypeConvention = !autoTypeConventionDisabled
+            ? (inscription.typeConvention || (this.typeConventions.length === 1 ? this.typeConventions[0] : null))
+            : null;
           if (!this.sansElp && inscription.elementPedagogiques && inscription.elementPedagogiques.length > 0) {
             inscriptionElpControl?.setValidators([Validators.required]);
           } else {
@@ -151,14 +157,18 @@ export class EtudiantComponent implements OnInit, OnChanges {
             this.centreGestion = inscription.centreGestion;
           }
           this.formConvention.get('inscriptionElp')?.setValue(null);
-          if (inscription.typeConvention) {
-            this.formConvention.get('idTypeConvention')?.setValue(inscription.typeConvention.id);
+          if (autoTypeConvention) {
+            this.formConvention.get('idTypeConvention')?.setValue(autoTypeConvention.id);
             if (!this.canEditTypeConvention) {
               this.formConvention.get('idTypeConvention')?.disable();
             } else {
               this.formConvention.get('idTypeConvention')?.enable();
             }
           } else {
+            const isCurrentTypeConventionStillAvailable = this.typeConventions.some((typeConvention: any) => typeConvention.id === currentTypeConventionId);
+            if (!isCurrentTypeConventionStillAvailable && !this.convention?.id) {
+              this.formConvention.get('idTypeConvention')?.setValue(null);
+            }
             this.formConvention.get('idTypeConvention')?.enable();
           }
           if (!this.convention.volumeHoraireFormation) {
@@ -288,6 +298,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
             libComposante: this.convention.ufr?.libelle || this.convention.libelleComposante
           },
           typeConvention: this.convention.typeConvention ? {id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle} : null,
+          typeConventionsDisponibles: this.convention.typeConvention ? [{id: this.convention.typeConvention.id, libelle: this.convention.typeConvention.libelle}] : [],
+          centreGestion: this.convention.centreGestion,
           elementPedagogiques: elementPedagogiques
         };
 

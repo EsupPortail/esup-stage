@@ -250,7 +250,7 @@ button.accent-button {
   }
 }
 
-/* Conteneur global de la rangée de boutons */
+/* Conteneur global de la rangÃƒÆ’Ã‚Â©e de boutons */
 .button-row {
   width: 100%;
 }
@@ -335,4 +335,32 @@ button.accent-button {
   .sync-radio-label {
     font-size: 12px;
   }
+}
+
+.toggle-confidentialite {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  margin-bottom: 8px;
+}
+
+.toggle-confidentialite > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.toggle-confidentialite .mat-mdc-slide-toggle .mdc-form-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.toggle-confidentialite .mat-mdc-slide-toggle .mdc-label {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  line-height: 1.2;
 }

@@ -20,6 +20,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.ConfidentialiteService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
@@ -94,6 +95,9 @@ public class CentreGestionController {
 
     @Autowired
     FileValidationService fileValidationService;
+
+    @Autowired
+    ConfidentialiteService confidentialiteService;
 
 
     @GetMapping
@@ -171,15 +175,10 @@ public class CentreGestionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
-        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
-
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-        if (etablissement != null) {
-            centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
-        }
+        normalizeConfidentialiteForSave(centreGestion);
 
         List<CentreGestionSignataire> signataires = conventionService.initSignataires(centreGestion);
-
         centreGestion.setSignataires(signataires);
 
         centreGestion = centreGestionJpaRepository.saveAndFlush(centreGestion);
@@ -193,7 +192,6 @@ public class CentreGestionController {
     @PutMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
-        // On passe verificationAdministrative=1 pour toutes les conventions liées au centre dont validationAdministrative et validationPedagogique sont à 1
         if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative()) {
             conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
         }
@@ -206,6 +204,7 @@ public class CentreGestionController {
         if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null && centreGestion.getCriteres().isEmpty()) {
             centreGestion.setCriteres(centreGestionActuel.getCriteres());
         }
+        normalizeConfidentialiteForSave(centreGestion);
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -400,6 +399,101 @@ public class CentreGestionController {
         }
     }
 
+    private void normalizeConfidentialiteForSave(CentreGestion centreGestion) {
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Centre de gestion invalide");
+        }
+
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        boolean isCentreEtablissement = isCentreEtablissement(centreGestion, centreEtablissement);
+        Confidentialite requestedConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialite());
+
+        if (isCentreEtablissement) {
+            Confidentialite normalizedConfidentialite = resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+            centreGestion.setCodeConfidentialite(normalizedConfidentialite);
+            centreGestion.setCodeConfidentialiteConventionOrpheline(resolveEtablissementOrphanConfidentialite(normalizedConfidentialite, centreGestion.getCodeConfidentialiteConventionOrpheline()));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialiteConventionOrpheline(null);
+        if (centreEtablissement == null || centreEtablissement.getCodeConfidentialite() == null) {
+            centreGestion.setCodeConfidentialite(resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+            return;
+        }
+
+        Confidentialite etablissementConfidentialite = resolveConfidentialiteOrDefault(resolveRequestedConfidentialite(centreEtablissement.getCodeConfidentialite()), ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        String etablissementCode = etablissementConfidentialite.getCode();
+
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(etablissementCode)) {
+            centreGestion.setCodeConfidentialite(validateCentreConfidentialiteWhenEtablissementIsFree(requestedConfidentialite));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialite(validateInheritedConfidentialite(requestedConfidentialite, etablissementCode));
+    }
+
+    private Confidentialite resolveEtablissementOrphanConfidentialite(Confidentialite centreConfidentialite, Confidentialite requestedOrphanConfidentialite) {
+        if (centreConfidentialite == null || centreConfidentialite.getCode() == null) {
+            return resolveConfidentialiteByCode(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        }
+
+        if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(centreConfidentialite.getCode())) {
+            return centreConfidentialite;
+        }
+
+        Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
+        if (orphanConfidentialite == null
+                || orphanConfidentialite.getCode() == null
+                || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(orphanConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité effective des conventions orphelines doit être renseignée");
+        }
+        return orphanConfidentialite;
+    }
+
+    private Confidentialite validateInheritedConfidentialite(Confidentialite requestedConfidentialite, String expectedCode) {
+        if (requestedConfidentialite == null) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        if (!expectedCode.equals(requestedConfidentialite.getCode())) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        return requestedConfidentialite;
+    }
+
+    private Confidentialite validateCentreConfidentialiteWhenEtablissementIsFree(Confidentialite requestedConfidentialite) {
+        if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null || requestedConfidentialite.getCode().isBlank()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre doit choisir entre pas de confidentialité et confidentialité totale");
+        }
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister le mode confidentialité libre");
+        }
+        return requestedConfidentialite;
+    }
+    private Confidentialite resolveRequestedConfidentialite(Confidentialite confidentialite) {
+        if (confidentialite == null || confidentialite.getCode() == null || confidentialite.getCode().isBlank()) {
+            return null;
+        }
+        return resolveConfidentialiteByCode(confidentialite.getCode());
+    }
+
+    private Confidentialite resolveConfidentialiteOrDefault(Confidentialite confidentialite, String defaultCode) {
+        if (confidentialite != null) {
+            return confidentialite;
+        }
+        return resolveConfidentialiteByCode(defaultCode);
+    }
+
+    private Confidentialite resolveConfidentialiteByCode(String code) {
+        return confidentialiteJpaRepository.findById(code)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Confidentialite non trouvee"));
+    }
+
+    private boolean isCentreEtablissement(CentreGestion centreGestion, CentreGestion centreEtablissement) {
+        if (centreGestion.getId() != 0 && centreEtablissement != null && centreGestion.getId() == centreEtablissement.getId()) {
+            return true;
+        }
+        return confidentialiteService.isCentreEtablissement(centreGestion);
+    }
     @GetMapping("/confidentialite")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {

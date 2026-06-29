@@ -38,7 +38,7 @@
       </ng-container>
       <ng-container matColumnDef="commune">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Commune</th>
-        <td mat-cell *matCellDef="let row">{{row.commune}}</td>
+        <td mat-cell *matCellDef="let row">{{displayStructureField(row, 'commune')}}</td>
       </ng-container>
       <ng-container matColumnDef="typeStructure.libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Type d'organisme</th>

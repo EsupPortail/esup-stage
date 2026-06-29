@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {FooterService} from "../../services/footer.service";
+import { catchError, of } from "rxjs";
 
 @Component({
   selector: 'app-footer',
@@ -19,11 +20,14 @@ export class FooterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.footerService.getLinks().subscribe(links => {
-      this.docUrl = links.wiki;
-      this.supportUrl = links.support;
-      this.githubUrl = links.github;
-      this.webSiteUrl = links.site;
+    this.footerService.getLinks().pipe(
+      catchError(() => of(null))
+    ).subscribe((links: any) => {
+      const safeLinks = links || {};
+      this.docUrl = safeLinks.wiki ?? null;
+      this.supportUrl = safeLinks.support ?? null;
+      this.githubUrl = safeLinks.github ?? null;
+      this.webSiteUrl = safeLinks.site ?? null;
     });
   }
 

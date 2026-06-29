@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.PersonneDto;
 import org.esup_portail.esup_stage.dto.UtilisateurDto;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @ApiController
@@ -39,6 +41,9 @@ public class UtilisateurController {
     @Autowired
     RoleJpaRepository roleJpaRepository;
 
+    @Autowired
+    AppliProperties appliProperties;
+
     @GetMapping("/connected")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<UtilisateurDto> getUserConnected(Authentication authentication) {
@@ -53,7 +58,7 @@ public class UtilisateurController {
                     .body(UtilisateurDto.from(u));
 
         }catch (Exception e){
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifie");
         }
     }
 
@@ -94,7 +99,7 @@ public class UtilisateurController {
     public UtilisateurDto update(@PathVariable("id") int id, @RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findById(id);
         if (utilisateur == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouve");
         }
         utilisateur.setNom(requestUtilisateur.getNom());
         utilisateur.setPrenom(requestUtilisateur.getPrenom());
@@ -115,7 +120,7 @@ public class UtilisateurController {
     public UtilisateurDto create(@RequestBody Utilisateur requestUtilisateur) {
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(requestUtilisateur.getLogin());
         if (utilisateur != null) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Utilisateur deja existant");
         }
         if (requestUtilisateur.getActif() == null) {
             requestUtilisateur.setActif(false);
@@ -135,10 +140,16 @@ public class UtilisateurController {
         PersonneDto personneDto = new PersonneDto();
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(login);
         if(utilisateur == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Utilisateur non trouve");
         }
         personneDto.setNom(utilisateur.getNom());
         personneDto.setPrenom(utilisateur.getPrenom());
         return personneDto;
+    }
+
+    @GetMapping("/admintech")
+    @Secure
+    public Set<String> getAdminTech() {
+        return appliProperties.getAdminTechnique();
     }
 }

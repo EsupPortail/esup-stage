@@ -54,7 +54,15 @@ export class TechnicalInterceptor implements HttpInterceptor {
     if (handleApogeeForbiddenLocally && this.isApogeeStudentForbiddenError(error, request)) {
       throw error;
     }
-
+    if (error?.status === 401) {
+      const authReason = error?.headers?.get?.("X-Auth-Reason");
+      if (authReason === "idle") {
+        this.messageService.setWarning("Vous avez été déconnecté suite à une période d'inactivité prolongée");
+      } else {
+        this.messageService.setWarning("Session non authentifiée. Merci de vous reconnecter.");
+      }
+      throw error;
+    }
     if (error.error instanceof Blob) {
       error.error.text().then((data: any) => {
         const message = JSON.parse(data).message;

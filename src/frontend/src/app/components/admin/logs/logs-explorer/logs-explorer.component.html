@@ -1,0 +1,164 @@
+<div class="explorer-container">
+  <mat-toolbar class="explorer-toolbar">
+    <button mat-icon-button [disabled]="isAtRoot" (click)="navigateUp()" matTooltip="Remonter">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <nav class="breadcrumbs" [class.breadcrumbs--root]="breadcrumbs.length === 1">
+      <span *ngFor="let crumb of breadcrumbs; let last = last" class="breadcrumb-item">
+        <button mat-button type="button" (click)="navigate(crumb.path)" [class.active]="last">
+          {{ crumb.name }}
+        </button>
+      </span>
+    </nav>
+
+    <span class="spacer"></span>
+
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="filterText" (ngModelChange)="onFilterChange($event)" placeholder="Filtrer par nom, extension ou chemin" />
+      <button *ngIf="filterText" mat-icon-button type="button" class="search-clear" (click)="clearFilter($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <button mat-icon-button [matMenuTriggerFor]="sortMenu" matTooltip="Trier">
+      <mat-icon>sort</mat-icon>
+    </button>
+    <mat-menu #sortMenu="matMenu">
+      <button mat-menu-item type="button" (click)="sortBy = 'name'">
+        <mat-icon>sort_by_alpha</mat-icon>
+        <span>Nom</span>
+      </button>
+      <button mat-menu-item type="button" (click)="sortBy = 'date'">
+        <mat-icon>schedule</mat-icon>
+        <span>Date</span>
+      </button>
+      <button mat-menu-item type="button" (click)="sortBy = 'size'">
+        <mat-icon>data_usage</mat-icon>
+        <span>Taille</span>
+      </button>
+    </mat-menu>
+
+    <button mat-icon-button type="button" (click)="viewMode = viewMode === 'grid' ? 'list' : 'grid'" matTooltip="Changer la vue">
+      <mat-icon>{{ viewMode === 'grid' ? 'view_list' : 'grid_view' }}</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div *ngIf="filteredElements.length === 0" class="empty-state">
+      <mat-icon>folder_open</mat-icon>
+      <h3>Aucun element a afficher</h3>
+      <p>Le dossier est vide ou aucun fichier ne correspond au filtre saisi.</p>
+    </div>
+
+    <div *ngIf="viewMode === 'grid' && filteredElements.length > 0" class="grid-view">
+      <div
+        *ngFor="let element of filteredElements; trackBy: trackByElement"
+        class="grid-item"
+        [class.folder]="element.isFolder"
+        (click)="openElement(element)"
+        (contextmenu)="openContextMenu($event, menuTrigger)">
+        <span
+          [matMenuTriggerFor]="ctxMenu"
+          [matMenuTriggerData]="{ element: element }"
+          #menuTrigger="matMenuTrigger"
+          class="menu-anchor">
+        </span>
+
+        <mat-icon class="file-icon" [class.folder-icon]="element.isFolder">
+          {{ element.isFolder ? 'folder' : getFileIcon(element) }}
+        </mat-icon>
+
+        <span class="file-name" [matTooltip]="element.name">{{ element.name }}</span>
+        <span class="file-size">{{ element.isFolder ? 'Dossier' : formatSize(element.size) }}</span>
+        <span class="file-date">{{ element.lastModified ? (element.lastModified | date:'dd/MM/yyyy HH:mm') : '-' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="viewMode === 'list' && filteredElements.length > 0" class="explorer-list">
+      <div class="explorer-list__header">
+        <div class="explorer-row explorer-row--header">
+          <div class="col col--name">Nom</div>
+          <div class="col col--type">Type</div>
+          <div class="col col--date">Modifie le</div>
+          <div class="col col--size">Taille</div>
+          <div class="col col--actions"></div>
+        </div>
+      </div>
+
+      <div class="explorer-list__body">
+        <div
+          *ngFor="let element of filteredElements; trackBy: trackByElement"
+          class="explorer-row"
+          (click)="openElement(element)"
+          (contextmenu)="openContextMenu($event, menuTrigger)">
+
+          <div class="col col--name">
+            <span
+              [matMenuTriggerFor]="ctxMenu"
+              [matMenuTriggerData]="{ element: element }"
+              #menuTrigger="matMenuTrigger"
+              class="menu-anchor">
+            </span>
+
+            <div class="file-main">
+              <mat-icon class="file-main__icon" [class.folder-icon]="element.isFolder">
+                {{ element.isFolder ? 'folder' : getFileIcon(element) }}
+              </mat-icon>
+
+              <div class="file-main__text">
+                <div class="file-main__name" [matTooltip]="element.name">
+                  {{ element.name }}
+                </div>
+                <div class="file-main__path" [matTooltip]="element.path">
+                  {{ element.path }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col col--type">
+            {{ element.isFolder ? 'Dossier' : (element.extension || 'Fichier') }}
+          </div>
+
+          <div class="col col--date">
+            {{ element.lastModified ? (element.lastModified | date:'dd/MM/yyyy HH:mm') : '-' }}
+          </div>
+
+          <div class="col col--size">
+            {{ element.isFolder ? '-' : formatSize(element.size) }}
+          </div>
+
+          <div class="col col--actions">
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="ctxMenu"
+              [matMenuTriggerData]="{ element: element }"
+              (click)="$event.stopPropagation()">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<mat-menu #ctxMenu="matMenu">
+  <ng-template matMenuContent let-element="element">
+    <button mat-menu-item type="button" (click)="openElement(element)">
+      <mat-icon>{{ element.isFolder ? 'folder_open' : 'open_in_new' }}</mat-icon>
+      <span>{{ element.isFolder ? 'Ouvrir le dossier' : 'Ouvrir' }}</span>
+    </button>
+    <button mat-menu-item type="button" (click)="downloadElement(element)" *ngIf="!element.isFolder">
+      <mat-icon>download</mat-icon>
+      <span>Télécharger</span>
+    </button>
+  </ng-template>
+</mat-menu>

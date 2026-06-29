@@ -195,7 +195,14 @@ mvn clean package cargo:run
 
 == Déploiement / Lancement de l'application
 
-Après la compilation, le chemin complet du fichier de déploiement est le suivant : `/opt/estage/target/ROOT.war`
+Après la compilation, le fichier généré est le suivant : `/opt/estage/target/esup-stage-<version>.war`
+
+IMPORTANT: avec Tomcat, le chemin d'accès de l'application dépend du nom du fichier copié dans le répertoire `webapps` :
+
+* `ROOT.war` -> application accessible à la racine `/`
+* `esup-stage.war` -> application accessible sous `/esup-stage`
+
+IMPORTANT: si vous copiez directement le fichier `esup-stage-<version>.war` sans le renommer, Tomcat exposera l'application sous un contexte incluant la version, par exemple `/esup-stage-3.3.0`.
 
 == Exécution de l'application avec __Docker__
 
@@ -250,13 +257,17 @@ TIP: Vous pouvez placer le .properties dans le répertoire de votre choix, il su
 
 === Exécution avec __Tomcat__
 
-Supprimer (ou déplacer une sauvegarde) votre répertoire `/opt/tomcat-esup-stage/webapp/ROOT` avant le déploiement
+Supprimer (ou déplacer une sauvegarde) votre répertoire `/opt/tomcat-esup-stage/webapp/esup-stage` avant le déploiement si vous souhaitez un accès via `/esup-stage`
+ou `/opt/tomcat-esup-stage/webapp/ROOT` si vous souhaitez un accès à la racine `/`
 
-Copier directement votre fichier `/opt/estage/target/ROOT.war` dans votre répertoire *`webapp` de tomcat*
+Copier directement votre fichier `/opt/estage/target/esup-stage-<version>.war` dans votre répertoire *`webapp` de tomcat* en le renommant selon le chemin souhaité :
+
+* `esup-stage.war` pour un accès via `/esup-stage`
+* `ROOT.war` pour un accès à la racine `/`
 
 [source,shell]
 ----
-cp /opt/esup-stage/target/esup-stage-3.0.0.4.war /opt/tomcat-esup-stage/webapps/
+cp /opt/esup-stage/target/esup-stage-3.0.0.4.war /opt/tomcat-esup-stage/webapps/esup-stage.war
 ----
 
 On arrête le tomcat avant et on le redémarre ensuite
@@ -273,9 +284,9 @@ Démarrage :
 /opt/tomcat-esup-stage/bin/startup.sh
 ----
 
-Bravo, l'installation est terminée ! Vous pouvez y accéder sur http://localhost:8080
+Bravo, l'installation est terminée ! Vous pouvez y accéder sur `http://localhost:8080/esup-stage` si vous avez déployé `esup-stage.war`, ou sur `http://localhost:8080/` si vous avez déployé `ROOT.war`
 
-Lancement direct du `war` (ne pas utiliser : en cours de debug) `java -jar /opt/estage/target/ROOT.war`
+Lancement direct du `war` (ne pas utiliser : en cours de debug) `java -jar /opt/estage/target/esup-stage-<version>.war`
 
 Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est conseillé d'utiliser le protocole AJP.
 
@@ -292,6 +303,9 @@ Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est co
     ProxyPassReverse / http://localhost:8080/
 </VirtualHost>
 ----
+
+TIP: Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
+
 
 TIP: Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
 

@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { AutocompleteService } from "./autocomplete.service";
+import {ConfidentialiteStructure} from "../models/confidentialite.model";
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,14 @@ export class StructureService implements PaginatedService, AutocompleteService {
 
   update(id: number, data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/structures/${id}`, data);
+  }
+
+  updateConfidentialite(id: number, data: ConfidentialiteStructure): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/structures/${id}/confidentialite`, data);
+  }
+
+  updateCentreGestionProprietaire(id: number, idCentreGestionProprietaire: number): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/structures/${id}/centre-proprietaire`, { idCentreGestionProprietaire });
   }
 
   create(data: any): Observable<any> {

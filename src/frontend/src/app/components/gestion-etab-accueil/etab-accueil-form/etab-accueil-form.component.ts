@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import { StructureService } from "../../../services/structure.service";
 import { CommuneService } from "../../../services/commune.service";
 import { PaysService } from "../../../services/pays.service";
@@ -10,7 +10,7 @@ import { StatutJuridiqueService } from "../../../services/statut-juridique.servi
 import { EffectifService } from "../../../services/effectif.service";
 import { MessageService } from "../../../services/message.service";
 import {REGEX} from "../../../utils/regex.utils";
-import { ReplaySubject, Subject } from 'rxjs';
+import { firstValueFrom, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
   AccessibilityHelp,
@@ -81,6 +81,9 @@ import { AuthService } from "../../../services/auth.service"
 import {AppFonction} from "../../../constants/app-fonction";
 import {Droit} from "../../../constants/droit";
 import {ConfigService} from "../../../services/config.service";
+import {CentreGestionService} from "../../../services/centre-gestion.service";
+import {MatDialog} from "@angular/material/dialog";
+import {CentreProprietaireDialogComponent} from "../centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 
 @Component({
   selector: 'app-etab-accueil-form',
@@ -116,8 +119,14 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   isSireneActive = false;
   filterTypeCountries!: 0 | 1 | 2  ;
   private lastNafListKey: string | number | null = null;
+  confidentiliteForm!: FormGroup;
+  confidentialiteActive: boolean = false;
+  gestionnaireCentres: any[] = [];
 
   form: any;
+
+  // map to track focus state of inputs used for masking
+  fieldFocus: { [key: string]: boolean } = {};
 
   constructor(
     public structureService: StructureService,
@@ -132,7 +141,9 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     private fb: FormBuilder,
     private messageService: MessageService,
     private changeDetector: ChangeDetectorRef,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private centreGestionService: CentreGestionService,
+    private matDialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -187,6 +198,8 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       .subscribe(() => {
         this.filterNafN5List();
       });
+    this.loadGestionnaireCentres();
+    this.syncConfidentialiteForm(this.etab);
   }
 
   public isLayoutReady = false;
@@ -416,6 +429,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       numeroRNE: [this.etab.numeroRNE, [Validators.maxLength(8), Validators.pattern(REGEX.NUMRNE)]],
       verrouillageSynchroStructureSirene: [this.etab.verrouillageSynchroStructureSirene || false]
     });
+    this.syncConfidentialiteForm(this.etab);
     this.toggleCommune();
     this.form.get('idPays')?.valueChanges
       .pipe(takeUntil(this._onDestroy))
@@ -505,7 +519,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     this.selectedNafN5 = nafN5;
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (this.form.valid) {
       if (!this.form.get('codeNafN5')?.value && !this.form.get('activitePrincipale')?.value) {
         this.messageService.setError('Une de ces deux informations doivent être renseignée : Code APE, Activité principale');
@@ -521,19 +535,24 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
         this.form.get('numeroSiret')?.setValue(null);
       }
       const data = {...this.form.getRawValue()};
-      if (data.verrouillageSynchroStructureSirene == null) {
-        data.verrouillageSynchroStructureSirene = false;
-      }
+      data.verrouillageSynchroStructureSirene ??= false;
       data.nafN5 = this.selectedNafN5;
       if (this.etab.id) {
         this.structureService.update(this.etab.id, data).subscribe((response: any) => {
-          this.messageService.setSuccess('Établissement d\'accueil modifié');
+          this.messageService.setSuccess('établissement d\'accueil modifié');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
       } else {
+        const ownerCentreId = await this.resolveOwnerCentreForCreation();
+        if (ownerCentreId === null) {
+          return;
+        }
+        if (ownerCentreId !== undefined) {
+          data.idCentreGestionProprietaire = ownerCentreId;
+        }
         this.structureService.create(data).subscribe((response: any) => {
-          this.messageService.setSuccess('Établissement d\'accueil créé');
+          this.messageService.setSuccess('établissement d\'accueil créé');
           this.etab = response;
           this.submitted.emit(this.etab);
         });
@@ -627,7 +646,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   isFieldDisabled(): boolean {
-      return !!this.etab?.id ? !this.canEdit() : !this.canCreate();
+      return !!this.etab?.id ? (!this.canEdit() || this.isStructureCoordinatesMasked()) : !this.canCreate();
   }
 
   isRaisonSocialeDisabled(): boolean {
@@ -688,9 +707,39 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     }, { emitEvent: true });
 
     this.selectedNafN5 = updated?.nafN5 ?? null;
+    this.syncConfidentialiteForm(updated);
 
     this.toggleCommune();
     this.changeDetector.detectChanges();
+  }
+
+  private syncConfidentialiteForm(etab: any): void {
+    const confidentialite = !!etab?.confidentialiteCoordonnees;
+    this.confidentialiteActive = confidentialite;
+
+    if (!this.confidentiliteForm) {
+      this.confidentiliteForm = this.fb.group({
+        confidentialite: [confidentialite]
+      });
+      return;
+    }
+
+    this.confidentiliteForm.patchValue({ confidentialite }, { emitEvent: false });
+  }
+  // Focus handlers used by template to control masking
+  onFocus(field: string): void {
+    this.fieldFocus[field] = true;
+  }
+
+  onBlur(field: string): void {
+    this.fieldFocus[field] = false;
+  }
+
+  getInputType(field: string, defaultType: string = 'text'): string {
+    if (this.isStructureCoordinatesMasked()) {
+      return this.fieldFocus[field] ? defaultType : 'password';
+    }
+    return defaultType;
   }
 
   autoUpdateFromApi(): void {
@@ -707,7 +756,7 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
       },
       error: () => {
         this.autoUpdating = false;
-        this.messageService.setError('Échec de la mise à jour automatique.');
+        this.messageService.setError('échec de la mise à jour automatique.');
       },
       complete: () => {
         this.autoUpdating = false;
@@ -715,18 +764,99 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     });
   }
 
-  // Vérifie si le bouton de verrouillage doit être affiché
-  canToggleVerrouillage(): boolean {
-    return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && !!this.etab?.id && this.canEdit();
-  }
-
   canUpdateFromApi(): boolean {
     return !(this.authService.isEtudiant() || this.authService.isEnseignant()) && this.isSireneActive && this.etab?.id && this.etab.pays.id == 82;
   }
 
-  // Méthode pour basculer l'état du verrouillage
   toggleVerrouillage(): void {
     this.etab.verrouillageSynchroStructureSirene = !this.etab.verrouillageSynchroStructureSirene;
     this.form.get('verrouillageSynchroStructureSirene')?.setValue(this.etab.verrouillageSynchroStructureSirene);
+  }
+
+  isOrgaAccConfidentiel(): boolean {
+    return this.isStructureCoordinatesMasked();
+  }
+
+  isConfidentialiteEditable(){
+    return !this.authService.isEtudiant() && !this.authService.isEnseignant() && !!this.etab?.id && this.canEdit();
+  }
+
+
+  toggleConfidentialite(){
+    this.structureService.updateConfidentialite(this.etab.id,{confidentialiteCoordonnees: this.confidentiliteForm.get('confidentialite')?.value}).subscribe({
+      next: (response: any) => {
+        this.etab = response;
+        this.syncConfidentialiteForm(response);
+      },
+    });
+  }
+
+  isFieldConfidential(field: string): boolean {
+    return !!this.etab?.id
+      && !!this.etab?.confidentialiteCoordonnees
+      && this.etab?.[field] == null;
+  }
+
+  getConfidentialPlaceholder(field: string): string {
+    return this.isFieldConfidential(field) ? 'Confidentiel' : '';
+  }
+
+  isStructureCoordinatesMasked(): boolean {
+    return !!this.etab?.id
+      && !!this.etab?.confidentialiteCoordonnees
+      && this.etab?.mail == null
+      && this.etab?.telephone == null
+      && this.etab?.voie == null
+      && this.etab?.codePostal == null
+      && this.etab?.commune == null;
+  }
+
+  isSaveDisabled(): boolean {
+    return this.form?.invalid || this.isStructureCoordinatesMasked();
+  }
+
+  private loadGestionnaireCentres(): void {
+    if (!this.authService.isGestionnaire()) {
+      return;
+    }
+    const uid = this.authService.userConnected?.uid;
+    if (!uid) {
+      return;
+    }
+    const filters = JSON.stringify({
+      personnel: { value: uid, specific: true }
+    });
+    this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters).subscribe((response: any) => {
+      this.gestionnaireCentres = response?.data ?? [];
+    });
+  }
+
+  private async resolveOwnerCentreForCreation(): Promise<number | undefined | null> {
+    if (!this.authService.isGestionnaire()) {
+      return undefined;
+    }
+    if (this.gestionnaireCentres.length === 0) {
+      const uid = this.authService.userConnected?.uid;
+      if (uid) {
+        const filters = JSON.stringify({
+          personnel: { value: uid, specific: true }
+        });
+        const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
+        this.gestionnaireCentres = response?.data ?? [];
+      }
+    }
+    if (this.gestionnaireCentres.length === 1) {
+      return this.gestionnaireCentres[0].id;
+    }
+    if (this.gestionnaireCentres.length === 0) {
+      return undefined;
+    }
+
+    const dialogRef = this.matDialog.open(CentreProprietaireDialogComponent, {
+      width: '560px',
+      data: { centres: this.gestionnaireCentres }
+    });
+    const selectedCentreId = await firstValueFrom(dialogRef.afterClosed());
+    return selectedCentreId ?? null;
   }
 }

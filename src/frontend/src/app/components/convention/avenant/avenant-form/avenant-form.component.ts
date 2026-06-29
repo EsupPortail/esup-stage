@@ -602,4 +602,21 @@ export class AvenantFormComponent implements OnInit {
   }
 
   protected readonly MAX_LENTGH_INPUT = MAX_LENTGH_INPUT;
+
+  isPrintAuthorised(): boolean {
+    if (this.isGestionnaire()) {
+      return true;
+    }
+
+    const centreGestion = this.avenant.convention.centreGestion;
+
+    if (!centreGestion.autoriserImpressionAvenant) {
+      return false;
+    }
+
+    return (
+      centreGestion.conditionValidationImpressionAvenant !== 1 ||
+      !!this.avenant.validationAvenant
+    );
+  }
 }

@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.service.apogee;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.dto.RegimeInscriptionDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
@@ -221,112 +223,198 @@ public class ApogeeService {
     }
 
     public List<ConventionFormationDto> getInscriptions(Utilisateur utilisateur, String numEtudiant, String anneeConvention, boolean filtrerEligibilite) {
-        String anneeEnCours = appConfigService.getAnneeUniv();
-        List<ConventionFormationDto> inscriptions = new ArrayList<>();
         List<String> anneeInscriptions = getAnneeInscriptions(numEtudiant);
-        int anneeEnCoursInt = Integer.parseInt(anneeEnCours);
+        int anneeEnCoursInt = Integer.parseInt(appConfigService.getAnneeUniv());
         int anneeReferenceInt = getAnneeReferenceInscriptions(anneeInscriptions, anneeEnCoursInt);
-        String anneeReference = String.valueOf(anneeReferenceInt);
+        List<String> anneesFiltrees = getAnneesFiltrees(utilisateur, anneeInscriptions, anneeReferenceInt, anneeConvention);
+        List<ConventionFormationDto> inscriptions = new ArrayList<>();
 
-        // Filtre la liste des années universitaire pour lesquels on doit rechercher les inscriptions
-        // Pour les étudiants, pas d'autorisation sur l'année précédente
-        // Pour les gestionnaire, au plus autorisation sur l'année précédente
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt).collect(Collectors.toList());
-        } else {
-            anneeInscriptions = anneeInscriptions.stream().filter(a -> a.equals(anneeReference) || Integer.parseInt(a) > anneeReferenceInt || anneeReferenceInt - 1 == Integer.parseInt(a)).collect(Collectors.toList());
-        }
-        if (anneeConvention != null && !anneeConvention.isEmpty() && !anneeInscriptions.contains(anneeConvention)) {
-            anneeInscriptions.add(anneeConvention);
-        }
-
-        for (String annee : anneeInscriptions) {
+        for (String annee : anneesFiltrees) {
             ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
-            RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(annee)).findAny().orElse(null);
-            TypeConvention typeConvention = null;
-            if (regIns != null) {
-                typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
-            }
-            for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
-                Etape etape = etapeJpaRepository.findById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet(), appConfigService.getConfigGenerale().getCodeUniversite());
-
-                // alimentation de la table Etape avec celles remontées depuis Apogée
-                if (etape == null) {
-                    EtapeId etapeId = new EtapeId();
-                    etapeId.setCode(etapeInscription.getCodeEtp());
-                    etapeId.setCodeVersionEtape(etapeInscription.getCodVrsVet());
-                    etapeId.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-
-                    etape = new Etape();
-                    etape.setId(etapeId);
-                    etape.setLibelle(etapeInscription.getLibWebVet());
-                    etapeJpaRepository.saveAndFlush(etape);
-                }
-                ConventionFormationDto conventionFormationDto = new ConventionFormationDto();
-                conventionFormationDto.setEtapeInscription(etapeInscription);
-                conventionFormationDto.setAnnee(annee);
-                TypeConvention typeCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
-                if (typeCesure != null) {
-                    typeConvention = typeCesure;
-                }
-                conventionFormationDto.setTypeConvention(typeConvention);
-                CentreGestion centreGestion = null;
-                // Recherche du centre de gestion par codeEtape/versionEtape
-                CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
-                // Si non trouvé, recherche par code composante et version = ""
-                if (critereGestion == null) {
-                    critereGestion = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
-                }
-                // Si non trouvé on vérifie l'autorisation de création de convention non liée à un centre
-                if (critereGestion == null) {
-                    // récupération du centre de gestion établissement si autorisation de création d'une convention non rattachée à un centre
-                    if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
-                        centreGestion = centreGestionJpaRepository.getCentreEtablissement();
-                    }
-                } else {
-                    centreGestion = critereGestion.getCentreGestion();
-                }
-                if (centreGestion != null) {
-                    conventionFormationDto.setCentreGestion(centreGestion);
-                    inscriptions.add(conventionFormationDto);
-                }
-            }
-            for (ElementPedagogique elementPedagogique : apogeeMap.getListeELPs()) {
-                ConventionFormationDto conventionFormationDto = inscriptions.stream().filter(i -> i.getEtapeInscription().getCodeEtp().equals(elementPedagogique.getCodEtp()) && i.getEtapeInscription().getCodVrsVet().equals(elementPedagogique.getCodVrsVet())).findAny().orElse(null);
-                if (conventionFormationDto != null) {
-                    conventionFormationDto.getElementPedagogiques().add(elementPedagogique);
-                }
-            }
+            RegimeInscription regimeInscription = findRegimeInscription(apogeeMap, annee);
+            List<TypeConvention> typeConventionsCompatibles = resolveTypeConventionsCompatibles(regimeInscription);
+            List<TypeConvention> typeConventionsAuto = resolveTypeConventionsAuto(regimeInscription);
+            List<ConventionFormationDto> inscriptionsAnnee = buildInscriptionsForAnnee(apogeeMap, annee, typeConventionsCompatibles, typeConventionsAuto);
+            enrichWithElementsPedagogiques(inscriptionsAnnee, apogeeMap.getListeELPs());
+            inscriptions.addAll(inscriptionsAnnee);
         }
 
-        if (filtrerEligibilite && !UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                // On garde les formations dont le centre de gestion autorise la création d'une convention
-                inscriptions = inscriptions.stream().filter(i -> i.getCentreGestion().isAutorisationEtudiantCreationConvention()).collect(Collectors.toList());
-            }
-            // Filtre les inscriptions on fonction du paramétrage côté centre de gestion
-            inscriptions = inscriptions.stream().filter(i -> {
-                CentreGestion centreGestion = i.getCentreGestion();
-                Boolean autorisationAnneePrecedente = centreGestion.getRecupInscriptionAnterieure();
-                // On autorise la création de convention sur l'année en cours et les années suivantes
-                int anneeInt = Integer.parseInt(i.getAnnee());
-                if (i.getAnnee().equals(anneeReference) || anneeInt > anneeReferenceInt) {
-                    return true;
-                }
-                if (!autorisationAnneePrecedente) {
-                    return false;
-                } else {
-                    // On autorise uniquement les gestionnaires pour l'année précédentes (et pas toutes les années précédentes)
-                    if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                        return false;
-                    } else {
-                        return (anneeReferenceInt - 1) == anneeInt;
-                    }
-                }
-            }).collect(Collectors.toList());
+        return filtrerEligibilite ? filterInscriptions(utilisateur, inscriptions, anneeReferenceInt) : inscriptions;
+    }
+
+    private List<String> getAnneesFiltrees(Utilisateur utilisateur, List<String> annees, int anneeReferenceInt, String anneeConvention) {
+        List<String> anneesFiltrees = annees.stream()
+                .filter(a -> isAnneeAutorisee(a, anneeReferenceInt, UtilisateurHelper.isRole(utilisateur, Role.ETU)))
+                .collect(Collectors.toList());
+
+        if (anneeConvention != null && !anneeConvention.isEmpty() && !anneesFiltrees.contains(anneeConvention)) {
+            anneesFiltrees.add(anneeConvention);
+        }
+
+        return anneesFiltrees;
+    }
+
+    private boolean isAnneeAutorisee(String annee, int anneeReferenceInt, boolean isEtudiant) {
+        int anneeInt = Integer.parseInt(annee);
+        boolean isCourranteOuFuture = anneeInt >= anneeReferenceInt;
+        boolean isPrecedente = anneeInt == anneeReferenceInt - 1;
+        return isCourranteOuFuture || (!isEtudiant && isPrecedente);
+    }
+
+    private RegimeInscription findRegimeInscription(ApogeeMap apogeeMap, String annee) {
+        return apogeeMap.getRegimeInscription().stream()
+                .filter(r -> r.getAnnee().equals(annee))
+                .findAny()
+                .orElse(null);
+    }
+
+    private List<TypeConvention> resolveTypeConventionsCompatibles(RegimeInscription regimeInscription) {
+        if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
+            return List.of();
+        }
+
+        return typeConventionJpaRepository.findAllActiveCompatibleByCodeRegimeInscription(regimeInscription.getCodRegIns());
+    }
+
+    private List<TypeConvention> resolveTypeConventionsAuto(RegimeInscription regimeInscription) {
+        if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
+            return List.of();
+        }
+
+        return typeConventionJpaRepository.findAllActiveByCodeRegimeInscription(regimeInscription.getCodRegIns());
+    }
+
+    private List<ConventionFormationDto> buildInscriptionsForAnnee(ApogeeMap apogeeMap, String annee, List<TypeConvention> typeConventionsCompatibles, List<TypeConvention> typeConventionsAuto) {
+        List<ConventionFormationDto> inscriptions = new ArrayList<>();
+
+        for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
+            syncEtapeIfAbsent(etapeInscription);
+
+            CentreGestion centreGestion = resolveCentreGestion(etapeInscription);
+            if (centreGestion == null) continue;
+
+            List<TypeConvention> typeConventionsDisponibles = resolveTypeConventionsDisponibles(etapeInscription, typeConventionsCompatibles);
+            TypeConvention typeEffectif = resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventionsAuto);
+
+            ConventionFormationDto dto = new ConventionFormationDto();
+            dto.setEtapeInscription(etapeInscription);
+            dto.setAnnee(annee);
+            dto.setTypeConvention(typeEffectif);
+            dto.setTypeConventionsDisponibles(typeConventionsDisponibles);
+            dto.setCentreGestion(centreGestion);
+            inscriptions.add(dto);
         }
 
         return inscriptions;
+    }
+
+    private List<TypeConvention> resolveTypeConventionsDisponibles(EtapeInscription etapeInscription, List<TypeConvention> typeConventionsCompatibles) {
+        TypeConvention typeConventionCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
+        if (typeConventionCesure != null) {
+            return List.of(typeConventionCesure);
+        }
+
+        if (!typeConventionsCompatibles.isEmpty()) {
+            return typeConventionsCompatibles;
+        }
+
+        return typeConventionJpaRepository.findAllActiveWithTemplate();
+    }
+
+    private TypeConvention resolveTypeConventionForInscription(EtapeInscription etapeInscription, CentreGestion centreGestion, List<TypeConvention> typeConventions) {
+        if (centreGestion.isDesactiverSelectionAutomatiqueTypeConvention()) {
+            return null;
+        }
+
+        TypeConvention typeConventionCesure = changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
+        if (typeConventionCesure != null) {
+            return typeConventionCesure;
+        }
+
+        if (typeConventions.size() == 1) {
+            return typeConventions.get(0);
+        }
+
+        return null;
+    }
+
+    public TypeConvention resolveTypeConvention(RegimeInscription regimeInscription, EtapeInscription etapeInscription, CentreGestion centreGestion) {
+        List<TypeConvention> typeConventions = resolveTypeConventionsAuto(regimeInscription);
+        return resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventions);
+    }
+
+    private void syncEtapeIfAbsent(EtapeInscription etapeInscription) {
+        String codeUniversite = appConfigService.getConfigGenerale().getCodeUniversite();
+        Etape etape = etapeJpaRepository.findById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet(), codeUniversite);
+        if (etape != null) return;
+
+        EtapeId etapeId = new EtapeId();
+        etapeId.setCode(etapeInscription.getCodeEtp());
+        etapeId.setCodeVersionEtape(etapeInscription.getCodVrsVet());
+        etapeId.setCodeUniversite(codeUniversite);
+
+        etape = new Etape();
+        etape.setId(etapeId);
+        etape.setLibelle(etapeInscription.getLibWebVet());
+        etapeJpaRepository.saveAndFlush(etape);
+    }
+
+    private CentreGestion resolveCentreGestion(EtapeInscription etapeInscription) {
+        CritereGestion critere = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeEtp(), etapeInscription.getCodVrsVet());
+
+        if (critere == null) {
+            critere = critereGestionJpaRepository.findEtapeById(etapeInscription.getCodeComposante(), "");
+        }
+
+        if (critere != null) {
+            return critere.getCentreGestion();
+        }
+
+        if (appConfigService.getConfigGenerale().isAutoriserConventionsOrphelines()) {
+            return centreGestionJpaRepository.getCentreEtablissement();
+        }
+
+        return null;
+    }
+
+    private void enrichWithElementsPedagogiques(List<ConventionFormationDto> inscriptions, List<ElementPedagogique> elements) {
+        for (ElementPedagogique elp : elements) {
+            inscriptions.stream()
+                    .filter(i -> i.getEtapeInscription().getCodeEtp().equals(elp.getCodEtp())
+                            && i.getEtapeInscription().getCodVrsVet().equals(elp.getCodVrsVet()))
+                    .findAny()
+                    .ifPresent(dto -> dto.getElementPedagogiques().add(elp));
+        }
+    }
+
+    private List<ConventionFormationDto> filterInscriptions(Utilisateur utilisateur, List<ConventionFormationDto> inscriptions, int anneeReferenceInt) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return inscriptions;
+        }
+
+        boolean isEtudiant = UtilisateurHelper.isRole(utilisateur, Role.ETU);
+
+        return inscriptions.stream()
+                .filter(inscription -> isAutorisationEtudiantRespectee(inscription, isEtudiant))
+                .filter(inscription -> isAnneeCentreGestionAutorisee(inscription, anneeReferenceInt, isEtudiant))
+                .toList();
+    }
+
+    private boolean isAutorisationEtudiantRespectee(ConventionFormationDto inscription, boolean isEtudiant) {
+        return !isEtudiant || inscription.getCentreGestion().isAutorisationEtudiantCreationConvention();
+    }
+
+    private boolean isAnneeCentreGestionAutorisee(ConventionFormationDto inscription, int anneeReferenceInt, boolean isEtudiant) {
+        int anneeInscriptionInt = Integer.parseInt(inscription.getAnnee());
+        if (anneeInscriptionInt >= anneeReferenceInt) {
+            return true;
+        }
+
+        if (!Boolean.TRUE.equals(inscription.getCentreGestion().getRecupInscriptionAnterieure())) {
+            return false;
+        }
+
+        return !isEtudiant && anneeInscriptionInt == anneeReferenceInt - 1;
     }
 
     private int getAnneeReferenceInscriptions(List<String> anneeInscriptions, int anneeEnCoursInt) {
@@ -338,7 +426,6 @@ public class ApogeeService {
                 .findFirst()
                 .orElse(anneeEnCoursInt);
     }
-
     public TypeConvention changeTypeConventionByCodeCursus(String codeCursusAmenage) {
         if (codeCursusAmenage != null && !codeCursusAmenage.isEmpty() && appConfigService.getConfigGenerale().getCodeCesure() != null && !appConfigService.getConfigGenerale().getCodeCesure().isEmpty()) {
             List<String> codeCesureList = List.of(appConfigService.getConfigGenerale().getCodeCesure().split(";"));
@@ -396,6 +483,21 @@ public class ApogeeService {
             return infoAdmEtudiant;
         } catch (JsonProcessingException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
+        }
+    }
+
+    public List<RegimeInscriptionDto> getRegimesInscriptions() {
+        String response = call("/regimesInscriptions", new HashMap<>());
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> rawMap = mapper.readValue(response, new TypeReference<>() {});
+            return rawMap.entrySet().stream()
+                    .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
+                    .toList();
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regimesInscriptions: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
     }

@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
+import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class SecureInterceptor {
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
 
         AppFonctionEnum[] fonctions = authorized.fonctions();
@@ -50,19 +51,20 @@ public class SecureInterceptor {
             throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
         }
 
-        Class<? extends org.esup_portail.esup_stage.security.permission.PermissionEvaluator> evaluatorClass =
-                authorized.evaluator();
+        Class<? extends PermissionEvaluator> evaluatorClass = authorized.evaluator();
         boolean hasCustomEvaluator = evaluatorClass != null
-                && !org.esup_portail.esup_stage.security.permission.PermissionEvaluator.class.equals(evaluatorClass);
-
-        if (!hasRight && hasCustomEvaluator) {
-            org.esup_portail.esup_stage.security.permission.PermissionEvaluator evaluator =
-                    context.getBean(evaluatorClass);
-            hasRight = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
-        }
+                && !PermissionEvaluator.class.equals(evaluatorClass);
 
         if (!hasRight) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
+        }
+
+        if (hasCustomEvaluator) {
+            PermissionEvaluator evaluator = context.getBean(evaluatorClass);
+            boolean hasPermission = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
+            if (!hasPermission) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a cette ressource");
+            }
         }
 
         return joinPoint.proceed();

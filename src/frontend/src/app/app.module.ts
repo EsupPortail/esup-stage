@@ -138,6 +138,7 @@ import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
 import {ColorPickerComponent, ColorPickerDirective} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
+import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accueil/centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
@@ -149,6 +150,17 @@ import {AccessibilityComponent} from "./components/accessibility/accessibility.c
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
 import {FooterComponent} from "./components/footer/footer.component";
 import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
+import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
+import {ConfigMissingModule} from "./components/admin/config-missing/config-missing.module";
+import { LogsComponent } from "./components/admin/logs/logs.component";
+import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
+import { MaintenanceDialogComponent } from "./components/admin/maintenance/maintenance-dialog/maintenance-dialog.component";
+import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
+import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
+import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.component";
+import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
+import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
+import {LogsDisplayComponent} from "./components/admin/logs/logs-display/logs-display.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -260,6 +272,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CentreSignatureElectroniqueComponent,
     SignatureElectroniqueViewComponent,
     ConfirmDeleteDialogComponent,
+    CentreProprietaireDialogComponent,
     ColumnSelectorComponent,
     TachePlanifieComponent,
     ConfirmEnvoieMailComponent,
@@ -268,7 +281,16 @@ export class FrenchDateProvider extends NativeDateAdapter {
     AccessibilityComponent,
     LegalNoticeComponent,
     FooterComponent,
-    MenuAccessibilityComponent
+    MenuAccessibilityComponent,
+    ConfigAppComponent,
+    LogsComponent,
+    MaintenanceComponent,
+    MaintenanceDialogComponent,
+    MaintenanceModeComponent,
+    LogsLiveComponent,
+    LogsExplorerComponent,
+    LogsViewerComponent,
+    LogsDisplayComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
@@ -317,7 +339,14 @@ export class FrenchDateProvider extends NativeDateAdapter {
     HttpClientXsrfModule.withOptions({
       cookieName: 'XSRF-TOKEN',   // nom du cookie envoyé par Spring
       headerName: 'X-XSRF-TOKEN' // header attendu par Spring
-    }),],
+    }),
+    ConfigMissingModule,
+    MatTreeNode,
+    MatTree,
+    MatTreeNodePadding,
+    MatTreeNodeDef,
+    MatTreeNodeToggle,
+  ],
   exports: [
     ContenuPipe,
     TitleComponent

@@ -1,0 +1,12 @@
+<mat-tab-group>
+  <mat-tab label="Logs en direct">
+    <div class="logs-live-container">
+      <app-logs-live></app-logs-live>
+    </div>
+  </mat-tab>
+  <mat-tab label="Explorateur de logs">
+    <div class="logs-explorer-container">
+      <app-logs-explorer (fileOpened)="openFile($event)"></app-logs-explorer>
+    </div>
+  </mat-tab>
+</mat-tab-group>

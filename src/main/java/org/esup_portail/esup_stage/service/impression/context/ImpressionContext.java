@@ -29,6 +29,8 @@ public class ImpressionContext {
     private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
     private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
+    private ReponseEvaluationContext reponse = reponseEvaluationContext;
+    private FicheEvaluationContext ficheEvaluation = ficheEvaluationContext;
 
     public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {
@@ -43,8 +45,10 @@ public class ImpressionContext {
             FicheEvaluation ficheEvaluation = convention.getCentreGestion() != null ? convention.getCentreGestion().getFicheEvaluation() : null;
             if (ficheEvaluation != null) {
                 this.ficheEvaluationContext = new FicheEvaluationContext(ficheEvaluation);
+                this.ficheEvaluation = this.ficheEvaluationContext;
             }
             this.reponseEvaluationContext = new ReponseEvaluationContext(convention.getReponseEvaluation());
+            this.reponse = this.reponseEvaluationContext;
             if (questionSupplementaires != null) {
                 for (QuestionSupplementaire question : questionSupplementaires) {
                     this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
@@ -129,6 +133,7 @@ public class ImpressionContext {
         private String conventionValidee;
         private String codeCaisse;
         private List<HoraireIrregulierContext> horaireIrregulier = new ArrayList<>();
+        private Boolean protectionSocialeOrganismeAccueil;
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -220,6 +225,7 @@ public class ImpressionContext {
                         periode.getNbHeuresJournalieres()
                 ));
             }
+            this.protectionSocialeOrganismeAccueil = convention.getProtectionSocialeOrganismeAccueil();
 
         }
     }

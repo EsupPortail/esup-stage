@@ -1,0 +1,751 @@
+﻿databaseChangeLog:
+  - changeSet:
+      id: legacy-align-baseline-drop-droit-administration-fk
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - foreignKeyConstraintExists:
+            foreignKeyName: fk_PersonnelCentreGestion_DroitAdministration1
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: PersonnelCentreGestion
+            constraintName: fk_PersonnelCentreGestion_DroitAdministration1
+
+  - changeSet:
+      id: legacy-align-baseline-drop-droit-administration-index
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - indexExists:
+            tableName: PersonnelCentreGestion
+            indexName: fk_PersonnelCentreGestion_DroitAdministration1
+      changes:
+        - dropIndex:
+            tableName: PersonnelCentreGestion
+            indexName: fk_PersonnelCentreGestion_DroitAdministration1
+
+  - changeSet:
+      id: legacy-align-baseline-drop-droit-administration-column
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: PersonnelCentreGestion
+            columnName: idDroitAdministration
+      changes:
+        - dropColumn:
+            tableName: PersonnelCentreGestion
+            columnName: idDroitAdministration
+
+  - changeSet:
+      id: legacy-align-baseline-drop-droit-administration
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: DroitAdministration
+      changes:
+        - dropTable:
+            tableName: DroitAdministration
+
+  - changeSet:
+      id: legacy-align-baseline-drop-assurance
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: Assurance
+      changes:
+        - dropTable:
+            tableName: Assurance
+
+  - changeSet:
+      id: legacy-align-baseline-drop-caisse-regime
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: CaisseRegime
+      changes:
+        - dropTable:
+            tableName: CaisseRegime
+
+  - changeSet:
+      id: legacy-align-baseline-drop-pstagedata-user
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: pstagedata_user
+      changes:
+        - dropTable:
+            tableName: pstagedata_user
+
+  - changeSet:
+      id: legacy-align-baseline-drop-pstagedata-vers-mana
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: pstagedata_vers_mana
+      changes:
+        - dropTable:
+            tableName: pstagedata_vers_mana
+
+  - changeSet:
+      id: legacy-align-baseline-drop-statut-juridique-mapping
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: StatutJuridique_Mapping
+      changes:
+        - dropTable:
+            tableName: StatutJuridique_Mapping
+
+  - changeSet:
+      id: legacy-align-baseline-create-affectation-sauv
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: Affectation_sauv
+      changes:
+        - createTable:
+            tableName: Affectation_sauv
+            columns:
+              - column:
+                  name: codeAffectation
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: libelleAffectation
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-execution
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_execution
+      changes:
+        - createTable:
+            tableName: batch_job_execution
+            columns:
+              - column:
+                  name: JOB_EXECUTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: VERSION
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: JOB_INSTANCE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATE_TIME
+                  type: datetime(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: START_TIME
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: END_TIME
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: STATUS
+                  type: VARCHAR(10)
+              - column:
+                  name: EXIT_CODE
+                  type: VARCHAR(20)
+              - column:
+                  name: EXIT_MESSAGE
+                  type: VARCHAR(2500)
+              - column:
+                  name: LAST_UPDATED
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-execution-context
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_execution_context
+      changes:
+        - createTable:
+            tableName: batch_job_execution_context
+            columns:
+              - column:
+                  name: JOB_EXECUTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: SHORT_CONTEXT
+                  type: VARCHAR(2500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SERIALIZED_CONTEXT
+                  type: TEXT
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-execution-seq
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_execution_seq
+      changes:
+        - createTable:
+            tableName: batch_job_execution_seq
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-instance
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_instance
+      changes:
+        - createTable:
+            tableName: batch_job_instance
+            columns:
+              - column:
+                  name: JOB_INSTANCE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: VERSION
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: JOB_NAME
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: JOB_KEY
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-params
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_params
+      changes:
+        - createTable:
+            tableName: batch_job_params
+            columns:
+              - column:
+                  name: JOB_INSTANCE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: TYPE_CD
+                  type: VARCHAR(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: KEY_NAME
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: STRING_VAL
+                  type: VARCHAR(250)
+              - column:
+                  name: DATE_VAL
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: LONG_VAL
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: DOUBLE_VAL
+                  type: DOUBLE
+                  defaultValueComputed: 'NULL'
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-job-seq
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_job_seq
+      changes:
+        - createTable:
+            tableName: batch_job_seq
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-step-execution
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_step_execution
+      changes:
+        - createTable:
+            tableName: batch_step_execution
+            columns:
+              - column:
+                  name: STEP_EXECUTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: VERSION
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: STEP_NAME
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: JOB_EXECUTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: START_TIME
+                  type: datetime(0)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: END_TIME
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: STATUS
+                  type: VARCHAR(10)
+              - column:
+                  name: COMMIT_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: READ_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: FILTER_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: WRITE_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: READ_SKIP_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: WRITE_SKIP_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: PROCESS_SKIP_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: ROLLBACK_COUNT
+                  type: BIGINT
+                  defaultValueComputed: 'NULL'
+              - column:
+                  name: EXIT_CODE
+                  type: VARCHAR(20)
+              - column:
+                  name: EXIT_MESSAGE
+                  type: VARCHAR(2500)
+              - column:
+                  name: LAST_UPDATED
+                  type: datetime(0)
+                  defaultValueComputed: 'NULL'
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-step-execution-context
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_step_execution_context
+      changes:
+        - createTable:
+            tableName: batch_step_execution_context
+            columns:
+              - column:
+                  name: STEP_EXECUTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: SHORT_CONTEXT
+                  type: VARCHAR(2500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SERIALIZED_CONTEXT
+                  type: TEXT
+
+  - changeSet:
+      id: legacy-align-baseline-create-batch-step-execution-seq
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: batch_step_execution_seq
+      changes:
+        - createTable:
+            tableName: batch_step_execution_seq
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-instance-unique
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_instance
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.statistics
+              WHERE table_schema = DATABASE()
+                AND table_name = 'batch_job_instance'
+                AND index_name = 'JOB_INST_UN'
+      changes:
+        - addUniqueConstraint:
+            tableName: batch_job_instance
+            columnNames: JOB_NAME, JOB_KEY
+            constraintName: JOB_INST_UN
+
+  - changeSet:
+      id: legacy-align-baseline-batch-step-execution-index
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_step_execution
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.statistics
+              WHERE table_schema = DATABASE()
+                AND table_name = 'batch_step_execution'
+                AND index_name = 'JOB_EXEC_STEP_FK'
+      changes:
+        - createIndex:
+            tableName: batch_step_execution
+            indexName: JOB_EXEC_STEP_FK
+            associatedWith: ''
+            columns:
+              - column:
+                  name: JOB_EXECUTION_ID
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-execution-index
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_execution
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.statistics
+              WHERE table_schema = DATABASE()
+                AND table_name = 'batch_job_execution'
+                AND index_name = 'JOB_INST_EXEC_FK'
+      changes:
+        - createIndex:
+            tableName: batch_job_execution
+            indexName: JOB_INST_EXEC_FK
+            associatedWith: ''
+            columns:
+              - column:
+                  name: JOB_INSTANCE_ID
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-params-index
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_params
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.statistics
+              WHERE table_schema = DATABASE()
+                AND table_name = 'batch_job_params'
+                AND index_name = 'JOB_INST_PARAMS_FK'
+      changes:
+        - createIndex:
+            tableName: batch_job_params
+            indexName: JOB_INST_PARAMS_FK
+            associatedWith: ''
+            columns:
+              - column:
+                  name: JOB_INSTANCE_ID
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-exec-context-fk
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_execution_context
+        - tableExists:
+            tableName: batch_job_execution
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.table_constraints
+              WHERE constraint_schema = DATABASE()
+                AND table_name = 'batch_job_execution_context'
+                AND constraint_name = 'JOB_EXEC_CTX_FK'
+                AND constraint_type = 'FOREIGN KEY'
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: batch_job_execution_context
+            baseColumnNames: JOB_EXECUTION_ID
+            constraintName: JOB_EXEC_CTX_FK
+            referencedTableName: batch_job_execution
+            referencedColumnNames: JOB_EXECUTION_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            validate: true
+
+  - changeSet:
+      id: legacy-align-baseline-batch-step-exec-fk
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_step_execution
+        - tableExists:
+            tableName: batch_job_execution
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.table_constraints
+              WHERE constraint_schema = DATABASE()
+                AND table_name = 'batch_step_execution'
+                AND constraint_name = 'JOB_EXEC_STEP_FK'
+                AND constraint_type = 'FOREIGN KEY'
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: batch_step_execution
+            baseColumnNames: JOB_EXECUTION_ID
+            constraintName: JOB_EXEC_STEP_FK
+            referencedTableName: batch_job_execution
+            referencedColumnNames: JOB_EXECUTION_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            validate: true
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-instance-exec-fk
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_execution
+        - tableExists:
+            tableName: batch_job_instance
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.table_constraints
+              WHERE constraint_schema = DATABASE()
+                AND table_name = 'batch_job_execution'
+                AND constraint_name = 'JOB_INST_EXEC_FK'
+                AND constraint_type = 'FOREIGN KEY'
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: batch_job_execution
+            baseColumnNames: JOB_INSTANCE_ID
+            constraintName: JOB_INST_EXEC_FK
+            referencedTableName: batch_job_instance
+            referencedColumnNames: JOB_INSTANCE_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            validate: true
+
+  - changeSet:
+      id: legacy-align-baseline-batch-job-instance-params-fk
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: batch_job_params
+        - tableExists:
+            tableName: batch_job_instance
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM information_schema.table_constraints
+              WHERE constraint_schema = DATABASE()
+                AND table_name = 'batch_job_params'
+                AND constraint_name = 'JOB_INST_PARAMS_FK'
+                AND constraint_type = 'FOREIGN KEY'
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: batch_job_params
+            baseColumnNames: JOB_INSTANCE_ID
+            constraintName: JOB_INST_PARAMS_FK
+            referencedTableName: batch_job_instance
+            referencedColumnNames: JOB_INSTANCE_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            validate: true
+
+  - changeSet:
+      id: legacy-drop-old-affectation
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_affectation
+      changes:
+        - dropTable:
+            tableName: old_affectation
+
+  - changeSet:
+      id: legacy-drop-old-convention
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_convention
+      changes:
+        - dropTable:
+            tableName: old_convention
+
+  - changeSet:
+      id: legacy-drop-old-criteregestion
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_criteregestion
+      changes:
+        - dropTable:
+            tableName: old_criteregestion
+
+  - changeSet:
+      id: legacy-drop-old-enseignant
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_enseignant
+      changes:
+        - dropTable:
+            tableName: old_enseignant
+
+  - changeSet:
+      id: legacy-drop-old-etudiant
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_etudiant
+      changes:
+        - dropTable:
+            tableName: old_etudiant
+
+  - changeSet:
+      id: legacy-drop-old-personnelcentregestion
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_personnelcentregestion
+      changes:
+        - dropTable:
+            tableName: old_personnelcentregestion
+
+  - changeSet:
+      id: legacy-drop-old-ufr
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: old_ufr
+      changes:
+        - dropTable:
+            tableName: old_ufr
+
+
+
