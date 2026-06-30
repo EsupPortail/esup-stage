@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class TitleService {
 
   private _title: string = '';
+  private _subtitle?: string;
 
   constructor() { }
 
@@ -15,5 +16,14 @@ export class TitleService {
 
   set title(value: string) {
     this._title = value;
+    this._subtitle = undefined;
+  }
+
+  get subtitle(): string|undefined {
+    return this._subtitle;
+  }
+
+  set subtitle(value: string|undefined) {
+    this._subtitle = value;
   }
 }

@@ -13,6 +13,7 @@ import { Router } from "@angular/router";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import * as FileSaver from 'file-saver';
+import {TitleService} from "../../../services/title.service";
 
 @Component({
     selector: 'app-gestion-groupe',
@@ -68,6 +69,7 @@ export class GestionGroupeComponent implements OnInit {
     public templateMailGroupeService: TemplateMailGroupeService,
     private fb: FormBuilder,
     private messageService: MessageService,
+    private titleService: TitleService,
     private router: Router
   ) {
     this.form = this.fb.group({
@@ -160,6 +162,7 @@ export class GestionGroupeComponent implements OnInit {
   tabChanged(event: MatTabChangeEvent): void {
     this.selected = [];
     if (event.index == 0) {
+      this.titleService.subtitle = undefined;
       this.groupeEtudiant = {};
     }else{
       this.refreshFilters();
@@ -172,6 +175,7 @@ export class GestionGroupeComponent implements OnInit {
 
   printTab(row: any): void{
     this.groupeEtudiant = row;
+    this.titleService.subtitle = this.groupeEtudiant?.nom;
     if (this.tabs) {
       this.tabs.selectedIndex = this.printTabIndex;
     }
@@ -179,6 +183,7 @@ export class GestionGroupeComponent implements OnInit {
 
   sendMailTab(row: any): void{
     this.groupeEtudiant = row;
+    this.titleService.subtitle = this.groupeEtudiant?.nom;
     if (this.tabs) {
       this.tabs.selectedIndex = this.mailTabIndex;
     }
