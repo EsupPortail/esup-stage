@@ -219,8 +219,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private el: ElementRef,
     private technicalService: TechnicalService,
     public vcRef: ViewContainerRef,
-    private configMissingService: ConfigMissingService,
     private router: Router,
+    private configMissingService: ConfigMissingService,
     private activatedRoute: ActivatedRoute,
     private maintenanceStateService: MaintenanceStateService
   ) {
@@ -302,6 +302,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isConnected() {
     return this.authService.userConnected;
+  }
+
+  showFooter(): boolean {
+    return !this.router.url.split('?')[0].startsWith('/evaluation-tuteur');
   }
 
   slideNavbar(): void {

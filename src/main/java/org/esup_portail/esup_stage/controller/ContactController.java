@@ -106,7 +106,7 @@ public class ContactController {
     }
 
     @GetMapping("/getByService/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC, AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<ContactDto> getByService(@PathVariable("id") int id, @RequestParam(value = "idCentreGestion", required = false, defaultValue = "-1") Integer idCentreGestion) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         List<Contact> contacts = getVisibleContactsByService(id, idCentreGestion, utilisateur);
@@ -133,16 +133,7 @@ public class ContactController {
         }
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        CentreGestion centreGestion;
-        if (isGestionnaire(utilisateur)) {
-            if (contactFormDto.getIdCentreGestion() != null) {
-                centreGestion = centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
-            } else {
-                centreGestion = centreGestionJpaRepository.getCentreEtablissement();
-            }
-        } else {
-            centreGestion = centreGestionJpaRepository.getCentreEtablissement();
-        }
+        CentreGestion centreGestion = resolveContactCentre(contactFormDto, service, utilisateur);
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
         }
@@ -162,7 +153,7 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.SUPPRESSION}, evaluator = ContactPermissionEvaluator.class)
     public boolean delete(@PathVariable("id") int id) {
         Contact contact = contactJpaRepository.findById(id);
         if (contact == null) {
@@ -218,13 +209,51 @@ public class ContactController {
         }
 
         return filteredContacts.stream()
-                .filter(contact -> canUseContactForConvention(contact, centreGestionConvention))
+                .filter(contact -> canUseContactForConvention(contact, centreGestionConvention, centresDemandeur))
                 .toList();
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
         return UtilisateurHelper.isRole(utilisateur, Role.GES)
                 || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+    }
+
+    private CentreGestion resolveGestionnaireContactCentre(ContactFormDto contactFormDto, Utilisateur utilisateur) {
+        List<CentreGestion> centresGestionnaire = getCurrentGestionnaireCentres(utilisateur);
+        if (centresGestionnaire.isEmpty()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
+        }
+
+        if (contactFormDto.getIdCentreGestion() == null) {
+            if (centresGestionnaire.size() == 1) {
+                return centresGestionnaire.get(0);
+            }
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion du contact doit etre renseigne");
+        }
+
+        return centresGestionnaire.stream()
+                .filter(centreGestion -> centreGestion.getId() == contactFormDto.getIdCentreGestion())
+                .findFirst()
+                .orElseThrow(() -> new AppException(HttpStatus.FORBIDDEN, "Le centre de gestion du contact n'est pas rattache au gestionnaire"));
+    }
+
+    private CentreGestion resolveContactCentre(ContactFormDto contactFormDto, Service service, Utilisateur utilisateur) {
+        if (isGestionnaire(utilisateur)) {
+            return resolveGestionnaireContactCentre(contactFormDto, utilisateur);
+        }
+
+        if (contactFormDto.getIdCentreGestion() != null) {
+            return centreGestionJpaRepository.findById(contactFormDto.getIdCentreGestion().intValue());
+        }
+
+        return resolveDefaultContactCentre(service);
+    }
+
+    private CentreGestion resolveDefaultContactCentre(Service service) {
+        if (service.getCentreGestion() != null) {
+            return service.getCentreGestion();
+        }
+        return centreGestionJpaRepository.getCentreEtablissement();
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
@@ -243,14 +272,20 @@ public class ContactController {
         return false;
     }
 
-    private boolean canUseContactForConvention(Contact contact, CentreGestion centreGestionConvention) {
+    private boolean canUseContactForConvention(Contact contact, CentreGestion centreGestionConvention, List<CentreGestion> centresDemandeur) {
         CentreGestion centreGestionContact = contact != null ? contact.getCentreGestion() : null;
         return centreGestionContact != null
                 && (centreGestionContact.getId() == centreGestionConvention.getId()
+                || isAttachedToCentre(centresDemandeur, centreGestionContact)
                 || confidentialiteService.isNoConfidentiality(centreGestionContact)
                 || confidentialiteService.isCentreEtablissement(centreGestionContact));
     }
 
+    private boolean isAttachedToCentre(List<CentreGestion> centresDemandeur, CentreGestion centreGestion) {
+        return centresDemandeur != null
+                && centreGestion != null
+                && centresDemandeur.stream().anyMatch(centreDemandeur -> centreDemandeur.getId() == centreGestion.getId());
+    }
     private List<ContactDto> toDtoList(List<Contact> contacts, boolean hideSensitiveFields) {
         return contacts.stream()
                 .map(contact -> ContactDto.from(contact, hideSensitiveFields))
@@ -270,9 +305,11 @@ public class ContactController {
         contactDetailDto.setFonction(contact.getFonction());
         contactDetailDto.setCivilite(contact.getCivilite());
         contactDetailDto.setIdCentreGestion(contact.getCentreGestion().getId());
+        contactDetailDto.setCentreGestionnaire(ContactDetailDto.CentreGestionDto.from(contact.getCentreGestion()));
         if (!hideSensitiveFields) {
             contactDetailDto.setMail(contact.getMail());
             contactDetailDto.setTel(contact.getTel());
+            contactDetailDto.setTelephone(contact.getTel());
             contactDetailDto.setFax(contact.getFax());
         }
         return contactDetailDto;

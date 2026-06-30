@@ -7,7 +7,7 @@
       <li>
         <a class="fr-link" href="#menu">Menu</a>
       </li>
-      <li>
+      <li *ngIf="showFooter()">
         <a class="fr-link" href="#footer">Pied de page</a>
       </li>
     </ul>
@@ -64,4 +64,4 @@
     <router-outlet></router-outlet>
   </main>
 </ng-template>
-<app-footer *ngIf="!publicLayout"></app-footer>
+<app-footer *ngIf="!publicLayout && showFooter()"></app-footer>

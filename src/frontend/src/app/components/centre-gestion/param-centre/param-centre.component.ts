@@ -163,12 +163,27 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
   getEtablissementConfidentialite() {
     this.centreGestionService.getEtablissementConfidentialite().subscribe((response: any) => {
       this.etablissementConfidentialite = response;
-      if (this.centreGestion.id && this.centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && this.etablissementConfidentialite.code != 2) {
-        this.form.get('codeConfidentialite')?.disable();
-      }
+      this.applyConfidentialiteControlState();
     });
   }
 
+  private applyConfidentialiteControlState(): void {
+    const control = this.form.get('codeConfidentialite');
+    if (!control) {
+      return;
+    }
+
+    if (!this.centreGestion?.id || this.centreGestion?.niveauCentre?.libelle === 'ETABLISSEMENT') {
+      control.enable({ emitEvent: false });
+      return;
+    }
+
+    if (`${this.etablissementConfidentialite?.code}` === '2') {
+      control.enable({ emitEvent: false });
+    } else {
+      control.disable({ emitEvent: false });
+    }
+  }
   setFormData(): void {
     this.form.patchValue({
       codeConfidentialite: this.centreGestion.codeConfidentialite,
@@ -215,6 +230,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
         return a.ordre - b.ordre;
       });
     }
+    this.applyConfidentialiteControlState();
   }
 
   toggleRecupInscription(): void {

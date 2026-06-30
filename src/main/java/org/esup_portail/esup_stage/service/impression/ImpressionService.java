@@ -271,16 +271,16 @@ public class ImpressionService {
         sb.append("<meta-data-list>");
         if (typeSignatureEnum == TypeSignatureEnum.otp) {
             for (int i = 0; i < otp.size(); ++i) {
-                sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get(firstnameKey)).append("\"/>");
-                sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get(lastnameKey)).append("\"/>");
-                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get(phoneNumberKey)).append("\"/>");
-                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get(emailKey)).append("\"/>");
+                sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(firstnameKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(lastnameKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(phoneNumberKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(emailKey))).append("\"/>");
             }
         } else {
             int counter = 1;
             for (String key : Arrays.asList(lastnameKey, firstnameKey, emailKey)) {
                 for (Map<String, String> stringStringMap : otp) {
-                    sb.append("<meta-data name=\"TEXT").append(String.format("%03d", counter++)).append("\" value=\"").append(stringStringMap.get(key)).append("\"/>");
+                    sb.append("<meta-data name=\"TEXT").append(String.format("%03d", counter++)).append("\" value=\"").append(xmlValue(stringStringMap.get(key))).append("\"/>");
                 }
             }
         }
@@ -341,7 +341,8 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
-        return conventionService.parseNumTel(phoneNumber);
+        String parsedPhoneNumber = conventionService.parseNumTel(phoneNumber);
+        return parsedPhoneNumber != null ? parsedPhoneNumber : "";
     }
 
     public String getOtpDataEmail(String email) {
@@ -349,7 +350,11 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
             return deliveryAddress;
         }
-        return email != null ? email : "";
+        return xmlValue(email);
+    }
+
+    private String xmlValue(String value) {
+        return value != null && !value.equals("null") ? value : "";
     }
 
     public String manageIfElse(String text) {

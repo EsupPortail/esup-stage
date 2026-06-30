@@ -31,6 +31,15 @@
             <mat-error><app-form-error [field]="form.get('idCivilite')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
+        <div class="row input-group" *ngIf="!contact && gestionnaireCentres.length > 1">
+          <mat-form-field class="col-12" appearance="fill">
+            <mat-label>Centre de gestion</mat-label>
+            <mat-select formControlName="idCentreGestion" required>
+              <mat-option *ngFor="let centre of gestionnaireCentres" [value]="centre.id">{{centre.nomCentre}}</mat-option>
+            </mat-select>
+            <mat-error><app-form-error [field]="form.get('idCentreGestion')"></app-form-error></mat-error>
+          </mat-form-field>
+        </div>
         <div class="row input-group">
           <mat-form-field class="col-12" appearance="fill">
             <mat-label>Fonction</mat-label>

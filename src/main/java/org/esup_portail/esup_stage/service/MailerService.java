@@ -52,9 +52,6 @@ public class MailerService {
     TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
 
     @Autowired
-    ApplicationProperties applicationProperties;
-
-    @Autowired
     EvaluationService evaluationService;
 
     @Autowired
@@ -83,7 +80,7 @@ public class MailerService {
         if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, avenant, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
                     mailContext, false, null, null);
         }
@@ -97,7 +94,7 @@ public class MailerService {
         if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
                     mailContext, false, null, null);
         }
@@ -111,7 +108,7 @@ public class MailerService {
         if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, null, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
+            MailContext mailContext = new MailContext(appliProperties, convention, null, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false, "conventions.zip", archive);
         }
@@ -128,7 +125,7 @@ public class MailerService {
             CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
             Convention convention = previewConventionFactory.createFictionalConvention(centreEtablissement);
             Avenant avenant = previewConventionFactory.createFictionalAvenant(convention);
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
             if (mailContext.getSignataire() != null && mailContext.getSignataire().getTel() == null) {
                 mailContext.getSignataire().setTel("+33 1 44 55 66 77");
             }
@@ -340,9 +337,9 @@ public class MailerService {
         private AvenantContext avenant = new AvenantContext();
         private String lienEvaluationTuteur= "";
 
-        public MailContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention, Avenant avenant, Utilisateur userModif, String lienEvaluationTuteur) {
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, Utilisateur userModif, String lienEvaluationTuteur) {
             if (convention != null) {
-                this.convention = new ConventionContext(appliProperties, applicationProperties, convention);
+                this.convention = new ConventionContext(appliProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
@@ -354,9 +351,9 @@ public class MailerService {
             this.modifiePar = new ModifieParContext(userModif);
         }
 
-        public MailContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention, Avenant avenant, String lienEvaluationTuteur) {
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, String lienEvaluationTuteur) {
             if (convention != null) {
-                this.convention = new ConventionContext(appliProperties, applicationProperties, convention);
+                this.convention = new ConventionContext(appliProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
@@ -383,7 +380,7 @@ public class MailerService {
             private String tempsTravailComment;
             private String lien;
 
-            public ConventionContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention) {
+            public ConventionContext(AppliProperties appliProperties, Convention convention) {
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                 this.numero = String.valueOf(convention.getId());

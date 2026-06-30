@@ -36,7 +36,7 @@ public class ContactRepository extends PaginationRepository<Contact> {
                 clauses.add("1 = 0");
                 return;
             }
-            clauses.add("(c.centreGestion.id IN :visibleForCentres OR c.centreGestion.codeConfidentialite IS NULL OR c.centreGestion.codeConfidentialite.code = '0')");
+            clauses.add("c.centreGestion.id IN :visibleForCentres");
         }
     }
 

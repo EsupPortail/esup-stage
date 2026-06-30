@@ -438,10 +438,6 @@ public class CentreGestionController {
         }
 
         if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(centreConfidentialite.getCode())) {
-            Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
-            if (orphanConfidentialite != null && !centreConfidentialite.getCode().equals(orphanConfidentialite.getCode())) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité des conventions orphelines doit suivre celle du centre établissement");
-            }
             return centreConfidentialite;
         }
 
@@ -459,7 +455,7 @@ public class CentreGestionController {
             return resolveConfidentialiteByCode(expectedCode);
         }
         if (!expectedCode.equals(requestedConfidentialite.getCode())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister une confidentialité différente de celle imposée par le centre établissement");
+            return resolveConfidentialiteByCode(expectedCode);
         }
         return requestedConfidentialite;
     }

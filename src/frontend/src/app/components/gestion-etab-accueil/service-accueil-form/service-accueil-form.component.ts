@@ -21,6 +21,7 @@ export class ServiceAccueilFormComponent {
   communes: any[] = [];
 
   form: any;
+  idCentreGestion: number | null = null;
 
   constructor(public serviceService: ServiceService,
               public communeService: CommuneService,
@@ -32,6 +33,7 @@ export class ServiceAccueilFormComponent {
     this.service = data.service
     this.etab = data.etab
     this.countries = data.countries
+    this.idCentreGestion = data.idCentreGestion ?? null
     if (this.service) {
       this.form = this.fb.group({
         nom: [this.service.nom, [Validators.required, Validators.maxLength(70)]],
@@ -90,6 +92,9 @@ export class ServiceAccueilFormComponent {
       } else {
         //ajoute idStructure à l'objet service
         data.idStructure = this.etab.id;
+        if (this.idCentreGestion) {
+          data.idCentreGestion = this.idCentreGestion;
+        }
         this.serviceService.create(data).subscribe((response: any) => {
           this.service = response;
           this.dialogRef.close(this.service);
