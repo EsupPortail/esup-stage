@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
@@ -36,10 +37,7 @@ public class LdapService {
         try {
             if (method.equals("GET")) {
                 return webClient.get()
-                        .uri(referentielProperties.getLdapUrl() + api, uri -> {
-                            ((Map<String, String>) params).forEach(uri::queryParam);
-                            return uri.build();
-                        })
+                        .uri(buildGetUri(api, (Map<String, String>) params))
                         .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
@@ -61,6 +59,14 @@ public class LdapService {
             log.error("context",e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
+    }
+
+    private String buildGetUri(String api, Map<String, String> params) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromUriString(referentielProperties.getLdapUrl())
+                .path(api);
+        params.forEach(uriBuilder::queryParam);
+        return uriBuilder.build().encode().toUriString();
     }
 
     public List<LdapUser> search(String api, LdapSearchDto ldapSearchDto) {
