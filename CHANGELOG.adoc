@@ -1,25 +1,5 @@
 == Version stable
-https://github.com/EsupPortail/esup-stage/releases/tag/3.1.12[Esup-Stage v3.1.12]
-
-== ESUP-Stage v3.2.0 (À venir)
-=== Nouveautés
-- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 (#309), (#186), (#114), (#4).
-- Ajout d'un filtre "Pays" dans le tableau de bord (#125).
-- Mise à jour de l'interface de sélection des établissements d'accueil, service, tuteur professionnel et signataire (#220).
-- Ajout d'un paramètre permettant d'autoriser ou non l'impression d'une convention suite à la validation d'un avenant.
-- Ajout d'un paramètre autorisant le chevauchement de dates de convention pour les étudiants (#176), (#117).
-- Création d’un délégataire pour le viseur d’un centre de gestion.
-- Création d'un bouton permettant de désactiver la synchro des données d'un établissement.
-
-=== Améliorations
-- Permettre de saisir un stage d'une durée de 1 jour (#200).
-- Suppression du champ "Pays de la convention" dans l'onglet Stage.
-- Finalisation du module de gestion des évaluations de stage (#97).
-
-=== Corrections
-- Correction du problème de mise à jour des signataires suite à la création d'un avenant pour changement de tuteur.
-- Correction du problème de création d'un avenant avant validation de la convention (#207).
-- Erreur lors de l'envoi du numéro de téléphone à Docaposte.
+https://github.com/EsupPortail/esup-stage/releases/tag/3.2.3[Esup-Stage v3.2.3]
 
 == ESUP-Stage v3.3.0 (À venir)
 === Nouveautés
