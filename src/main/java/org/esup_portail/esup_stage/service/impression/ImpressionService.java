@@ -341,7 +341,7 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
-        String parsedPhoneNumber = conventionService.parseNumTel(phoneNumber);
+        String parsedPhoneNumber = conventionService.parseNumTelMobile(phoneNumber);
         return parsedPhoneNumber != null ? parsedPhoneNumber : "";
     }
 
