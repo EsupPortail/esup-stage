@@ -1,15 +1,5 @@
 databaseChangeLog:
   - changeSet:
-      id: 3.3.0-ajout-informations-complementaires-convention
-      author: thouveno9
-      changes:
-        - addColumn:
-            tableName: Convention
-            columns:
-              - column:
-                  name: informationsComplementaires
-                  type: varchar(1000)
-  - changeSet:
       id: 3.3.0-ajout-param-convention-informations-complementaires
       author: thouveno9
       changes:

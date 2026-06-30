@@ -182,7 +182,7 @@ export class StageComponent implements OnInit {
       competences: [this.convention.competences, this.fieldValidators['competences']],
       fonctionsEtTaches: [this.convention.fonctionsEtTaches, this.fieldValidators['fonctionsEtTaches']],
       details: [this.convention.details, this.fieldValidators['details']],
-      informationsComplementaires: [this.convention.informationsComplementaires, this.fieldValidators['informationsComplementaires']],
+      informationsComplementaires: [this.convention.commentaireStage, this.fieldValidators['informationsComplementaires']],
       // - Partie Dates / horaires
       dateDebutStage: [this.convention.dateDebutStage ? new Date(this.convention.dateDebutStage) : null, [Validators.required]],
       dateFinStage: [this.convention.dateFinStage ? new Date(this.convention.dateFinStage) : null, [Validators.required]],

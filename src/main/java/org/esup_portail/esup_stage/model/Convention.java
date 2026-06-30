@@ -298,9 +298,6 @@ public class Convention extends ObjetMetier implements Exportable {
     private String nbConges;
     private String competences;
 
-    @Column(length = 1000)
-    private String informationsComplementaires;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUniteDureeGratification")
     private UniteDuree uniteDureeGratification;
@@ -677,9 +674,6 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "competences":
                 value = getConfidentialExportValue("competences", getCompetences());
-                break;
-            case "informationsComplementaires":
-                value = getInformationsComplementaires();
                 break;
             case "commentaireDureeTravail":
                 value = getCommentaireDureeTravail();

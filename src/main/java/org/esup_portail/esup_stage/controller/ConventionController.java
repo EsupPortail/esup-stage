@@ -655,7 +655,8 @@ public class  ConventionController {
             convention.setDetails((String) conventionSingleFieldDto.getValue());
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "informationsComplementaires")) {
-            convention.setInformationsComplementaires(getLimitedStringValue(conventionSingleFieldDto, INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH));
+            // Stocké dans la colonne existante commentaireStage (pas de colonne dédiée)
+            convention.setCommentaireStage(getLimitedStringValue(conventionSingleFieldDto, INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH));
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutStage")) {
             Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue());
