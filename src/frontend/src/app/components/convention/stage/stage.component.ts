@@ -96,6 +96,7 @@ export class StageComponent implements OnInit {
   singleFieldUpdateQueue : any[] = [];
   updatingPeriode = false;
   initialLoading: boolean = true;
+  initialDureeExceptionnelleMissing: boolean = false;
   private readonly periodeStageFields = ['periodeStageMois', 'periodeStageJours', 'periodeStageHeures'];
 
   @Output() validated = new EventEmitter<number>();
@@ -213,6 +214,8 @@ export class StageComponent implements OnInit {
       travailNuitFerie: [this.convention.travailNuitFerie, this.fieldValidators['travailNuitFerie']],
     }, { emitEvent: false });
 
+    this.initialDureeExceptionnelleMissing = this.isBlank(this.convention.dureeExceptionnelle);
+
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeMois = value;
     });
@@ -231,15 +234,7 @@ export class StageComponent implements OnInit {
 
     this.form.get('dureeExceptionnelle')!.valueChanges.subscribe((value) => {
       this.convention.dureeExceptionnelle = value;
-      if (!this.initialLoading) {
-        this.calculPeriode(this.convention.nbHeuresHebdo, this.convention.dureeExceptionnelle);
-
-        this.form.patchValue({
-          periodeStageMois: this.dureeStage.dureeMois,
-          periodeStageJours: this.dureeStage.dureeJours,
-          periodeStageHeures: this.dureeStage.dureeHeures
-        }, { emitEvent: false });
-      }
+      this.refreshPeriodeStageFields();
     });
 
     //Set default value for booleans
@@ -260,6 +255,8 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
     this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
+    this.loadJoursFeries();
+    this.refreshPeriodeStageFields();
     this.loadInterruptionsStage();
     if (!this.form.get('horairesReguliers')?.value) {
       this.loadPeriodesStage();
@@ -301,8 +298,6 @@ export class StageComponent implements OnInit {
       this.form.disable();
     }
 
-    this.loadJoursFeries();
-
     this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
       this.texteLimiteRenumeration = response.texte;
     })
@@ -322,7 +317,10 @@ export class StageComponent implements OnInit {
 
     //le timeout permet de laisser le temps aux données d'être chargées
     setTimeout(() => {
+      this.updateHeuresTravail(true);
       this.initialLoading = false;
+      this.refreshPeriodeStageFields();
+      this.persistMissingCalculatedDureeExceptionnelle();
     }, 1000);
   }
 
@@ -474,6 +472,7 @@ export class StageComponent implements OnInit {
   loadInterruptionsStage() : void{
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
+      this.updateHeuresTravail(true);
       this.checkInterruptionsPeriodesValid();
     });
   }
@@ -521,7 +520,7 @@ export class StageComponent implements OnInit {
   loadPeriodesStage() : void {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.periodesCalculHeuresStage = response;
-      this.updateHeuresTravail();
+      this.updateHeuresTravail(true);
     });
   }
 
@@ -677,8 +676,51 @@ export class StageComponent implements OnInit {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  updateHeuresTravail(): void {
-    if (this.initialLoading) return;
+  refreshPeriodeStageFields(): void {
+    if (!this.form) {
+      return;
+    }
+
+    this.calculPeriode(this.form.get('nbHeuresHebdo')?.value, this.form.get('dureeExceptionnelle')?.value);
+    this.form.patchValue({
+      periodeStageMois: this.dureeStage.dureeMois,
+      periodeStageJours: this.dureeStage.dureeJours,
+      periodeStageHeures: this.dureeStage.dureeHeures
+    }, { emitEvent: false });
+  }
+
+  private setCalculatedDureeExceptionnelle(totalHeures: number): void {
+    this.convention.dureeExceptionnelle = totalHeures;
+    this.form.get('dureeExceptionnelle')?.setValue(totalHeures, { emitEvent: !this.initialLoading });
+    this.refreshPeriodeStageFields();
+  }
+
+  private persistMissingCalculatedDureeExceptionnelle(): void {
+    const dureeExceptionnelle = this.form.get('dureeExceptionnelle')?.value;
+    if (
+      this.modifiable
+      && this.initialDureeExceptionnelleMissing
+      && !this.isBlank(dureeExceptionnelle)
+      && !Number.isNaN(this.parseDecimal(dureeExceptionnelle))
+    ) {
+      this.initialDureeExceptionnelleMissing = false;
+      this.updateSingleField('dureeExceptionnelle', dureeExceptionnelle);
+    }
+  }
+
+  private isBlank(value: any): boolean {
+    return value === null || value === undefined || value === '';
+  }
+
+  private parseDecimal(value: any): number {
+    if (this.isBlank(value)) {
+      return NaN;
+    }
+    return parseFloat(value.toString().replace(',', '.'));
+  }
+
+  updateHeuresTravail(force: boolean = false): void {
+    if (this.initialLoading && !force) return;
 
     this.updatingPeriode = true;
     setTimeout(() => {
@@ -692,10 +734,10 @@ export class StageComponent implements OnInit {
 
     if (this.form.get('horairesReguliers')!.value) {
       // For regular hours
-      if (this.form.get('nbHeuresHebdo')?.valid) {
+      const nbHeuresHebdo = this.parseDecimal(this.form.get('nbHeuresHebdo')!.value);
+      if (!Number.isNaN(nbHeuresHebdo)) {
         const dateDebutStage = this.dateFromBackend(this.form.get('dateDebutStage')!.value);
         const dateFinStage = this.dateFromBackend(this.form.get('dateFinStage')!.value);
-        const nbHeuresHebdo = parseFloat(this.form.get('nbHeuresHebdo')!.value);
         const nbHeuresJournalieres = nbHeuresHebdo / 5;
 
         const periodes = [{
@@ -706,12 +748,16 @@ export class StageComponent implements OnInit {
 
         // Calculate total hours
         const totalHeures = this.calculHeuresTravails(periodes);
-        this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
+        this.setCalculatedDureeExceptionnelle(totalHeures);
       }
     } else {
       // For irregular hours
+      if (this.initialLoading && this.periodesCalculHeuresStage.length === 0) {
+        this.refreshPeriodeStageFields();
+        return;
+      }
       const totalHeures = this.calculHeuresTravails(this.periodesCalculHeuresStage);
-      this.form.get('dureeExceptionnelle')?.setValue(totalHeures);
+      this.setCalculatedDureeExceptionnelle(totalHeures);
     }
   }
 
@@ -729,7 +775,10 @@ export class StageComponent implements OnInit {
       // Ensure we're working with Date objects
       let startDate = new Date(periode.dateDebut);
       const endDate = new Date(periode.dateFin);
-      const nbHeuresJournalieres = parseFloat(periode.nbHeuresJournalieres);
+      const nbHeuresJournalieres = this.parseDecimal(periode.nbHeuresJournalieres);
+      if (Number.isNaN(nbHeuresJournalieres)) {
+        continue;
+      }
 
       // Normalize dates to start of day to avoid time comparison issues
       startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
@@ -825,12 +874,11 @@ export class StageComponent implements OnInit {
   }
 
   calculPeriode(nbHeuresHebdo: number, nbHeures: number): void {
-    if (!nbHeures || isNaN(nbHeures)) {
+    const parsedNbHeures = this.parseDecimal(nbHeures);
+    if (!parsedNbHeures || Number.isNaN(parsedNbHeures)) {
       this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: 0 };
       return;
     }
-
-    const parsedNbHeures = parseFloat(nbHeures.toString());
 
     // Calculer selon le type d'horaires
     if (!this.form.get('horairesReguliers')?.value && this.periodesCalculHeuresStage && this.periodesCalculHeuresStage.length > 0) {
@@ -844,12 +892,12 @@ export class StageComponent implements OnInit {
     const NB_JOUR_MOIS = 22; // 1 mois = 22 jours ouvrés
     const NB_JOUR_SEMAINE = 5; // 1 semaine = 5 jours ouvrés
 
-    if (!nbHeuresHebdo || isNaN(nbHeuresHebdo)) {
+    const parsedNbHeuresHebdo = this.parseDecimal(nbHeuresHebdo);
+    if (!parsedNbHeuresHebdo || Number.isNaN(parsedNbHeuresHebdo)) {
       this.dureeStage = { dureeMois: 0, dureeJours: 0, dureeHeures: nbHeures };
       return;
     }
 
-    const parsedNbHeuresHebdo = parseFloat(nbHeuresHebdo.toString());
     const nbHeuresJournalieres = parsedNbHeuresHebdo / NB_JOUR_SEMAINE;
 
     if (nbHeuresJournalieres === 0) {

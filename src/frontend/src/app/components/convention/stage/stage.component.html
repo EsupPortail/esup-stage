@@ -154,7 +154,7 @@
         <div class="row" *ngIf="form.value.horairesReguliers">
           <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
             <mat-label>Nombre d’heures hebdomadaires du stage</mat-label>
-            <input type="number" step="any" matInput formControlName="nbHeuresHebdo" required />
+            <input type="text" inputmode="decimal" matInput formControlName="nbHeuresHebdo" required />
             <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
           </mat-form-field>
           <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
@@ -214,7 +214,7 @@
         <div class="form-row row align-items-start">
           <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
-            <input type="number" step="any" matInput formControlName="dureeExceptionnelle" required />
+            <input type="text" inputmode="decimal" matInput formControlName="dureeExceptionnelle" required />
             <mat-error>
               <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
             </mat-error>
