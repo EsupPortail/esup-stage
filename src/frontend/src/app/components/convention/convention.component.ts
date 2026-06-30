@@ -7,11 +7,13 @@ import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
 import { AppFonction } from '../../constants/app-fonction';
 import { Droit } from '../../constants/droit';
+import { getProgressText } from '../../utils/text-progress-bar.utils';
 
 @Component({
-  selector: 'app-convention',
-  templateUrl: './convention.component.html',
-  styleUrls: ['./convention.component.scss']
+    selector: 'app-convention',
+    templateUrl: './convention.component.html',
+    styleUrls: ['./convention.component.scss'],
+    standalone: false
 })
 export class ConventionComponent implements OnInit {
 
@@ -36,6 +38,7 @@ export class ConventionComponent implements OnInit {
   allValid = false;
   modifiable = true;
   signatureEnabled = false;
+  protected readonly getProgressText = getProgressText;
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
@@ -187,7 +190,7 @@ export class ConventionComponent implements OnInit {
   }
 
   updateStage(data: any): void {
-    this.updateSingleField(data.field,data.value);
+    this.updateSingleField(data.field, data.value, data.dureeExceptionnellePeriode);
   }
 
   updateEnseignant(data: any): void {
@@ -202,11 +205,14 @@ export class ConventionComponent implements OnInit {
   }
 
 
-  updateSingleField(key: string, value: any): void {
-    const data = {
+  updateSingleField(key: string, value: any, dureeExceptionnellePeriode?: string): void {
+    const data: any = {
       "field":key,
       "value":value,
     };
+    if (dureeExceptionnellePeriode != null) {
+      data.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
+    }
     this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
       this.convention = response;
       this.majStatus();
@@ -214,21 +220,15 @@ export class ConventionComponent implements OnInit {
   }
 
   isConventionValide(): boolean {
-    let conventionValide = null;
-    if (this.convention.centreGestion != null) {
-      if (this.convention.centreGestion.validationPedagogique) {
-        conventionValide = this.convention.validationPedagogique;
-      }
-      if (this.convention.centreGestion.validationConvention) {
-        if (conventionValide != null) {
-          conventionValide = conventionValide && this.convention.validationConvention
-        } else {
-          conventionValide = this.convention.validationConvention
-        }
-      }
-      return conventionValide;
-    }
-    return false;
+    const c = this.convention;
+
+    const cg = c?.centreGestion;
+    if (!cg) return false;
+    if (!cg.validationPedagogique && !cg.validationConvention && !cg.verificationAdministrative) return false;
+
+    return (!cg.validationPedagogique || c.validationPedagogique)
+      && (!cg.validationConvention || c.validationConvention)
+      && (!cg.verificationAdministrative || c.verificationAdministrative);
   }
 
   isEtudiant(): boolean {

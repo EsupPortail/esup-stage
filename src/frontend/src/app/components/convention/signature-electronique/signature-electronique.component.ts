@@ -8,9 +8,10 @@ import { ConfigService } from '../../../services/config.service';
 import { UserService } from '../../../services/user.service';
 
 @Component({
-  selector: 'app-signature-electronique',
-  templateUrl: './signature-electronique.component.html',
-  styleUrls: ['./signature-electronique.component.scss']
+    selector: 'app-signature-electronique',
+    templateUrl: './signature-electronique.component.html',
+    styleUrls: ['./signature-electronique.component.scss'],
+    standalone: false
 })
 export class SignatureElectroniqueComponent implements OnInit, OnDestroy {
   @Input() convention!: any;
@@ -133,7 +134,7 @@ export class SignatureElectroniqueComponent implements OnInit, OnDestroy {
     }
     const date = new Date();
     date.setMinutes(date.getMinutes() - 30);
-    return new Date(this.convention.dateActualisationSignature) >= date;
+    return new Date(this.convention.dateActualisationSignature) >= date || !!this.convention.allSignedDateSetted;
   }
 
   getNomPrenomEnvoiSignature(): void {

@@ -2,9 +2,11 @@ package org.esup_portail.esup_stage.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "Service")

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CentreGestionJpaRepository extends JpaRepository<CentreGestion, Integer> {
 
@@ -19,6 +21,9 @@ public interface CentreGestionJpaRepository extends JpaRepository<CentreGestion,
 
     @Query("SELECT cg FROM CentreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid")
     CentreGestion getByGestionnaireUid(@Param("uid") String uid);
+
+    @Query("SELECT cg FROM CentreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid")
+    List<CentreGestion> findAllByGestionnaireUid(@Param("uid") String uid);
 
     @Query("SELECT cg FROM CentreGestion cg where LOWER(cg.nomCentre) = LOWER(:code)")
     CentreGestion getByCode(@Param("code") String code);

@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Injectable, LOCALE_ID, NgModule } from '@angular/core';
+import { Injectable, LOCALE_ID, NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from "./app-routing.module";
@@ -10,7 +10,13 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MenuComponent } from './components/menu/menu.component';
 import { MatListModule } from "@angular/material/list";
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule,
+  HttpClientXsrfModule,
+  provideHttpClient,
+  withInterceptorsFromDi
+} from "@angular/common/http";
 import { CookieService } from "ngx-cookie-service";
 import { TechnicalInterceptor } from "./interceptors/technical.interceptor";
 import { HomeComponent } from './components/home/home.component';
@@ -28,6 +34,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatPaginatorIntl, MatPaginatorModule } from "@angular/material/paginator";
 import { DatePipe, registerLocaleData } from "@angular/common";
 import localeFr from '@angular/common/locales/fr';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle'
+import { CdkTrapFocus } from '@angular/cdk/a11y'
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -128,12 +136,31 @@ import { SignatureElectroniqueComponent } from './components/convention/signatur
 import { MatTabNavChangeDirective } from './directives/mat-tab-nav-change.directive';
 import {CentreSignatureElectroniqueComponent} from "./components/centre-gestion/signature-electronique/signature-electronique.component";
 import { SignatureElectroniqueViewComponent } from './components/convention/signature-electronique/signature-electronique-view/signature-electronique-view.component';
-import {ColorPickerModule} from "ngx-color-picker";
+import {ColorPickerComponent, ColorPickerDirective} from "ngx-color-picker";
 import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/confirm-delete-dialog/confirm-delete-dialog.component";
+import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accueil/centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
+import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';
+import { EnvoiMailEnMasseEvalComponent } from "./components/eval-stage/envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
+import { ExportEvaluationComponent } from "./components/eval-stage/export-evaluation/export-evaluation.component";
+import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
+import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
+import {FooterComponent} from "./components/footer/footer.component";
+import {MenuAccessibilityComponent} from "./components/menu-accessibility/menu-accessibility.component";
+import {ConfigAppComponent} from "./components/admin/config-app/config-app.component";
+import {ConfigMissingModule} from "./components/admin/config-missing/config-missing.module";
+import { LogsComponent } from "./components/admin/logs/logs.component";
+import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
+import { MaintenanceDialogComponent } from "./components/admin/maintenance/maintenance-dialog/maintenance-dialog.component";
+import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
+import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
+import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.component";
+import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
+import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
+import {LogsDisplayComponent} from "./components/admin/logs/logs-display/logs-display.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -159,95 +186,113 @@ export class FrenchDateProvider extends NativeDateAdapter {
   }
 }
 
-@NgModule({ declarations: [
-        AppComponent,
-        HeaderComponent,
-        MenuComponent,
-        HomeComponent,
-        TitleComponent,
-        MessageComponent,
-        AdminUserComponent,
-        TableComponent,
-        BooleanPipe,
-        RoleLibellePipe,
-        DashboardComponent,
-        ConventionComponent,
-        AdminNomenclaturesComponent,
-        AdminNomenclaturesEditionComponent,
-        AdminRoleComponent,
-        ConfirmComponent,
-        ConfigGeneraleComponent,
-        ContenuComponent,
-        ContenuPipe,
-        CentreGestionSearchComponent,
-        EtabAccueilComponent,
-        CentreGestionComponent,
-        EtudiantComponent,
-        LoaderComponent,
-        AdminNomenclaturesCreationComponent,
-        FormErrorComponent,
-        ServiceAccueilComponent,
-        CoordCentreComponent,
-        TuteurProComponent,
-        SignataireComponent,
-        EnseignantReferentComponent,
-        TemplateMailComponent,
-        ParamCentreComponent,
-        MailTesterComponent,
-        CreateDialogComponent,
-        GestionEtabAccueilComponent,
-        EtabAccueilFormComponent,
-        StageComponent,
-        ServiceAccueilFormComponent,
-        ContactFormComponent,
-        GestionnairesComponent,
-        RecapitulatifComponent,
-        AvenantComponent,
-        AvenantFormComponent,
-        ValidationComponent,
-        ValidationCardComponent,
-        LogoCentreComponent,
-        AvenantViewComponent,
-        CalendrierComponent,
-        TemplateConventionComponent,
-        InterruptionsFormComponent,
-        ConsigneComponent,
-        RetourListeComponent,
-        FicheEvaluationComponent,
-        QuestionSupplementaireFormComponent,
-        EvalStageComponent,
-        EvaluationStageComponent,
-        ConventionCreateEnMasseComponent,
-        SelectionGroupeEtuComponent,
-        CadreStageComponent,
-        InfosStageComponent,
-        EtabAccueilGroupeComponent,
-        EtabAccueilGroupeModalComponent,
-        ServiceAccueilGroupeComponent,
-        ServiceAccueilGroupeModalComponent,
-        TuteurAccueilGroupeComponent,
-        TuteurAccueilGroupeModalComponent,
-        EnseignantGroupeComponent,
-        EnseignantGroupeModalComponent,
-        SignataireGroupeComponent,
-        SignataireGroupeModalComponent,
-        InfosStageModalComponent,
-        CadreStageModalComponent,
-        ValidationCreationComponent,
-        GestionGroupeComponent,
-        TemplateMailGroupeComponent,
-        ConfirmDeleteCentreComponent,
-        TruncatePipe,
-        FormAutocompleteFieldComponent,
-        SignatureElectroniqueComponent,
-        MatTabNavChangeDirective,
-        CentreSignatureElectroniqueComponent,
-        SignatureElectroniqueViewComponent,
-        ConfirmDeleteDialogComponent,
-        ColumnSelectorComponent,
-        TachePlanifieComponent
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+@NgModule({
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    MenuComponent,
+    HomeComponent,
+    TitleComponent,
+    MessageComponent,
+    AdminUserComponent,
+    TableComponent,
+    BooleanPipe,
+    RoleLibellePipe,
+    DashboardComponent,
+    ConventionComponent,
+    AdminNomenclaturesComponent,
+    AdminNomenclaturesEditionComponent,
+    AdminRoleComponent,
+    ConfirmComponent,
+    ConfigGeneraleComponent,
+    ContenuComponent,
+    ContenuPipe,
+    CentreGestionSearchComponent,
+    EtabAccueilComponent,
+    CentreGestionComponent,
+    EtudiantComponent,
+    LoaderComponent,
+    AdminNomenclaturesCreationComponent,
+    FormErrorComponent,
+    ServiceAccueilComponent,
+    CoordCentreComponent,
+    TuteurProComponent,
+    SignataireComponent,
+    EnseignantReferentComponent,
+    TemplateMailComponent,
+    ParamCentreComponent,
+    MailTesterComponent,
+    CreateDialogComponent,
+    GestionEtabAccueilComponent,
+    EtabAccueilFormComponent,
+    StageComponent,
+    ServiceAccueilFormComponent,
+    ContactFormComponent,
+    GestionnairesComponent,
+    RecapitulatifComponent,
+    AvenantComponent,
+    AvenantFormComponent,
+    ValidationComponent,
+    ValidationCardComponent,
+    LogoCentreComponent,
+    AvenantViewComponent,
+    CalendrierComponent,
+    TemplateConventionComponent,
+    InterruptionsFormComponent,
+    ConsigneComponent,
+    RetourListeComponent,
+    FicheEvaluationComponent,
+    QuestionSupplementaireFormComponent,
+    EvalStageComponent,
+    EvaluationStageComponent,
+    ConventionCreateEnMasseComponent,
+    SelectionGroupeEtuComponent,
+    CadreStageComponent,
+    InfosStageComponent,
+    EtabAccueilGroupeComponent,
+    EtabAccueilGroupeModalComponent,
+    ServiceAccueilGroupeComponent,
+    ServiceAccueilGroupeModalComponent,
+    TuteurAccueilGroupeComponent,
+    TuteurAccueilGroupeModalComponent,
+    EnseignantGroupeComponent,
+    EnseignantGroupeModalComponent,
+    SignataireGroupeComponent,
+    SignataireGroupeModalComponent,
+    InfosStageModalComponent,
+    CadreStageModalComponent,
+    ValidationCreationComponent,
+    GestionGroupeComponent,
+    TemplateMailGroupeComponent,
+    ConfirmDeleteCentreComponent,
+    TruncatePipe,
+    FormAutocompleteFieldComponent,
+    SignatureElectroniqueComponent,
+    MatTabNavChangeDirective,
+    CentreSignatureElectroniqueComponent,
+    SignatureElectroniqueViewComponent,
+    ConfirmDeleteDialogComponent,
+    CentreProprietaireDialogComponent,
+    ColumnSelectorComponent,
+    TachePlanifieComponent,
+    ConfirmEnvoieMailComponent,
+    EnvoiMailEnMasseEvalComponent,
+    ExportEvaluationComponent,
+    AccessibilityComponent,
+    LegalNoticeComponent,
+    FooterComponent,
+    MenuAccessibilityComponent,
+    ConfigAppComponent,
+    LogsComponent,
+    MaintenanceComponent,
+    MaintenanceDialogComponent,
+    MaintenanceModeComponent,
+    LogsLiveComponent,
+    LogsExplorerComponent,
+    LogsViewerComponent,
+    LogsDisplayComponent,
+  ],
+  bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -284,17 +329,43 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MatSnackBarModule,
     MatBadgeModule,
     ImageCropperComponent,
-    ColorPickerModule, MatSlideToggle], providers: [
-        CookieService,
-        ContenuService,
-        ContenuPipe,
-        DatePipe,
-        { provide: LOCALE_ID, useValue: 'fr' },
-        { provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true },
-        { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
-        { provide: DateAdapter, useClass: FrenchDateProvider },
-        { provide: MatPaginatorIntl, useClass: PaginatorIntl },
-        { provide: APP_INITIALIZER, useFactory: (cs: ContenuService) => () => cs.getAllLibelle(), deps: [ContenuService], multi: true },
-        provideHttpClient(withInterceptorsFromDi()),
-    ] })
+    ColorPickerComponent,
+    MatSlideToggle,
+    ColorPickerDirective,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkTrapFocus,
+    HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',   // nom du cookie envoyé par Spring
+      headerName: 'X-XSRF-TOKEN' // header attendu par Spring
+    }),
+    ConfigMissingModule,
+    MatTreeNode,
+    MatTree,
+    MatTreeNodePadding,
+    MatTreeNodeDef,
+    MatTreeNodeToggle,
+  ],
+  exports: [
+    ContenuPipe,
+    TitleComponent
+  ],
+  providers: [
+    CookieService,
+    ContenuService,
+    ContenuPipe,
+    DatePipe,
+    {provide: LOCALE_ID, useValue: 'fr'},
+    {provide: HTTP_INTERCEPTORS, useClass: TechnicalInterceptor, multi: true},
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    {provide: DateAdapter, useClass: FrenchDateProvider},
+    {provide: MatPaginatorIntl, useClass: PaginatorIntl},
+    provideAppInitializer(() => {
+        const initializerFn = ((cs: ContenuService) => () => cs.getAllLibelle())(inject(ContenuService));
+        return initializerFn();
+      }),
+    provideHttpClient(withInterceptorsFromDi()),
+  ]
+})
 export class AppModule { }

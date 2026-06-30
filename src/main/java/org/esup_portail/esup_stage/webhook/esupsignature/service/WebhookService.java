@@ -11,6 +11,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestionSignataire;
 import org.esup_portail.esup_stage.model.Convention;
+import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.*;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.model.Steps;
@@ -44,6 +45,8 @@ public class WebhookService {
     private final WebClient webClient;
     @Autowired
     SignatureProperties signatureProperties;
+    @Autowired
+    FilenameSanitizerService filenameSanitizerService;
 
     private final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
@@ -51,9 +54,10 @@ public class WebhookService {
         this.webClient = builder.build();
     }
 
-    private static Resource geMultipartFile(String filename, byte[] bytes) {
+    private Resource geMultipartFile(String filename, byte[] bytes) {
         try {
-            Path tmpFile = Files.createTempFile(filename, ".pdf");
+            String safeFilename = filenameSanitizerService.sanitizeTempFilePrefix(filename);
+            Path tmpFile = Files.createTempFile(safeFilename, ".pdf");
             Files.write(tmpFile, bytes);
             return new FileSystemResource(tmpFile.toFile());
         } catch (Exception e) {

@@ -3,9 +3,10 @@ import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-confirm-delete-centre',
-  templateUrl: './confirm-delete-centre.component.html',
-  styleUrls: ['./confirm-delete-centre.component.scss']
+    selector: 'app-confirm-delete-centre',
+    templateUrl: './confirm-delete-centre.component.html',
+    styleUrls: ['./confirm-delete-centre.component.scss'],
+    standalone: false
 })
 export class ConfirmDeleteCentreComponent implements OnInit {
 

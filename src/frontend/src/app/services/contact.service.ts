@@ -19,12 +19,12 @@ export class ContactService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/contacts/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
-  getById(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/contacts/${id}`);
-  }
-
   getByService(id: number, idCentreGestion: any): Observable<any> {
     return this.http.get(`${environment.apiUrl}/contacts/getByService/${id}`, {params: {idCentreGestion}});
+  }
+
+  getByServiceDetail(id: number, idCentreGestion: any): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/contacts/getByService/${id}/detail`, {params: {idCentreGestion}});
   }
 
   update(id: number, data: any): Observable<any> {

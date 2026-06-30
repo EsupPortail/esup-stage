@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-create-regime-inscription-apogee
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: RegimeInscriptionApogee
+            columns:
+              - column:
+                  name: codeRegimeInscription
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_RegimeInscriptionApogee
+              - column:
+                  name: libelle
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: temEnServ
+                  type: CHAR(1)
+                  defaultValue: O
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateDerniereMaj
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3.3.0-create-type-convention-regime-inscription
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: TypeConventionRegimeInscription
+            columns:
+              - column:
+                  name: idTypeConvention
+                  type: INT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_TypeConventionRegimeInscription
+                    foreignKeyName: fk_TypeConventionRegimeInscription_TypeConvention
+                    references: TypeConvention(idTypeConvention)
+              - column:
+                  name: codeRegimeInscription
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_TypeConventionRegimeInscription
+                    foreignKeyName: fk_TypeConventionRegimeInscription_RegimeInscriptionApogee
+                    references: RegimeInscriptionApogee(codeRegimeInscription)
+
+  - changeSet:
+      id: 3.3.0-index-type-convention-regime-inscription
+      author: thouveno9
+      changes:
+        - createIndex:
+            tableName: TypeConventionRegimeInscription
+            indexName: idx_TypeConventionRegimeInscription_Regime
+            columns:
+              - column:
+                  name: codeRegimeInscription
+
+  - changeSet:
+      id: 3.3.0-add-cron-synchroniser-regimes-inscription-apogee
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'SynchroniserRegimesInscriptionApogee'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: SynchroniserRegimesInscriptionApogee
+              - column:
+                  name: expressionCron
+                  value: 0 0 2 * * ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: true

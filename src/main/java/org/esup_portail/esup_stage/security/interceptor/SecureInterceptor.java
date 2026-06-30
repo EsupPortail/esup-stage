@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.security.interceptor;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.util.Optional;
 
 @Aspect
 @Configuration
@@ -35,54 +30,43 @@ public class SecureInterceptor {
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = currentRequest();
-        if (request == null) {
-            throw new Exception("Not a request");
-        }
-
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getStaticPart().getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Secure authorized = methodSignature.getMethod().getAnnotation(Secure.class);
+
         AppFonctionEnum[] fonctions = authorized.fonctions();
         DroitEnum[] droits = authorized.droits();
         boolean forbiddenEtu = authorized.forbiddenEtu();
 
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (utilisateur == null) {
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Vous n'êtes pas autorisé");
-        }
-
-        if (utilisateur.getActif() != null && !utilisateur.getActif()) {
-            throw new AppException(HttpStatus.NOT_ACCEPTABLE, "Votre compte est inactif");
+            return joinPoint.proceed();
         }
 
         boolean hasRight = fonctions.length == 0 && droits.length == 0;
-        if (!hasRight) {
-            if (fonctions.length > 0 && droits.length > 0) {
-                if (UtilisateurHelper.isRole(utilisateur, fonctions, droits)) {
-                    hasRight = true;
-                }
-            }
+        if (!hasRight && fonctions.length > 0 && droits.length > 0) {
+            hasRight = UtilisateurHelper.isRole(utilisateur, fonctions, droits);
         }
 
         if (forbiddenEtu && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            hasRight = false;
-        }
-
-        // Fallback : évaluateur spécifique si configuré (autre que l'interface par défaut)
-        if (!hasRight && authorized.evaluator() != PermissionEvaluator.class) {
-            PermissionEvaluator evaluator = context.getBean(authorized.evaluator());
-            hasRight = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
-        }
-
-        if (!hasRight) {
             throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
         }
 
-        return joinPoint.proceed();
-    }
+        Class<? extends PermissionEvaluator> evaluatorClass = authorized.evaluator();
+        boolean hasCustomEvaluator = evaluatorClass != null
+                && !PermissionEvaluator.class.equals(evaluatorClass);
 
-    private HttpServletRequest currentRequest() {
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return Optional.ofNullable(servletRequestAttributes).map(ServletRequestAttributes::getRequest).orElse(null);
+        if (!hasRight) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
+        }
+
+        if (hasCustomEvaluator) {
+            PermissionEvaluator evaluator = context.getBean(evaluatorClass);
+            boolean hasPermission = evaluator.hasPermission(utilisateur, methodSignature, joinPoint.getArgs());
+            if (!hasPermission) {
+                throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a cette ressource");
+            }
+        }
+
+        return joinPoint.proceed();
     }
 }

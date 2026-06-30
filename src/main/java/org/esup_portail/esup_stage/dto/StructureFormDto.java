@@ -72,7 +72,9 @@ public class StructureFormDto {
     @Size(max = 20)
     private String numeroRNE;
 
-    @NotNull
     private Boolean verrouillageSynchroStructureSirene;
 
+    private Boolean confidentialiteCoordonnees;
+
+    private Integer idCentreGestionProprietaire;
 }

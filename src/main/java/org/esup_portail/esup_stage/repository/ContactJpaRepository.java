@@ -12,8 +12,37 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
     @Query("SELECT c FROM Contact c WHERE c.id = :id")
     Contact findById(@Param("id") int id);
 
+    @Query("""
+            SELECT c
+            FROM Contact c
+            WHERE c.id = :id
+              AND c.centreGestion.id IN :centreIds
+            """)
+    Contact findVisibleByIdForCentres(@Param("id") int id, @Param("centreIds") List<Integer> centreIds);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END
+            FROM Contact c
+            WHERE c.id = :id
+              AND c.centreGestion.id IN :centreIds
+            """)
+    boolean existsByIdAndCentreGestionIdIn(@Param("id") Integer id, @Param("centreIds") List<Integer> centreIds);
+
     @Query("SELECT c FROM Contact c WHERE c.service.id = :idService")
     List<Contact> findByService(@Param("idService") int idService);
+
+    @Query("""
+            SELECT c
+            FROM Contact c
+            WHERE c.service.id = :idService
+              AND (
+                c.centreGestion.id IN :centreIds
+                OR c.centreGestion.codeConfidentialite IS NULL
+                OR c.centreGestion.codeConfidentialite.code = '0'
+                OR (c.centreGestion.codeConfidentialite.code = '2' AND c.centreGestion.codeConfidentialiteConventionOrpheline.code = '0')
+              )
+            """)
+    List<Contact> findByServiceVisibleForCentres(@Param("idService") int idService, @Param("centreIds") List<Integer> centreIds);
 
     @Query("SELECT COUNT(c.id) FROM Contact c WHERE c.service.id = :idService")
     Long countContactWithService(@Param("idService") int idService);

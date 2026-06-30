@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-suppression-url-page-instruction-cg
+      author: thouveno9
+      changes:
+        - dropColumn:
+            columnName: urlPageInstruction
+            tableName: CentreGestion

@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-interruptions-form',
-  templateUrl: './interruptions-form.component.html',
-  styleUrls: ['./interruptions-form.component.scss'],
+    selector: 'app-interruptions-form',
+    templateUrl: './interruptions-form.component.html',
+    styleUrls: ['./interruptions-form.component.scss'],
+    standalone: false
 })
 export class InterruptionsFormComponent implements OnInit  {
 

@@ -12,11 +12,14 @@ import { SortDirection } from "@angular/material/sort";
 import { ContenuPipe } from "../../pipes/contenu.pipe";
 import { TypeConventionService } from "../../services/type-convention.service";
 import { LangueConventionService } from "../../services/langue-convention.service";
+import { PaysService } from "../../services/pays.service";
+import { environment } from "../../../environments/environment";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
+    standalone: false
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
@@ -26,9 +29,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   filters: any[] = [];
   validationsOptions: any[] = [
     { id: 'validationPedagogique', libelle: 'Validée pédagogiquement' },
+    { id: 'verificationAdministrative', libelle: 'Vérifiée administrativement' },
     { id: 'validationConvention', libelle: 'Validée administrativement' },
+    { id: 'verificationAdministrative', libelle: 'Vérifier administrativement' },
     { id: 'nonValidationPedagogique', libelle: 'Non validée pédagogiquement' },
+    { id: 'nonVerificationAdministrative', libelle: 'Non vérifiée administrativement' },
     { id: 'nonValidationConvention', libelle: 'Non validée administrativement' },
+    { id: 'nonVerificationAdministrative', libelle: 'Non vérifiée administrativement' },
     { id: 'signe', libelle: 'Signé' },
     { id: 'enCours', libelle: 'En cours de signature' },
     { id: 'nonSigne', libelle: 'Non signé' },
@@ -45,9 +52,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   typeDashboard: number = 1; // Type de tableau de bord à afficher : 1=gestionnaire/responsable/admin/profil non défini ; 2=enseignant ; 3=etudiant
   langueConventionList: any[] = [];
   typeConventionList: any[] = [];
+  paysList: any[] = [];
 
   selected: any[] = [];
   validationLibelles: any = {};
+  private shouldAutoSearchOnReturn = false;
+  showButtonText = false;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
 
@@ -62,6 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private contenuPipe: ContenuPipe,
     private langueConventionService: LangueConventionService,
     private typeConventionService: TypeConventionService,
+    private paysService: PaysService,
   ) {
     this.columns = [];
     this.filters = [];
@@ -75,6 +86,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    const returnFlag = sessionStorage.getItem('dashboard-return-refresh');
+    this.shouldAutoSearchOnReturn = returnFlag === '1' || navigation?.trigger === 'popstate';
+
     this.configService.getConfigGenerale().subscribe({
       next: (response: any) => {
         this.initializeValidationLibelles(response);
@@ -85,10 +100,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadInitialData();
       },
       error: (error) => {
-        console.error('Error loading config:', error);
+        this.logError('Error loading config', error);
         this.messageService.setError('Error loading configuration');
       }
     });
+
+    const saved = localStorage.getItem('accessibilityPreferences');
+
+    if (saved) {
+      const preferences = JSON.parse(saved);
+      this.showButtonText = preferences.showButtonText ?? false;
+    }
   }
 
   private initializeValidationLibelles(response: any): void {
@@ -121,7 +143,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       try {
         this.savedFilters = JSON.parse(filtersString);
       } catch (error) {
-        console.error('Error parsing saved filters:', error);
+        this.logError('Error parsing saved filters', error);
         this.savedFilters = [];
       }
     }
@@ -144,7 +166,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadComplementaryData();
       },
       error: (error) => {
-        console.error('Error loading années:', error);
+        this.logError('Error loading annees', error);
         this.messageService.setError('Error loading années');
       }
     });
@@ -169,13 +191,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ufr: this.ufrService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
       etape: this.etapeService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
       langueConvention: this.langueConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
-      typeConvention: this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}')
+      typeConvention: this.typeConventionService.getPaginated(1, 0, 'libelle', 'asc', '{}'),
+      pays: this.paysService.getPaginated(1, 0, 'libelle', 'asc', '{}')
     }).subscribe({
       next: (results) => {
         this.ufrList = results.ufr.data || [];
         this.etapeList = results.etape.data || [];
         this.langueConventionList = results.langueConvention.data || [];
         this.typeConventionList = results.typeConvention.data || [];
+        this.paysList = results.pays.data || [];
 
         if (this.appTable) {
           this.appTable.update();
@@ -189,7 +213,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error('Error loading complementary data:', error);
+        this.logError('Error loading complementary data', error);
         this.messageService.setError('Error loading data');
       }
     });
@@ -201,6 +225,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.appTable.setFilterOption('etape.id', this.etapeList);
       this.appTable.setFilterOption('langueConvention.code', this.langueConventionList);
       this.appTable.setFilterOption('typeConvention.id', this.typeConventionList);
+      this.appTable.setFilterOption('structure.pays.id', this.paysList);
 
       if (this.authService.isEtudiant()) {
         this.appTable.setFilterOption('annee', this.annees);
@@ -220,9 +245,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
+      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
       { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {
@@ -332,6 +358,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
     { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
     { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
+    { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [],searchable: true },
   ];
 
   this.exportColumns = {
@@ -365,6 +392,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'annee', libelle: 'Année', type: 'annee', options: [], keyLibelle: 'libelle', keyId: 'libelle', value: [] },
+      { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
     this.exportColumns = {
@@ -385,7 +413,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   changeAnnee(): void {
     if (!this.appTable || !this.anneeEnCours){
-      console.error("erreur lors du chargement du tableau")
+      this.logError("Erreur lors du chargement du tableau");
     }else if(this.appTable?.getFilters().annee?.value === "Toutes les années"){
       delete this.appTable.filterValues['annee'];
       this.appTable?.update();
@@ -456,6 +484,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   goToConvention(id: number): void {
+    sessionStorage.setItem('dashboard-return-refresh', '1');
     this.router.navigate([`/conventions/${id}`],)
   }
 
@@ -489,7 +518,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private restoreFilters(): void {
     if (!this.appTable || !this.savedFilters) {
-      console.error("Required data not yet loaded");
+      this.logError("Required data not yet loaded");
       return;
     }
 
@@ -566,12 +595,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
         }
       } catch (error) {
-        console.error(`Error restoring filter ${key}:`, error);
+        this.logError(`Error restoring filter ${key}`, error);
       }
     });
 
     if (this.appTable) {
       this.appTable.update();
+    }
+    if (this.shouldAutoSearchOnReturn && this.appTable?.disableAutoSearch) {
+      this.appTable.runSearch();
+      this.shouldAutoSearchOnReturn = false;
+      sessionStorage.removeItem('dashboard-return-refresh');
     }
     this.restorePagingConfig()
   }
@@ -585,9 +619,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.sortDirection = pagingConfig.sortOrder;
         this.appTable.setBackConfig(pagingConfig);
       } catch (error) {
-        console.error('Error parsing paging config:', error);
+        this.logError('Error parsing paging config', error);
       }
     }
+  }
+
+  private logError(message: string, error?: unknown): void {
+    const args: unknown[] = [message];
+    if (!environment.production && error !== undefined) {
+      args.push(error);
+    }
+    console.error(...args);
   }
 
   getValidationIconStatus(row: any): string {

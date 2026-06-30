@@ -16,14 +16,36 @@ public class WebMcvConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/theme.css")
+                .addResourceLocations("classpath:/static/");
+
         registry.addResourceHandler("/frontend/**")
-                .addResourceLocations("classpath:/frontend/");
+                .addResourceLocations("classpath:/frontend/browser/");
+
+        registry.addResourceHandler(
+                        "/*.js",
+                        "/*.js.map",
+                        "/*.css",
+                        "/*.css.map",
+                        "/*.ico",
+                        "/*.woff",
+                        "/*.woff2",
+                        "/*.ttf",
+                        "/*.eot",
+                        "/*.svg",
+                        "/*.webmanifest",
+                        "/assets/**",
+                        "/media/**")
+                .addResourceLocations("classpath:/frontend/browser/");
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:/frontend/");
+        registry.addViewController("/frontend").setViewName("forward:/frontend/index.html");
         registry.addViewController("/frontend/").setViewName("forward:/frontend/index.html");
+        registry.addViewController("/maintenance").setViewName("forward:/frontend/index.html");
+        registry.addViewController("/maintenance/").setViewName("forward:/frontend/index.html");
     }
 
     @Override

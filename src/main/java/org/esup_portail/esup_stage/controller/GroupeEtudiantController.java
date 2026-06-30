@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
 
-    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(GroupeEtudiantController.class);
 
     @Autowired
     GroupeEtudiantRepository groupeEtudiantRepository;
@@ -96,7 +96,7 @@ public class GroupeEtudiantController {
     }
 
     @GetMapping
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<GroupeEtudiant> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
 
         PaginatedResponse<GroupeEtudiant> paginatedResponse = new PaginatedResponse<>();
@@ -300,7 +300,7 @@ public class GroupeEtudiantController {
 
 
     @PostMapping("/pdf-convention")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public ResponseEntity<byte[]> getConventionPDF(@Valid @RequestBody IdsListDto idsListDto) {
         ByteArrayOutputStream archiveOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(archiveOutputStream);
@@ -397,7 +397,7 @@ public class GroupeEtudiantController {
     }
 
     @PostMapping(value = "/import/{id}", consumes = "text/csv")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
+    @Secure(fonctions = {AppFonctionEnum.CREATION_EN_MASSE_CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void importStructures(InputStream inputStream, @PathVariable("id") int groupeId) {
 
         logger.info("import start");
@@ -461,7 +461,8 @@ public class GroupeEtudiantController {
             }
             conventionJpaRepository.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Erreur lors de l'import des structures du groupe etudiant {}", groupeId, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 
@@ -534,10 +535,6 @@ public class GroupeEtudiantController {
         EtudiantRef etudiantRef = apogeeService.getInfoApogee(etudiant.getCodEtu(), etudiant.getAnnee());
         ApogeeMap apogeeMap = apogeeService.getEtudiantEtapesInscription(etudiant.getCodEtu(), etudiant.getAnnee());
         RegimeInscription regIns = apogeeMap.getRegimeInscription().stream().filter(r -> r.getAnnee().equals(etudiant.getAnnee())).findAny().orElse(null);
-        TypeConvention typeConvention = null;
-        if (regIns != null) {
-            typeConvention = typeConventionJpaRepository.findByCodeCtrl(regIns.getLicRegIns());
-        }
         EtapeInscription etapeInscription = apogeeMap.getListeEtapeInscriptions().stream()
                 .filter(i -> i.getCodeComposante().equals(etudiant.getCodeComposante())
                         && i.getCodeDiplome().equals(etudiant.getCodeDiplome())
@@ -547,18 +544,20 @@ public class GroupeEtudiantController {
                 )
                 .findAny()
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Aucun inscription trouvée"));
-        TypeConvention typeCesure = apogeeService.changeTypeConventionByCodeCursus(etapeInscription.getCodeCursusAmenage());
-        if (typeCesure != null) {
-            typeConvention = typeCesure;
-        }
-        if (typeConvention == null) {
-            throw new AppException(HttpStatus.NO_CONTENT, "Type de convention non trouvé");
-        }
         CentreGestion centreGestionEtab = conventionService.getCentreGestionEtab();
+        CentreGestion centreGestion = conventionService.getCentreGestion(centreGestionEtab, etudiant.getCodeComposante(), etudiant.getCodeEtape(), etudiant.getVersionEtape());
+        TypeConvention typeConvention = apogeeService.resolveTypeConvention(regIns, etapeInscription, centreGestion);
+        if (typeConvention == null) {
+            logger.error(
+                    "Type de convention non trouvé automatiquement pour le regime d'inscription (codRegIns={})",
+                    regIns != null ? regIns.getCodRegIns() : "null"
+            );
+            throw new AppException(HttpStatus.NOT_FOUND, "Type de convention non trouvé");
+        }
         ConventionFormationDto inscription = new ConventionFormationDto();
         inscription.setAnnee(etudiant.getAnnee());
         inscription.setEtapeInscription(etapeInscription);
-        inscription.setCentreGestion(conventionService.getCentreGestion(centreGestionEtab, etudiant.getCodeComposante(), etudiant.getCodeEtape(), etudiant.getVersionEtape()));
+        inscription.setCentreGestion(centreGestion);
         inscription.setTypeConvention(typeConvention);
 
         ConventionFormDto conventionFormDto = new ConventionFormDto();

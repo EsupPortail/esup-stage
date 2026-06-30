@@ -1,6 +1,5 @@
 package org.esup_portail.esup_stage.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.io.FileUtils;
@@ -8,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.dto.*;
-import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -22,7 +20,6 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
-import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +39,7 @@ import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/conventions")
-public class ConventionController {
+public class  ConventionController {
 
     private static final Logger logger = LogManager.getLogger(ConventionController.class);
 
@@ -116,15 +113,17 @@ public class ConventionController {
 
 
 
-    @JsonView(Views.List.class)
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<Convention> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<ConventionListDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         filters = addUserContextFilter(filters);
 
-        PaginatedResponse<Convention> paginatedResponse = new PaginatedResponse<>();
+        PaginatedResponse<ConventionListDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(conventionRepository.count(filters));
-        paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        paginatedResponse.setData(conventionRepository.findPaginated(page, perPage, predicate, sortOrder, filters)
+                .stream()
+                .map(ConventionListDto::from)
+                .toList());
         return paginatedResponse;
     }
 
@@ -227,6 +226,9 @@ public class ConventionController {
     public Convention update(@PathVariable("id") int id, @Valid @RequestBody ConventionFormDto conventionFormDto) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         conventionService.setConventionData(convention, conventionFormDto);
         convention.setValeurNomenclature();
@@ -239,14 +241,14 @@ public class ConventionController {
                 boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionEtudiant();
                 boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationConventionEtudiant();
                 boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationConventionEtudiant();
-                conventionService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+                 mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_ETU_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
             } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
                 ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
                 boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isModificationConventionGestionnaire();
                 boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isModificationConventionGestionnaire();
                 boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isModificationConventionGestionnaire();
                 boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isModificationConventionGestionnaire();
-                conventionService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+                 mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_GES_MODIF_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
             }
         }
         return convention;
@@ -256,11 +258,11 @@ public class ConventionController {
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention singleFieldUpdate(@PathVariable("id") int id, @Valid @RequestBody ConventionSingleFieldDto conventionSingleFieldDto) {
         Convention convention = conventionJpaRepository.findById(id);
-        // Pour les étudiants on vérifie que c'est une de ses conventions
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (convention == null || (UtilisateurHelper.isRole(utilisateur, Role.ETU) && !utilisateur.getUid().equals(convention.getEtudiant().getIdentEtudiant()))) {
+        if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, utilisateur);
         setSingleFieldData(convention, conventionSingleFieldDto, utilisateur);
         convention.setValeurNomenclature();
         convention = conventionJpaRepository.saveAndFlush(convention);
@@ -324,11 +326,7 @@ public class ConventionController {
         }
 
         // Contrôle chevauchement de dates
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
-            }
-        }
+        checkChevauchement(convention,utilisateur);
 
         convention.setValidationCreation(true);
         convention.setDateValidationCreation(new Date());
@@ -341,14 +339,14 @@ public class ConventionController {
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionEtudiant();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationConventionEtudiant();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionEtudiant();
-            conventionService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_ETU_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire); //ICI : ATTENTION IL Y AVAIT DEJA UN SENDMAILGESTIONNAIRE EN PARAM2 DE LA FONCTION
+             mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_ETU_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire); //ICI : ATTENTION IL Y AVAIT DEJA UN SENDMAILGESTIONNAIRE EN PARAM2 DE LA FONCTION
         } else if (UtilisateurHelper.isRole(utilisateur, Role.GES)) {
             ConfigAlerteMailDto configAlerteMailDto = appConfigService.getConfigAlerteMail();
             boolean sendMailEtudiant = configAlerteMailDto.getAlerteEtudiant().isCreationConventionGestionnaire();
             boolean sendMailEnseignant = configAlerteMailDto.getAlerteEnseignant().isCreationConventionGestionnaire();
             boolean sendMailGestionnaire = configAlerteMailDto.getAlerteGestionnaire().isCreationConventionGestionnaire();
             boolean sendMailRespGestionnaire = configAlerteMailDto.getAlerteRespGestionnaire().isCreationConventionGestionnaire();
-            conventionService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_GES_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+             mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_GES_CREA_CONVENTION, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         return convention;
     }
@@ -356,7 +354,7 @@ public class ConventionController {
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public ResponseEntity<Map<String, String>> validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS)) {
+        if (UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ENS)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         if (idsListDto.getIds().isEmpty()) {
@@ -369,17 +367,24 @@ public class ConventionController {
 
         for (int id : idsListDto.getIds()) {
             Convention convention = conventionJpaRepository.findById(id);
-            if (convention == null || Boolean.TRUE.equals(convention.getValidationConvention())) {
-                continue;
+            if(convention == null){
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
             }
-            if (Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique()) &&
-                    !Boolean.TRUE.equals(convention.getValidationPedagogique())) {
-                idConventionsErreur.add(convention.getId());
-                continue;
+            conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+            if (!Boolean.TRUE.equals(convention.getValidationConvention())) {
+                boolean validationPedagogiqueRequise =
+                        Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique());
+                boolean validationPedagogiqueAbsente =
+                        !Boolean.TRUE.equals(convention.getValidationPedagogique());
+
+                if (validationPedagogiqueRequise && validationPedagogiqueAbsente) {
+                    idConventionsErreur.add(convention.getId());
+                } else {
+                    validationAdministrative(convention, configAlerteMailDto, ServiceContext.getUtilisateur(), true);
+                    conventionService.validationAutoDonnees(convention, ServiceContext.getUtilisateur());
+                    count++;
+                }
             }
-            validationAdministrative(convention, configAlerteMailDto, ServiceContext.getUtilisateur(), true);
-            conventionService.validationAutoDonnees(convention, ServiceContext.getUtilisateur());
-            count++;
         }
 
         Map<String, String> response = new HashMap<>();
@@ -403,6 +408,7 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
@@ -431,6 +437,7 @@ public class ConventionController {
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         // Un enseignant n'a les droits que sur la validation pédagogique
         if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
@@ -455,16 +462,22 @@ public class ConventionController {
     @GetMapping("/{id}/historique-validations")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
-        return historiqueValidationJpaRepository.findByConvention(idConvention);
+        Convention convention = conventionJpaRepository.findById(idConvention);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        return historiqueValidationJpaRepository.findByConvention(convention.getId());
     }
 
     @GetMapping("/{id}/pdf-convention")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
-    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id, @RequestParam(name = "isRecap", required = false) boolean isRecap) {
+    public ResponseEntity<byte[]> getConventionPDF(@PathVariable("id") int id, @RequestParam(name = "isRecap", required = false) Boolean isRecap) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         if (convention.getNomEtabRef() == null || convention.getAdresseEtabRef() == null) {
             CentreGestion centreGestionEtab = centreGestionJpaRepository.getCentreEtablissement();
             // Erreur si le centre de type etablissement est null
@@ -489,6 +502,7 @@ public class ConventionController {
         if (avenant == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvée");
         }
+        conventionService.canViewEditConvention(avenant.getConvention(), ServiceContext.getUtilisateur());
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
         impressionService.generateConventionAvenantPDF(avenant.getConvention(), avenant, ou, false);
 
@@ -497,7 +511,7 @@ public class ConventionController {
     }
 
     @DeleteMapping("/brouillon")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public void deleteBrouillon() {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
@@ -582,8 +596,7 @@ public class ConventionController {
     }
 
     private void setSingleFieldData(Convention convention, ConventionSingleFieldDto conventionSingleFieldDto, Utilisateur utilisateur) {
-        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
-        if (!conventionService.isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
+        if (!conventionService.isConventionModifiable(convention, utilisateur)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "codeLangueConvention")) {
@@ -648,6 +661,9 @@ public class ConventionController {
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dureeExceptionnelle")) {
             convention.setDureeExceptionnelle(conventionSingleFieldDto.getValue().toString());
+            if (conventionSingleFieldDto.getDureeExceptionnellePeriode() != null) {
+                convention.setDureeExceptionnellePeriode(conventionSingleFieldDto.getDureeExceptionnellePeriode());
+            }
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "idTempsTravail")) {
             TempsTravail tempsTravail = tempsTravailJpaRepository.findById((int) conventionSingleFieldDto.getValue());
@@ -726,6 +742,9 @@ public class ConventionController {
         if (Objects.equals(conventionSingleFieldDto.getField(), "confidentiel")) {
             convention.setConfidentiel((Boolean) conventionSingleFieldDto.getValue());
         }
+        if(Objects.equals(conventionSingleFieldDto.getField(),"protectionSocialeOrganismeAccueil")) {
+            convention.setProtectionSocialeOrganismeAccueil((Boolean) conventionSingleFieldDto.getValue());
+        }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")) {
             int oldIdStructure = convention.getStructure() != null ? convention.getStructure().getId() : 0;
@@ -777,11 +796,7 @@ public class ConventionController {
         }
 
         // Contrôle chevauchement de dates
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-            if (convention.getDateDebutStage() != null && convention.getDateFinStage() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), convention.getDateDebutStage(), convention.getDateFinStage()).size() > 0) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Les dates de début et fin de stage se chevauchent avec une de vos conventions");
-            }
-        }
+        checkChevauchement(convention,utilisateur);
 
     }
 
@@ -803,7 +818,14 @@ public class ConventionController {
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
 
         // Contrôle chevauchement de dates
-        return dateStageDto.getDateDebut() != null && dateStageDto.getDateFin() != null && conventionJpaRepository.findDatesChevauchent(convention.getEtudiant().getIdentEtudiant(), convention.getId(), dateStageDto.getDateDebut(), dateStageDto.getDateFin()).size() > 0;
+        return dateStageDto.getDateDebut() != null
+                && dateStageDto.getDateFin() != null
+                && !conventionJpaRepository.findDatesChevauchent(
+                        convention.getEtudiant().getIdentEtudiant(),
+                        convention.getId(),
+                        dateStageDto.getDateDebut(),
+                        dateStageDto.getDateFin()
+                ).isEmpty();
     }
 
     private void validationPedagogique(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
@@ -828,7 +850,7 @@ public class ConventionController {
         historique.setValeurApres(valider);
         historiqueValidationJpaRepository.saveAndFlush(historique);
 
-        conventionService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+         mailerService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_PEDAGOGIQUE : TemplateMail.CODE_CONVENTION_DEVALID_PEDAGOGIQUE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
     }
 
     private void verificationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
@@ -849,7 +871,7 @@ public class ConventionController {
 
         historique.setValeurApres(valider);
         historiqueValidationJpaRepository.saveAndFlush(historique);
-        conventionService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+         mailerService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VERIF_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVERIF_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
     }
 
     private void validationAdministrative(Convention convention, ConfigAlerteMailDto configAlerteMailDto, Utilisateur utilisateurContext, boolean valider) {
@@ -873,7 +895,7 @@ public class ConventionController {
 
         historique.setValeurApres(valider);
         historiqueValidationJpaRepository.saveAndFlush(historique);
-        conventionService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
+         mailerService.sendValidationMail(convention, null, utilisateurContext, valider ? TemplateMail.CODE_CONVENTION_VALID_ADMINISTRATIVE : TemplateMail.CODE_CONVENTION_DEVALID_ADMINISTRATIVE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
     }
 
     private String addUserContextFilter(String filters) {
@@ -902,12 +924,13 @@ public class ConventionController {
     }
 
     @GetMapping("/{id}/download-signed-doc")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("id") int id) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Avenant non trouvé");
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         MetadataDto metadataDto = signatureService.getPublicMetadata(convention);
         String filePath = signatureService.getSignatureFilePath(metadataDto.getTitle());
         if (Files.exists(Paths.get(filePath))) {
@@ -923,12 +946,13 @@ public class ConventionController {
     }
 
     @PostMapping("/{id}/periodes")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION,DroitEnum.MODIFICATION})
     public Convention updatePeriodes(@PathVariable("id") int id, @RequestBody PeriodesDto periodes) {
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
         convention.setDureeExceptionnellePeriode(periodes.getPeriodes());
         convention = conventionJpaRepository.saveAndFlush(convention);
         return convention;
@@ -954,23 +978,25 @@ public class ConventionController {
         convention.setEnseignant(enseignant);
         conventionJpaRepository.saveAndFlush(convention);
 
-        // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
-        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-        assert personnels != null;
-        for (PersonnelCentreGestion personnel : personnels) {
-            if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
-                mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+        if (convention.isValidationCreation()) {
+            // Envoi de l'alerte de changement d'enseignant référent aux gestionnaires
+            List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+            assert personnels != null;
+            for (PersonnelCentreGestion personnel : personnels) {
+                if (mailerService.isAlerteActif(personnel, "CHANGEMENT_ENS")) {
+                    mailerService.sendAlerteValidation(personnel.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+                }
             }
-        }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
-        if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
-        }
+            // Envoi de l'alerte de changement d'enseignant référent à l'enseignant
+            if(appConfigService.getConfigAlerteMail().getAlerteEnseignant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(enseignant.getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
 
-        // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
-        if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
-            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            // Envoi de l'alerte de changement d'enseignant référent à l'étudiant
+            if(appConfigService.getConfigAlerteMail().getAlerteEtudiant().isChangementEnseignant()){
+                mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, null, utilisateur, "CHANGEMENT_ENS");
+            }
         }
 
         return convention;
@@ -982,6 +1008,7 @@ public class ConventionController {
      * @return PDF en byte[] (Content-Type: application/pdf)
      */
     @GetMapping("/preview-pdf/centre-gestion/{id}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> generateConventionPreview(@PathVariable("id") int idCentreGestion, @RequestParam(name = "templateId") Integer templateId) {
 
         ByteArrayOutputStream ou = new ByteArrayOutputStream();
@@ -990,6 +1017,31 @@ public class ConventionController {
 
         byte[] pdf = ou.toByteArray();
         return ResponseEntity.ok().body(pdf);
+    }
+
+    /**
+     * Contrôle de chevauchement de dates pour une convention donnée, en excluant la convention elle-même.
+     * Lance une AppException si un chevauchement est détecté, sinon ne fait rien.
+     *
+     * @param convention la convention pour laquelle vérifier le chevauchement
+     * @param utilisateur l'utilisateur pour lequel vérifier le chevauchement (doit être un étudiant)
+     */
+    private void checkChevauchement(Convention convention, Utilisateur utilisateur) {
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)
+                && !convention.getCentreGestion().isAutoriserChevauchement()
+                && convention.getDateDebutStage() != null
+                && convention.getDateFinStage() != null
+                && !conventionJpaRepository.findDatesChevauchent(
+                convention.getEtudiant().getIdentEtudiant(),
+                convention.getId(),
+                convention.getDateDebutStage(),
+                convention.getDateFinStage()
+        ).isEmpty()) {
+            throw new AppException(
+                    HttpStatus.BAD_REQUEST,
+                    "Les dates de début et fin de stage se chevauchent avec une de vos conventions"
+            );
+        }
     }
 
 }

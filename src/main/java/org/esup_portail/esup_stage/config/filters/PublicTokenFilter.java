@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.esup_portail.esup_stage.config.PublicSecurityConfiguration;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class PublicTokenFilter extends OncePerRequestFilter {
 
     private final AppliProperties appliProperties;
 
-    @Autowired
     public PublicTokenFilter(AppliProperties appliProperties) {
         this.appliProperties = appliProperties;
     }
@@ -49,6 +47,6 @@ public class PublicTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Éviter d'exécuter le filtre si l'URL n'est pas "/public"
-        return !request.getRequestURI().startsWith(PublicSecurityConfiguration.PATH_FILTER);
+        return !request.getServletPath().startsWith(PublicSecurityConfiguration.PATH_FILTER);
     }
 }

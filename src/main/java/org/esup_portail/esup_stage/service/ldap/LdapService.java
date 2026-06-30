@@ -66,7 +66,8 @@ public class LdapService {
     public List<LdapUser> search(String api, LdapSearchDto ldapSearchDto) {
         String response = call(api, "POST", ldapSearchDto);
         try {
-            log.info("LDAP {} parametres: {}",api, ldapSearchDto);
+            log.info("LDAP {} appele", api);
+            log.debug("LDAP {} parametres: {}", api, ldapSearchDto);
             ObjectMapper mapper = new ObjectMapper();
             List<LdapUser> users = Arrays.asList(mapper.readValue(response, LdapUser[].class));
             log.info("{} utilisateurs trouvé",users.size());

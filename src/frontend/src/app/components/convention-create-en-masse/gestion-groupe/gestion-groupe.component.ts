@@ -15,9 +15,10 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import * as FileSaver from 'file-saver';
 
 @Component({
-  selector: 'app-gestion-groupe',
-  templateUrl: './gestion-groupe.component.html',
-  styleUrls: ['./gestion-groupe.component.scss']
+    selector: 'app-gestion-groupe',
+    templateUrl: './gestion-groupe.component.html',
+    styleUrls: ['./gestion-groupe.component.scss'],
+    standalone: false
 })
 export class GestionGroupeComponent implements OnInit {
 

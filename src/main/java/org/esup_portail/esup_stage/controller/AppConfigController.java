@@ -12,7 +12,6 @@ import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
-import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AffectationId;
 import org.esup_portail.esup_stage.model.AppConfig;
@@ -20,8 +19,8 @@ import org.esup_portail.esup_stage.repository.AffectationJpaRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.FileValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,15 +43,18 @@ public class AppConfigController {
     @Autowired
     AppConfigService appConfigService;
 
+    @Autowired
+    FileValidationService fileValidationService;
+
     @JsonView(Views.Etu.class)
     @GetMapping("/generale/etu")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGeneraleEtu() {
         return appConfigService.getConfigGenerale();
     }
 
     @GetMapping("/generale")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }
@@ -88,7 +90,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/alerte-mail")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
@@ -129,27 +131,20 @@ public class AppConfigController {
         configThemeDto.setDateModification(new Date());
 
         if (logo != null) {
-            // Autorisation de l'upload d'images uniquement
-            if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-            }
-
+            FileValidationService.ValidatedImage validatedLogo = fileValidationService.validateImage(logo);
             ConfigThemeDto.File64 logo64 = new ConfigThemeDto.File64();
-            logo64.setContentType(logo.getContentType());
-            logo64.setBase64(Base64.getEncoder().encodeToString(logo.getBytes()));
+            logo64.setContentType(validatedLogo.contentType());
+            logo64.setBase64(Base64.getEncoder().encodeToString(validatedLogo.bytes()));
             configThemeDto.setLogo(logo64);
         } else {
             configThemeDto.setLogo(configThemeDtoOrigin.getLogo());
         }
 
         if (favicon != null) {
-            // Autorisation de l'upload d'images uniquement
-            if (favicon.getContentType() == null || !favicon.getContentType().startsWith("image/")) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-            }
+            FileValidationService.ValidatedImage validatedFavicon = fileValidationService.validateImage(favicon);
             ConfigThemeDto.File64 favicon64 = new ConfigThemeDto.File64();
-            favicon64.setContentType(favicon.getContentType());
-            favicon64.setBase64(Base64.getEncoder().encodeToString(favicon.getBytes()));
+            favicon64.setContentType(validatedFavicon.contentType());
+            favicon64.setBase64(Base64.getEncoder().encodeToString(validatedFavicon.bytes()));
             configThemeDto.setFavicon(favicon64);
         } else {
             configThemeDto.setFavicon(configThemeDtoOrigin.getFavicon());
@@ -176,7 +171,7 @@ public class AppConfigController {
     }
 
     @GetMapping("/signature")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ConfigSignatureDto getSignature() {
         return appConfigService.getConfigSignature();
     }

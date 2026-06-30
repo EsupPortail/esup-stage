@@ -16,9 +16,10 @@ import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-signataire',
-  templateUrl: './signataire.component.html',
-  styleUrls: ['./signataire.component.scss']
+    selector: 'app-signataire',
+    templateUrl: './signataire.component.html',
+    styleUrls: ['./signataire.component.scss'],
+    standalone: false
 })
 export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -85,9 +86,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
     });
-    this.authService.getCurrentUser().subscribe(res => { // +++
-      this.currentUser = res;
-    });
+    this.authService.getCurrentUser().subscribe(res => this.currentUser = res);
   }
 
   ngOnChanges(): void {
@@ -215,6 +214,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
 
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
+        data.idCentreGestion = this.convention?.centreGestion?.id;
 
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
@@ -280,7 +280,6 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
     const isModified = contact.loginModif && contact.loginModif !== contact.loginCreation;
     return isCreator && !isModified;
   }
-
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();

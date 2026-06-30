@@ -137,6 +137,13 @@ public class Structure extends ObjetMetier implements Exportable {
     @Column
     private boolean temDiffusibleSirene;
 
+    @Column(nullable = false)
+    private boolean confidentialiteCoordonnees = false;
+
+    @ManyToOne
+    @JoinColumn(name = "idCentreGestionProprietaire")
+    private CentreGestion centreGestionProprietaire;
+
     public Structure() {
     }
 

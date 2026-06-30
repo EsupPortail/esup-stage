@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.CentreGestionListDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
@@ -19,6 +19,8 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.ConfidentialiteService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
@@ -91,30 +93,36 @@ public class CentreGestionController {
     @Autowired
     AppliProperties appliProperties;
 
+    @Autowired
+    FileValidationService fileValidationService;
+
+    @Autowired
+    ConfidentialiteService confidentialiteService;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<CentreGestionListDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         JSONObject jsonFilters = new JSONObject(filters);
         Map<String, Object> map = new HashMap<>();
         map.put("type", "boolean");
         map.put("value", true);
         jsonFilters.put("validationCreation", map);
         filters = jsonFilters.toString();
-        PaginatedResponse<CentreGestion> paginatedResponse = new PaginatedResponse<>();
+        PaginatedResponse<CentreGestionListDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(centreGestionRepository.count(filters));
-        paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        List<CentreGestion> centresGestion = centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
-            list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
+            centresGestion.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
             if (sortOrder.equals("asc"))
-                Collections.reverse(list);
+                Collections.reverse(centresGestion);
         }
 
+        paginatedResponse.setData(centresGestion.stream().map(CentreGestionListDto::from).toList());
         return paginatedResponse;
     }
 
@@ -145,7 +153,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/etablissement")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public CentreGestion getCentreEtablissement() {
         CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         if (centreGestion == null) {
@@ -155,7 +163,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public CentreGestion getById(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion == null) {
@@ -167,15 +175,10 @@ public class CentreGestionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
-        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
-
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-        if (etablissement != null) {
-            centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
-        }
+        normalizeConfidentialiteForSave(centreGestion);
 
         List<CentreGestionSignataire> signataires = conventionService.initSignataires(centreGestion);
-
         centreGestion.setSignataires(signataires);
 
         centreGestion = centreGestionJpaRepository.saveAndFlush(centreGestion);
@@ -189,7 +192,6 @@ public class CentreGestionController {
     @PutMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
-        // On passe verificationAdministrative=1 pour toutes les conventions liées au centre dont validationAdministrative et validationPedagogique sont à 1
         if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative()) {
             conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
         }
@@ -199,11 +201,10 @@ public class CentreGestionController {
         }
         //conserve les criteregestion sélectionnés lors de la mise à jour
         CentreGestion centreGestionActuel = centreGestionJpaRepository.findById(centreGestion.getId());
-        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null) {
-            if(centreGestion.getCriteres().isEmpty()) {
-                centreGestion.setCriteres(centreGestionActuel.getCriteres());
-            }
+        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null && centreGestion.getCriteres().isEmpty()) {
+            centreGestion.setCriteres(centreGestionActuel.getCriteres());
         }
+        normalizeConfidentialiteForSave(centreGestion);
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -398,6 +399,101 @@ public class CentreGestionController {
         }
     }
 
+    private void normalizeConfidentialiteForSave(CentreGestion centreGestion) {
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Centre de gestion invalide");
+        }
+
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        boolean isCentreEtablissement = isCentreEtablissement(centreGestion, centreEtablissement);
+        Confidentialite requestedConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialite());
+
+        if (isCentreEtablissement) {
+            Confidentialite normalizedConfidentialite = resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+            centreGestion.setCodeConfidentialite(normalizedConfidentialite);
+            centreGestion.setCodeConfidentialiteConventionOrpheline(resolveEtablissementOrphanConfidentialite(normalizedConfidentialite, centreGestion.getCodeConfidentialiteConventionOrpheline()));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialiteConventionOrpheline(null);
+        if (centreEtablissement == null || centreEtablissement.getCodeConfidentialite() == null) {
+            centreGestion.setCodeConfidentialite(resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+            return;
+        }
+
+        Confidentialite etablissementConfidentialite = resolveConfidentialiteOrDefault(resolveRequestedConfidentialite(centreEtablissement.getCodeConfidentialite()), ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        String etablissementCode = etablissementConfidentialite.getCode();
+
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(etablissementCode)) {
+            centreGestion.setCodeConfidentialite(validateCentreConfidentialiteWhenEtablissementIsFree(requestedConfidentialite));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialite(validateInheritedConfidentialite(requestedConfidentialite, etablissementCode));
+    }
+
+    private Confidentialite resolveEtablissementOrphanConfidentialite(Confidentialite centreConfidentialite, Confidentialite requestedOrphanConfidentialite) {
+        if (centreConfidentialite == null || centreConfidentialite.getCode() == null) {
+            return resolveConfidentialiteByCode(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        }
+
+        if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(centreConfidentialite.getCode())) {
+            return centreConfidentialite;
+        }
+
+        Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
+        if (orphanConfidentialite == null
+                || orphanConfidentialite.getCode() == null
+                || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(orphanConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité effective des conventions orphelines doit être renseignée");
+        }
+        return orphanConfidentialite;
+    }
+
+    private Confidentialite validateInheritedConfidentialite(Confidentialite requestedConfidentialite, String expectedCode) {
+        if (requestedConfidentialite == null) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        if (!expectedCode.equals(requestedConfidentialite.getCode())) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        return requestedConfidentialite;
+    }
+
+    private Confidentialite validateCentreConfidentialiteWhenEtablissementIsFree(Confidentialite requestedConfidentialite) {
+        if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null || requestedConfidentialite.getCode().isBlank()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre doit choisir entre pas de confidentialité et confidentialité totale");
+        }
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister le mode confidentialité libre");
+        }
+        return requestedConfidentialite;
+    }
+    private Confidentialite resolveRequestedConfidentialite(Confidentialite confidentialite) {
+        if (confidentialite == null || confidentialite.getCode() == null || confidentialite.getCode().isBlank()) {
+            return null;
+        }
+        return resolveConfidentialiteByCode(confidentialite.getCode());
+    }
+
+    private Confidentialite resolveConfidentialiteOrDefault(Confidentialite confidentialite, String defaultCode) {
+        if (confidentialite != null) {
+            return confidentialite;
+        }
+        return resolveConfidentialiteByCode(defaultCode);
+    }
+
+    private Confidentialite resolveConfidentialiteByCode(String code) {
+        return confidentialiteJpaRepository.findById(code)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Confidentialite non trouvee"));
+    }
+
+    private boolean isCentreEtablissement(CentreGestion centreGestion, CentreGestion centreEtablissement) {
+        if (centreGestion.getId() != 0 && centreEtablissement != null && centreGestion.getId() == centreEtablissement.getId()) {
+            return true;
+        }
+        return confidentialiteService.isCentreEtablissement(centreGestion);
+    }
     @GetMapping("/confidentialite")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {
@@ -415,13 +511,10 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(value="logo",required = true) MultipartFile logo) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
-        String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
+        FileValidationService.ValidatedImage validatedLogo = fileValidationService.validateImage(logo);
+        String extension = validatedLogo.extension();
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
         String nomReel = logo.getOriginalFilename();
-        // Autorisation de l'upload d'images uniquement
-        if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-        }
 
         Fichier fichier = centreGestion.getFichier();
         if (fichier == null) {
@@ -435,7 +528,7 @@ public class CentreGestionController {
         try {
             String filename = this.getNomFichier(fichier.getId(), fichier.getNom());
             Path uploadLocation = Paths.get(this.getFilePath(filename));
-            Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(uploadLocation, validatedLogo.bytes());
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());

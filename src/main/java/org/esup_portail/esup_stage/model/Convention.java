@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Convention")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -423,6 +425,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private boolean temConventionSignee;
 
+    @Column
+    private Boolean protectionSocialeOrganismeAccueil;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
@@ -456,6 +461,11 @@ public class Convention extends ObjetMetier implements Exportable {
     public boolean isDepasseDelaiValidation() {
         CentreGestion centreGestion = getCentreGestion();
         if (centreGestion != null) {
+            Integer delaiAlerte = centreGestion.getDelaiAlerteConvention();
+            if (delaiAlerte == null) {
+                delaiAlerte = 0;
+            }
+
             Date now = new Date();
             Calendar calendarNow = Calendar.getInstance();
             calendarNow.setTime(now);
@@ -469,7 +479,7 @@ public class Convention extends ObjetMetier implements Exportable {
             if (dateDebutStage != null) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(dateDebutStage);
-                calendar.add(Calendar.DAY_OF_MONTH, centreGestion.getDelaiAlerteConvention() * -1);
+                calendar.add(Calendar.DAY_OF_MONTH, delaiAlerte * -1);
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
                 calendar.set(Calendar.SECOND, 0);
@@ -588,13 +598,13 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "sujetStage":
-                value = getSujetStage();
+                value = getConfidentialExportValue("sujetStage", getSujetStage());
                 break;
             case "fonctionsEtTaches":
-                value = getFonctionsEtTaches();
+                value = getConfidentialExportValue("fonctionsEtTaches", getFonctionsEtTaches());
                 break;
             case "details":
-                value = getDetails();
+                value = getConfidentialExportValue("details", getDetails());
                 break;
             case "dureeExceptionnelle":
                 value = getDureeExceptionnelle();
@@ -660,7 +670,10 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "commentaireStage":
-                value = getCommentaireStage();
+                value = getConfidentialExportValue("commentaireStage", getCommentaireStage());
+                break;
+            case "competences":
+                value = getConfidentialExportValue("competences", getCompetences());
                 break;
             case "commentaireDureeTravail":
                 value = getCommentaireDureeTravail();
@@ -837,7 +850,21 @@ public class Convention extends ObjetMetier implements Exportable {
         return value;
     }
 
-    @Transient
+        private String getConfidentialExportValue(String key, String value) {
+        if (Boolean.TRUE.equals(getConfidentiel()) && isConfidentialExportField(key)) {
+            return "";
+        }
+        return value;
+    }
+
+    private boolean isConfidentialExportField(String key) {
+        return "sujetStage".equals(key)
+                || "fonctionsEtTaches".equals(key)
+                || "competences".equals(key)
+                || "details".equals(key)
+                || "commentaireStage".equals(key);
+    }
+@Transient
     public boolean isAllSignedDateSetted() {
         return getDateDepotEtudiant() != null && getDateSignatureEtudiant() != null &&
                 getDateDepotEnseignant() != null && getDateSignatureEnseignant() != null &&

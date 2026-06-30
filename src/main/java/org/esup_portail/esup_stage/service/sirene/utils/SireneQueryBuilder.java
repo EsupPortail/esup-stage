@@ -36,9 +36,10 @@ public class SireneQueryBuilder {
             String field = mapToApiField(key);
 
             if ("raisonSociale".equals(key)) {
-                String cleaned = raw.replaceAll("\"", "").trim();
-                String clause = field + ":\"" + cleaned + "*\"";
-                clauses.add("(" + clause + ")");
+                String clause = buildRaisonSocialeClause(raw);
+                if (!clause.isEmpty()) {
+                    clauses.add("(" + clause + ")");
+                }
                 continue;
             }
 
@@ -159,6 +160,28 @@ public class SireneQueryBuilder {
         clauses.add("(etatAdministratifUniteLegale:A)");
         String query = String.join(" AND ", clauses);
         return query.isEmpty() ? "" : query;
+    }
+
+    private static String buildRaisonSocialeClause(String raw) {
+        List<String> terms = Arrays.stream(raw.replaceAll("[\"']", " ")
+                        .split("[^\\p{L}\\p{N}]+"))
+                .map(String::trim)
+                .filter(term -> !term.isEmpty())
+                .map(SireneQueryBuilder::escapeLuceneTerm)
+                .map(term -> "raisonSociale:" + term + "*")
+                .toList();
+
+        if (terms.isEmpty()) {
+            return "";
+        }
+        if (terms.size() == 1) {
+            return terms.get(0);
+        }
+        return "(" + String.join(" AND ", terms) + ")";
+    }
+
+    private static String escapeLuceneTerm(String term) {
+        return term.replaceAll("([+\\-!(){}\\[\\]^~?:\\\\/])", "\\\\$1");
     }
 
     /**

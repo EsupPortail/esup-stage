@@ -11,9 +11,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { InfosStageModalComponent } from './infos-stage-modal/infos-stage-modal.component';
 
 @Component({
-  selector: 'app-infos-stage',
-  templateUrl: './infos-stage.component.html',
-  styleUrls: ['./infos-stage.component.scss']
+    selector: 'app-infos-stage',
+    templateUrl: './infos-stage.component.html',
+    styleUrls: ['./infos-stage.component.scss'],
+    standalone: false
 })
 export class InfosStageComponent implements OnInit, OnChanges {
 

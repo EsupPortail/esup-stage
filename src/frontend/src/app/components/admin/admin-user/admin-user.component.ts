@@ -16,9 +16,10 @@ import { CreateDialogComponent } from "./create-dialog/create-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-admin-user',
-  templateUrl: './admin-user.component.html',
-  styleUrls: ['./admin-user.component.scss']
+    selector: 'app-admin-user',
+    templateUrl: './admin-user.component.html',
+    styleUrls: ['./admin-user.component.scss'],
+    standalone: false
 })
 export class AdminUserComponent implements OnInit {
 

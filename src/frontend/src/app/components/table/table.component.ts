@@ -1,24 +1,11 @@
-import {
-  AfterContentInit,
-  Component,
-  ContentChildren,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  QueryList,
-  SimpleChanges,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import {AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild,} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { PaginatedService } from '../../services/paginated.service';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AuthService } from '../../services/auth.service';
@@ -26,13 +13,15 @@ import * as FileSaver from 'file-saver';
 import { TechnicalService } from '../../services/technical.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ColumnSelectorComponent } from './column-selector/column-selector.component';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss']
+  styleUrls: ['./table.component.scss'],
+  standalone: false
 })
-export class TableComponent implements OnInit, AfterContentInit, OnChanges {
+export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
 
   @Input() service!: PaginatedService;
   @Input() columns: any;
@@ -41,6 +30,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() filters: any[] = [];
   @Input() pagination: boolean = true;
   @Input() actionButton: any;
+  @Input() actionTemplateRef: TemplateRef<any> | undefined;
   @Input() hideDeleteFilters!: boolean;
   @Input() selectedRow: any;
   @Input() noResultText: string = 'Aucun élément trouvé';
@@ -49,8 +39,9 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   @Input() exportColumns: any = null;
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
+  @Input() confirmMessage: string = "";
 
-  @Output() onUpdated = new EventEmitter<any>();
+  @Output() updated = new EventEmitter<any>();
 
   @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
@@ -69,15 +60,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   backConfig: any;
   isMobile: boolean = false;
 
-  // --- recherche pour toutes les listes ---
   listFilterCtrls: Record<string, FormControl> = {};
   filteredListOptions: Record<string, any[]> = {};
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
+  private _colSub?: Subscription;
+
+  disableAutoSearch: boolean = false;
+  hasPendingSearch: boolean = false;
 
   constructor(
-    private authService: AuthService,
-    private technicalService: TechnicalService,
-    private dialog: MatDialog,
+    private readonly authService: AuthService,
+    private readonly technicalService: TechnicalService,
+    private readonly dialog: MatDialog,
+    private readonly accessibilityService: AccessibilityService,
   ) {
     this.technicalService.isMobile.subscribe((value: boolean) => {
       this.isMobile = value;
@@ -85,6 +80,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
     this.filterChanged.pipe(debounceTime(1000)).subscribe(() => {
       const filters = this.getFilters();
+
       if (this.backConfig) {
         this.page = this.backConfig.page;
         this.pageSize = this.backConfig.pageSize;
@@ -96,20 +92,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         this.resetPage();
       }
 
-      for (const key of Object.keys(this.autocmpleteChanged)) {
-        this.autocmpleteChanged[key].pipe(debounceTime(1000)).subscribe(async (event: any) => {
-          if (event.value?.length >= 2) {
-            try {
-              const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
-              this.autocompleteData[event.filter.id] = result?.data || [];
-            } catch (error) {
-              console.error('Error fetching autocomplete data:', error);
-              this.autocompleteData[event.filter.id] = [];
-            }
-          }
-        });
-      }
-
       const nonPermanentFiltersCount = Object.entries(filters)
         .filter(([key, val]) => {
           const f = val as any;
@@ -118,12 +100,19 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
 
       if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
         this.filterValuesToSend = filters;
-        this.getPaginated();
+        if (this.disableAutoSearch) {
+          this.hasPendingSearch = true;
+        } else {
+          this.hasPendingSearch = false;
+          this.getPaginated();
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    this.loadDisableAutoSearchPref();
+
     if (window.screen.width < TechnicalService.MAX_WIDTH) {
       this.isMobile = true;
     }
@@ -134,26 +123,49 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     if (this.loadWithoutFilters) {
       this.update();
     }
+
+    this.accessibilityService.disableAutoSearch$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value) => {
+        const previous = this.disableAutoSearch;
+        this.disableAutoSearch = value;
+
+        if (this.disableAutoSearch && !previous) {
+          this.hasPendingSearch = this.shouldQueueSearch();
+        } else if (!this.disableAutoSearch && previous && this.hasPendingSearch) {
+          this.hasPendingSearch = false;
+          this.getPaginated();
+        }
+      });
   }
 
   ngAfterContentInit() {
-    if (this.columnDefs) {
-      this.columnDefs.forEach(columnDef => {
-        if (this.table) {
-          this.table.addColumnDef(columnDef);
-        }
-      });
-    }
+    this._colSub = this.columnDefs?.changes.subscribe(() => {
+      this._registerColumnDefs();
+    });
+    this._registerColumnDefs();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {}
+  private _registerColumnDefs() {
+    if (!this.table || !this.columnDefs) return;
+    this.columnDefs.forEach(cd => this.table!.addColumnDef(cd));
+  }
 
   ngOnDestroy(): void {
+    this._colSub?.unsubscribe();
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  // --- utils recherche list ---
+  private loadDisableAutoSearchPref(): void {
+    const saved = localStorage.getItem('accessibilityPreferences');
+    if (!saved) return;
+    try {
+      const prefs = JSON.parse(saved);
+      this.disableAutoSearch = !!prefs?.disableAutoSearch;
+    } catch {}
+  }
+
   private norm(v: any): string {
     return (v ?? '')
       .toString()
@@ -176,7 +188,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     );
   }
 
-
   getPaginated(): void {
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {
       this.total = results.total;
@@ -192,12 +203,29 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         });
       }
       this.backConfig = undefined;
-      this.onUpdated.emit(results);
+      this.updated.emit(results);
     });
   }
 
   update(): void {
     this.filterChanged.next(this.filterValues);
+  }
+
+  runSearch(): void {
+    const filters = this.getFilters();
+
+    const nonPermanentFiltersCount = Object.entries(filters)
+      .filter(([key, val]) => {
+        const f = val as any;
+        return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+      }).length;
+
+    if (this.loadWithoutFilters || nonPermanentFiltersCount > 0) {
+      this.filterValuesToSend = filters;
+      this.hasPendingSearch = false;
+      this.resetPage();
+      this.getPaginated();
+    }
   }
 
   changePaginator(event: PageEvent): void {
@@ -213,12 +241,13 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   sorting(event: Sort): void {
     this.sortColumn = event.active;
     this.sortOrder = event.direction;
-    this.update();
+    this.resetPage();
+    this.getPaginated();
   }
 
   initFilters(emptyValues: boolean): void {
     this.filters.forEach(filter => {
-      if (filter && filter.id) {
+      if (filter?.id) {
         this.filterValues[filter.id] = {
           type: filter.type ?? 'text',
           value: (emptyValues && !filter.permanent) ? undefined : filter.value,
@@ -226,7 +255,22 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         };
 
         if (filter.type === 'autocomplete') {
-          this.autocmpleteChanged[filter.id] = new Subject();
+          if (!this.autocmpleteChanged[filter.id]) {
+            this.autocmpleteChanged[filter.id] = new Subject();
+            this.autocmpleteChanged[filter.id].pipe(debounceTime(1000)).subscribe(async (event: any) => {
+              if (event.value?.length >= 2) {
+                try {
+                  const result = await event.filter.autocompleteService.getAutocompleteData(event.value).toPromise();
+                  this.autocompleteData[event.filter.id] = result?.data || [];
+                } catch (error) {
+                  console.error('Error fetching autocomplete data:', error);
+                  this.autocompleteData[event.filter.id] = [];
+                }
+              } else {
+                this.autocompleteData[event.filter.id] = [];
+              }
+            });
+          }
           if (!this.filterValues[filter.id].value) {
             this.filterValues[filter.id].value = [];
           }
@@ -359,12 +403,25 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
         if (typeof f[key].value === 'string') {
           f[key].value = f[key].value.trim();
         }
+        if (key === 'numeroSiret' && typeof f[key].value === 'string') {
+          f[key].value = f[key].value.replace(/\s+/g, '');
+        }
         if (f[key].specific === undefined) {
           delete f[key].specific;
         }
       }
     }
     return f;
+  }
+
+  private shouldQueueSearch(): boolean {
+    const filters = this.getFilters();
+    const nonPermanentFiltersCount = Object.entries(filters)
+      .filter(([key, val]) => {
+        const f = val as any;
+        return !f.permanent && f.value !== undefined && f.value !== null && f.value !== '';
+      }).length;
+    return this.loadWithoutFilters || nonPermanentFiltersCount > 0;
   }
 
   isEtudiant(): boolean {
@@ -375,7 +432,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
     this.service.exportData(format, JSON.stringify(this.exportColumns), this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((response: any) => {
       const type = format === 'excel' ? 'application/vnd.ms-excel' : 'text/csv';
       let blob = new Blob([response as BlobPart], {type: type});
-      let filename = 'export_' + (new Date()).getTime() + '.' + (format === 'excel' ? 'xls' : 'csv');
+      let filename = 'export_' + Date.now() + '.' + (format === 'excel' ? 'xls' : 'csv');
       FileSaver.saveAs(blob, filename);
     });
   }
@@ -474,8 +531,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       finalConfig = columnsConfig;
     }
 
-    console.log('Config envoyée:', JSON.stringify(finalConfig, null, 2));
-
     this.service.exportData(
       'excel',
       JSON.stringify(finalConfig),
@@ -491,7 +546,6 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
   hasExportableColumns(): boolean {
     if (!this.exportColumns) return false;
 
-    // Cas avec plusieurs feuilles
     if ('multipleExcelSheets' in this.exportColumns && Array.isArray(this.exportColumns.multipleExcelSheets)) {
       return this.exportColumns.multipleExcelSheets.some((sheet: any) =>
         sheet.columns && Object.keys(sheet.columns).length > 0
@@ -504,13 +558,26 @@ export class TableComponent implements OnInit, AfterContentInit, OnChanges {
       );
     }
 
-    // Cas simple : un seul objet plat
     return typeof this.exportColumns === 'object' && Object.keys(this.exportColumns).length > 0;
   }
 
   onListOpenedChange(id: string, opened: boolean) {
     if (!opened) return;
     const q = this.listFilterCtrls[id]?.value || '';
-    this.applyListFilter(id, q);   // ← vide => toutes les options
+    this.applyListFilter(id, q);
+  }
+
+  getFilter(id: string) {
+    return this.filters?.find(f => f.id === id);
+  }
+
+  isFilterHidden(id: string) {
+    const f = this.getFilter(id);
+    return !f || !!f.hidden;
+  }
+
+  hasVisibleFilter(id: string): boolean {
+    const f = this.filters?.find(x => x.id === id);
+    return !!f && !f.hidden;
   }
 }
