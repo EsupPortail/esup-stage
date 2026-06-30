@@ -97,6 +97,7 @@ export class StageComponent implements OnInit {
   updatingPeriode = false;
   initialLoading: boolean = true;
   initialDureeExceptionnelleMissing: boolean = false;
+  private readonly periodeStageFields = ['periodeStageMois', 'periodeStageJours', 'periodeStageHeures'];
 
   @Output() validated = new EventEmitter<number>();
   @Output() updateField = new EventEmitter<any>();
@@ -263,7 +264,10 @@ export class StageComponent implements OnInit {
 
     this.previousValues={...this.form.value}
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(res=>{
-      const keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
+      let keys=Object.keys(res).filter(k=>res[k]!=this.previousValues[k])
+      if (keys.includes('dureeExceptionnelle')) {
+        keys = keys.filter(k => !this.periodeStageFields.includes(k));
+      }
       this.previousValues={...this.form.value}
       keys.forEach((key: string) => {
         if (['interruptionStage','horairesReguliers','nbHeuresHebdo'].includes(key)){
@@ -329,7 +333,7 @@ export class StageComponent implements OnInit {
     this.singleFieldUpdateLock = false;
     if(this.singleFieldUpdateQueue.length > 0){
       const data = this.singleFieldUpdateQueue.shift();
-      this.updateSingleField(data.field,data.value);
+      this.updateSingleField(data.field, data.value, data.dureeExceptionnellePeriode);
     } else if (this.form) {
       this.validateForm();
     }
@@ -354,20 +358,24 @@ export class StageComponent implements OnInit {
     return this.convention?.centreGestion?.autoriserChevauchement === true;
   }
 
-  updateSingleField(key: string,value: any): void {
+  updateSingleField(key: string, value: any, dureeExceptionnellePeriode?: string): void {
     if (this.form.get(key)!.valid) {
-      const data = {
-        "field":key,
-        "value":value,
-      };
-      if (!this.singleFieldUpdateLock){
-        this.singleFieldUpdateLock = true;
-        this.updateField.emit(data);
-        if (key === 'dureeExceptionnelle' || key === 'periodeStageMois' || key === 'periodeStageJours' || key === 'periodeStageHeures') {
-          this.updateDureeStage();
+      if (this.periodeStageFields.includes(key)) {
+        this.updateDureeStage();
+      } else {
+        const data: any = {
+          "field":key,
+          "value":value,
+        };
+        if (key === 'dureeExceptionnelle') {
+          data.dureeExceptionnellePeriode = dureeExceptionnellePeriode ?? this.getDureeStageString();
         }
-      }else{
-        this.singleFieldUpdateQueue.push(data);
+        if (!this.singleFieldUpdateLock){
+          this.singleFieldUpdateLock = true;
+          this.updateField.emit(data);
+        }else{
+          this.singleFieldUpdateQueue.push(data);
+        }
       }
     }
     if (this.singleFieldUpdateLock || this.singleFieldUpdateQueue.length > 0) {
@@ -851,8 +859,12 @@ export class StageComponent implements OnInit {
     }
   }
 
+  getDureeStageString(): string {
+    return `${this.dureeStage.dureeMois} mois ${this.dureeStage.dureeJours} jour(s) ${this.dureeStage.dureeHeures} heure(s)`;
+  }
+
   updateDureeStage(): void {
-    const dureeString = `${this.dureeStage.dureeMois} mois ${this.dureeStage.dureeJours} jour(s) ${this.dureeStage.dureeHeures} heure(s)`;
+    const dureeString = this.getDureeStageString();
     this.conventionService.updatePeriodes(this.convention.id, dureeString)
       .subscribe({
         next: (response) => {

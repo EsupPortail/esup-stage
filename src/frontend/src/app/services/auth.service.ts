@@ -5,7 +5,6 @@ import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
-import { AppFonction } from "../constants/app-fonction";
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +61,7 @@ export class AuthService {
 
       return this.checkRights(right);
     } catch (error) {
-      console.error('Erreur dans secure :', error);
+      this.logError('Erreur dans secure', error);
       return false;
     }
   }
@@ -108,7 +107,7 @@ export class AuthService {
         this.createUser(user);
       })
       .catch(error => {
-        console.error('Erreur rafraîchissement user :', error);
+        this.logError('Erreur rafraichissement user', error);
         throw error;
       })
       .finally(() => {
@@ -143,5 +142,13 @@ export class AuthService {
       return true;
     }
     return this.checkRights(roleData);
+  }
+
+  private logError(message: string, error?: unknown): void {
+    const args: unknown[] = [message];
+    if (!environment.production && error !== undefined) {
+      args.push(error);
+    }
+    console.error(...args);
   }
 }

@@ -303,7 +303,7 @@ public class AvenantController {
     }
 
     @PostMapping("/signature-electronique")
-    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.VALIDATION}, forbiddenEtu = true)
     public int envoiSignatureElectroniqueMultiple(@RequestBody IdsListDto idsListDto) {
         idsListDto.getIds().forEach(id->{
             Avenant avenant = avenantJpaRepository.findById(id).orElse(null);

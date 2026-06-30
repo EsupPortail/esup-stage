@@ -52,7 +52,7 @@
                   <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
                     <div class="editor-container__editor">
                       <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config" formControlName="texte" *ngIf="isLayoutReady" />
+                        <ckeditor [editor]="Editor" [config]="config" formControlName="texte" *ngIf="isLayoutReady && activeEditorTabIndex === createTabIndex" />
                       </div>
                     </div>
                   </div>
@@ -68,7 +68,7 @@
                   <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
                     <div class="editor-container__editor">
                       <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady" />
+                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady && activeEditorTabIndex === createTabIndex" />
                       </div>
                     </div>
                   </div>
@@ -147,7 +147,7 @@
                   <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
                     <div class="editor-container__editor">
                       <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texte" *ngIf="isLayoutReady" />
+                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texte" *ngIf="isLayoutReady && activeEditorTabIndex === editTabIndex" />
                       </div>
                     </div>
                   </div>
@@ -169,7 +169,7 @@
                   <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
                     <div class="editor-container__editor">
                       <div #editorElement>
-                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady" />
+                        <ckeditor [editor]="Editor" [config]="config"  formControlName="texteAvenant" *ngIf="isLayoutReady && activeEditorTabIndex === editTabIndex" />
                       </div>
                     </div>
                   </div>

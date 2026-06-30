@@ -48,6 +48,7 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
   }
 
   imprimer(){
+    if (!this.canUseToken()) return;
     this.evaluationTuteurService.getEvaluationPDF(this.token,this.convention.id).subscribe(r=>{
       var blob = new Blob([r as BlobPart], {type: "application/pdf"});
       let filename = 'Questionnaire_'+this.convention.id + '.pdf';
@@ -56,10 +57,19 @@ export class QuestionnaireCompletTuteurComponent implements OnInit{
   }
 
   renouvellement() {
+    if (!this.canUseToken()) return;
     this.evaluationTuteurService.getReouvellement(this.token,this.convention.id).subscribe(
       r => {
-        this.messageService.setSuccess('Renouvellement effectué avec succès.');
+        this.messageService.setSuccess('Renouvellement effectue avec succes.');
       }
     )
+  }
+
+  canUseToken(): boolean {
+    if (!this.token || !this.convention) {
+      this.messageService.setError('Chargement de l\'evaluation en cours.');
+      return false;
+    }
+    return true;
   }
 }

@@ -126,7 +126,6 @@ public class RoleController {
 
         Role role = roleJpaRepository.findOneByCode(codeRole);
         if (role == null) {
-            System.out.println("role");
             throw new AppException(HttpStatus.NOT_FOUND, "Role non trouvé");
         }
 
@@ -134,7 +133,6 @@ public class RoleController {
         try {
             appFonctionEnum = AppFonctionEnum.valueOf(codeAppFonction);
         } catch (IllegalArgumentException e) {
-            System.out.println("appfonction");
             throw new AppException(HttpStatus.BAD_REQUEST, "Code appFonction invalide : " + codeAppFonction);
         }
 

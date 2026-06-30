@@ -54,8 +54,11 @@ public class EtudiantSecurityService {
             return false;
         }
 
-        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, numEtudiant, null);
-        if (inscriptions == null || inscriptions.isEmpty()) {
+        return isInscriptionInCentreGestionUtilisateur(apogeeService.getInscriptions(utilisateur, numEtudiant, null), idsCentresGestionUtilisateur);
+    }
+
+    public boolean isInscriptionInCentreGestionUtilisateur(List<ConventionFormationDto> inscriptions, List<Integer> idsCentresGestionUtilisateur) {
+        if (inscriptions == null || inscriptions.isEmpty() || idsCentresGestionUtilisateur == null || idsCentresGestionUtilisateur.isEmpty()) {
             return false;
         }
 

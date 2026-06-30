@@ -20,6 +20,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { TitleService } from 'src/app/services/title.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import {REGEX} from "../../../utils/regex.utils";
+import { CadreStageConventionPayload } from "../../../models/cadre-stage-convention-payload.model";
 
 @Component({
     selector: 'app-convention-etudiant',
@@ -46,6 +47,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   isLoadingApogeeInscriptions: boolean = false;
   hasLoadedApogeeInscriptions: boolean = false;
   apogeeInscriptionsLoadFailed: boolean = false;
+  isFormationEditUnavailable: boolean = false;
 
   formConvention!: FormGroup;
 
@@ -245,6 +247,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
     this.isLoadingApogeeInscriptions = false;
     this.hasLoadedApogeeInscriptions = false;
     this.apogeeInscriptionsLoadFailed = false;
+    this.isFormationEditUnavailable = false;
+    this.etudiantService.clearCachedApogeeInscriptions(row.codEtu, this.convention ? this.convention.annee : null, true);
 
     if (this.searchEtudiantPanel) {
       this.searchEtudiantPanel.expanded = false;
@@ -303,6 +307,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else {
         this.inscriptions = [];
       }
+      if (this.modifiable && this.selectedNumEtudiant) {
+        this.loadApogeeInscriptions(this.selectedNumEtudiant);
+      }
       return;
     }
 
@@ -354,6 +361,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       error: (error: any) => {
         this.isLoadingApogeeInscriptions = false;
         this.apogeeInscriptionsLoadFailed = true;
+        if (this.convention?.id) {
+          this.isEditingFormation = false;
+        }
         if (error?.status === 403) {
           this.handleApogeeError(error, false, !this.convention?.id);
         } else if (this.convention?.id) {
@@ -369,15 +379,28 @@ export class EtudiantComponent implements OnInit, OnChanges {
   }
 
   private applyApogeeInscriptions(response: any[]): void {
+    const reference = this.getInscriptionReference();
+    const currentInscription = this.formConvention.get('inscription')?.value;
     const inscriptions = [...response];
     inscriptions.sort((a, b) => a.annee < b.annee ? 1 : -1);
-    this.inscriptions = inscriptions;
 
-    const reference = this.getInscriptionReference();
+    if (this.convention?.id && inscriptions.length === 0) {
+      this.isFormationEditUnavailable = true;
+      this.inscriptions = currentInscription ? [currentInscription] : [];
+      if (this.isEditingFormation) {
+        this.isEditingFormation = false;
+        this.messageService.setError(this.getFormationEditUnavailableMessage());
+      }
+      return;
+    }
+
+    this.isFormationEditUnavailable = false;
+    this.inscriptions = this.convention?.id && currentInscription
+      ? this.mergeCurrentInscription(inscriptions, currentInscription)
+      : inscriptions;
+
     const matchingInscription = this.inscriptions.find((inscription: any) => {
-      const sameCode = inscription.etapeInscription.codeEtp === reference.codeEtp;
-      const sameVersion = !reference.codVrsVet || !inscription.etapeInscription.codVrsVet || inscription.etapeInscription.codVrsVet === reference.codVrsVet;
-      return sameCode && sameVersion;
+      return this.isSameInscription(inscription, reference);
     });
 
     if (matchingInscription) {
@@ -394,19 +417,46 @@ export class EtudiantComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.convention?.etape) {
+    if (this.convention?.etape && !currentInscription) {
       this.formConvention.get('inscription')?.reset();
       this.formConvention.get('inscriptionElp')?.reset();
     }
   }
 
-  private getInscriptionReference(): { codeEtp: string | null; codVrsVet: string | null; codeElp: string | null } {
+  private mergeCurrentInscription(inscriptions: any[], currentInscription: any): any[] {
+    const currentReference = this.getInscriptionReference(currentInscription);
+    const hasCurrent = inscriptions.some((inscription: any) => this.isSameInscription(inscription, currentReference));
+    return hasCurrent ? inscriptions : [currentInscription, ...inscriptions];
+  }
+
+  private isSameInscription(inscription: any, reference: { codeEtp: string | null; codVrsVet: string | null; annee: string | null }): boolean {
+    const sameCode = this.normalizeInscriptionValue(inscription?.etapeInscription?.codeEtp) === this.normalizeInscriptionValue(reference.codeEtp);
+    const sameVersion = !reference.codVrsVet || !inscription?.etapeInscription?.codVrsVet || this.normalizeInscriptionValue(inscription.etapeInscription.codVrsVet) === this.normalizeInscriptionValue(reference.codVrsVet);
+    const sameAnnee = !reference.annee || !inscription?.annee || this.normalizeAnnee(inscription.annee) === this.normalizeAnnee(reference.annee);
+    return sameCode && sameVersion && sameAnnee;
+  }
+
+  private normalizeInscriptionValue(value: any): string {
+    return String(value ?? '').trim();
+  }
+
+  private normalizeAnnee(value: any): string {
+    return this.normalizeInscriptionValue(value).split('/')[0];
+  }
+
+  private getFormationEditUnavailableMessage(): string {
+    return this.authService.isEtudiant() ? "La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible." : "La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.";
+  }
+
+  private getInscriptionReference(inscription?: any): { codeEtp: string | null; codVrsVet: string | null; annee: string | null; codeElp: string | null } {
     const selectedInscription = this.formConvention.get('inscription')?.value;
     const selectedElp = this.formConvention.get('inscriptionElp')?.value;
+    const sourceInscription = inscription || selectedInscription;
 
     return {
-      codeEtp: selectedInscription?.etapeInscription?.codeEtp ?? this.convention?.etape?.id?.code ?? null,
-      codVrsVet: selectedInscription?.etapeInscription?.codVrsVet ?? this.convention?.etape?.id?.codeVersionEtape ?? null,
+      codeEtp: sourceInscription?.etapeInscription?.codeEtp ?? this.convention?.etape?.id?.code ?? null,
+      codVrsVet: sourceInscription?.etapeInscription?.codVrsVet ?? this.convention?.etape?.id?.codeVersionEtape ?? null,
+      annee: sourceInscription?.annee ?? this.convention?.annee ?? null,
       codeElp: selectedElp?.codElp ?? this.convention?.codeElp ?? null,
     };
   }
@@ -418,6 +468,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   getInscriptionCodeComposante(inscription: any): string | null {
     return inscription?.etapeInscription?.codeComposante || null;
+  }
+
+  shouldDisplayFormationSelect(): boolean {
+    if (!this.convention?.id) {
+      return this.inscriptions.length > 1;
+    }
+    return this.isEditingFormation && !this.isFormationEditUnavailable && this.inscriptions.length > 0;
   }
 
   private handleApogeeError(error: any, resetEtudiant: boolean = false, resetInscriptions: boolean = true): void {
@@ -536,12 +593,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
       }
       if (!data.volumeHoraireFormationBool)
         data.volumeHoraireFormation = "200+";
+      const payload = CadreStageConventionPayload.from(data);
       if (!this.convention || !this.convention.id) {
-        this.conventionService.create(data).subscribe((response: any) => {
+        this.conventionService.create(payload).subscribe((response: any) => {
           this.validated.emit(response);
         });
       } else {
-        this.conventionService.update(this.convention.id, data).subscribe((response: any) => {
+        this.conventionService.update(this.convention.id, payload).subscribe((response: any) => {
           this.validated.emit(response);
         });
       }
@@ -595,7 +653,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
   }
 
   isFr() {
-    let pays = this.formConvention.get('paysEtudiant')?.value;
+    let pays = CadreStageConventionPayload.toFormString(this.formConvention.get('paysEtudiant')?.value) || '';
     return pays.toLowerCase() === 'france';
   }
 
@@ -633,35 +691,18 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   enableFormationEdit(): void {
     this.isEditingFormation = true;
-    if (this.selectedNumEtudiant && this.inscriptions.length <= 1) {
-      this.etudiantService.getApogeeInscriptions(this.selectedNumEtudiant, this.convention ? this.convention.annee : null).subscribe((response: any) => {
-        let apogeeInscriptions: any[] = response || [];
-        apogeeInscriptions.sort((a, b) => a.annee < b.annee ? 1 : -1);
-
-        const currentInscription = this.formConvention.get('inscription')?.value;
-        if (currentInscription) {
-          const currentCodeEtp = String(currentInscription?.etapeInscription?.codeEtp ?? '').trim();
-          const currentAnnee = String(currentInscription?.annee ?? '').trim();
-
-          apogeeInscriptions = apogeeInscriptions.filter((i: any) => {
-            const codeEtp = String(i?.etapeInscription?.codeEtp ?? '').trim();
-            const annee = String(i?.annee ?? '').trim();
-            return !(codeEtp === currentCodeEtp && annee === currentAnnee);
-          });
-
-          apogeeInscriptions = [currentInscription, ...apogeeInscriptions];
-        }
-
-        this.inscriptions = apogeeInscriptions;
-
-        if (this.inscriptions.length === 0) {
-          this.isEditingFormation = false;
-          this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
-        }
-      });
-    } else if (this.inscriptions.length === 0) {
+    if (this.hasLoadedApogeeInscriptions && this.isFormationEditUnavailable) {
       this.isEditingFormation = false;
-      this.messageService.setError(this.authService.isEtudiant()?"La modification n'est pas possible car vous n'êtes plus inscrit à aucune formation éligible.":"La modification n'est pas possible car l'étudiant n'est plus inscrit à aucune formation éligible.");
+      this.messageService.setError(this.getFormationEditUnavailableMessage());
+      return;
+    }
+    if (this.selectedNumEtudiant) {
+      this.loadApogeeInscriptions(this.selectedNumEtudiant);
+      return;
+    }
+    if (this.inscriptions.length === 0) {
+      this.isEditingFormation = false;
+      this.messageService.setError(this.getFormationEditUnavailableMessage());
     }
   }
 }

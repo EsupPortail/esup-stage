@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/groupeEtudiant")
 public class GroupeEtudiantController {
 
-    private static final Logger logger = LogManager.getLogger(ConsigneController.class);
+    private static final Logger logger = LogManager.getLogger(GroupeEtudiantController.class);
 
     @Autowired
     GroupeEtudiantRepository groupeEtudiantRepository;
@@ -461,7 +461,8 @@ public class GroupeEtudiantController {
             }
             conventionJpaRepository.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Erreur lors de l'import des structures du groupe etudiant {}", groupeId, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         }
     }
 

@@ -15,7 +15,7 @@
 	<description>Application ESUP-Stage</description>
 
 	<properties>
-		<revision>3.2.0</revision>
+		<revision>3.2.3</revision>
 		<sha1></sha1>
 		<changelist></changelist>
 
@@ -181,7 +181,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20231013</version>
+			<version>20260522</version>
 		</dependency>
 
 		<dependency>

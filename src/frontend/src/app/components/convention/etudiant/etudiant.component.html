@@ -195,7 +195,7 @@
               <ng-template #hasInscriptions>
                 <fieldset class="fieldset-block">
                   <legend class="sr-only">Choisissez le cadre du stage</legend>
-                <ng-container *ngIf="inscriptions.length > 1">
+                <ng-container *ngIf="shouldDisplayFormationSelect()">
                   <div class="row">
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                       <mat-label>Formation</mat-label>
@@ -213,7 +213,20 @@
                   </div>
                   <div class="row mb-2">
                     <div class="col-sm-4 font-weight-bold">Formation</div>
-                    <div class="col-sm-8">{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</div>
+                    <div class="col-sm-8 formation-display">
+                      <span>{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</span>
+                      <button
+                        *ngIf="modifiable && convention.id && !isEditingFormation"
+                        type="button"
+                        class="edit-button edit-formation-button"
+                        mat-icon-button
+                        matTooltip="Modifier la formation"
+                        aria-label="Modifier la formation"
+                        (click)="enableFormationEdit()">
+                        <span class="fa fa-pen edit-formation-icon" aria-hidden="true"></span>
+                      </button>
+                      <mat-spinner *ngIf="isLoadingApogeeInscriptions && isEditingFormation" class="edit-formation-spinner" diameter="20" aria-label="Chargement des formations"></mat-spinner>
+                    </div>
                   </div>
                   <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
                     <mat-form-field class="col-sm-12 mb-2" appearance="fill">

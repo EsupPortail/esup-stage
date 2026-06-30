@@ -196,8 +196,20 @@ databaseChangeLog:
   - changeSet:
       id: 3.2.0-updtade-token
       author: thouveno9
+      validCheckSum: ANY
+      changes:
+        - sql:
+            sql: ALTER TABLE EvaluationTuteurToken MODIFY Token VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
+            dbms: mysql,mariadb
+  - changeSet:
+      id: 3.2.3-fix-evaluation-tuteur-token-dates
+      author: thouveno9
       changes:
         - modifyDataType:
             tableName: EvaluationTuteurToken
-            columnName: Token
-            newDataType: VARCHAR(1024)
+            columnName: DateExpiration
+            newDataType: DATETIME
+        - modifyDataType:
+            tableName: EvaluationTuteurToken
+            columnName: DateCreation
+            newDataType: DATETIME

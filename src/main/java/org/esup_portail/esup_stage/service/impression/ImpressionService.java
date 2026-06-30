@@ -26,7 +26,6 @@ import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepositor
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
-import org.esup_portail.esup_stage.service.impression.PreviewConventionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ImpressionService {
@@ -58,10 +56,10 @@ public class ImpressionService {
     PreviewConventionFactory previewConventionFactory;
 
     @Autowired
-    QuestionSupplementaireJpaRepository QSJpaRepository;
+    QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
 
     @Autowired
-    QuestionEvaluationJpaRepository QEJpaRepository;
+    QuestionEvaluationJpaRepository questionEvaluationJpaRepository;
 
     @Autowired
     ConventionService conventionService;
@@ -78,8 +76,8 @@ public class ImpressionService {
             throw new AppException(HttpStatus.NOT_FOUND, "Template convention " + convention.getTypeConvention().getLibelle() + "-" + convention.getLangueConvention().getCode() + " non trouvé");
         }
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
-        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        List<QuestionSupplementaire> questionSupplementaire = getQuestionsSupplementaires(centreEtablissement);
+        List<QuestionEvaluation> questionEvaluations = questionEvaluationJpaRepository.findAll();
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
 
         try {
@@ -157,16 +155,20 @@ public class ImpressionService {
             }
             document.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Une erreur est survenue lors de la generation du PDF {}", filename, e);
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
         } finally {
             try {
                 if (fop != null) {
                     File file = new File(tempFile);
                     fop.close();
-                    file.delete();
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        logger.warn("Le fichier temporaire {} n'a pas pu être supprimé.",tempFile);
+                    }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.warn("Impossible de fermer ou supprimer le fichier temporaire du PDF {}", tempFile, e);
             }
         }
     }
@@ -194,63 +196,67 @@ public class ImpressionService {
 
     public String generateXmlData(Convention convention, TypeSignatureEnum typeSignatureEnum) {
         List<Map<String, String>> otp = new ArrayList<>();
-        List<CentreGestionSignataire> signatairesOtp = convention.getCentreGestion().getSignataires().stream().filter(s -> s.getType() == typeSignatureEnum).collect(Collectors.toList());
-        if (signatairesOtp.size() == 0) {
+        List<CentreGestionSignataire> signatairesOtp = convention.getCentreGestion().getSignataires().stream().filter(s -> s.getType() == typeSignatureEnum).toList();
+        if (signatairesOtp.isEmpty()) {
             return null;
         }
+        String firstnameKey = "firstname";
+        String lastnameKey = "lastname";
+        String phoneNumberKey = "phoneNumber";
+        String emailKey = "email";
         for (CentreGestionSignataire signataire : signatairesOtp) {
             switch (signataire.getId().getSignataire()) {
                 case etudiant:
                     // Ajout de l'étudiant
                     otp.add(new HashMap<>() {{
-                        put("firstname", convention.getEtudiant().getPrenom());
-                        put("lastname", convention.getEtudiant().getNom());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getTelPortableEtudiant()));
-                        put("email", getOtpDataEmail(convention.getEtudiant().getMail()));
+                        put(firstnameKey, convention.getEtudiant().getPrenom());
+                        put(lastnameKey, convention.getEtudiant().getNom());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getTelPortableEtudiant()));
+                        put(emailKey, getOtpDataEmail(convention.getEtudiant().getMail()));
                     }});
                     break;
                 case enseignant:
                     // Ajout de l'enseignant référent
                     otp.add(new HashMap<>() {{
-                        put("firstname", convention.getEnseignant().getPrenom());
-                        put("lastname", convention.getEnseignant().getNom());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getEnseignant().getTel()));
-                        put("email", getOtpDataEmail(convention.getEnseignant().getMail()));
+                        put(firstnameKey, convention.getEnseignant().getPrenom());
+                        put(lastnameKey, convention.getEnseignant().getNom());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getEnseignant().getTel()));
+                        put(emailKey, getOtpDataEmail(convention.getEnseignant().getMail()));
                     }});
                     break;
                 case tuteur:
                     // Ajout du tuteur pédagogique
                     otp.add(new HashMap<>() {{
-                        put("firstname", convention.getContact().getPrenom());
-                        put("lastname", convention.getContact().getNom());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getContact().getTel()));
-                        put("email", getOtpDataEmail(convention.getContact().getMail()));
+                        put(firstnameKey, convention.getContact().getPrenom());
+                        put(lastnameKey, convention.getContact().getNom());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getContact().getTel()));
+                        put(emailKey, getOtpDataEmail(convention.getContact().getMail()));
                     }});
                     break;
                 case signataire:
                     // Ajout du signataire de la convention
                     otp.add(new HashMap<>() {{
-                        put("firstname", convention.getSignataire().getPrenom());
-                        put("lastname", convention.getSignataire().getNom());
-                        put("phoneNumber", getOtpDataPhoneNumber(convention.getSignataire().getTel()));
-                        put("email", getOtpDataEmail(convention.getSignataire().getMail()));
+                        put(firstnameKey, convention.getSignataire().getPrenom());
+                        put(lastnameKey, convention.getSignataire().getNom());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getSignataire().getTel()));
+                        put(emailKey, getOtpDataEmail(convention.getSignataire().getMail()));
                     }});
                     break;
                 case viseur:
                     // Ajout du directeur du département
                     if(convention.getCentreGestion().getPrenomDelegataireViseur() != null && !convention.getCentreGestion().getPrenomDelegataireViseur().isEmpty()) {
                         otp.add(new HashMap<>() {{
-                            put("firstname", convention.getCentreGestion().getPrenomDelegataireViseur());
-                            put("lastname", convention.getCentreGestion().getNomDelegataireViseur());
-                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                            put(firstnameKey, convention.getCentreGestion().getPrenomDelegataireViseur());
+                            put(lastnameKey, convention.getCentreGestion().getNomDelegataireViseur());
+                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
                         }});
                     }else{
                         otp.add(new HashMap<>() {{
-                            put("firstname", convention.getCentreGestion().getPrenomViseur());
-                            put("lastname", convention.getCentreGestion().getNomViseur());
-                            put("phoneNumber", getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put("email", getOtpDataEmail(convention.getCentreGestion().getMail()));
+                            put(firstnameKey, convention.getCentreGestion().getPrenomViseur());
+                            put(lastnameKey, convention.getCentreGestion().getNomViseur());
+                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
                         }});
                     }
                     break;
@@ -265,16 +271,16 @@ public class ImpressionService {
         sb.append("<meta-data-list>");
         if (typeSignatureEnum == TypeSignatureEnum.otp) {
             for (int i = 0; i < otp.size(); ++i) {
-                sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(otp.get(i).get("firstname")).append("\"/>");
-                sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(otp.get(i).get("lastname")).append("\"/>");
-                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(otp.get(i).get("phoneNumber")).append("\"/>");
-                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(otp.get(i).get("email")).append("\"/>");
+                sb.append("<meta-data name=\"OTP_firstname_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(firstnameKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_lastname_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(lastnameKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_phonenumber_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(phoneNumberKey))).append("\"/>");
+                sb.append("<meta-data name=\"OTP_email_").append(i).append("\" value=\"").append(xmlValue(otp.get(i).get(emailKey))).append("\"/>");
             }
         } else {
             int counter = 1;
-            for (String key : Arrays.asList("lastname", "firstname", "email")) {
+            for (String key : Arrays.asList(lastnameKey, firstnameKey, emailKey)) {
                 for (Map<String, String> stringStringMap : otp) {
-                    sb.append("<meta-data name=\"TEXT").append(String.format("%03d", counter++)).append("\" value=\"").append(stringStringMap.get(key)).append("\"/>");
+                    sb.append("<meta-data name=\"TEXT").append(String.format("%03d", counter++)).append("\" value=\"").append(xmlValue(stringStringMap.get(key))).append("\"/>");
                 }
             }
         }
@@ -289,7 +295,7 @@ public class ImpressionService {
         }
 
         String htmlTexte = getDefaultText("/templates/template_style.html");
-        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
+        htmlTexte = htmlTexte.replace("__project_fonts_dir__", Objects.requireNonNull(this.getClass().getResource("/static/fonts/")).getPath());
 
         if (isRecap) {
             htmlTexte += getDefaultText("/templates/template_recapitulatif.html");
@@ -335,7 +341,8 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty()  && !deliveryAddress.equals("null")) {
             return "";
         }
-        return conventionService.parseNumTel(phoneNumber);
+        String parsedPhoneNumber = conventionService.parseNumTel(phoneNumber);
+        return parsedPhoneNumber != null ? parsedPhoneNumber : "";
     }
 
     public String getOtpDataEmail(String email) {
@@ -343,16 +350,20 @@ public class ImpressionService {
         if (deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
             return deliveryAddress;
         }
-        return email != null ? email : "";
+        return xmlValue(email);
+    }
+
+    private String xmlValue(String value) {
+        return value != null && !value.equals("null") ? value : "";
     }
 
     public String manageIfElse(String text) {
-        return text.replaceAll("\\$IF", "<#if")
-                .replaceAll("\\$EQUALS ", "==\\\"")
-                .replaceAll(" \\$FI", ">")
-                .replaceAll("\\$ELSE", "<#else>")
-                .replaceAll("\\?\\?\\$", "\\?\\?>")
-                .replaceAll("\\$ENDIF", "</#if>");
+        return text.replace("$IF", "<#if")
+                .replace("$EQUALS ", "==\"")
+                .replace(" $FI", ">")
+                .replace("$ELSE", "<#else>")
+                .replace("??$", "??>")
+                .replace("$ENDIF", "</#if>");
 
     }
 
@@ -413,7 +424,9 @@ public class ImpressionService {
                 ImpressionContext impressionContext = previewConventionFactory.createPreviewContext(centreGestion, centreEtablissement);
 
                 // Traitement du template avec les données fictives
-                Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfigurer.getConfiguration());
+                Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
+                freeMarkerConfig.setClassicCompatible(true);
+                Template template = new Template("template_preview_" + templateId, htmlTexte, freeMarkerConfig);
                 StringWriter texte = new StringWriter();
                 template.process(impressionContext, texte);
                 htmlTexte = texte.toString();
@@ -537,7 +550,10 @@ public class ImpressionService {
                 }
                 File tempFileObj = new File(tempFile);
                 if (tempFileObj.exists()) {
-                    tempFileObj.delete();
+                    boolean deleted = tempFileObj.delete();
+                    if (!deleted) {
+                        logger.warn("Le fichier temporaire {} n'a pas pu être supprimé.", tempFile);
+                    }
                 }
             } catch (IOException e) {
                 logger.error("Erreur lors de la suppression des fichiers temporaires", e);
@@ -558,14 +574,14 @@ public class ImpressionService {
         String templatePath = getTemplatePath(convention, typeRole);
 
         CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
-        List<QuestionSupplementaire> questionSupplementaire = QSJpaRepository.findByFicheEvaluation(centreEtablissement.getFicheEvaluation().getId());
-        List<QuestionEvaluation> questionEvaluations = QEJpaRepository.findAll();
+        List<QuestionSupplementaire> questionSupplementaire = getQuestionsSupplementaires(centreEtablissement);
+        List<QuestionEvaluation> questionEvaluations = questionEvaluationJpaRepository.findAll();
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
 
         try {
             // Récupération du texte HTML directement depuis les fichiers
             String htmlTexte = getDefaultText(templatePath);
-            htmlTexte = this.getHtmlText(htmlTexte,typeRole);
+            htmlTexte = this.getHtmlText(htmlTexte);
 
             // Traitement des conditions if/else comme dans generateConventionAvenantPDF
             htmlTexte = manageIfElse(htmlTexte);
@@ -615,6 +631,17 @@ public class ImpressionService {
         }
     }
 
+    private List<QuestionSupplementaire> getQuestionsSupplementaires(CentreGestion centreGestion) {
+        if (centreGestion == null || centreGestion.getFicheEvaluation() == null) {
+            logger.warn(
+                    "Aucune fiche d'évaluation configurée pour le centre de gestion {}, génération PDF poursuivie sans fiche d'évaluation.",
+                    centreGestion != null ? centreGestion.getId() : null
+            );
+            return Collections.emptyList();
+        }
+        return questionSupplementaireJpaRepository.findByFicheEvaluation(centreGestion.getFicheEvaluation().getId());
+    }
+
     private static String getTemplatePath(Convention convention, Integer typeRole) {
         String name = switch (typeRole) {
             case 0 -> "evaluation_etu";
@@ -631,9 +658,9 @@ public class ImpressionService {
         return templatePath;
     }
 
-    private String getHtmlText(String texte, Integer typeRole) {
+    private String getHtmlText(String texte) {
         String htmlTexte = getDefaultText("/templates/template_style.html");
-        htmlTexte = htmlTexte.replaceAll("__project_fonts_dir__", this.getClass().getResource("/static/fonts/").getPath());
+        htmlTexte = htmlTexte.replace("__project_fonts_dir__", Objects.requireNonNull(this.getClass().getResource("/static/fonts/")).getPath());
 
         htmlTexte += texte;
 
