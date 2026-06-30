@@ -50,8 +50,8 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     this.columns.push('service')
     this.columns.push('contact')
     this.filters = [...this.sharedData.filters];
-    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
-    this.filters.push({ id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id'});
+    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id', specific: true});
+    this.filters.push({ id: 'convention.service.id', libelle: 'Service d\'accueil', type: 'list', options: [], keyLibelle: 'nom', keyId: 'id', specific: true});
     this.initStructureFilter();
     this.initServiceFilters();
   }
@@ -64,18 +64,24 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
   }
 
   initStructureFilter(): void {
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service) {
-      this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure ?? this.groupeEtudiant.convention.structure);
-      this.structures = [...new Map(this.structures.map(e => [e.id, {id: e.id, raisonSociale: e.raisonSociale}])).values()];
+    if (this.groupeEtudiant) {
+      this.structures = [...new Map(this.groupeEtudiant.etudiantGroupeEtudiants
+        .map((e: any) => e.convention.structure ?? this.groupeEtudiant.convention.structure)
+        .filter((e: any) => !!e)
+        .map((e: any) => [e.id, {id: e.id, raisonSociale: e.raisonSociale}])
+      ).values()];
       let filter = this.filters.find((f: any) => f.id === 'convention.structure.id');
       if (filter) filter.options = this.structures;
     }
   }
 
   initServiceFilters(): void {
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure && this.groupeEtudiant.convention.service) {
-      this.services = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.service ?? this.groupeEtudiant.convention.service);
-      this.services = [...new Map(this.services.map(e => [e.id, {id: e.id, nom: e.nom}])).values()];
+    if (this.groupeEtudiant) {
+      this.services = [...new Map(this.groupeEtudiant.etudiantGroupeEtudiants
+        .map((e: any) => e.convention.service ?? this.groupeEtudiant.convention.service)
+        .filter((e: any) => !!e)
+        .map((e: any) => [e.id, {id: e.id, nom: e.nom}])
+      ).values()];
       let filter = this.filters.find((f: any) => f.id === 'convention.service.id');
       if (filter) filter.options = this.services;
     }
