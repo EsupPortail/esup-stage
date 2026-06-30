@@ -24,8 +24,8 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
-    private ReponseEvaluationContext reponseEvaluationContext = new ReponseEvaluationContext();
-    private FicheEvaluationContext ficheEvaluationContext = new FicheEvaluationContext();
+    private ReponseEvaluationContext reponse = new ReponseEvaluationContext();
+    private FicheEvaluationContext ficheEvaluation = new FicheEvaluationContext();
     private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
     private List<QuestionSupplementaireContext> questionsSupplementaires = new ArrayList<>();
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
@@ -42,9 +42,9 @@ public class ImpressionContext {
             this.structure = new StructureContext(convention.getStructure());
             FicheEvaluation ficheEvaluation = convention.getCentreGestion() != null ? convention.getCentreGestion().getFicheEvaluation() : null;
             if (ficheEvaluation != null) {
-                this.ficheEvaluationContext = new FicheEvaluationContext(ficheEvaluation);
+                this.ficheEvaluation = new FicheEvaluationContext(ficheEvaluation);
             }
-            this.reponseEvaluationContext = new ReponseEvaluationContext(convention.getReponseEvaluation());
+            this.reponse = new ReponseEvaluationContext(convention.getReponseEvaluation());
             if (questionSupplementaires != null) {
                 for (QuestionSupplementaire question : questionSupplementaires) {
                     this.questionsSupplementaires.add(new QuestionSupplementaireContext(question));
