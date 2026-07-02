@@ -107,6 +107,39 @@ public class HabilitationService {
         return !getRolesByUtilisateurAndCentre(utilisateur.getId(), idCentreGestion).isEmpty();
     }
 
+    /**
+     * Vrai si l'utilisateur est gestionnaire ou responsable gestionnaire au niveau global
+     * ou sur au moins un centre de gestion (rôle appliqué sur le centre).
+     */
+    public boolean isGestionnaire(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            return false;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.GES) || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+            return true;
+        }
+        return !getGestionnaireCentreIds(utilisateur).isEmpty();
+    }
+
+    /**
+     * Identifiants des centres de gestion sur lesquels l'utilisateur possède un rôle
+     * gestionnaire ou responsable gestionnaire.
+     */
+    public List<Integer> getGestionnaireCentreIds(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            return Collections.emptyList();
+        }
+        return utilisateurCentreGestionRoleJpaRepository.findByUtilisateurId(utilisateur.getId())
+                .stream()
+                .filter(userCentreRole -> {
+                    Role role = userCentreRole.getRole();
+                    return role != null && (Role.GES.equals(role.getCode()) || Role.RESP_GES.equals(role.getCode()));
+                })
+                .map(userCentreRole -> userCentreRole.getCentreGestion().getId())
+                .distinct()
+                .toList();
+    }
+
     public List<Role> getRolesByUidAndCentre(String uid, int idCentreGestion) {
         if (uid == null || uid.isBlank()) {
             return Collections.emptyList();

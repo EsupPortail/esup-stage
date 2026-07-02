@@ -25,6 +25,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.ServicePermissionEvaluator;
 import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,9 @@ public class ServiceController {
 
     @Autowired
     ConfidentialiteService confidentialiteService;
+
+    @Autowired
+    HabilitationService habilitationService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
@@ -206,15 +210,16 @@ public class ServiceController {
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
-        return UtilisateurHelper.isRole(utilisateur, Role.GES)
-                || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        return habilitationService.isGestionnaire(utilisateur);
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
-        if (utilisateur == null || utilisateur.getUid() == null || utilisateur.getUid().isBlank()) {
+        // Centres sur lesquels l'utilisateur a un rôle gestionnaire (rôle appliqué sur le centre)
+        List<Integer> centreIds = habilitationService.getGestionnaireCentreIds(utilisateur);
+        if (centreIds.isEmpty()) {
             return new ArrayList<>();
         }
-        return centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        return centreGestionJpaRepository.findAllById(centreIds);
     }
 
     private boolean canViewService(List<CentreGestion> centresDemandeur, Service service) {

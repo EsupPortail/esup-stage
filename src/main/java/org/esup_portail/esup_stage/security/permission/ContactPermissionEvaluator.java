@@ -5,8 +5,8 @@ import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
-import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ContactJpaRepository;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class ContactPermissionEvaluator implements PermissionEvaluator {
     private ContactJpaRepository contactJpaRepository;
 
     @Autowired
-    private CentreGestionJpaRepository centreGestionJpaRepository;
+    private HabilitationService habilitationService;
 
     @Override
     public boolean hasPermission(Utilisateur user, MethodSignature sig, Object[] args) {
@@ -29,13 +29,9 @@ public class ContactPermissionEvaluator implements PermissionEvaluator {
             return contactJpaRepository.isOwner(id, user.getId());
         }
 
-        if (UtilisateurHelper.isRole(user, Role.GES) || UtilisateurHelper.isRole(user, Role.RESP_GES)) {
-            if (user == null || user.getUid() == null || user.getUid().isBlank()) {
-                return false;
-            }
-            List<Integer> centreIds = centreGestionJpaRepository.findAllByGestionnaireUid(user.getUid()).stream()
-                    .map(CentreGestion::getId)
-                    .toList();
+        // Gestionnaire (global ou rôle appliqué sur un centre) : restreint aux contacts de ses centres
+        if (habilitationService.isGestionnaire(user)) {
+            List<Integer> centreIds = habilitationService.getGestionnaireCentreIds(user);
             return !centreIds.isEmpty() && contactJpaRepository.existsByIdAndCentreGestionIdIn(id, centreIds);
         }
 
