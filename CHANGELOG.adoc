@@ -6,7 +6,9 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.3[Esup-Stage v3.2.3]
 - Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
 - Création d'un paramètre permettant d'autoriser l'impression de l'avenant sous conditions (#218).
 - Intégration de la conformité au RPGD.
-- Ajouter la vérification administrative dans le filtre de recherche du tableau de bord.
+- Ajout de la vérification administrative dans le filtre de recherche du tableau de bord.
+- Fonctionnalité de dépôt de documents par les étudiants.
+- Ajout d'un champ d'informations complémentaires dans l'onglet Stage (existait déjà dans Pstage).
 
 === Améliorations
 - Permettre d'associer de 1 à n régimes d'inscription par type de convention.
@@ -14,11 +16,14 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.3[Esup-Stage v3.2.3]
 - Demander à l’étudiant de répondre au choix proposé par l’article 6.3.
 - Installation de l’application dans une webapp spécifique.
 - Amélioration du message d’erreur en cas d’inactivité.
-- Suppression du champ url dans centre de gestion
+- Suppression du champ url dans centre de gestion.
 - Augmentation du nombre de caractères maximum des champs mails.
+- Rendre facultatif le numéro de téléphone des organismes d'accueil (#415).
+- Finalisation de la gestion de la confidentialité.
 
 === Corrections
 - Création d'un script de migration pour que legacy ait le même schéma que baseline.
+- Intégration des corrections d'anomalies de l'UNISTRA sur la création de convention en masse.
 
 == ESUP-Stage v3.4.0 (À venir)
 === Nouveautés
