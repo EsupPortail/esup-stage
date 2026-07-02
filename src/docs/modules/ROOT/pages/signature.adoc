@@ -34,19 +34,19 @@ Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la 
 
 [,properties]
 ----
-# tokens d'accès d'esup-stage permettant d'autoriser les webhook à accéder aux api /public/api d'esup-stage séparés par des ; (exemple : token1;token2;token3)
-appli.public.tokens=xxxx
+# token à renseigner du côté de l'application de signature électronique permettant d'autoriser les webhook à accéder aux api /public/api d'esup-stage séparés par des ; (exemple : token1;token2;token3). Ce token doit être créé par l'administrateur.
+appli.tokens=xxxx
 
 ### Paramétrage webhooks ###
 # uri du webhook de signature
 webhook.signature.uri=http://localhost:8080/webhook/esup-signature
 # token permettant d'accéder au webhook signature
-webhook.signature.token=yyyyy
+webhook.signature.token=yyyyy # Token fournit par l'application de signature électronique.
 ### -------------------- ###
 
 ### Paramétrage esup-signature ###
 # numero du circuit
 esupsignature.uri=http://localhost:8880/ws
-esupsignature.circuit=123
+esupsignature.circuit=123 # Peut ne pas être utilisé. Dans ce cas renseigner le circuit au niveau du centre de gestion.
 ### -------------------- ###
 ----
