@@ -201,11 +201,44 @@ export class AuthService {
   }
 
   isGestionnaire(): boolean {
-    return this.userConnected && (this.userConnected.roles || []).find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    if (!this.userConnected) {
+      return false;
+    }
+    // Gestionnaire au niveau global OU au niveau d'au moins un centre de gestion
+    const globalGestionnaire = (this.userConnected.roles || []).find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    const centreGestionnaire = (this.userConnected.centreRoles || [])
+      .some((cr: any) => cr.role && [Role.GES, Role.RESP_GES].indexOf(cr.role.code) > -1);
+    return globalGestionnaire || centreGestionnaire;
   }
 
   isEnseignant(): boolean {
     return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ENS].indexOf(r.code) > -1) !== undefined;
+  }
+
+  /**
+   * Rôles qui font foi pour un centre de gestion donné : les rôles définis sur ce centre
+   * s'ils existent (ils priment sur le rôle global), sinon les rôles globaux.
+   */
+  getEffectiveRolesForCentre(idCentreGestion: number): any[] {
+    const centreRoles = (this.userConnected?.centreRoles || [])
+      .filter((cr: any) => cr.idCentreGestion === idCentreGestion)
+      .map((cr: any) => cr.role)
+      .filter((r: any) => !!r);
+    if (centreRoles.length > 0) {
+      return centreRoles;
+    }
+    return this.userConnected?.roles || [];
+  }
+
+  /**
+   * Vrai si, pour le centre de gestion donné, l'utilisateur n'agit qu'en tant qu'enseignant
+   * (rôle enseignant sans rôle gestionnaire), auquel cas il n'a que la validation pédagogique.
+   */
+  isEnseignantOnlyForCentre(idCentreGestion: number): boolean {
+    const roles = this.getEffectiveRolesForCentre(idCentreGestion);
+    const hasEnseignant = roles.some((r: any) => r.code === Role.ENS);
+    const hasGestionnaire = roles.some((r: any) => [Role.GES, Role.RESP_GES, Role.ADM].indexOf(r.code) > -1);
+    return hasEnseignant && !hasGestionnaire;
   }
 
   private hasAdminRole(): boolean {

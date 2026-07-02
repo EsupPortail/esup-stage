@@ -17,7 +17,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
-        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
     }
 
     @Override
@@ -38,6 +38,20 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("centreGestion.ids")) {
             clauses.add(getJsonArrayValues(parameter).isEmpty() ? "1 = 0" : "c.centreGestion.id IN :centreGestionIds");
+        }
+        if (key.equals("userScope")) {
+            List<String> ors = new ArrayList<>();
+            JsonNode centreIdsNode = parameter.get("centreIds");
+            if (centreIdsNode != null && centreIdsNode.isArray() && centreIdsNode.size() > 0) {
+                ors.add("c.centreGestion.id IN :userScopeCentreIds");
+            }
+            if (parameter.has("enseignant") && parameter.get("enseignant").asBoolean()) {
+                ors.add("c.enseignant.uidEnseignant = :userScopeUid");
+            }
+            if (parameter.has("etudiant") && parameter.get("etudiant").asBoolean()) {
+                ors.add("c.etudiant.identEtudiant = :userScopeUid");
+            }
+            clauses.add(ors.isEmpty() ? "1 = 0" : "(" + String.join(" OR ", ors) + ")");
         }
         if (key.equals("enseignant.uidEnseignant")) {
             clauses.add("c.enseignant.uidEnseignant = :" + key.replace(".", ""));
@@ -161,6 +175,21 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("centreGestion.ids") && !getJsonArrayValues(parameter).isEmpty()) {
             query.setParameter("centreGestionIds", getJsonArrayValues(parameter));
+        }
+        if (key.equals("userScope")) {
+            JsonNode centreIdsNode = parameter.get("centreIds");
+            if (centreIdsNode != null && centreIdsNode.isArray() && centreIdsNode.size() > 0) {
+                List<Object> centreIds = new ArrayList<>();
+                for (JsonNode item : centreIdsNode) {
+                    centreIds.add(item.asInt());
+                }
+                query.setParameter("userScopeCentreIds", centreIds);
+            }
+            boolean useUid = (parameter.has("enseignant") && parameter.get("enseignant").asBoolean())
+                    || (parameter.has("etudiant") && parameter.get("etudiant").asBoolean());
+            if (useUid && parameter.has("uid")) {
+                query.setParameter("userScopeUid", parameter.get("uid").asText());
+            }
         }
         if (key.equals("enseignant.uidEnseignant")) {
             query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));

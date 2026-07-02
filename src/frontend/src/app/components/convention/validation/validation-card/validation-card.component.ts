@@ -1,15 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ConventionService } from "../../../../services/convention.service";
-import { MessageService } from "../../../../services/message.service";
-import { AuthService } from "../../../../services/auth.service";
+import { Component, EventEmitter, Input, Output} from '@angular/core';
+import {ConventionService} from "../../../../services/convention.service";
+import {MessageService} from "../../../../services/message.service";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
-    selector: 'app-validation-card',
-    templateUrl: './validation-card.component.html',
-    styleUrls: ['./validation-card.component.scss'],
-    standalone: false
+  selector: 'app-validation-card',
+  templateUrl: './validation-card.component.html',
+  styleUrls: ['./validation-card.component.scss'],
+  standalone: false
 })
-export class ValidationCardComponent implements OnInit {
+export class ValidationCardComponent {
 
   @Input() convention: any;
   @Input() validation: string;
@@ -18,17 +18,15 @@ export class ValidationCardComponent implements OnInit {
   @Output() conventionChanged = new EventEmitter<any>();
 
   constructor(
-    private conventionService: ConventionService,
-    private messageService: MessageService,
-    private authService: AuthService,
-  ) { }
-
-  ngOnInit(): void {
+    private readonly conventionService: ConventionService,
+    private readonly messageService: MessageService,
+    private readonly authService: AuthService,
+  ) {
   }
 
   canRevertValidation(): boolean {
-    // Un enseignant n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+    // Un enseignant (rôle appliqué sur le centre de gestion de la convention) n'a les droits que sur la validation pédagogique
+    if (this.authService.isEnseignantOnlyForCentre(this.convention.centreGestion.id) && this.validation === 'validationConvention') {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
@@ -41,8 +39,8 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canValidate(): boolean {
-    // Un enseignant n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+    // Un enseignant (rôle appliqué sur le centre de gestion de la convention) n'a les droits que sur la validation pédagogique
+    if (this.authService.isEnseignantOnlyForCentre(this.convention.centreGestion.id) && this.validation === 'validationConvention') {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];

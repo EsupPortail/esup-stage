@@ -326,6 +326,15 @@ public class ConventionService {
             }
             return;
         }
+        // Si l'utilisateur possède un ou plusieurs rôles sur le centre de gestion de la
+        // convention, ce sont ces droits qui font foi : ils priment sur le rôle global.
+        if (hasCentreRolesForConvention(convention, utilisateur)) {
+            if (!hasCentreConventionRight(convention, utilisateur, droit)) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        // Comportement global historique (aucun rôle spécifique sur ce centre de gestion)
         if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
             if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -337,6 +346,13 @@ public class ConventionService {
         }
     }
 
+    private boolean hasCentreRolesForConvention(Convention convention, Utilisateur utilisateur) {
+        if (convention == null || convention.getCentreGestion() == null) {
+            return false;
+        }
+        return habilitationService.hasCentreRoles(utilisateur, convention.getCentreGestion().getId());
+    }
+
     private boolean hasCentreConventionRight(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
         if (convention == null || convention.getCentreGestion() == null) {
             return false;
@@ -345,6 +361,21 @@ public class ConventionService {
             return habilitationService.hasCentreRight(utilisateur, convention.getCentreGestion().getId(), new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{droit});
         } catch (Exception e) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
+    }
+
+    /**
+     * Un enseignant (rôle appliqué sur le centre de gestion de la convention, ou rôle global
+     * à défaut) n'a de droits que sur la validation pédagogique. La distinction repose sur le
+     * rôle effectif du centre de gestion et non sur le seul rôle global.
+     */
+    public void checkValidationType(Convention convention, Utilisateur utilisateur, String type) {
+        Integer idCentreGestion = convention != null && convention.getCentreGestion() != null ? convention.getCentreGestion().getId() : null;
+        List<Role> rolesEffectifs = habilitationService.getEffectiveRoles(utilisateur, idCentreGestion);
+        boolean enseignantSeulement = rolesEffectifs.stream().anyMatch(r -> Role.ENS.equals(r.getCode()))
+                && rolesEffectifs.stream().noneMatch(r -> Role.GES.equals(r.getCode()) || Role.RESP_GES.equals(r.getCode()) || Role.ADM.equals(r.getCode()));
+        if (enseignantSeulement && !"validationPedagogique".equals(type)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
     }
 
@@ -365,11 +396,14 @@ public class ConventionService {
                 return modifiable;
             } else {
                 boolean modifiable = convention.getValidationConvention() == null || !convention.getValidationConvention();
-                if (!UtilisateurHelper.isRole(utilisateur, Role.GES) && !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                // Les droits appliqués sont ceux du rôle du centre de gestion de la convention
+                // s'il existe, sinon ceux du rôle global.
+                List<Role> rolesEffectifs = habilitationService.getEffectiveRoles(utilisateur, convention.getCentreGestion() != null ? convention.getCentreGestion().getId() : null);
+                boolean gestionnaire = rolesEffectifs.stream().anyMatch(r -> Role.GES.equals(r.getCode()) || Role.RESP_GES.equals(r.getCode()));
+                if (!gestionnaire) {
                     // en fonction du paramétrage
                     try {
-                        modifiable = modifiable && (UtilisateurHelper.isRole(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION})
-                                || hasCentreConventionRight(convention, utilisateur, DroitEnum.MODIFICATION));
+                        modifiable = modifiable && UtilisateurHelper.isRole(rolesEffectifs, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION});
                     } catch (Exception e) {
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
                     }

@@ -165,18 +165,21 @@ public class  ConventionController {
         List<AnneeUniversitaireDto> results = new ArrayList<>();
         List<String> annees;
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            // Union des années des conventions visibles : périmètre des centres de gestion
+            // (rôles CG) et périmètre personnel du rôle global (enseignant référent / étudiant).
             List<Integer> centreIds = getAuthorizedConventionCentreIds(DroitEnum.LECTURE);
-            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-                annees = conventionJpaRepository.getGestionnaireAnnees(utilisateur.getUid());
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                annees = conventionJpaRepository.getEnseignantAnnees(utilisateur.getUid());
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                annees = conventionJpaRepository.getEtudiantAnnees(utilisateur.getUid());
-            } else if (!centreIds.isEmpty()) {
-                annees = conventionJpaRepository.getAnneesByCentreIds(centreIds);
-            } else {
-                annees = Collections.emptyList();
+            Set<String> anneesSet = new LinkedHashSet<>();
+            if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+                anneesSet.addAll(conventionJpaRepository.getEnseignantAnnees(utilisateur.getUid()));
             }
+            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+                anneesSet.addAll(conventionJpaRepository.getEtudiantAnnees(utilisateur.getUid()));
+            }
+            if (!centreIds.isEmpty()) {
+                anneesSet.addAll(conventionJpaRepository.getAnneesByCentreIds(centreIds));
+            }
+            annees = new ArrayList<>(anneesSet);
+            annees.sort(Collections.reverseOrder());
         } else {
             annees = conventionJpaRepository.getAnnees();
         }
@@ -369,9 +372,6 @@ public class  ConventionController {
     @PostMapping("/validation-administrative")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public ResponseEntity<Map<String, String>> validationAdministrativeMultiple(@RequestBody IdsListDto idsListDto) {
-        if (UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ENS)) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
-        }
         if (idsListDto.getIds().isEmpty()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La liste est vide");
         }
@@ -386,6 +386,8 @@ public class  ConventionController {
                 throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
             }
             conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
+            // La validation administrative est interdite à un enseignant (rôle appliqué sur le centre de gestion)
+            conventionService.checkValidationType(convention, ServiceContext.getUtilisateur(), "validationConvention");
             if (!Boolean.TRUE.equals(convention.getValidationConvention())) {
                 boolean validationPedagogiqueRequise =
                         Boolean.TRUE.equals(convention.getCentreGestion().getValidationPedagogique());
@@ -424,10 +426,8 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
-        // Un enseignant n'a les droits que sur la validation pédagogique
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
-        }
+        // Un enseignant n'a les droits que sur la validation pédagogique (rôle appliqué sur le centre de gestion)
+        conventionService.checkValidationType(convention, ServiceContext.getUtilisateur(), type);
         switch (type) {
             case "validationPedagogique":
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), true);
@@ -453,10 +453,8 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.VALIDATION);
-        // Un enseignant n'a les droits que sur la validation pédagogique
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
-        }
+        // Un enseignant n'a les droits que sur la validation pédagogique (rôle appliqué sur le centre de gestion)
+        conventionService.checkValidationType(convention, ServiceContext.getUtilisateur(), type);
         switch (type) {
             case "validationPedagogique":
                 validationPedagogique(convention, appConfigService.getConfigAlerteMail(), ServiceContext.getUtilisateur(), false);
@@ -920,27 +918,16 @@ public class  ConventionController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             JSONObject jsonFilters = new JSONObject(filters);
-            Map<String, Object> currentUser = new HashMap<>();
-            currentUser.put("type", "text");
-            currentUser.put("value", utilisateur.getUid());
-            currentUser.put("specific", true);
-            if (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES)) {
-                Map<String, Object> ges = new HashMap<>();
-                ges.put("type", "text");
-                ges.put("value", utilisateur.getLogin());
-                ges.put("specific", true);
-                jsonFilters.put("centreGestion.personnels", ges);
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                jsonFilters.put("enseignant.uidEnseignant", currentUser);
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                jsonFilters.put("etudiant.identEtudiant", currentUser);
-            } else {
-                Map<String, Object> centreIds = new HashMap<>();
-                centreIds.put("type", "list");
-                centreIds.put("value", getAuthorizedConventionCentreIds(DroitEnum.LECTURE));
-                centreIds.put("specific", true);
-                jsonFilters.put("centreGestion.ids", centreIds);
-            }
+            // Périmètre des conventions visibles : union (OR) des centres de gestion sur lesquels
+            // l'utilisateur possède un rôle donnant la lecture, et de son périmètre "personnel"
+            // issu de son rôle global (conventions dont il est l'enseignant référent ou l'étudiant).
+            Map<String, Object> userScope = new HashMap<>();
+            userScope.put("specific", true);
+            userScope.put("uid", utilisateur.getUid());
+            userScope.put("enseignant", UtilisateurHelper.isRole(utilisateur, Role.ENS));
+            userScope.put("etudiant", UtilisateurHelper.isRole(utilisateur, Role.ETU));
+            userScope.put("centreIds", getAuthorizedConventionCentreIds(DroitEnum.LECTURE));
+            jsonFilters.put("userScope", userScope);
 
             filters = jsonFilters.toString();
         }

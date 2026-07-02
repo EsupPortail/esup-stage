@@ -82,6 +82,31 @@ public class HabilitationService {
                 .toList();
     }
 
+    /**
+     * Retourne les rôles qui font foi pour l'utilisateur sur un centre de gestion donné :
+     * les rôles définis spécifiquement sur ce centre de gestion s'ils existent (ils priment
+     * alors sur le rôle global), sinon les rôles globaux de l'utilisateur.
+     */
+    public List<Role> getEffectiveRoles(Utilisateur utilisateur, Integer idCentreGestion) {
+        if (utilisateur == null) {
+            return Collections.emptyList();
+        }
+        if (idCentreGestion != null) {
+            List<Role> centreRoles = getRolesByUtilisateurAndCentre(utilisateur.getId(), idCentreGestion);
+            if (!centreRoles.isEmpty()) {
+                return centreRoles;
+            }
+        }
+        return utilisateur.getRoles();
+    }
+
+    public boolean hasCentreRoles(Utilisateur utilisateur, Integer idCentreGestion) {
+        if (utilisateur == null || idCentreGestion == null) {
+            return false;
+        }
+        return !getRolesByUtilisateurAndCentre(utilisateur.getId(), idCentreGestion).isEmpty();
+    }
+
     public List<Role> getRolesByUidAndCentre(String uid, int idCentreGestion) {
         if (uid == null || uid.isBlank()) {
             return Collections.emptyList();
