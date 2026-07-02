@@ -5,10 +5,21 @@ import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
+import { ServiceService } from "../../../services/service.service";
 import { MessageService } from "../../../services/message.service";
 import { SortDirection } from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
+import {
+  defaultIfEmpty, defer,
+  filter,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  shareReplay,
+  tap, toArray,
+} from "rxjs";
 
 @Component({
     selector: 'app-etab-accueil-groupe',
@@ -34,6 +45,7 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     public groupeEtudiantService: GroupeEtudiantService,
     public etudiantGroupeEtudiantService: EtudiantGroupeEtudiantService,
     private conventionService: ConventionService,
+    private serviceService: ServiceService,
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService,
@@ -101,7 +113,13 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        this.updateEtab(this.groupeEtudiant.convention.id,dialogResponse)
+        this.updateEtab(this.groupeEtudiant.convention.id,dialogResponse.id)
+          .pipe(
+            mergeMap(convention => this.getServiceIfSingle(dialogResponse, this.groupeEtudiant.convention.centreGestion.id).pipe(
+              mergeMap(service => this.updateService(convention,service)),
+              defaultIfEmpty(convention),
+            ))
+          ).subscribe(convention => this.emitGroupe())
       }
     });
   }
@@ -116,9 +134,19 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     const modalDialog = this.matDialog.open(EtabAccueilGroupeModalComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(dialogResponse => {
       if (dialogResponse) {
-        for(const etu of this.selected){
-          this.updateEtab(etu.convention.id,dialogResponse);
-        }
+        const service$ = defer(
+            () => this.getServiceIfSingle(dialogResponse, this.groupeEtudiant.convention.centreGestion.id)
+          ).pipe(shareReplay(1));
+        from(this.selected).pipe(
+          mergeMap((etu) =>
+            this.updateEtab(etu.convention.id, dialogResponse.id)
+          ),
+          mergeMap(convention => service$.pipe(
+            mergeMap(service => this.updateService(convention,service)),
+            defaultIfEmpty(convention),
+          )),
+          toArray(),
+        ).subscribe((conventions:any)=> this.emitGroupe());
       }
     });
   }
@@ -129,16 +157,37 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     });
   }
 
-  updateEtab(conventionId: number, etabId: number): void {
+  updateEtab(conventionId: number, etabId: number): Observable<any> {
     const data = {
       "field":'idStructure',
       "value":etabId,
     };
-    this.conventionService.patch(conventionId, data).subscribe((response: any) => {
+    return this.conventionService.patch(conventionId, data).pipe(tap((response: any) => {
         this.messageService.setSuccess('Structure d\'accueil affectée avec succès');
+    }));
+  }
+
+  emitGroupe() {
         this.groupeEtudiantService.getById(this.groupeEtudiant.id).subscribe((response: any) => {
           this.validated.emit(response);
         });
-    });
+  }
+
+  getServiceIfSingle(etab: any, centreGestionId: number): Observable<any> {
+    return this.serviceService.getByStructure(etab.id, centreGestionId).pipe(
+      map((response: any) => response.length === 1 ? response : response.filter(
+        (service:any) => service.nom === etab.raisonSociale)),
+      filter((response: any) => response.length === 1),
+      map((response: any) => response[0])
+    );
+  }
+
+  updateService(convention: any, service: any): Observable<any> {
+    return this.conventionService.patch(convention.id, {
+      "field":'idService',
+      "value":service.id,
+    }).pipe(tap(convention =>
+        this.messageService.setSuccess('Service d\'accueil par défaut affectée avec succès')
+    ));
   }
 }
