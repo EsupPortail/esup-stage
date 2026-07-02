@@ -28,11 +28,8 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let row">
-            <button class="secondary-button" mat-button mat-stroked-button (click)="edit(row)">
-              <span *ngIf="true"><span class="fa fa-pen" aria-label="Modifier"></span> Modifier</span>
-              <ng-template #notSelected>
-                <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
-              </ng-template>
+            <button mat-icon-button matTooltip="Modifier" (click)="edit(row)" color="primary">
+              <i class="fa fa-pen"></i>
             </button>
           </td>
         </ng-container>
