@@ -229,9 +229,8 @@
     </mat-form-field>
     <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
       <mat-label>Téléphone</mat-label>
-      <input matInput formControlName="telephone" required [placeholder]="getConfidentialPlaceholder('telephone')" />
+      <input matInput formControlName="telephone" [placeholder]="getConfidentialPlaceholder('telephone')" />
       <mat-error *ngIf="form.get('telephone')?.touched && form.get('telephone')?.invalid">
-        <ng-container *ngIf="form.get('telephone')?.hasError('required')">Ce champ est obligatoire.</ng-container>
         <ng-container *ngIf="form.get('telephone')?.hasError('pattern')">Numéro de téléphone invalide. Format attendu : 01 23 XX XX XX </ng-container>
         <ng-container *ngIf="form.get('telephone')?.hasError('maxlength')">50 caractères maximum.</ng-container>
       </mat-error>
