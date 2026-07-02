@@ -38,6 +38,13 @@ public class ConventionService {
 
     private static final Logger logger = LogManager.getLogger(ConventionService.class);
 
+    /**
+     * Whitelist des séquences (préfixes au format E.164) autorisées pour l'envoi des numéros en signature.
+     * Seuls les numéros de téléphone portable (ici +336 et +337 pour la France) sont acceptés ;
+     * tout numéro ne commençant pas par une de ces séquences est rejeté.
+     */
+    private List<String> sequencesPortablesAutorisees = List.of("+336", "+337");
+
     @Autowired
     EtudiantJpaRepository etudiantJpaRepository;
 
@@ -469,6 +476,26 @@ public class ConventionService {
             }
         }
         return null;
+    }
+
+    /**
+     * Variante de {@link #parseNumTel(String)} pour l'envoi en signature (Docaposte OTP) :
+     * ne laisse passer que les numéros de téléphone portable dont la séquence (préfixe E.164)
+     * fait partie de la whitelist {@link #sequencesPortablesAutorisees}.
+     *
+     * @return le numéro au format E.164 si autorisé, sinon {@code null} (l'appelant enverra "").
+     */
+    public String parseNumTelMobile(String numTel) {
+        String parsedNumTel = parseNumTel(numTel);
+        if (parsedNumTel == null) {
+            return null;
+        }
+        boolean sequenceAutorisee = sequencesPortablesAutorisees.stream().anyMatch(parsedNumTel::startsWith);
+        if (!sequenceAutorisee) {
+            logger.error("Numéro de téléphone non autorisé pour l'envoi en signature : " + numTel);
+            return null;
+        }
+        return parsedNumTel;
     }
 
     public List<CentreGestionSignataire> initSignataires(CentreGestion centreGestion) {
