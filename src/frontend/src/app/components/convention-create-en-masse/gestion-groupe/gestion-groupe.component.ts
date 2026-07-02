@@ -131,7 +131,7 @@ export class GestionGroupeComponent implements OnInit {
   }
 
   isConventionGenerated(row: any): boolean {
-    const merged = row?.etudiantGroupeEtudiants?.[0]?.mergedConvention;
+    const merged = row?.etudiantGroupeEtudiants?.every((ege:any) => !!ege.mergedConvention);
     return !!merged;
   }
 
