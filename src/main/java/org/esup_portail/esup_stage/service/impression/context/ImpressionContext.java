@@ -94,6 +94,7 @@ public class ImpressionContext {
         private String etapeCode;
         private String fonctionsEtTaches;
         private String interruptionStage;
+        private String informationsComplementaires;
         private String libelleCPAM;
         private String regionCPAM;
         private String adresseCPAM;
@@ -158,6 +159,7 @@ public class ImpressionContext {
             this.etapeCode = convention.getEtape() != null ? convention.getEtape().getId().getCode() : null;
             this.fonctionsEtTaches = convention.getFonctionsEtTaches();
             this.interruptionStage = (convention.getInterruptionStage() != null && convention.getInterruptionStage()) ? "Oui" : "Non";
+            this.informationsComplementaires = convention.getCommentaireStage();
             this.libelleCPAM = convention.getLibelleCPAM();
             this.regionCPAM = convention.getRegionCPAM();
             this.adresseCPAM = convention.getAdresseCPAM();
