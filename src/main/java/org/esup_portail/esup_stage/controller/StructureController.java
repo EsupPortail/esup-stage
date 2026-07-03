@@ -28,8 +28,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.StructurePermissionEvaluator;
 import org.esup_portail.esup_stage.service.AppConfigService;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
-import org.esup_portail.esup_stage.service.HabilitationService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
 import org.esup_portail.esup_stage.service.sirene.SireneService;
@@ -87,10 +86,7 @@ public class StructureController {
     private StructureService structureService;
 
     @Autowired
-    private ConfidentialiteService confidentialiteService;
-
-    @Autowired
-    private HabilitationService habilitationService;
+    private ConfidentialiteAccessService confidentialiteAccessService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -612,12 +608,7 @@ public class StructureController {
             return true;
         }
 
-        for (CentreGestion centreDemandeur : centresDemandeur) {
-            if (confidentialiteService.canViewStructureCoordinates(centreDemandeur, structure)) {
-                return false;
-            }
-        }
-        return true;
+        return !confidentialiteAccessService.canViewStructureCoordinates(centresDemandeur, structure);
     }
 
     private void assertCanManageStructureConfidentialite() {
@@ -629,16 +620,11 @@ public class StructureController {
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
-        return habilitationService.isGestionnaire(utilisateur);
+        return confidentialiteAccessService.isGestionnaire(utilisateur);
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
-        // Centres sur lesquels l'utilisateur a un rôle gestionnaire (rôle appliqué sur le centre)
-        List<Integer> centreIds = habilitationService.getGestionnaireCentreIds(utilisateur);
-        if (centreIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return centreGestionJpaRepository.findAllById(centreIds);
+        return confidentialiteAccessService.getCentresDemandeur(utilisateur);
     }
 
     private String formatCentresDisponibles(List<CentreGestion> centresGestionnaires) {

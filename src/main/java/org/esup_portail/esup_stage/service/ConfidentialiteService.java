@@ -5,6 +5,8 @@ import org.esup_portail.esup_stage.model.Confidentialite;
 import org.esup_portail.esup_stage.model.Contact;
 import org.esup_portail.esup_stage.model.Service;
 import org.esup_portail.esup_stage.model.Structure;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @org.springframework.stereotype.Service
 public class ConfidentialiteService {
@@ -13,6 +15,9 @@ public class ConfidentialiteService {
     public static final String CONFIDENTIALITE_TOTALE = "1";
     public static final String CONFIDENTIALITE_LIBRE = "2";
     public static final String NIVEAU_ETABLISSEMENT = "ETABLISSEMENT";
+
+    @Autowired
+    private CentreGestionJpaRepository centreGestionJpaRepository;
 
     public boolean canViewCentreData(CentreGestion demandeur, CentreGestion porteur) {
         if (demandeur == null || porteur == null) {
@@ -28,16 +33,8 @@ public class ConfidentialiteService {
         return contact != null && canViewCentreData(demandeur, contact.getCentreGestion());
     }
 
-    public boolean canViewContact(CentreGestion demandeur, CentreGestion porteur) {
-        return canViewCentreData(demandeur, porteur);
-    }
-
     public boolean canViewService(CentreGestion demandeur, Service service) {
         return service != null && canViewCentreData(demandeur, service.getCentreGestion());
-    }
-
-    public boolean canViewService(CentreGestion demandeur, CentreGestion porteur) {
-        return canViewCentreData(demandeur, porteur);
     }
 
     public boolean canViewStructureCoordinates(CentreGestion demandeur, Structure structure) {
@@ -53,47 +50,39 @@ public class ConfidentialiteService {
         return canViewCentreData(demandeur, structure.getCentreGestionProprietaire());
     }
 
-    public boolean canViewStructureCoordinates(CentreGestion demandeur, Structure structure, CentreGestion porteur) {
-        if (structure == null) {
-            return false;
-        }
-        if (!structure.isConfidentialiteCoordonnees()) {
-            return true;
-        }
-        return porteur != null && canViewCentreData(demandeur, porteur);
-    }
-
-    public boolean canViewStructureCoordinates(CentreGestion demandeur, CentreGestion porteur) {
-        return canViewCentreData(demandeur, porteur);
-    }
-
     public String getEffectiveConfidentialityForCentre(CentreGestion porteur) {
-        String configuredCode = getConfiguredConfidentialityCode(porteur);
+        if (porteur == null) {
+            return PAS_DE_CONFIDENTIALITE;
+        }
+        if (isCentreEtablissement(porteur)) {
+            return resolveEtablissementEffectiveConfidentiality(porteur);
+        }
+        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
+        String etablissementCode = getConfiguredConfidentialityCode(etablissement);
+        if (PAS_DE_CONFIDENTIALITE.equals(etablissementCode) || CONFIDENTIALITE_TOTALE.equals(etablissementCode)) {
+            return etablissementCode;
+        }
+        String centreCode = getConfiguredConfidentialityCode(porteur);
+        return CONFIDENTIALITE_LIBRE.equals(centreCode) ? CONFIDENTIALITE_TOTALE : centreCode;
+    }
+
+    private String resolveEtablissementEffectiveConfidentiality(CentreGestion etablissement) {
+        String configuredCode = getConfiguredConfidentialityCode(etablissement);
         if (!CONFIDENTIALITE_LIBRE.equals(configuredCode)) {
             return configuredCode;
         }
-
-        Confidentialite effectiveOrpheline = porteur != null ? porteur.getCodeConfidentialiteConventionOrpheline() : null;
+        Confidentialite effectiveOrpheline = etablissement.getCodeConfidentialiteConventionOrpheline();
         if (effectiveOrpheline != null
                 && effectiveOrpheline.getCode() != null
                 && !effectiveOrpheline.getCode().isBlank()
                 && !CONFIDENTIALITE_LIBRE.equals(effectiveOrpheline.getCode())) {
             return effectiveOrpheline.getCode();
         }
-
         return CONFIDENTIALITE_TOTALE;
     }
 
     public boolean isNoConfidentiality(CentreGestion centreGestion) {
         return PAS_DE_CONFIDENTIALITE.equals(getEffectiveConfidentialityForCentre(centreGestion));
-    }
-
-    public boolean isTotalConfidentiality(CentreGestion centreGestion) {
-        return CONFIDENTIALITE_TOTALE.equals(getEffectiveConfidentialityForCentre(centreGestion));
-    }
-
-    public boolean isFreeConfidentiality(CentreGestion centreGestion) {
-        return CONFIDENTIALITE_LIBRE.equals(getConfiguredConfidentialityCode(centreGestion));
     }
 
     public boolean isCentreEtablissement(CentreGestion centreGestion) {
