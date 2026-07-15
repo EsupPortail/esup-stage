@@ -124,4 +124,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL")
     List<Convention> findConventionNonSignees();
+
+    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = TRUE AND c.documentId IS NOT NULL")
+    List<Convention> findConventionsSignees();
 }
