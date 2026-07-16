@@ -281,7 +281,6 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       validationConventionOrdre: [null],
       recupInscriptionAnterieure: [null],
       dureeRecupInscriptionAnterieure: [1],
-      urlPageInstruction: [null, [Validators.maxLength(200)]],
       nomViseur: [null, [Validators.maxLength(50)]],
       prenomViseur: [null, [Validators.maxLength(50)]],
       mailViseur: [null, [Validators.maxLength(255)]],
@@ -316,7 +315,6 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.validationConventionOrdre = this.paramCentreForm.get('validationConventionOrdre')?.value;
     this.centreGestion.recupInscriptionAnterieure = this.paramCentreForm.get('recupInscriptionAnterieure')?.value;
     this.centreGestion.dureeRecupInscriptionAnterieure = this.paramCentreForm.get('dureeRecupInscriptionAnterieure')?.value ?? 1;
-    this.centreGestion.urlPageInstruction = this.paramCentreForm.get('urlPageInstruction')?.value;
     this.centreGestion.nomViseur = this.paramCentreForm.get('nomViseur')?.value;
     this.centreGestion.prenomViseur = this.paramCentreForm.get('prenomViseur')?.value;
     this.centreGestion.mailViseur = this.paramCentreForm.get('mailViseur')?.value;
