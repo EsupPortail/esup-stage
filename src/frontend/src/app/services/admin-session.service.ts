@@ -27,4 +27,8 @@ export class AdminSessionService {
   closeSession(sessionId: string): Observable<void> {
     return this.http.post<void>(environment.apiUrl + "/admin/sessions/" + encodeURIComponent(sessionId) + "/close", null);
   }
+
+  closeAllSessions(message: string): Observable<number> {
+    return this.http.post<number>(environment.apiUrl + "/admin/sessions/close-all", { message });
+  }
 }

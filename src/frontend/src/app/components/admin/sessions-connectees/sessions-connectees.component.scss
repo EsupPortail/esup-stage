@@ -1,7 +1,23 @@
 .sessions-toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-count {
+  font-weight: 500;
+}
+
+.message-field {
+  width: 100%;
 }
 
 .sessions-table {

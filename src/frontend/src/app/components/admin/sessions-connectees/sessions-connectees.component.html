@@ -1,9 +1,35 @@
 <div class="sessions-toolbar">
-  <button class="valid-button" mat-flat-button (click)="refresh()">
-    <span class="fa fa-rotate mr-1" aria-hidden="true"></span>
-    Rafraîchir
-  </button>
+  <span class="user-count" *ngIf="!loading">
+    <span class="fa fa-users mr-1" aria-hidden="true"></span>
+    {{ userCount }} {{ userCount > 1 ? 'utilisateurs connectés' : 'utilisateur connecté' }}
+  </span>
+  <div class="toolbar-actions">
+    <button class="delete-button" mat-flat-button (click)="openCloseAllDialog()">
+      <span class="fa fa-right-from-bracket mr-1" aria-hidden="true"></span>
+      Déconnecter tout le monde
+    </button>
+    <button class="valid-button" mat-flat-button (click)="refresh()">
+      <span class="fa fa-rotate mr-1" aria-hidden="true"></span>
+      Rafraîchir
+    </button>
+  </div>
 </div>
+
+<ng-template #closeAllDialog>
+  <h2 mat-dialog-title>Déconnecter tous les utilisateurs</h2>
+  <mat-dialog-content>
+    <p>Toutes les sessions actives seront fermées, sauf la vôtre. Les utilisateurs devront se réauthentifier auprès du CAS.</p>
+    <mat-form-field appearance="outline" class="message-field">
+      <mat-label>Message affiché aux utilisateurs (optionnel)</mat-label>
+      <textarea matInput rows="3" [(ngModel)]="closeAllMessage"
+                placeholder="Votre session a été fermée par un administrateur"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button class="cancel-button" mat-flat-button mat-dialog-close>Annuler</button>
+    <button class="delete-button" mat-flat-button (click)="confirmCloseAll()">Déconnecter</button>
+  </mat-dialog-actions>
+</ng-template>
 
 <table mat-table [dataSource]="sessions" class="sessions-table">
   <ng-container matColumnDef="login">

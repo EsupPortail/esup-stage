@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,14 +35,15 @@ public class SessionSseService {
         });
     }
 
-    public void sendForceLogout(String sessionId) {
+    public void sendForceLogout(String sessionId, String message) {
         List<SseEmitter> emitters = emittersBySessionId.remove(sessionId);
         if (emitters == null) {
             return;
         }
         for (SseEmitter emitter : emitters) {
             try {
-                emitter.send(SseEmitter.event().name(FORCE_LOGOUT_EVENT).data("admin"));
+                emitter.send(SseEmitter.event().name(FORCE_LOGOUT_EVENT)
+                        .data(Collections.singletonMap("message", message)));
                 emitter.complete();
             } catch (Exception e) {
                 log.debug("Envoi force-logout impossible (client déjà déconnecté ?) : {}", e.getMessage());

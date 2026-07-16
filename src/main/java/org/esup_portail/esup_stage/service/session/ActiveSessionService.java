@@ -61,6 +61,27 @@ public class ActiveSessionService {
             throw new AppException(HttpStatus.NOT_FOUND, "Session non trouvée");
         }
         sessionInformation.expireNow();
-        sessionSseService.sendForceLogout(sessionId);
+        sessionSseService.sendForceLogout(sessionId, null);
+    }
+
+    /**
+     * Ferme toutes les sessions actives sauf celle de l'administrateur courant.
+     * Le message optionnel est affiché aux utilisateurs déconnectés.
+     *
+     * @return le nombre de sessions fermées
+     */
+    public int closeAllSessions(String currentSessionId, String message) {
+        int closed = 0;
+        for (Object principal : sessionRegistry.getAllPrincipals()) {
+            for (SessionInformation sessionInformation : sessionRegistry.getAllSessions(principal, false)) {
+                if (sessionInformation.getSessionId().equals(currentSessionId)) {
+                    continue;
+                }
+                sessionInformation.expireNow();
+                sessionSseService.sendForceLogout(sessionInformation.getSessionId(), message);
+                closed++;
+            }
+        }
+        return closed;
     }
 }

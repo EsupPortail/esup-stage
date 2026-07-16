@@ -24,12 +24,19 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -70,7 +77,24 @@ public class SecurityConfiguration {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(casProperties.getUrl().getLoginUrl());
         entryPoint.setServiceProperties(serviceProperties());
-        return entryPoint;
+
+        // Entry point avec renew=true : le CAS redemande les identifiants même si le SSO est actif,
+        // sans déconnecter l'utilisateur des autres applications. Utilisé après une fermeture de
+        // session par un administrateur (marqueur ?renew=1 sur /login/cas).
+        ServiceProperties renewServiceProperties = new ServiceProperties();
+        renewServiceProperties.setService(appliProperties.getUrl() + "/login/cas");
+        renewServiceProperties.setSendRenew(true);
+        CasAuthenticationEntryPoint renewEntryPoint = new CasAuthenticationEntryPoint();
+        renewEntryPoint.setLoginUrl(casProperties.getUrl().getLoginUrl());
+        renewEntryPoint.setServiceProperties(renewServiceProperties);
+
+        return (request, response, authException) -> {
+            if ("1".equals(request.getParameter("renew"))) {
+                renewEntryPoint.commence(request, response, authException);
+            } else {
+                entryPoint.commence(request, response, authException);
+            }
+        };
     }
 
     @Bean
@@ -105,7 +129,20 @@ public class SecurityConfiguration {
         filter.setAuthenticationManager(new ProviderManager(Collections.singletonList(casAuthenticationProvider())));
         filter.setAuthenticationFailureHandler((req, res, ex) -> casEntryPoint().commence(req, res, ex));
         filter.setFilterProcessesUrl("/login/cas"); // explicite
+        // Le filtre étant créé manuellement, la stratégie de session du DSL ne lui est pas injectée :
+        // sans ce câblage explicite, le SessionRegistry n'est jamais peuplé et la protection
+        // contre la fixation de session ne s'applique pas au login CAS.
+        filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
         return filter;
+    }
+
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        ConcurrentSessionControlAuthenticationStrategy concurrentSessionControl = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
+        concurrentSessionControl.setMaximumSessions(1);
+        SessionFixationProtectionStrategy sessionFixation = new SessionFixationProtectionStrategy(); // migrateSession
+        RegisterSessionAuthenticationStrategy registerSession = new RegisterSessionAuthenticationStrategy(sessionRegistry());
+        return new CompositeSessionAuthenticationStrategy(List.of(concurrentSessionControl, sessionFixation, registerSession));
     }
 
     @Bean
@@ -139,6 +176,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/theme.css").permitAll()
                         .requestMatchers("/api/admin/maintenance/**").hasAuthority(Role.ADM)
                         .requestMatchers("/api/admin/logs/**", "/admin/logs/**").hasAuthority(Role.ADM)
+                        .requestMatchers("/api/admin/sessions/**").hasAuthority(Role.ADM)
                         .requestMatchers("/api/maintenance/stream").authenticated()
                         // Protection API
                         .requestMatchers("/api/**").authenticated()
@@ -166,6 +204,19 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session
                         .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::migrateSession)
                         .maximumSessions(1)
+                        .sessionRegistry(sessionRegistry())
+                        // Déclenché à la première requête d'une session expirée par un administrateur :
+                        // on force une ré-authentification CAS avec saisie des identifiants (renew).
+                        .expiredSessionStrategy(event -> {
+                            var request = event.getRequest();
+                            var response = event.getResponse();
+                            if (request.getServletPath().startsWith("/api/")) {
+                                response.setHeader("X-Auth-Reason", "admin-logout");
+                                response.setStatus(401);
+                            } else {
+                                response.sendRedirect(request.getContextPath() + "/login/cas?renew=1");
+                            }
+                        })
                 )
                 .csrf(csrf -> csrf
                         // Utilise un cookie accessible en JS (non HttpOnly)
@@ -180,6 +231,11 @@ public class SecurityConfiguration {
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
     @Bean

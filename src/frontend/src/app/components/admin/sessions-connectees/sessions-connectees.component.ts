@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subscription, interval } from "rxjs";
 import { startWith, switchMap } from "rxjs/operators";
 import { ActiveSession, AdminSessionService } from "../../../services/admin-session.service";
@@ -17,12 +18,17 @@ export class SessionsConnecteesComponent implements OnInit, OnDestroy {
   columns = ['login', 'nom', 'prenom', 'roles', 'lastRequest', 'action'];
   sessions: ActiveSession[] = [];
   loading = true;
+  closeAllMessage = '';
+
+  @ViewChild('closeAllDialog') closeAllDialog!: TemplateRef<any>;
+  private closeAllDialogRef?: MatDialogRef<any>;
 
   private refreshSubscription?: Subscription;
 
   constructor(
     private adminSessionService: AdminSessionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -60,5 +66,22 @@ export class SessionsConnecteesComponent implements OnInit, OnDestroy {
 
   formatRoles(row: ActiveSession): string {
     return row.roles && row.roles.length > 0 ? row.roles.join(', ') : '-';
+  }
+
+  get userCount(): number {
+    return new Set(this.sessions.map((s: ActiveSession) => s.login)).size;
+  }
+
+  openCloseAllDialog(): void {
+    this.closeAllMessage = '';
+    this.closeAllDialogRef = this.dialog.open(this.closeAllDialog, { width: '500px' });
+  }
+
+  confirmCloseAll(): void {
+    this.adminSessionService.closeAllSessions(this.closeAllMessage.trim()).subscribe((closed: number) => {
+      this.messageService.setSuccess(closed > 1 ? `${closed} sessions fermées` : `${closed} session fermée`);
+      this.closeAllDialogRef?.close();
+      this.refresh();
+    });
   }
 }
