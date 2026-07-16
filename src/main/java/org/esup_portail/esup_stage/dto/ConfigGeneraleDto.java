@@ -52,4 +52,7 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    // Nombre maximum de tentatives de récupération automatique du PDF signé (tâche horaire UpdateSignature)
+    private int nombreMaxTentativesRecuperationPdfSigne = 5;
+
 }
