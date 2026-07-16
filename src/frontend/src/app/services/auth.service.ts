@@ -13,14 +13,18 @@ export class AuthService {
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
-  private redirecting = false;
+  // Marqueur persistant (survit au rechargement provoqué par la redirection) empêchant
+  // toute boucle de redirection vers CAS.
+  private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected").pipe(
-      catchError(() => {
-        this.handleUnauthorized();
+      catchError((error) => {
+        if (error?.status === 401) {
+          this.handleUnauthorized();
+        }
         return EMPTY;
       })
     );
@@ -33,14 +37,16 @@ export class AuthService {
   }
 
   private handleUnauthorized() {
-    if (!this.redirecting) {
-      this.redirecting = true;
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/login/cas') {
-        sessionStorage.setItem('redirectUrl', currentPath);
-        window.location.href = '/login/cas';
-      }
+    const currentPath = window.location.pathname;
+    if (currentPath === '/login/cas') {
+      return;
     }
+    if (sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1') {
+      return;
+    }
+    sessionStorage.setItem(AuthService.CAS_REDIRECT_FLAG, '1');
+    sessionStorage.setItem('redirectUrl', currentPath);
+    window.location.href = '/login/cas';
   }
 
   logout() {
@@ -69,6 +75,7 @@ export class AuthService {
 
   createUser(user: any) {
     this.userConnected = user;
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
   }
 
   checkRights(right: any) {
