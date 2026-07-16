@@ -402,42 +402,6 @@ mat-slide-toggle:focus-visible {
   }
 }
 
-/* Mode sombre (si supporté par l'application) */
-@media (prefers-color-scheme: dark) {
-  mat-card {
-    background: #2a2a2a;
-    color: #fff;
-  }
-
-  table {
-    background: #2a2a2a;
-    color: #fff;
-  }
-
-  tbody tr {
-    border-bottom-color: #444;
-  }
-
-  tbody tr:hover {
-    background-color: #333;
-  }
-
-  .form-control {
-    background: #333;
-    color: #fff;
-    border-color: #555;
-  }
-
-  .task-card {
-    background: #333;
-    color: #fff;
-  }
-
-  .field-label {
-    color: #bbb;
-  }
-}
-
 /* Animation de chargement */
 @keyframes pulse {
   0%, 100% {
