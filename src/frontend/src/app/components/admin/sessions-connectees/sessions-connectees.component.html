@@ -1,0 +1,50 @@
+<div class="sessions-toolbar">
+  <button class="valid-button" mat-flat-button (click)="refresh()">
+    <span class="fa fa-rotate mr-1" aria-hidden="true"></span>
+    Rafraîchir
+  </button>
+</div>
+
+<table mat-table [dataSource]="sessions" class="sessions-table">
+  <ng-container matColumnDef="login">
+    <th mat-header-cell *matHeaderCellDef>Login</th>
+    <td mat-cell *matCellDef="let row">{{ row.login }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="nom">
+    <th mat-header-cell *matHeaderCellDef>Nom</th>
+    <td mat-cell *matCellDef="let row">{{ row.nom || '-' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="prenom">
+    <th mat-header-cell *matHeaderCellDef>Prénom</th>
+    <td mat-cell *matCellDef="let row">{{ row.prenom || '-' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="roles">
+    <th mat-header-cell *matHeaderCellDef>Rôle</th>
+    <td mat-cell *matCellDef="let row">{{ formatRoles(row) }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="lastRequest">
+    <th mat-header-cell *matHeaderCellDef>Dernière activité</th>
+    <td mat-cell *matCellDef="let row">{{ row.lastRequest | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let row" class="actions-cell">
+      <span *ngIf="!row.current" (confirm)="closeSession(row)" [confirmMessage]="'Êtes-vous sûr de vouloir fermer la session de ' + row.login + ' ? L\'utilisateur sera déconnecté immédiatement.'">
+        <button class="delete-button" mat-icon-button matTooltip="Déconnecter">
+          <span class="fa fa-right-from-bracket" aria-label="Déconnecter"></span>
+        </button>
+      </span>
+      <span *ngIf="row.current" class="current-session" matTooltip="Vous ne pouvez pas fermer votre propre session">Votre session</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columns"></tr>
+  <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+</table>
+
+<p *ngIf="!loading && sessions.length === 0" class="no-session">Aucune session active</p>

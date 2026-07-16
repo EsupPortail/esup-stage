@@ -29,6 +29,8 @@ import {ConfigAppComponent} from "./components/admin/config-app/config-app.compo
 import { ConfigMissingGuard } from "./guard/config-missing.guard";
 import {LogsComponent} from "./components/admin/logs/logs.component";
 import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
+import { SessionsConnecteesComponent } from "./components/admin/sessions-connectees/sessions-connectees.component";
+import { AdminGuard } from "./guard/admin.guard";
 import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
 
 const routes: Routes = [
@@ -254,6 +256,16 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
       title: 'Maintenance',
       sitemap: {label: 'Maintenance', group: 'Paramétrage global', order: 10}
+    }
+  },
+  {
+    path: 'param-global/sessions',
+    component: SessionsConnecteesComponent,
+    canActivate: [AuthGuard, AdminGuard, ConfigMissingGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]},
+      title: 'Utilisateurs connectés',
+      sitemap: {label: 'Utilisateurs connectés', group: 'Paramétrage global', order: 11}
     }
   }
 ];

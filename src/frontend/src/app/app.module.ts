@@ -156,6 +156,7 @@ import { LogsComponent } from "./components/admin/logs/logs.component";
 import { MaintenanceComponent } from "./components/admin/maintenance/maintenance.component";
 import { MaintenanceDialogComponent } from "./components/admin/maintenance/maintenance-dialog/maintenance-dialog.component";
 import { MaintenanceModeComponent } from "./components/maintenance-mode/maintenance-mode.component";
+import { SessionsConnecteesComponent } from "./components/admin/sessions-connectees/sessions-connectees.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
 import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.component";
 import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
@@ -289,6 +290,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     MaintenanceComponent,
     MaintenanceDialogComponent,
     MaintenanceModeComponent,
+    SessionsConnecteesComponent,
     LogsLiveComponent,
     LogsExplorerComponent,
     LogsViewerComponent,

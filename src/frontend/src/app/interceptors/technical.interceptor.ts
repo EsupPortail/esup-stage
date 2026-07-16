@@ -6,6 +6,7 @@ import { environment } from "../../environments/environment";
 import { catchError, finalize } from "rxjs/operators";
 import { MessageService } from "../services/message.service";
 import { LoaderService } from "../services/loader.service";
+import { ForceLogoutService } from "../services/force-logout.service";
 
 @Injectable()
 export class TechnicalInterceptor implements HttpInterceptor {
@@ -13,7 +14,7 @@ export class TechnicalInterceptor implements HttpInterceptor {
   private nbRequests: number = 0;
   private currentActiveElement :any;
 
-  constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
+  constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService, private forceLogoutService: ForceLogoutService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const handleApogeeForbiddenLocally = request.headers.has('X-Handle-Apogee-Forbidden-Locally');
@@ -56,7 +57,11 @@ export class TechnicalInterceptor implements HttpInterceptor {
     }
     if (error?.status === 401) {
       const authReason = error?.headers?.get?.("X-Auth-Reason");
-      if (authReason === "idle") {
+      if (authReason === "admin-logout") {
+        // Session fermée par un administrateur : le message est affiché après la redirection
+        // (via ForceLogoutService.consumePendingMessage) pour survivre au rechargement.
+        this.forceLogoutService.redirectToRenewLogin();
+      } else if (authReason === "idle") {
         this.messageService.setWarning("Vous avez été déconnecté suite à une période d'inactivité prolongée");
       } else {
         this.messageService.setWarning("Session non authentifiée. Merci de vous reconnecter.");

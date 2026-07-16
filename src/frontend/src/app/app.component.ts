@@ -10,6 +10,7 @@ import { TechnicalService } from "./services/technical.service";
 import { ConfigMissingService } from "./services/config-missing.service";
 import { filter, firstValueFrom, Subscription } from "rxjs";
 import { MaintenanceState, MaintenanceStateService } from "./services/maintenance-state.service";
+import { ForceLogoutService } from "./services/force-logout.service";
 
 interface MaintenanceAnnouncementDismissal {
   key: string;
@@ -165,6 +166,14 @@ export class AppComponent implements OnInit, OnDestroy {
             return this.authService.isAdmin();
           }
         },
+        {
+          libelle: 'Utilisateurs connectés',
+          path: 'param-global/sessions',
+          icon: "fa-user-clock",
+          canView: () => {
+            return this.authService.isAdmin();
+          }
+        },
       ],
     },
     {
@@ -222,7 +231,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private configMissingService: ConfigMissingService,
     private activatedRoute: ActivatedRoute,
-    private maintenanceStateService: MaintenanceStateService
+    private maintenanceStateService: MaintenanceStateService,
+    private forceLogoutService: ForceLogoutService
   ) {
     this.configService.getConfigTheme();
     this.configService.themeModified.subscribe((config: any) => {
@@ -236,6 +246,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.forceLogoutService.consumePendingMessage();
     this.maintenanceStateService.start();
     this.maintenanceStateSubscription = this.maintenanceStateService.state$.subscribe((state: MaintenanceState) => {
       this.maintenanceState = state;
@@ -257,6 +268,10 @@ export class AppComponent implements OnInit, OnDestroy {
         if (user) {
           this.authService.createUser(user);
         }
+      }
+
+      if (this.authService.userConnected) {
+        this.forceLogoutService.start();
       }
 
       await this.authService.ensureAdminTechListLoaded();
@@ -282,6 +297,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.maintenanceStateSubscription?.unsubscribe();
     this.maintenanceStateService.stop();
+    this.forceLogoutService.stop();
   }
 
   private updateLayoutFromSnapshot(snapshot: ActivatedRouteSnapshot): void {

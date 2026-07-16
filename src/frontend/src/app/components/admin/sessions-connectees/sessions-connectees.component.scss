@@ -1,0 +1,20 @@
+.sessions-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.sessions-table {
+  width: 100%;
+}
+
+.current-session {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.no-session {
+  margin-top: 1rem;
+  text-align: center;
+  font-style: italic;
+}
