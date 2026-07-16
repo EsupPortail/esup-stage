@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.esup_portail.esup_stage.constants.ValidationPatterns;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.model.Pays;
 
@@ -108,7 +109,7 @@ public class ConventionFormDto {
     @Size(max = 50)
     private String paysEtudiant;
 
-    @Pattern(regexp = "^(?!.*\\.\\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "L'adresse électronique n'est pas valide")
+    @Pattern(regexp = ValidationPatterns.EMAIL, message = "L'adresse électronique n'est pas valide")
     @Size(max = 255)
     private String courrielPersoEtudiant;
 
