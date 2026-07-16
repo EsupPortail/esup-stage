@@ -1,6 +1,11 @@
 package org.esup_portail.esup_stage.service;
 
+import com.itextpdf.kernel.pdf.PdfArray;
+import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfIndirectReference;
+import com.itextpdf.kernel.pdf.PdfName;
+import com.itextpdf.kernel.pdf.PdfObject;
 import com.itextpdf.kernel.pdf.PdfReader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -14,8 +19,12 @@ import javax.imageio.stream.ImageInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class FileValidationService {
@@ -114,21 +123,12 @@ public class FileValidationService {
         }
     }
 
-    private void validatePdfContent(byte[] bytes) throws IOException {
-        String ascii = new String(bytes, StandardCharsets.ISO_8859_1).toLowerCase(Locale.ROOT);
-        String[] forbiddenMarkers = {
-                "/javascript", "/js", "/launch", "/embeddedfile", "/richmedia", "/openaction", "/aa"
-        };
-        for (String marker : forbiddenMarkers) {
-            if (ascii.contains(marker)) {
-                throw rejectedPdf(forbiddenMarkerReason(marker));
-            }
-        }
-
+    private void validatePdfContent(byte[] bytes) {
         try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new ByteArrayInputStream(bytes)))) {
             if (pdfDocument.getNumberOfPages() < 1) {
                 throw rejectedPdf("le document ne contient aucune page exploitable.");
             }
+            checkForbiddenStructures(pdfDocument);
         } catch (AppException e) {
             throw e;
         } catch (Exception e) {
@@ -136,20 +136,67 @@ public class FileValidationService {
         }
     }
 
-    private AppException rejectedPdf(String reason) {
-        return new AppException(HttpStatus.BAD_REQUEST, "PDF refusé : " + reason);
+    /**
+     * Inspection structurelle du PDF : parcourt le graphe d'objets accessible depuis le trailer
+     * et rejette les constructions dangereuses (JavaScript, lancement de programme, fichiers
+     * intégrés, médias riches, formulaires XFA).
+     * Contrairement à une recherche de sous-chaînes sur les octets bruts, cette approche
+     * ne produit pas de faux positifs sur les flux compressés (images, contenus) et détecte
+     * les objets dangereux même stockés dans des flux d'objets compressés (/ObjStm).
+     */
+    private void checkForbiddenStructures(PdfDocument pdfDocument) {
+        Deque<PdfObject> toVisit = new ArrayDeque<>();
+        Set<PdfIndirectReference> visited = new HashSet<>();
+        toVisit.push(pdfDocument.getTrailer());
+
+        while (!toVisit.isEmpty()) {
+            PdfObject current = toVisit.pop();
+            if (current == null) {
+                continue;
+            }
+            PdfIndirectReference reference = current.getIndirectReference();
+            if (reference != null && !visited.add(reference)) {
+                continue;
+            }
+
+            if (current instanceof PdfDictionary dictionary) {
+                checkForbiddenDictionary(dictionary);
+                for (PdfName key : dictionary.keySet()) {
+                    toVisit.push(dictionary.get(key));
+                }
+            } else if (current instanceof PdfArray array) {
+                for (int i = 0; i < array.size(); i++) {
+                    toVisit.push(array.get(i));
+                }
+            }
+        }
     }
 
-    private String forbiddenMarkerReason(String marker) {
-        return switch (marker) {
-            case "/javascript", "/js" -> "le document contient du JavaScript, ce qui est interdit pour des raisons de sécurité.";
-            case "/launch" -> "le document contient une action de lancement de programme, ce qui est interdit pour des raisons de sécurité.";
-            case "/embeddedfile" -> "le document contient un fichier intégré, ce qui est interdit pour des raisons de sécurité.";
-            case "/richmedia" -> "le document contient un média riche intégré, ce qui est interdit pour des raisons de sécurité.";
-            case "/openaction" -> "le document contient une action automatique à l'ouverture, ce qui est interdit pour des raisons de sécurité.";
-            case "/aa" -> "le document contient une action automatique, ce qui est interdit pour des raisons de sécurité.";
-            default -> "le document contient un élément actif interdit pour des raisons de sécurité.";
-        };
+    private void checkForbiddenDictionary(PdfDictionary dictionary) {
+        PdfName actionType = dictionary.getAsName(PdfName.S);
+        if (dictionary.containsKey(PdfName.JS)
+                || dictionary.containsKey(PdfName.JavaScript)
+                || PdfName.JavaScript.equals(actionType)) {
+            throw rejectedPdf("le document contient du JavaScript, ce qui est interdit pour des raisons de sécurité.");
+        }
+        if (PdfName.Launch.equals(actionType)) {
+            throw rejectedPdf("le document contient une action de lancement de programme, ce qui est interdit pour des raisons de sécurité.");
+        }
+        if (dictionary.containsKey(PdfName.EmbeddedFiles)
+                || dictionary.containsKey(PdfName.EF)
+                || PdfName.FileAttachment.equals(dictionary.getAsName(PdfName.Subtype))) {
+            throw rejectedPdf("le document contient un fichier intégré, ce qui est interdit pour des raisons de sécurité.");
+        }
+        if (PdfName.RichMedia.equals(dictionary.getAsName(PdfName.Subtype))) {
+            throw rejectedPdf("le document contient un média riche intégré, ce qui est interdit pour des raisons de sécurité.");
+        }
+        if (dictionary.containsKey(PdfName.XFA)) {
+            throw rejectedPdf("le document contient un formulaire XFA, ce qui est interdit pour des raisons de sécurité.");
+        }
+    }
+
+    private AppException rejectedPdf(String reason) {
+        return new AppException(HttpStatus.BAD_REQUEST, "PDF refusé : " + reason);
     }
 
     private String pdfParsingReason(Exception e) {
