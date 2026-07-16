@@ -1,9 +1,9 @@
 package org.esup_portail.esup_stage.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
@@ -108,7 +108,7 @@ public class ConventionFormDto {
     @Size(max = 50)
     private String paysEtudiant;
 
-    @Email
+    @Pattern(regexp = "^(?!.*\\.\\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "L'adresse électronique n'est pas valide")
     @Size(max = 255)
     private String courrielPersoEtudiant;
 
