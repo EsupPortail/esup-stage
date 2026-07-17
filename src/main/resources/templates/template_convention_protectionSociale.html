@@ -1,0 +1,25 @@
+<table style="margin-left:20px; border-collapse:collapse; width:100%;">
+    <tr>
+        <td style="width:16px; vertical-align:top; padding-top:2px;">
+            <span class="checkbox"><#if convention.protectionSocialeOrganismeAccueil?? && convention.protectionSocialeOrganismeAccueil>X</#if></span>
+        </td>
+        <td style="text-align:justify;">
+            <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
+                <strong>OUI:&nbsp;</strong> cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.
+            </span>
+        </td>
+    </tr>
+</table>
+
+<table style="margin-left:20px; border-collapse:collapse; width:100%; margin-top:4px;">
+    <tr>
+        <td style="width:16px; vertical-align:top; padding-top:2px;">
+            <span class="checkbox"><#if convention.protectionSocialeOrganismeAccueil?? && !convention.protectionSocialeOrganismeAccueil>X</#if></span>
+        </td>
+        <td style="text-align:justify;">
+            <span class="text-tiny" style="color:hsl(0,0%,0%);font-family:'Times New Roman', Times, serif;">
+                <strong>NON:&nbsp;</strong> la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
+            </span>
+        </td>
+    </tr>
+</table>

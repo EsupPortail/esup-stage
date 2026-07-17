@@ -183,6 +183,8 @@
           <div class="col-sm-9">{{tmpConvention.modeValidationStageLibelle}}</div>
           <div class="col-sm-3 font-weight-bold">Cas particuliers</div>
           <div class="col-sm-9">{{tmpConvention.travailNuitFerie}}</div>
+          <div class="col-sm-3 font-weight-bold">Protection sociale issue de l'organisme d'accueil (article 6.3)</div>
+          <div class="col-sm-9">{{tmpConvention.protectionSocialeOrganismeAccueil == null ? 'Non renseigné' : (tmpConvention.protectionSocialeOrganismeAccueil ? 'Oui' : 'Non')}}</div>
         </div>
       </div>
 
