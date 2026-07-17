@@ -1,8 +1,9 @@
 package org.esup_portail.esup_stage.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import org.esup_portail.esup_stage.constants.ValidationPatterns;
 
 public class SendMailGroupeDto {
     @NotNull
@@ -14,7 +15,7 @@ public class SendMailGroupeDto {
 
     @NotNull
     @NotEmpty
-    @Email
+    @Pattern(regexp = ValidationPatterns.EMAIL, message = "L'adresse mail n'est pas valide")
     private String to;
 
     public String getTemplateMail() {

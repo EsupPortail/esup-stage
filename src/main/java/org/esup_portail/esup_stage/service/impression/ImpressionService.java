@@ -306,6 +306,9 @@ public class ImpressionService {
             String horaireIrregulier = getDefaultText("/templates/template_convention_horaireIrregulier.html");
             texte = texte.replace("${convention.horaireIrregulier}", horaireIrregulier);
 
+            String protectionSociale = getDefaultText("/templates/template_convention_protectionSociale.html");
+            texte = texte.replace("${convention.protectionSocialeOrganismeAccueil}", protectionSociale);
+
             // Remplacement ${avenant.motifs} par le template html contenant tous les motifs
             String motifTexte = getDefaultText("/templates/template_avenant_motifs.html");
             texte = texte.replace("${avenant.motifs}", motifTexte);

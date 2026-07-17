@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -25,6 +26,15 @@ public class ExceptionAdvice {
         body.put("code", e.getHttpStatus());
         body.put("message", e.getMessage());
         return ResponseEntity.status(e.getHttpStatus()).body(body);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.warn("Fichier rejeté car il dépasse la limite d'upload du serveur: {}", e.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", HttpStatus.PAYLOAD_TOO_LARGE);
+        body.put("message", "Le fichier dépasse la taille maximale autorisée par le serveur.");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(body);
     }
 
     @ExceptionHandler(AsyncRequestNotUsableException.class)
