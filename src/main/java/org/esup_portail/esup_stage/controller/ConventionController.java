@@ -19,6 +19,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.HabilitationService;
+import org.esup_portail.esup_stage.service.ConventionDocumentEtudiantService;
 import org.esup_portail.esup_stage.service.MailerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 public class  ConventionController {
 
     private static final Logger logger = LogManager.getLogger(ConventionController.class);
+    private static final int INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH = 1000;
 
     @Autowired
     ConventionRepository conventionRepository;
@@ -102,6 +104,9 @@ public class  ConventionController {
 
     @Autowired
     ConventionService conventionService;
+
+    @Autowired
+    ConventionDocumentEtudiantService conventionDocumentEtudiantService;
 
     @Autowired
     SignatureService signatureService;
@@ -472,6 +477,20 @@ public class  ConventionController {
         return convention;
     }
 
+    private String getLimitedStringValue(ConventionSingleFieldDto conventionSingleFieldDto, int maxLength) {
+        Object value = conventionSingleFieldDto.getValue();
+        if (value == null) {
+            return null;
+        }
+        if (!(value instanceof String stringValue)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Valeur invalide pour le champ " + conventionSingleFieldDto.getField());
+        }
+        if (stringValue.length() > maxLength) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le champ " + conventionSingleFieldDto.getField() + " est limité à " + maxLength + " caractères");
+        }
+        return stringValue;
+    }
+
     @GetMapping("/{id}/historique-validations")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.VALIDATION})
     public List<HistoriqueValidation> getHistoriqueValidations(@PathVariable("id") int idConvention) {
@@ -529,6 +548,7 @@ public class  ConventionController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         Convention brouillon = conventionJpaRepository.findBrouillon(utilisateur.getLogin());
         if (brouillon != null) {
+            conventionDocumentEtudiantService.deleteAllForConvention(brouillon);
             conventionJpaRepository.delete(brouillon);
         }
     }
@@ -560,6 +580,7 @@ public class  ConventionController {
         if (hasValidation) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention a déjà été validée et ne peut être supprimée");
         }
+        conventionDocumentEtudiantService.deleteAllForConvention(convention);
         conventionJpaRepository.delete(convention);
         return convention;
     }
@@ -654,6 +675,10 @@ public class  ConventionController {
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "details")) {
             convention.setDetails((String) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "informationsComplementaires")) {
+            // Stocké dans la colonne existante commentaireStage (pas de colonne dédiée)
+            convention.setCommentaireStage(getLimitedStringValue(conventionSingleFieldDto, INFORMATIONS_COMPLEMENTAIRES_MAX_LENGTH));
         }
         if (Objects.equals(conventionSingleFieldDto.getField(), "dateDebutStage")) {
             Instant instant = Instant.parse((String) conventionSingleFieldDto.getValue());

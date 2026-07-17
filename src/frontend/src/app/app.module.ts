@@ -161,6 +161,8 @@ import {LogsLiveComponent} from "./components/admin/logs/logs-live/logs-live.com
 import {LogsExplorerComponent} from "./components/admin/logs/logs-explorer/logs-explorer.component";
 import {LogsViewerComponent} from "./components/admin/logs/logs-explorer/logs-viewer/logs-viewer.component";
 import {LogsDisplayComponent} from "./components/admin/logs/logs-display/logs-display.component";
+import {DepotDocumentsComponent} from "./components/convention/depot-documents/depot-documents.component";
+import {DepotDocumentPreviewDialogComponent} from "./components/convention/depot-documents/preview-dialog/preview-dialog.component";
 
 registerLocaleData(localeFr, 'fr');
 
@@ -291,6 +293,8 @@ export class FrenchDateProvider extends NativeDateAdapter {
     LogsExplorerComponent,
     LogsViewerComponent,
     LogsDisplayComponent,
+    DepotDocumentsComponent,
+    DepotDocumentPreviewDialogComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

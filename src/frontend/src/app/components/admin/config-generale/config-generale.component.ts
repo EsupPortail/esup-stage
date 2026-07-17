@@ -82,6 +82,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserElementPedagogiqueFacultatif: [null, [Validators.required]],
       validationPedagogiqueLibelle: [null, [Validators.required]],
       validationAdministrativeLibelle: [null, [Validators.required]],
+      tailleMaxDepotDocumentsMo: [10, [Validators.required, Validators.min(1), Validators.max(100)]],
       codeCesure: [null],
       autoriserEtudiantACreerEntrepriseFrance: [null],
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],

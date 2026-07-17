@@ -77,6 +77,14 @@
             </div>
           </div>
           <div class="row mb-2">
+            <mat-form-field class="col-md-3" appearance="fill">
+              <mat-label>Taille maximale des documents déposés (Mo)</mat-label>
+              <input matInput type="number" min="1" max="100" formControlName="tailleMaxDepotDocumentsMo" />
+              <mat-error *ngIf="formGenerale.get('tailleMaxDepotDocumentsMo')?.hasError('required')">La taille maximale est obligatoire.</mat-error>
+              <mat-error *ngIf="formGenerale.get('tailleMaxDepotDocumentsMo')?.hasError('min') || formGenerale.get('tailleMaxDepotDocumentsMo')?.hasError('max')">La taille maximale doit être comprise entre 1 et 100 Mo.</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="row mb-2">
             <mat-form-field class="col-md-12" appearance="fill">
               <mat-label>Codes césures séparés par ;</mat-label>
               <input matInput formControlName="codeCesure" />

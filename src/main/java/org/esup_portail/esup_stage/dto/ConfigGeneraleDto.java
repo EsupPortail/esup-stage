@@ -17,6 +17,12 @@ public class ConfigGeneraleDto {
     private TypeCentreEnum typeCentre = null;
     private boolean autoriserCentresBloquerImpressionConvention = false;
 
+    @JsonView(Views.Etu.class)
+    private String messageDepotDocuments;
+
+    @JsonView(Views.Etu.class)
+    private int tailleMaxDepotDocumentsMo = 10;
+
     private boolean saisieManuelle = false;
 
     @JsonView(Views.Etu.class)
