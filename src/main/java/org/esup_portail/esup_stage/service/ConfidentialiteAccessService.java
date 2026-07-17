@@ -44,6 +44,16 @@ public class ConfidentialiteAccessService {
         return centreGestionJpaRepository.findAllById(centreIds);
     }
 
+    /**
+     * Identifiants des centres dont les données sont visibles depuis {@code centresDemandeur} :
+     * les centres de rattachement eux-mêmes, plus ceux dont la confidentialité effective est
+     * « pas de confidentialité ». À passer aux requêtes paginées plutôt que les seuls centres de
+     * rattachement, afin que le filtrage SQL applique les mêmes règles que le service.
+     */
+    public List<Integer> getVisibleCentreIds(List<CentreGestion> centresDemandeur) {
+        return confidentialiteService.getVisibleCentreIds(centresDemandeur, centreGestionJpaRepository.findAll());
+    }
+
     public boolean isAttachedToCentre(List<CentreGestion> centresDemandeur, CentreGestion centreGestion) {
         return centresDemandeur != null
                 && centreGestion != null

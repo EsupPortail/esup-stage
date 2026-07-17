@@ -69,7 +69,7 @@ public class ContactController {
                 throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
             }
 
-            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            List<Integer> centreIds = confidentialiteAccessService.getVisibleCentreIds(centresDemandeur);
             paginatedResponse.setTotal(contactRepository.countVisibleForCentres(centreIds, filters));
             contacts = contactRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters);
         } else {
@@ -92,7 +92,7 @@ public class ContactController {
             if (centresDemandeur.isEmpty()) {
                 throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
             }
-            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            List<Integer> centreIds = confidentialiteAccessService.getVisibleCentreIds(centresDemandeur);
             contact = contactJpaRepository.findVisibleByIdForCentres(id, centreIds);
         } else {
             contact = contactJpaRepository.findById(id);

@@ -25,8 +25,7 @@ export class ValidationCardComponent {
   }
 
   canRevertValidation(): boolean {
-    // Un enseignant (rôle appliqué sur le centre de gestion de la convention) n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignantOnlyForCentre(this.convention.centreGestion.id) && this.validation === 'validationConvention') {
+    if (!this.canActOnValidation()) {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
@@ -39,8 +38,7 @@ export class ValidationCardComponent {
   }
 
   canValidate(): boolean {
-    // Un enseignant (rôle appliqué sur le centre de gestion de la convention) n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignantOnlyForCentre(this.convention.centreGestion.id) && this.validation === 'validationConvention') {
+    if (!this.canActOnValidation()) {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
@@ -50,6 +48,22 @@ export class ValidationCardComponent {
     }
     // On ne peut pas valider si la validation précédente n'est pas passée
     return this.convention[this.validationsActives[validationOrdre - 2]];
+  }
+
+  /**
+   * Droits de l'utilisateur sur ce type de validation, pour le centre de gestion de la convention.
+   * Reflète les contrôles du backend (ConventionService.checkValidationType) : un enseignant seul
+   * n'a que la validation pédagogique, et la vérification administrative suppose d'être gestionnaire.
+   */
+  private canActOnValidation(): boolean {
+    const idCentreGestion = this.convention.centreGestion.id;
+    if (this.validation === 'verificationAdministrative') {
+      return this.authService.isGestionnaireForCentre(idCentreGestion);
+    }
+    if (this.validation === 'validationConvention') {
+      return !this.authService.isEnseignantOnlyForCentre(idCentreGestion);
+    }
+    return true;
   }
 
   validate(): void {

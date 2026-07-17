@@ -241,6 +241,15 @@ export class AuthService {
     return hasEnseignant && !hasGestionnaire;
   }
 
+  /**
+   * Vrai si, pour le centre de gestion donné, l'utilisateur est gestionnaire : rôle gestionnaire
+   * défini sur ce centre, ou à défaut rôle gestionnaire global.
+   */
+  isGestionnaireForCentre(idCentreGestion: number): boolean {
+    return this.getEffectiveRolesForCentre(idCentreGestion)
+      .some((r: any) => [Role.GES, Role.RESP_GES, Role.ADM].indexOf(r.code) > -1);
+  }
+
   private hasAdminRole(): boolean {
     return !!(this.userConnected && (this.userConnected.roles || []).find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
   }

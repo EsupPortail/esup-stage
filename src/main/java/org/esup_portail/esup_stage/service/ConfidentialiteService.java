@@ -8,6 +8,9 @@ import org.esup_portail.esup_stage.model.Structure;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
+import java.util.List;
+
 @org.springframework.stereotype.Service
 public class ConfidentialiteService {
 
@@ -26,7 +29,34 @@ public class ConfidentialiteService {
         if (isSameCentre(demandeur, porteur)) {
             return true;
         }
-        return PAS_DE_CONFIDENTIALITE.equals(getEffectiveConfidentialityForCentre(porteur));
+        return canViewCentreData(demandeur, porteur, centreGestionJpaRepository.getCentreEtablissement());
+    }
+
+    private boolean canViewCentreData(CentreGestion demandeur, CentreGestion porteur, CentreGestion etablissement) {
+        if (demandeur == null || porteur == null) {
+            return false;
+        }
+        if (isSameCentre(demandeur, porteur)) {
+            return true;
+        }
+        return PAS_DE_CONFIDENTIALITE.equals(getEffectiveConfidentialityForCentre(porteur, etablissement));
+    }
+
+    /**
+     * Identifiants des centres, parmi {@code centres}, dont les données sont visibles depuis l'un
+     * des {@code centresDemandeur}. Le centre ÉTABLISSEMENT n'est chargé qu'une fois pour toute la
+     * liste, là où un appel unitaire par centre le rechargerait à chaque fois.
+     */
+    public List<Integer> getVisibleCentreIds(List<CentreGestion> centresDemandeur, List<CentreGestion> centres) {
+        if (centresDemandeur == null || centresDemandeur.isEmpty() || centres == null) {
+            return Collections.emptyList();
+        }
+        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
+        return centres.stream()
+                .filter(porteur -> centresDemandeur.stream()
+                        .anyMatch(demandeur -> canViewCentreData(demandeur, porteur, etablissement)))
+                .map(CentreGestion::getId)
+                .toList();
     }
 
     public boolean canViewContact(CentreGestion demandeur, Contact contact) {
@@ -57,7 +87,21 @@ public class ConfidentialiteService {
         if (isCentreEtablissement(porteur)) {
             return resolveEtablissementEffectiveConfidentiality(porteur);
         }
-        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
+        return getEffectiveConfidentialityForCentre(porteur, centreGestionJpaRepository.getCentreEtablissement());
+    }
+
+    private String getEffectiveConfidentialityForCentre(CentreGestion porteur, CentreGestion etablissement) {
+        if (porteur == null) {
+            return PAS_DE_CONFIDENTIALITE;
+        }
+        if (isCentreEtablissement(porteur)) {
+            return resolveEtablissementEffectiveConfidentiality(porteur);
+        }
+        // Sans centre ÉTABLISSEMENT, l'héritage ne peut pas être déterminé : on retient la valeur
+        // la plus protectrice plutôt que d'ouvrir les données de tous les centres.
+        if (etablissement == null) {
+            return CONFIDENTIALITE_TOTALE;
+        }
         String etablissementCode = getConfiguredConfidentialityCode(etablissement);
         if (PAS_DE_CONFIDENTIALITE.equals(etablissementCode) || CONFIDENTIALITE_TOTALE.equals(etablissementCode)) {
             return etablissementCode;
