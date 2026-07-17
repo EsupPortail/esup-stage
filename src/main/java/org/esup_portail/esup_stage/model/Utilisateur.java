@@ -51,6 +51,9 @@ public class Utilisateur implements Exportable {
     @Column(unique = true)
     private String numEtudiant;
 
+    @OneToMany(mappedBy = "utilisateur", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UtilisateurCentreGestionRole> centreGestionRoles = new ArrayList<>();
+
     @PrePersist
     public void prePersist() {
         setDateCreation(new Date());

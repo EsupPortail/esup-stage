@@ -777,8 +777,11 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     return this.isStructureCoordinatesMasked();
   }
 
-  isConfidentialiteEditable(){
-    return !this.authService.isEtudiant() && !this.authService.isEnseignant() && !!this.etab?.id && this.canEdit();
+  isConfidentialiteEditable(): boolean {
+    if (!this.etab?.id || this.authService.isEtudiant() || this.authService.isEnseignant()) {
+      return false;
+    }
+    return this.authService.isAdmin() || this.authService.isGestionnaire();
   }
 
 

@@ -15,6 +15,10 @@ export class RoleService implements PaginatedService {
     return this.getPaginated(1, 0, 'libelle', 'asc', '{}');
   }
 
+  findCentreAssignable(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/roles/centre-assignables");
+  }
+
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string): Observable<any> {
     return this.http.get(environment.apiUrl + "/roles", {params: {page, perPage, predicate, sortOrder, filters}});
   }

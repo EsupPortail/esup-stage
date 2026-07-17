@@ -28,7 +28,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.StructurePermissionEvaluator;
 import org.esup_portail.esup_stage.service.AppConfigService;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
 import org.esup_portail.esup_stage.service.sirene.SireneService;
@@ -86,7 +86,7 @@ public class StructureController {
     private StructureService structureService;
 
     @Autowired
-    private ConfidentialiteService confidentialiteService;
+    private ConfidentialiteAccessService confidentialiteAccessService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -532,7 +532,7 @@ public class StructureController {
             throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
         }
 
-        List<CentreGestion> centresGestionnaires = centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        List<CentreGestion> centresGestionnaires = getCurrentGestionnaireCentres(utilisateur);
         if (centresGestionnaires.isEmpty()) {
             throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
         }
@@ -608,31 +608,23 @@ public class StructureController {
             return true;
         }
 
-        for (CentreGestion centreDemandeur : centresDemandeur) {
-            if (confidentialiteService.canViewStructureCoordinates(centreDemandeur, structure)) {
-                return false;
-            }
-        }
-        return true;
+        return !confidentialiteAccessService.canViewStructureCoordinates(centresDemandeur, structure);
     }
 
     private void assertCanManageStructureConfidentialite() {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (UtilisateurHelper.isRole(utilisateur, Role.ETU) || UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+        // Seuls l'administrateur et les gestionnaires (global ou rôle appliqué sur un centre) peuvent gérer la confidentialité
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && !isGestionnaire(utilisateur)) {
             throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a cette action");
         }
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
-        return UtilisateurHelper.isRole(utilisateur, Role.GES)
-                || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        return confidentialiteAccessService.isGestionnaire(utilisateur);
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
-        if (utilisateur == null || utilisateur.getUid() == null || utilisateur.getUid().isBlank()) {
-            return new ArrayList<>();
-        }
-        return centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        return confidentialiteAccessService.getCentresDemandeur(utilisateur);
     }
 
     private String formatCentresDisponibles(List<CentreGestion> centresGestionnaires) {

@@ -170,7 +170,7 @@ public class Structure extends ObjetMetier implements Exportable {
                 }
                 break;
             case "commune":
-                value = getCommune();
+                value = isConfidentialiteCoordonnees() ? "" : getCommune();
                 break;
             case "typeStructure":
                 if (getTypeStructure() != null) {

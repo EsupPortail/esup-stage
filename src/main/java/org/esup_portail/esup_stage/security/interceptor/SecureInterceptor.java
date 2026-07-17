@@ -12,6 +12,7 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class SecureInterceptor {
 
     @Autowired
     private ApplicationContext context;
+
+    @Autowired
+    private HabilitationService habilitationService;
 
     @Around("@annotation(Secure)")
     public Object checkAuthorization(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -44,7 +48,7 @@ public class SecureInterceptor {
 
         boolean hasRight = fonctions.length == 0 && droits.length == 0;
         if (!hasRight && fonctions.length > 0 && droits.length > 0) {
-            hasRight = UtilisateurHelper.isRole(utilisateur, fonctions, droits);
+            hasRight = habilitationService.hasRight(utilisateur, fonctions, droits);
         }
 
         if (forbiddenEtu && UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
@@ -56,7 +60,7 @@ public class SecureInterceptor {
                 && !PermissionEvaluator.class.equals(evaluatorClass);
 
         if (!hasRight) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre rôle ne donne pas accès à cette ressource");
         }
 
         if (hasCustomEvaluator) {

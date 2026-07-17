@@ -87,13 +87,15 @@ public class ContactDto {
         dto.setCivilite(contact.getCivilite());
         dto.setFonction(contact.getFonction());
         dto.setService(contact.getService());
-        dto.setCentreGestion(contact.getCentreGestion());
-        dto.setCentreGestionnaire(contact.getCentreGestion());
         dto.setIdCentreGestion(contact.getCentreGestion() != null ? contact.getCentreGestion().getId() : null);
         dto.setLoginCreation(contact.getLoginCreation());
         dto.setLoginModif(contact.getLoginModif());
 
         if (!hideSensitiveFields) {
+            // Le centre gestionnaire (donnée RGPD) et les coordonnées ne sont exposés qu'aux
+            // profils autorisés (gestionnaires / admin), pas aux étudiants / enseignants.
+            dto.setCentreGestion(contact.getCentreGestion());
+            dto.setCentreGestionnaire(contact.getCentreGestion());
             dto.setMail(contact.getMail());
             dto.setTel(contact.getTel());
             dto.setTelephone(contact.getTel());

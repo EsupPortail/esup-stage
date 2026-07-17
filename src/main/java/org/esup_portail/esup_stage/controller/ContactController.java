@@ -26,12 +26,11 @@ import org.esup_portail.esup_stage.repository.ServiceJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.ContactPermissionEvaluator;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApiController
@@ -54,7 +53,7 @@ public class ContactController {
     ContactRepository contactRepository;
 
     @Autowired
-    ConfidentialiteService confidentialiteService;
+    ConfidentialiteAccessService confidentialiteAccessService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -70,7 +69,7 @@ public class ContactController {
                 throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
             }
 
-            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            List<Integer> centreIds = confidentialiteAccessService.getVisibleCentreIds(centresDemandeur);
             paginatedResponse.setTotal(contactRepository.countVisibleForCentres(centreIds, filters));
             contacts = contactRepository.findPaginatedVisibleForCentres(centreIds, page, perPage, predicate, sortOrder, filters);
         } else {
@@ -93,7 +92,7 @@ public class ContactController {
             if (centresDemandeur.isEmpty()) {
                 throw new AppException(HttpStatus.FORBIDDEN, "Impossible de determiner le centre de gestion du gestionnaire");
             }
-            List<Integer> centreIds = centresDemandeur.stream().map(CentreGestion::getId).toList();
+            List<Integer> centreIds = confidentialiteAccessService.getVisibleCentreIds(centresDemandeur);
             contact = contactJpaRepository.findVisibleByIdForCentres(id, centreIds);
         } else {
             contact = contactJpaRepository.findById(id);
@@ -186,8 +185,28 @@ public class ContactController {
             throw new AppException(HttpStatus.NOT_FOUND, "Contact non trouve");
         }
 
-        if (!isGestionnaire(utilisateur)) {
+        CentreGestion centreGestionConvention = null;
+        if (idCentreGestion != null && idCentreGestion != -1) {
+            centreGestionConvention = centreGestionJpaRepository.findById(idCentreGestion.intValue());
+            if (centreGestionConvention == null) {
+                throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
+            }
+        }
+        final CentreGestion centreConvention = centreGestionConvention;
+
+        // L'administrateur a accès à l'ensemble des contacts
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             return contacts;
+        }
+
+        // Profils non gestionnaires (étudiant / enseignant en contexte convention) : la
+        // confidentialité est appliquée côté backend. Seuls les contacts utilisables pour le
+        // centre concerné (même centre, non confidentiel, ou établissement) sont renvoyés — les
+        // contacts confidentiels d'un autre centre ne fuitent pas.
+        if (!isGestionnaire(utilisateur)) {
+            return contacts.stream()
+                    .filter(contact -> canUseContactForConvention(contact, centreConvention, List.of()))
+                    .toList();
         }
 
         List<CentreGestion> centresDemandeur = getCurrentGestionnaireCentres(utilisateur);
@@ -199,23 +218,17 @@ public class ContactController {
                 .filter(contact -> canViewContact(centresDemandeur, contact))
                 .toList();
 
-        if (idCentreGestion == null || idCentreGestion == -1) {
+        if (centreConvention == null) {
             return filteredContacts;
         }
 
-        CentreGestion centreGestionConvention = centreGestionJpaRepository.findById(idCentreGestion.intValue());
-        if (centreGestionConvention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "CentreGestion non trouve");
-        }
-
         return filteredContacts.stream()
-                .filter(contact -> canUseContactForConvention(contact, centreGestionConvention, centresDemandeur))
+                .filter(contact -> canUseContactForConvention(contact, centreConvention, centresDemandeur))
                 .toList();
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
-        return UtilisateurHelper.isRole(utilisateur, Role.GES)
-                || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        return confidentialiteAccessService.isGestionnaire(utilisateur);
     }
 
     private CentreGestion resolveGestionnaireContactCentre(ContactFormDto contactFormDto, Utilisateur utilisateur) {
@@ -257,34 +270,15 @@ public class ContactController {
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
-        if (utilisateur == null || utilisateur.getUid() == null || utilisateur.getUid().isBlank()) {
-            return new ArrayList<>();
-        }
-        return centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        return confidentialiteAccessService.getCentresDemandeur(utilisateur);
     }
 
     private boolean canViewContact(List<CentreGestion> centresDemandeur, Contact contact) {
-        for (CentreGestion centreDemandeur : centresDemandeur) {
-            if (confidentialiteService.canViewContact(centreDemandeur, contact)) {
-                return true;
-            }
-        }
-        return false;
+        return confidentialiteAccessService.canViewContact(centresDemandeur, contact);
     }
 
     private boolean canUseContactForConvention(Contact contact, CentreGestion centreGestionConvention, List<CentreGestion> centresDemandeur) {
-        CentreGestion centreGestionContact = contact != null ? contact.getCentreGestion() : null;
-        return centreGestionContact != null
-                && (centreGestionContact.getId() == centreGestionConvention.getId()
-                || isAttachedToCentre(centresDemandeur, centreGestionContact)
-                || confidentialiteService.isNoConfidentiality(centreGestionContact)
-                || confidentialiteService.isCentreEtablissement(centreGestionContact));
-    }
-
-    private boolean isAttachedToCentre(List<CentreGestion> centresDemandeur, CentreGestion centreGestion) {
-        return centresDemandeur != null
-                && centreGestion != null
-                && centresDemandeur.stream().anyMatch(centreDemandeur -> centreDemandeur.getId() == centreGestion.getId());
+        return confidentialiteAccessService.canUseContactForConvention(contact, centreGestionConvention, centresDemandeur);
     }
     private List<ContactDto> toDtoList(List<Contact> contacts, boolean hideSensitiveFields) {
         return contacts.stream()
@@ -305,8 +299,9 @@ public class ContactController {
         contactDetailDto.setFonction(contact.getFonction());
         contactDetailDto.setCivilite(contact.getCivilite());
         contactDetailDto.setIdCentreGestion(contact.getCentreGestion().getId());
-        contactDetailDto.setCentreGestionnaire(ContactDetailDto.CentreGestionDto.from(contact.getCentreGestion()));
         if (!hideSensitiveFields) {
+            // Centre gestionnaire (RGPD) et coordonnées réservés aux profils autorisés
+            contactDetailDto.setCentreGestionnaire(ContactDetailDto.CentreGestionDto.from(contact.getCentreGestion()));
             contactDetailDto.setMail(contact.getMail());
             contactDetailDto.setTel(contact.getTel());
             contactDetailDto.setTelephone(contact.getTel());

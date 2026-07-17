@@ -24,12 +24,11 @@ import org.esup_portail.esup_stage.repository.StructureJpaRepository;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.ServicePermissionEvaluator;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApiController
@@ -55,7 +54,7 @@ public class ServiceController {
     PaysJpaRepository paysJpaRepository;
 
     @Autowired
-    ConfidentialiteService confidentialiteService;
+    ConfidentialiteAccessService confidentialiteAccessService;
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.LECTURE})
@@ -206,39 +205,19 @@ public class ServiceController {
     }
 
     private boolean isGestionnaire(Utilisateur utilisateur) {
-        return UtilisateurHelper.isRole(utilisateur, Role.GES)
-                || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        return confidentialiteAccessService.isGestionnaire(utilisateur);
     }
 
     private List<CentreGestion> getCurrentGestionnaireCentres(Utilisateur utilisateur) {
-        if (utilisateur == null || utilisateur.getUid() == null || utilisateur.getUid().isBlank()) {
-            return new ArrayList<>();
-        }
-        return centreGestionJpaRepository.findAllByGestionnaireUid(utilisateur.getUid());
+        return confidentialiteAccessService.getCentresDemandeur(utilisateur);
     }
 
     private boolean canViewService(List<CentreGestion> centresDemandeur, Service service) {
-        for (CentreGestion centreDemandeur : centresDemandeur) {
-            if (confidentialiteService.canViewService(centreDemandeur, service)) {
-                return true;
-            }
-        }
-        return false;
+        return confidentialiteAccessService.canViewService(centresDemandeur, service);
     }
 
     private boolean canUseServiceForConvention(Service service, CentreGestion centreGestionConvention, List<CentreGestion> centresDemandeur) {
-        CentreGestion centreGestionService = service != null ? service.getCentreGestion() : null;
-        return centreGestionService != null
-                && (centreGestionService.getId() == centreGestionConvention.getId()
-                || isAttachedToCentre(centresDemandeur, centreGestionService)
-                || confidentialiteService.isNoConfidentiality(centreGestionService)
-                || confidentialiteService.isCentreEtablissement(centreGestionService));
-    }
-
-    private boolean isAttachedToCentre(List<CentreGestion> centresDemandeur, CentreGestion centreGestion) {
-        return centresDemandeur != null
-                && centreGestion != null
-                && centresDemandeur.stream().anyMatch(centreDemandeur -> centreDemandeur.getId() == centreGestion.getId());
+        return confidentialiteAccessService.canUseServiceForConvention(service, centreGestionConvention, centresDemandeur);
     }
 
     private void assertCanViewService(Service service, Utilisateur utilisateur) {

@@ -107,7 +107,7 @@ export class AuthService {
     let hasRight = true;
     if (right.fonction && right.droits) {
       hasRight = false;
-      this.userConnected.roles.forEach((r: any) => {
+      this.getEffectiveRoles(right).forEach((r: any) => {
         r.roleAppFonctions.forEach((ha: any) => {
           if (ha.appFonction.code === right.fonction) {
             right.droits.forEach((d: any) => {
@@ -120,6 +120,18 @@ export class AuthService {
       });
     }
     return hasRight;
+  }
+
+  private getEffectiveRoles(right?: any): any[] {
+    const globalRoles = this.userConnected?.roles || [];
+    if (right?.fonction !== 'PARAM_CENTRE' && right?.fonction !== 'CONVENTION') {
+      return globalRoles;
+    }
+
+    const centreRoles = (this.userConnected?.centreRoles || [])
+      .map((centreRole: any) => centreRole.role)
+      .filter((role: any) => !!role);
+    return [...globalRoles, ...centreRoles];
   }
 
   async ensureAdminTechListLoaded(): Promise<void> {
@@ -189,15 +201,57 @@ export class AuthService {
   }
 
   isGestionnaire(): boolean {
-    return this.userConnected && this.userConnected.roles.find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    if (!this.userConnected) {
+      return false;
+    }
+    // Gestionnaire au niveau global OU au niveau d'au moins un centre de gestion
+    const globalGestionnaire = (this.userConnected.roles || []).find((r: any) => [Role.GES, Role.RESP_GES].indexOf(r.code) > -1) !== undefined;
+    const centreGestionnaire = (this.userConnected.centreRoles || [])
+      .some((cr: any) => cr.role && [Role.GES, Role.RESP_GES].indexOf(cr.role.code) > -1);
+    return globalGestionnaire || centreGestionnaire;
   }
 
   isEnseignant(): boolean {
     return this.userConnected && this.userConnected.roles.find((r: any) => [Role.ENS].indexOf(r.code) > -1) !== undefined;
   }
 
+  /**
+   * Rôles qui font foi pour un centre de gestion donné : les rôles définis sur ce centre
+   * s'ils existent (ils priment sur le rôle global), sinon les rôles globaux.
+   */
+  getEffectiveRolesForCentre(idCentreGestion: number): any[] {
+    const centreRoles = (this.userConnected?.centreRoles || [])
+      .filter((cr: any) => cr.idCentreGestion === idCentreGestion)
+      .map((cr: any) => cr.role)
+      .filter((r: any) => !!r);
+    if (centreRoles.length > 0) {
+      return centreRoles;
+    }
+    return this.userConnected?.roles || [];
+  }
+
+  /**
+   * Vrai si, pour le centre de gestion donné, l'utilisateur n'agit qu'en tant qu'enseignant
+   * (rôle enseignant sans rôle gestionnaire), auquel cas il n'a que la validation pédagogique.
+   */
+  isEnseignantOnlyForCentre(idCentreGestion: number): boolean {
+    const roles = this.getEffectiveRolesForCentre(idCentreGestion);
+    const hasEnseignant = roles.some((r: any) => r.code === Role.ENS);
+    const hasGestionnaire = roles.some((r: any) => [Role.GES, Role.RESP_GES, Role.ADM].indexOf(r.code) > -1);
+    return hasEnseignant && !hasGestionnaire;
+  }
+
+  /**
+   * Vrai si, pour le centre de gestion donné, l'utilisateur est gestionnaire : rôle gestionnaire
+   * défini sur ce centre, ou à défaut rôle gestionnaire global.
+   */
+  isGestionnaireForCentre(idCentreGestion: number): boolean {
+    return this.getEffectiveRolesForCentre(idCentreGestion)
+      .some((r: any) => [Role.GES, Role.RESP_GES, Role.ADM].indexOf(r.code) > -1);
+  }
+
   private hasAdminRole(): boolean {
-    return !!(this.userConnected && this.userConnected.roles.find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
+    return !!(this.userConnected && (this.userConnected.roles || []).find((r: any) => [Role.ADM].indexOf(r.code) > -1) !== undefined);
   }
 
   isAdminTech(): boolean {
