@@ -69,7 +69,7 @@ public class StructureRepository extends PaginationRepository<Structure> {
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("siret", siret);
         List<Integer> results = query.getResultList();
-        if (structure.getId() == 0 && results.isEmpty()) {
+        if (structure.getId() == 0 && !results.isEmpty()) {
             return true;
         }
 

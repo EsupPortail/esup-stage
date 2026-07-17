@@ -24,7 +24,7 @@ public class LangueConventionRepository extends PaginationRepository<LangueConve
         TypedQuery<String> query = em.createQuery(queryString, String.class);
         query.setParameter("code", langueConvention.getCode());
         List<String> results = query.getResultList();
-        return results.isEmpty();
+        return !results.isEmpty();
     }
 
     @Override
