@@ -68,7 +68,8 @@
 
                 <div class="tab-content-padding">
                   <!-- Questions principales -->
-                  <div *ngFor="let q of section; trackBy: trackByCode" class="mb-4">
+                  <ng-container *ngFor="let q of section; trackBy: trackByCode">
+                    <div class="mb-4" *ngIf="isQuestionActive(q.code)">
                     <div class="font-semibold mb-1"><b>{{ q.texte }}</b></div>
 
                     <ng-container [ngSwitch]="q.type">
@@ -183,7 +184,8 @@
                         </mat-hint>
                       </mat-form-field>
                     </div>
-                  </div>
+                    </div>
+                  </ng-container>
 
                   <!-- Questions supplémentaires -->
                   <ng-container *ngIf="questionsSupplementaires && questionsSupplementaires[fiche.suppl[sIndex]]?.length > 0">
