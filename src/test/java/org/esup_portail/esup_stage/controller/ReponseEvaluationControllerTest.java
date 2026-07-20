@@ -1,13 +1,17 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ReponseEnseignantFormDto;
 import org.esup_portail.esup_stage.dto.ReponseEntrepriseFormDto;
 import org.esup_portail.esup_stage.dto.ReponseEtudiantFormDto;
+import org.esup_portail.esup_stage.dto.ReponseSupplementaireFormDto;
+import org.esup_portail.esup_stage.dto.SendMailEvaluationEnMasseResponseDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
 import org.esup_portail.esup_stage.repository.ReponseEvaluationJpaRepository;
+import org.esup_portail.esup_stage.repository.ReponseSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
@@ -28,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -39,6 +44,7 @@ class ReponseEvaluationControllerTest {
     private ReponseEvaluationController controller;
     private ReponseEvaluationJpaRepository reponseEvaluationJpaRepository;
     private ConventionJpaRepository conventionJpaRepository;
+    private ReponseSupplementaireJpaRepository reponseSupplementaireJpaRepository;
     private ImpressionService impressionService;
     private MailerService mailerService;
     private AppConfigService appConfigService;
@@ -50,6 +56,7 @@ class ReponseEvaluationControllerTest {
         controller = new ReponseEvaluationController();
         reponseEvaluationJpaRepository = mock(ReponseEvaluationJpaRepository.class);
         conventionJpaRepository = mock(ConventionJpaRepository.class);
+        reponseSupplementaireJpaRepository = mock(ReponseSupplementaireJpaRepository.class);
         impressionService = mock(ImpressionService.class);
         mailerService = mock(MailerService.class);
         appConfigService = mock(AppConfigService.class);
@@ -57,6 +64,7 @@ class ReponseEvaluationControllerTest {
         conventionService = mock(ConventionService.class);
         controller.reponseEvaluationJpaRepository = reponseEvaluationJpaRepository;
         controller.conventionJpaRepository = conventionJpaRepository;
+        controller.reponseSupplementaireJpaRepository = reponseSupplementaireJpaRepository;
         controller.impressionService = impressionService;
         controller.mailerService = mailerService;
         controller.appConfigService = appConfigService;
@@ -244,5 +252,203 @@ class ReponseEvaluationControllerTest {
 
         assertThatThrownBy(() -> controller.getFichePDF(99, 0))
                 .isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // envoi des mails d'évaluation
+    // ------------------------------------------------------------------
+
+    private Convention conventionComplete(int id) {
+        Convention convention = new Convention();
+        convention.setId(id);
+        Etudiant etudiant = new Etudiant();
+        etudiant.setMail("etu@univ.fr");
+        convention.setEtudiant(etudiant);
+        Enseignant enseignant = new Enseignant();
+        enseignant.setMail("ens@univ.fr");
+        convention.setEnseignant(enseignant);
+        Contact contact = new Contact();
+        contact.setMail("tuteur@acme.fr");
+        convention.setContact(contact);
+        CentreGestion centreGestion = new CentreGestion();
+        centreGestion.setMail("centre@univ.fr");
+        convention.setCentreGestion(centreGestion);
+        return convention;
+    }
+
+    @Test
+    void sendMailEvaluationEtudiantPuisRappel() {
+        connecte("ges1");
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        Convention convention = conventionComplete(42);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+
+        controller.sendMailEvaluation(42, 0);
+        verify(mailerService).sendAlerteValidation(eq("etu@univ.fr"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_FICHE_EVAL_ETU));
+        assertThat(convention.getEnvoiMailEtudiant()).isTrue();
+        assertThat(convention.getDateEnvoiMailEtudiant()).isNotNull();
+
+        // second envoi : mail de rappel
+        controller.sendMailEvaluation(42, 0);
+        verify(mailerService).sendAlerteValidation(eq("etu@univ.fr"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_RAPPEL_FICHE_EVAL_ETU));
+
+        when(conventionJpaRepository.findById(99)).thenReturn(null);
+        assertThatThrownBy(() -> controller.sendMailEvaluation(99, 0)).isInstanceOf(AppException.class);
+    }
+
+    @Test
+    void sendMailEvaluationUtiliseLeMailPersoSiConfigure() {
+        connecte("ges1");
+        ConfigGeneraleDto config = new ConfigGeneraleDto();
+        config.setUtiliserMailPersoEtudiant(true);
+        when(appConfigService.getConfigGenerale()).thenReturn(config);
+        Convention convention = conventionComplete(42);
+        convention.setCourrielPersoEtudiant("perso@gmail.com");
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+
+        controller.sendMailEvaluation(42, 0);
+
+        verify(mailerService).sendAlerteValidation(eq("perso@gmail.com"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_FICHE_EVAL_ETU));
+    }
+
+    @Test
+    void sendMailEvaluationEnseignantEnvoieLeRappel() {
+        connecte("ges1");
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        Convention convention = conventionComplete(42);
+        convention.setEnvoiMailTuteurPedago(true);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+
+        controller.sendMailEvaluation(42, 1);
+
+        verify(mailerService).sendAlerteValidation(eq("ens@univ.fr"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT));
+        assertThat(convention.getEnvoiMailTuteurPedago()).isTrue();
+    }
+
+    @Test
+    void sendMailEvaluationRespecteLeModeCentreGestionSeul() {
+        connecte("ges1");
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        Convention convention = conventionComplete(42);
+        convention.getCentreGestion().setOnlyMailCentreGestion(true);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+
+        // fiche étudiant : seul le centre est notifié, pas de drapeau posé
+        controller.sendMailEvaluation(42, 0);
+        verify(mailerService).sendAlerteValidation(eq("centre@univ.fr"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_FICHE_EVAL_ETU));
+        assertThat(convention.getEnvoiMailEtudiant()).isNull();
+
+        // fiche enseignant : idem
+        controller.sendMailEvaluation(42, 1);
+        assertThat(convention.getEnvoiMailTuteurPedago()).isNull();
+
+        // fiche tuteur : le tuteur reçoit toujours, le centre en plus
+        controller.sendMailEvaluation(42, 2);
+        verify(mailerService).sendAlerteValidation(eq("tuteur@acme.fr"), eq(convention), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_FICHE_EVAL_TUTEUR));
+        assertThat(convention.getEnvoiMailTuteurPro()).isNull();
+    }
+
+    // ------------------------------------------------------------------
+    // suppression + réponses supplémentaires
+    // ------------------------------------------------------------------
+
+    @Test
+    void deleteSupprimeLaReponse() {
+        ReponseEvaluation reponseEvaluation = new ReponseEvaluation();
+        when(reponseEvaluationJpaRepository.findById(9)).thenReturn(reponseEvaluation);
+
+        assertThat(controller.delete(9)).isTrue();
+        verify(reponseEvaluationJpaRepository).delete(reponseEvaluation);
+
+        when(reponseEvaluationJpaRepository.findById(99)).thenReturn(null);
+        assertThatThrownBy(() -> controller.delete(99)).isInstanceOf(AppException.class);
+    }
+
+    @Test
+    void lesReponsesSupplementairesSontGerees() {
+        ReponseSupplementaire reponseSupplementaire = new ReponseSupplementaire();
+        reponseSupplementaire.setReponseTxt("réponse existante");
+        when(reponseSupplementaireJpaRepository.findByQuestionAndConvention(42, 7)).thenReturn(reponseSupplementaire);
+        when(reponseSupplementaireJpaRepository.saveAndFlush(any(ReponseSupplementaire.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThat(controller.getReponseSupplementaire(42, 7)).isSameAs(reponseSupplementaire);
+
+        when(evaluationService.initReponseSupplementaire(42, 7)).thenReturn(new ReponseSupplementaire());
+        ReponseSupplementaireFormDto form = new ReponseSupplementaireFormDto();
+        assertThat(controller.createReponseSupplementaire(42, 7, form)).isNotNull();
+
+        assertThat(controller.updateReponseSupplementaire(42, 7, form)).isSameAs(reponseSupplementaire);
+        verify(evaluationService).setReponseSupplementaireData(reponseSupplementaire, form);
+
+        when(reponseSupplementaireJpaRepository.findByQuestionAndConvention(42, 8)).thenReturn(null);
+        assertThatThrownBy(() -> controller.updateReponseSupplementaire(42, 8, form)).isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // envoi en masse
+    // ------------------------------------------------------------------
+
+    @Test
+    void sendMailEnMasseValideLesParametres() {
+        connecte("ges1");
+        assertThatThrownBy(() -> controller.sendMailEvaluationEnMasse(0, List.of()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Aucune convention");
+        assertThatThrownBy(() -> controller.sendMailEvaluationEnMasse(0, null)).isInstanceOf(AppException.class);
+        assertThatThrownBy(() -> controller.sendMailEvaluationEnMasse(5, List.of(1)))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Type fiche invalide");
+    }
+
+    @Test
+    void sendMailEnMasseEtudiantChroniqueLesStatuts() {
+        connecte("ges1");
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        Convention ok = conventionComplete(1);
+        Convention sansMail = conventionComplete(2);
+        sansMail.getEtudiant().setMail(null);
+        when(conventionJpaRepository.findAllById(List.of(1, 2, 3))).thenReturn(List.of(ok, sansMail));
+
+        SendMailEvaluationEnMasseResponseDto corps = controller.sendMailEvaluationEnMasse(0, List.of(1, 2, 3)).getBody();
+
+        assertThat(corps.getResume().requested).isEqualTo(3);
+        assertThat(corps.getResume().found).isEqualTo(2);
+        assertThat(corps.getResume().sent).isEqualTo(1);
+        assertThat(corps.getResume().failed).isEqualTo(2);
+        assertThat(corps.getConventions()).extracting(r -> r.status).containsExactlyInAnyOrder("ERROR", "SENT", "ERROR");
+        assertThat(ok.getEnvoiMailEtudiant()).isTrue();
+        verify(mailerService).sendAlerteValidation(eq("etu@univ.fr"), eq(ok), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_FICHE_EVAL_ETU));
+    }
+
+    @Test
+    void sendMailEnMasseGereRappelCentreEtExceptions() {
+        connecte("ges1");
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+
+        // fiche enseignant, rappel, uniquement vers le centre : pas de maj des drapeaux d'envoi
+        Convention centreOnly = conventionComplete(1);
+        centreOnly.getCentreGestion().setOnlyMailCentreGestion(true);
+        centreOnly.setEnvoiMailTuteurPedago(true);
+        when(conventionJpaRepository.findAllById(List.of(1))).thenReturn(List.of(centreOnly));
+        SendMailEvaluationEnMasseResponseDto rep1 = controller.sendMailEvaluationEnMasse(1, List.of(1)).getBody();
+        assertThat(rep1.getResume().sent).isEqualTo(1);
+        verify(mailerService).sendAlerteValidation(eq("centre@univ.fr"), eq(centreOnly), any(), any(Utilisateur.class),
+                eq(TemplateMail.CODE_RAPPEL_FICHE_EVAL_ENSEIGNANT));
+
+        // fiche tuteur : l'envoi SMTP échoue → statut ERROR/exception
+        Convention enErreur = conventionComplete(2);
+        when(conventionJpaRepository.findAllById(List.of(2))).thenReturn(List.of(enErreur));
+        org.mockito.Mockito.doThrow(new RuntimeException("smtp down")).when(mailerService)
+                .sendAlerteValidation(eq("tuteur@acme.fr"), eq(enErreur), any(), any(Utilisateur.class), anyString());
+        SendMailEvaluationEnMasseResponseDto rep2 = controller.sendMailEvaluationEnMasse(2, List.of(2)).getBody();
+        assertThat(rep2.getResume().failed).isEqualTo(1);
+        assertThat(rep2.getConventions().get(0).reason).isEqualTo("exception");
     }
 }

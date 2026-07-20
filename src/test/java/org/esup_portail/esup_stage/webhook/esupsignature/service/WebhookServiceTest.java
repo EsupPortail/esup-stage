@@ -145,4 +145,50 @@ class WebhookServiceTest {
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND));
     }
+
+    // ------------------------------------------------------------------
+    // upload / download
+    // ------------------------------------------------------------------
+
+    private org.esup_portail.esup_stage.dto.MetadataSignataireDto signataire(int ordre, String mail) {
+        org.esup_portail.esup_stage.dto.MetadataSignataireDto dto = new org.esup_portail.esup_stage.dto.MetadataSignataireDto();
+        dto.setOrder(ordre);
+        dto.setMail(mail);
+        dto.setName("Nom" + ordre);
+        dto.setGivenname("Prenom" + ordre);
+        return dto;
+    }
+
+    @Test
+    void uploadConstruitLeCircuitEtEnvoieLeDocument() {
+        WebhookService service = serviceRepondant(HttpStatus.OK, "\"WF-42\"");
+        service.filenameSanitizerService = new org.esup_portail.esup_stage.service.FilenameSanitizerService();
+
+        org.esup_portail.esup_stage.dto.MetadataDto metadata = new org.esup_portail.esup_stage.dto.MetadataDto();
+        metadata.setTitle("Convention_42_Durand_Alice");
+        metadata.setCompanyname("ACME");
+        metadata.setSchool("L3");
+        metadata.setWorkflowId("7");
+        // deux signataires sur la même étape + un troisième : couvre la fusion des étapes
+        metadata.setSignatory(new java.util.ArrayList<>(List.of(
+                signataire(1, "alice@univ.fr"),
+                signataire(1, "co-signataire@univ.fr"),
+                signataire(2, "tuteur@acme.fr"))));
+        metadata.setWatchers(List.of(new org.esup_portail.esup_stage.dto.MetadataObservateurDto("observateur@univ.fr")));
+
+        org.esup_portail.esup_stage.dto.PdfMetadataDto contenu = new org.esup_portail.esup_stage.dto.PdfMetadataDto();
+        contenu.setMetadata(metadata);
+        contenu.setPdf64(com.itextpdf.commons.utils.Base64.encodeBytes("%PDF-1.4 test".getBytes()));
+
+        assertThat(service.upload(contenu)).isEqualTo("\"WF-42\"");
+    }
+
+    @Test
+    void downloadRecupereLeFluxDuDocumentSigne() throws Exception {
+        WebhookService service = serviceRepondant(HttpStatus.OK, "CONTENU-PDF");
+
+        java.io.InputStream flux = service.download("DOC42");
+
+        assertThat(new String(flux.readAllBytes())).isEqualTo("CONTENU-PDF");
+    }
 }

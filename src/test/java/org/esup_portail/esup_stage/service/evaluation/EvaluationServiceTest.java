@@ -368,4 +368,97 @@ class EvaluationServiceTest {
         }
         return dto;
     }
+
+    // ------------------------------------------------------------------
+    // paramétrage des fiches, questions supplémentaires et exports
+    // ------------------------------------------------------------------
+
+    /** Coche toutes les cases (booléens primitifs ou wrappers) du DTO. */
+    private <T> T coche(T dto) throws Exception {
+        for (java.lang.reflect.Method method : dto.getClass().getMethods()) {
+            if (method.getName().startsWith("set") && method.getParameterCount() == 1
+                    && (method.getParameterTypes()[0] == boolean.class || method.getParameterTypes()[0] == Boolean.class)) {
+                method.invoke(dto, true);
+            }
+        }
+        return dto;
+    }
+
+    @Test
+    void lesTroisFichesCopientLeursCasesACocher() throws Exception {
+        org.esup_portail.esup_stage.model.FicheEvaluation fiche = new org.esup_portail.esup_stage.model.FicheEvaluation();
+
+        service.setFicheEtudiantData(fiche, coche(new org.esup_portail.esup_stage.dto.FicheEtudiantDto()));
+        assertThat(fiche.getQuestionEtuI1()).isTrue();
+        assertThat(fiche.getQuestionEtuIII16()).isTrue();
+
+        service.setFicheEnseignantData(fiche, coche(new org.esup_portail.esup_stage.dto.FicheEnseignantDto()));
+        assertThat(fiche.getQuestionEnsI1()).isTrue();
+        assertThat(fiche.getQuestionEnsII11()).isTrue();
+
+        service.setFicheEntrepriseData(fiche, coche(new org.esup_portail.esup_stage.dto.FicheEntrepriseDto()));
+        assertThat(fiche.getQuestionEnt1()).isTrue();
+        assertThat(fiche.getQuestionEnt19()).isTrue();
+    }
+
+    @Test
+    void laQuestionSupplementaireEstCopieeDepuisLeDto() {
+        org.esup_portail.esup_stage.dto.QuestionSupplementaireDto dto = new org.esup_portail.esup_stage.dto.QuestionSupplementaireDto();
+        dto.setQuestion("Question bonus ?");
+        dto.setTypeQuestion("txt");
+        dto.setIdPlacement(1);
+        org.esup_portail.esup_stage.model.QuestionSupplementaire question = new org.esup_portail.esup_stage.model.QuestionSupplementaire();
+
+        service.setQuestionSupplementaireData(question, dto);
+
+        assertThat(question.getQuestion()).isEqualTo("Question bonus ?");
+        assertThat(question.getTypeQuestion()).isEqualTo("txt");
+        assertThat(question.getIdPlacement()).isEqualTo(1);
+    }
+
+    @Test
+    void initReponseSupplementaireAssembleLesIdentifiants() {
+        var conventionJpaRepository = mock(org.esup_portail.esup_stage.repository.ConventionJpaRepository.class);
+        var questionSupplementaireJpaRepository = mock(org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository.class);
+        ReflectionTestUtils.setField(service, "conventionJpaRepository", conventionJpaRepository);
+        ReflectionTestUtils.setField(service, "questionSupplementaireJpaRepository", questionSupplementaireJpaRepository);
+
+        Convention convention = new Convention();
+        convention.setId(42);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+        org.esup_portail.esup_stage.model.QuestionSupplementaire question = new org.esup_portail.esup_stage.model.QuestionSupplementaire();
+        question.setId(7);
+        when(questionSupplementaireJpaRepository.findById(7)).thenReturn(question);
+
+        var reponse = service.initReponseSupplementaire(42, 7);
+
+        assertThat(reponse.getId().getIdConvention()).isEqualTo(42);
+        assertThat(reponse.getId().getIdQuestionSupplementaire()).isEqualTo(7);
+        assertThat(reponse.getConvention()).isSameAs(convention);
+        assertThat(reponse.getQuestionSupplementaire()).isSameAs(question);
+
+        when(conventionJpaRepository.findById(99)).thenReturn(null);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.initReponseSupplementaire(99, 7))
+                .isInstanceOf(org.esup_portail.esup_stage.exception.AppException.class);
+        when(questionSupplementaireJpaRepository.findById(8)).thenReturn(null);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.initReponseSupplementaire(42, 8))
+                .isInstanceOf(org.esup_portail.esup_stage.exception.AppException.class);
+    }
+
+    @Test
+    void lExportExcelChoisitLeTypeSelonLaFiche() {
+        EvaluationExcelExporter exporter = mock(EvaluationExcelExporter.class);
+        ReflectionTestUtils.setField(service, "evaluationExcelExporter", exporter);
+        when(exporter.export(any(), any(), any())).thenReturn(new byte[]{1});
+
+        assertThat(service.getEvaluationToExcel(List.of(), 0, null)).containsExactly((byte) 1);
+        assertThat(service.getEvaluationToExcel(List.of(), 1, null)).containsExactly((byte) 1);
+        assertThat(service.getEvaluationToExcel(List.of(), 2, null)).containsExactly((byte) 1);
+        assertThat(service.getEvaluationToExcel(List.of(), 3, null)).containsExactly((byte) 1);
+
+        verify(exporter).export(any(), org.mockito.ArgumentMatchers.eq(org.esup_portail.esup_stage.enums.ExportType.ETUDIANT), any());
+        verify(exporter).export(any(), org.mockito.ArgumentMatchers.eq(org.esup_portail.esup_stage.enums.ExportType.ENSEIGNANT), any());
+        verify(exporter).export(any(), org.mockito.ArgumentMatchers.eq(org.esup_portail.esup_stage.enums.ExportType.ENTREPRISE), any());
+        verify(exporter).export(any(), org.mockito.ArgumentMatchers.eq(org.esup_portail.esup_stage.enums.ExportType.ALL_IN_ONE), any());
+    }
 }

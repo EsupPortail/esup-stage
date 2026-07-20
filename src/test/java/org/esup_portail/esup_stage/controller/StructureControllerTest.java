@@ -2,6 +2,8 @@ package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.config.properties.SireneProperties;
+import org.esup_portail.esup_stage.dto.ImportReportDto;
+import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.StructureCentreGestionProprietaireDto;
 import org.esup_portail.esup_stage.dto.StructureConfidentialiteDto;
 import org.esup_portail.esup_stage.dto.StructureDto;
@@ -13,16 +15,24 @@ import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConfidentialiteService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
+import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
 import org.esup_portail.esup_stage.service.sirene.SireneService;
+import org.esup_portail.esup_stage.service.sirene.model.ListStructureSireneDTO;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +41,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -398,5 +410,400 @@ class StructureControllerTest {
         assertThat(demande.isEstValidee()).isTrue();
         assertThat(demande.getLoginCreation()).isEqualTo("adm1");
         verify(structureService).save(any(), any(Structure.class));
+    }
+
+    @Test
+    void getOrCreateSynchroniseAvecSireneQuandActif() {
+        connecte("adm1", Role.ADM);
+        Structure existante = new Structure();
+        existante.setId(7);
+        existante.setTemEnServStructure(true);
+        existante.setNumeroSiret(SIRET_VALIDE);
+        when(structureJpaRepository.findById((Integer) 7)).thenReturn(Optional.of(existante));
+
+        Structure demande = new Structure();
+        demande.setId(7);
+        controller.getOrCreate(demande);
+
+        verify(sireneService).update(anyString(), eq(existante));
+    }
+
+    @Test
+    void getOrCreateParEtudiantNeValidePasAutomatiquement() {
+        connecte("etu1", Role.ETU);
+        when(structureJpaRepository.findBySiret(SIRET_VALIDE)).thenReturn(null);
+
+        Structure demande = new Structure();
+        demande.setNumeroSiret(SIRET_VALIDE);
+        demande.setRaisonSociale("ETU SARL");
+        controller.getOrCreate(demande);
+
+        assertThat(demande.isEstValidee()).isFalse();
+        assertThat(demande.getLoginCreation()).isNull();
+    }
+
+    // ------------------------------------------------------------------
+    // search + exports
+    // ------------------------------------------------------------------
+
+    @Test
+    void searchSansApiSireneRetourneLaPaginationLocale() {
+        connecte("adm1", Role.ADM);
+        when(structureRepository.findPaginated(1, 50, "id", "asc", "{}")).thenReturn(new ArrayList<>(List.of(new Structure())));
+        when(structureRepository.count("{}")).thenReturn(1L);
+
+        PaginatedResponse<StructureDto> reponse = controller.search(1, 50, "id", "asc", "{}", null);
+
+        assertThat(reponse.getTotal()).isEqualTo(1);
+        assertThat(reponse.getData()).hasSize(1);
+        verify(sireneService, never()).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+    }
+
+    private void activeApiSirene() {
+        sireneProperties.setUrl("https://api.insee.fr");
+        sireneProperties.setToken("token");
+        sireneProperties.setNombreMinimumResultats(5);
+    }
+
+    private ListStructureSireneDTO reponseSirene(int total, Structure... structures) {
+        ListStructureSireneDTO reponse = mock(ListStructureSireneDTO.class);
+        when(reponse.getStructures()).thenReturn(List.of(structures));
+        when(reponse.getTotal()).thenReturn(total);
+        return reponse;
+    }
+
+    @Test
+    void searchCompleteLaPremierePageAvecLApiSirene() {
+        connecte("ges1", Role.GES);
+        activeApiSirene();
+        String filters = "{\"numeroSiret\":{\"value\":\"732\",\"type\":\"text\"}}";
+        Structure locale = new Structure();
+        locale.setNumeroSiret("111");
+        when(structureRepository.findPaginated(eq(1), eq(50), anyString(), anyString(), eq(filters)))
+                .thenReturn(new ArrayList<>(List.of(locale)));
+        when(structureRepository.count(filters)).thenReturn(1L);
+
+        Structure doublon = new Structure();
+        doublon.setNumeroSiret("111");
+        Structure nouvelle = new Structure();
+        nouvelle.setNumeroSiret("222");
+        Structure sansSiret = new Structure();
+        ListStructureSireneDTO reponseApi = reponseSirene(10, doublon, nouvelle, sansSiret);
+        when(sireneService.getEtablissementFiltered(1, 49, filters)).thenReturn(reponseApi);
+
+        PaginatedResponse<StructureDto> reponse = controller.search(1, 50, "id", "asc", filters, null);
+
+        assertThat(reponse.getData()).hasSize(3); // locale + 2 résultats non doublons
+        assertThat(reponse.getTotal()).isEqualTo(11);
+    }
+
+    @Test
+    void searchRemplaceLesPagesSuivantesParLApiSirene() {
+        connecte("ges1", Role.GES);
+        activeApiSirene();
+        String filters = "{\"numeroSiret\":{\"value\":\"732\",\"type\":\"text\"}}";
+        Structure locale = new Structure();
+        locale.setNumeroSiret("111");
+        when(structureRepository.findPaginated(eq(2), eq(50), anyString(), anyString(), eq(filters)))
+                .thenReturn(new ArrayList<>(List.of(locale)));
+        when(structureRepository.count(filters)).thenReturn(1L);
+
+        Structure doublon = new Structure();
+        doublon.setNumeroSiret("111");
+        Structure nouvelle = new Structure();
+        nouvelle.setNumeroSiret("222");
+        ListStructureSireneDTO reponseApi = reponseSirene(10, doublon, nouvelle);
+        when(sireneService.getEtablissementFiltered(2, 50, filters)).thenReturn(reponseApi);
+
+        PaginatedResponse<StructureDto> reponse = controller.search(2, 50, "id", "asc", filters, null);
+
+        assertThat(reponse.getData()).hasSize(1); // page API sans le doublon local
+        assertThat(reponse.getTotal()).isEqualTo(11);
+    }
+
+    @Test
+    void searchNInterrogeSireneQuePourLaFrance() {
+        connecte("ges1", Role.GES);
+        activeApiSirene();
+        when(structureRepository.findPaginated(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+                .thenAnswer(inv -> new ArrayList<Structure>());
+        when(structureRepository.count(anyString())).thenReturn(0L);
+        ListStructureSireneDTO reponseVide = reponseSirene(0);
+        when(sireneService.getEtablissementFiltered(anyInt(), anyInt(), anyString())).thenReturn(reponseVide);
+
+        // pays unique France (valeur String)
+        controller.search(1, 50, "id", "asc", "{\"pays.id\":{\"value\":\"82\"}}", null);
+        verify(sireneService, org.mockito.Mockito.times(1)).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+
+        // liste de pays contenant la France
+        controller.search(1, 50, "id", "asc", "{\"pays.id\":{\"value\":[\"82\",\"100\"]}}", null);
+        verify(sireneService, org.mockito.Mockito.times(2)).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+
+        // valeur numérique convertie en chaîne
+        controller.search(1, 50, "id", "asc", "{\"pays.id\":{\"value\":82}}", null);
+        verify(sireneService, org.mockito.Mockito.times(3)).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+
+        // liste sans la France : pas d'appel supplémentaire
+        controller.search(1, 50, "id", "asc", "{\"pays.id\":{\"value\":[\"100\"]}}", null);
+        verify(sireneService, org.mockito.Mockito.times(3)).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+    }
+
+    @Test
+    void searchNInterrogePasSirenePourUnEtudiantAutoriseACreer() {
+        ConfigGeneraleDto config = new ConfigGeneraleDto();
+        config.setAutoriserEtudiantACreerEntrepriseFrance(true);
+        when(appConfigService.getConfigGenerale()).thenReturn(config);
+        connecte("etu1", Role.ETU);
+        activeApiSirene();
+        when(structureRepository.findPaginated(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+                .thenAnswer(inv -> new ArrayList<Structure>());
+        when(structureRepository.count(anyString())).thenReturn(0L);
+
+        controller.search(1, 50, "id", "asc", "{\"pays.id\":{\"value\":\"82\"}}", null);
+
+        verify(sireneService, never()).getEtablissementFiltered(anyInt(), anyInt(), anyString());
+    }
+
+    @Test
+    void lesExportsDelegentAuRepository() {
+        when(structureRepository.exportExcel("{}", "id", "asc", "{}")).thenReturn(new byte[]{1, 2});
+        assertThat(controller.exportExcel("{}", "id", "asc", "{}", null).getBody()).hasSize(2);
+
+        when(structureRepository.exportCsv("{}", "id", "asc", "{}")).thenReturn(new StringBuilder("a;b"));
+        assertThat(controller.exportCsv("{}", "id", "asc", "{}", null).getBody()).isEqualTo("a;b");
+    }
+
+    // ------------------------------------------------------------------
+    // confidentialité des coordonnées
+    // ------------------------------------------------------------------
+
+    @Test
+    void lesCoordonneesConfidentiellesSontEvalueesSelonLeRole() {
+        Structure structure = new Structure();
+        structure.setRaisonSociale("SECRETE");
+        structure.setConfidentialiteCoordonnees(true);
+        when(structureJpaRepository.findById(7)).thenReturn(structure);
+
+        // admin : jamais masqué
+        connecte("adm1", Role.ADM);
+        assertThat(controller.getById(7)).isNotNull();
+
+        // étudiant : masqué
+        connecte("etu1", Role.ETU);
+        assertThat(controller.getById(7)).isNotNull();
+
+        // gestionnaire sans centre rattaché : masqué
+        connecte("ges1", Role.GES);
+        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        assertThat(controller.getById(7)).isNotNull();
+
+        // gestionnaire dont le centre a (ou non) le droit de voir
+        ConfidentialiteService confidentialiteService = mock(ConfidentialiteService.class);
+        ReflectionTestUtils.setField(controller, "confidentialiteService", confidentialiteService);
+        CentreGestion centre = new CentreGestion();
+        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteService.canViewStructureCoordinates(centre, structure)).thenReturn(true);
+        assertThat(controller.getById(7)).isNotNull();
+        when(confidentialiteService.canViewStructureCoordinates(centre, structure)).thenReturn(false);
+        assertThat(controller.getById(7)).isNotNull();
+    }
+
+    // ------------------------------------------------------------------
+    // centre de gestion propriétaire + nomenclatures
+    // ------------------------------------------------------------------
+
+    @Test
+    void leCentreProprietaireSuitLesReglesDeRole() {
+        // admin avec centre demandé inexistant
+        connecte("adm1", Role.ADM);
+        StructureFormDto dto = formulaireValide();
+        dto.setIdCentreGestionProprietaire(33);
+        when(centreGestionJpaRepository.findById((Integer) 33)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> controller.create(dto)).isInstanceOf(AppException.class);
+
+        // admin avec centre trouvé
+        when(centreGestionJpaRepository.findById((Integer) 33)).thenReturn(Optional.of(new CentreGestion()));
+        assertThat(controller.create(dto)).isNotNull();
+
+        // gestionnaire sans uid exploitable
+        connecte("", Role.GES);
+        StructureFormDto dtoGes = formulaireValide();
+        assertThatThrownBy(() -> controller.create(dtoGes))
+                .isInstanceOf(AppException.class)
+                .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
+
+        // gestionnaire sans centre rattaché
+        connecte("ges1", Role.GES);
+        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        assertThatThrownBy(() -> controller.create(dtoGes))
+                .isInstanceOf(AppException.class)
+                .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
+
+        // plusieurs centres possibles sans choix explicite
+        CentreGestion c1 = new CentreGestion();
+        c1.setId(1);
+        c1.setNomCentre("A");
+        CentreGestion c2 = new CentreGestion();
+        c2.setId(2);
+        c2.setNomCentre("B");
+        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(c1, c2));
+        assertThatThrownBy(() -> controller.create(dtoGes))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Plusieurs centres");
+
+        // choix explicite d'un centre autorisé
+        StructureFormDto dtoChoisi = formulaireValide();
+        dtoChoisi.setIdCentreGestionProprietaire(2);
+        assertThat(controller.create(dtoChoisi)).isNotNull();
+    }
+
+    @Test
+    void updatePeutChangerLeCentreProprietaire() {
+        connecte("adm1", Role.ADM);
+        Structure structure = new Structure();
+        when(structureJpaRepository.findById(7)).thenReturn(structure);
+        CentreGestion centre = new CentreGestion();
+        when(centreGestionJpaRepository.findById((Integer) 33)).thenReturn(Optional.of(centre));
+        StructureFormDto dto = formulaireValide();
+        dto.setIdCentreGestionProprietaire(33);
+
+        controller.update(7, dto);
+
+        assertThat(structure.getCentreGestionProprietaire()).isSameAs(centre);
+    }
+
+    @Test
+    void lesNomenclaturesInconnuesSontRejetees() {
+        connecte("adm1", Role.ADM);
+
+        when(typeStructureJpaRepository.findById(anyInt())).thenReturn(null);
+        assertThatThrownBy(() -> controller.create(formulaireValide()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Type de structure");
+        when(typeStructureJpaRepository.findById(anyInt())).thenReturn(new TypeStructure());
+
+        when(statutJuridiqueJpaRepository.findById(anyInt())).thenReturn(null);
+        assertThatThrownBy(() -> controller.create(formulaireValide()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Statut juridique");
+        when(statutJuridiqueJpaRepository.findById(anyInt())).thenReturn(new StatutJuridique());
+
+        when(paysJpaRepository.findById(anyInt())).thenReturn(null);
+        assertThatThrownBy(() -> controller.create(formulaireValide()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Pays");
+        when(paysJpaRepository.findById(anyInt())).thenReturn(new Pays());
+
+        StructureFormDto dto = formulaireValide();
+        dto.setCodeNafN5("62.01Z");
+        when(nafN5JpaRepository.findByCode("62.01Z")).thenReturn(null);
+        assertThatThrownBy(() -> controller.create(dto))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Code APE");
+        when(nafN5JpaRepository.findByCode("62.01Z")).thenReturn(new NafN5());
+        assertThat(controller.create(dto)).isNotNull();
+    }
+
+    @Test
+    void unSiretLaPosteNonNumeriqueEstRejete() {
+        connecte("adm1", Role.ADM);
+        StructureFormDto dto = formulaireValide();
+        dto.setNumeroSiret("35600000000E00");
+
+        assertThatThrownBy(() -> controller.create(dto)).isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // import CSV
+    // ------------------------------------------------------------------
+
+    private static final String ENTETE_CSV = "NumeroRNE;RaisonSociale;NumeroSiret;ActivitePrincipale;CodeAPE;Voie;CodePostal;Commune;Telephone;Fax;SiteWeb;Mail;TypeStructure;StatutJuridique;Effectif;Pays";
+
+    private void brancheImportCsv() {
+        CsvStructureImportUtils csvUtils = new CsvStructureImportUtils();
+        ReflectionTestUtils.setField(csvUtils, "nafN5JpaRepository", nafN5JpaRepository);
+        ReflectionTestUtils.setField(csvUtils, "effectifJpaRepository", effectifJpaRepository);
+        ReflectionTestUtils.setField(csvUtils, "statutJuridiqueJpaRepository", statutJuridiqueJpaRepository);
+        ReflectionTestUtils.setField(csvUtils, "typeStructureJpaRepository", typeStructureJpaRepository);
+        ReflectionTestUtils.setField(csvUtils, "paysJpaRepository", paysJpaRepository);
+        ReflectionTestUtils.setField(controller, "csvUtils", csvUtils);
+    }
+
+    private ResponseEntity<?> importe(String contenu) {
+        return controller.importStructures(new ByteArrayInputStream(contenu.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    void importCsvCreeLesStructuresValides() {
+        connecte("adm1", Role.ADM);
+        brancheImportCsv();
+        String ligne = ";ACME;12345678901234;Conseil;;1 rue A;75001;Paris;0102030405;;;contact@acme.fr;SARL;SARL;10-19;FR";
+
+        ResponseEntity<?> reponse = importe(ENTETE_CSV + "\n" + ligne);
+
+        assertThat(reponse.getStatusCode().is2xxSuccessful()).isTrue();
+        verify(structureService).save(eq(null), any(Structure.class));
+    }
+
+    @Test
+    void importCsvAccepteLEncodageWindows1252() {
+        connecte("adm1", Role.ADM);
+        brancheImportCsv();
+        String contenu = ENTETE_CSV + "\n;SOCIÉTÉ GÉNÉRALE;12345678901234;Conseil;;;;;;;;;SARL;SARL;;FR";
+
+        ResponseEntity<?> reponse = controller.importStructures(
+                new ByteArrayInputStream(contenu.getBytes(java.nio.charset.Charset.forName("windows-1252"))));
+
+        assertThat(reponse.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @Test
+    void importCsvRejetteUnEnteteIncomplet() {
+        connecte("adm1", Role.ADM);
+        brancheImportCsv();
+
+        ResponseEntity<?> reponse = importe("Foo;Bar\nx;y");
+
+        assertThat(reponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        ImportReportDto rapport = (ImportReportDto) reponse.getBody();
+        assertThat(rapport.getFatalError()).contains("colonnes manquantes");
+    }
+
+    @Test
+    void importCsvSignaleLesLignesInvalidesEtLesDoublons() {
+        connecte("adm1", Role.ADM);
+        brancheImportCsv();
+        when(structureJpaRepository.existAndActifByNumeroSiret("99999999999999")).thenReturn(true);
+        when(structureJpaRepository.existAndActifByNumeroRNE("0751234A")).thenReturn(true);
+        String ligneValide = ";ACME;12345678901234;Conseil;;;;;;;;;SARL;SARL;;FR";
+        String ligneInvalide = ";;123;;99Z;;123;;;;;bad@;;;;";
+        String doublonSiret = ";DOUBLON;99999999999999;Conseil;;;;;;;;;SARL;SARL;;FR";
+        String doublonRne = "0751234A;Lycée X;;Enseignement;;;;;;;;;Etablissement;EPLE;;FR";
+
+        ResponseEntity<?> reponse = importe(String.join("\n", ENTETE_CSV, ligneValide, "", ligneInvalide, doublonSiret, doublonRne));
+
+        assertThat(reponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        ImportReportDto rapport = (ImportReportDto) reponse.getBody();
+        assertThat(rapport.getImported()).isEqualTo(1);
+        assertThat(rapport.getTotalLines()).isEqualTo(5);
+        assertThat(rapport.getErrors()).isNotEmpty();
+    }
+
+    @Test
+    void importCsvSurvitAUneErreurDeLecture() {
+        connecte("adm1", Role.ADM);
+        brancheImportCsv();
+        InputStream fluxEnPanne = new InputStream() {
+            @Override
+            public int read() throws IOException {
+                throw new IOException("flux interrompu");
+            }
+        };
+
+        ResponseEntity<?> reponse = controller.importStructures(fluxEnPanne);
+
+        assertThat(reponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        ImportReportDto rapport = (ImportReportDto) reponse.getBody();
+        assertThat(rapport.getFatalError()).contains("Erreur import");
     }
 }

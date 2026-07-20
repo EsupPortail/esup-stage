@@ -1,15 +1,19 @@
 package org.esup_portail.esup_stage.service;
 
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
+import org.esup_portail.esup_stage.service.impression.PreviewConventionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -369,5 +373,109 @@ class MailerServiceTest {
 
         assertThatCode(() -> service.sendMailGroupe("", conventionComplete(), null, "GRP", new byte[0]))
                 .doesNotThrowAnyException();
+    }
+
+    // ------------------------------------------------------------------
+    // envoi effectif : rendu des templates et configuration SMTP
+    // ------------------------------------------------------------------
+
+    private void configureFreemarker() {
+        FreeMarkerConfigurer freeMarkerConfigurer = mock(FreeMarkerConfigurer.class);
+        when(freeMarkerConfigurer.getConfiguration())
+                .thenReturn(new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_32));
+        service.freeMarkerConfigurer = freeMarkerConfigurer;
+    }
+
+    @Test
+    void laLivraisonDesactiveeJournaliseSeulement() {
+        appliProperties.getMailer().setHost("smtp.univ.fr");
+        appliProperties.getMailer().setDisableDelivery(true);
+        when(templateMailJpaRepository.findByCode("CODE")).thenReturn(template("CODE"));
+
+        assertThatCode(() -> service.sendAlerteValidation("dest@univ.fr", conventionComplete(), null, "CODE"))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void unEnvoiReelSansServeurSmtpEstUneErreurTechnique() {
+        AppliProperties.MailerProperties mailer = appliProperties.getMailer();
+        mailer.setHost("localhost");
+        mailer.setPort(1); // port fermé : l'envoi échoue au moment de la connexion
+        mailer.setProtocol("smtp");
+        mailer.setAuth(true);
+        mailer.setUsername("user");
+        mailer.setPassword("secret");
+        mailer.setFrom("noreply@univ.fr");
+        mailer.setSslEnable(true);
+        mailer.setDeliveryAddress("redirect@univ.fr");
+        configureFreemarker();
+
+        TemplateMail templateMail = template("CODE");
+        templateMail.setObjet("Convention ${convention.numero}");
+        templateMail.setTexte("$IF etudiant.nom??$Bonjour ${etudiant.nom}$ELSE Inconnu$ENDIF");
+        when(templateMailJpaRepository.findByCode("CODE")).thenReturn(templateMail);
+
+        assertThatThrownBy(() -> service.sendAlerteValidation("dest@univ.fr", conventionComplete(), null, "CODE"))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("technique");
+    }
+
+    @Test
+    void lEnvoiGroupeAvecArchiveEchoueSansServeurSmtp() {
+        AppliProperties.MailerProperties mailer = appliProperties.getMailer();
+        mailer.setHost("localhost");
+        mailer.setPort(1);
+        mailer.setFrom("noreply@univ.fr");
+        configureFreemarker();
+        TemplateMailGroupe templateMailGroupe = new TemplateMailGroupe();
+        templateMailGroupe.setId(2);
+        templateMailGroupe.setCode("GRP");
+        templateMailGroupe.setObjet("Objet");
+        templateMailGroupe.setTexte("Texte");
+        when(templateMailGroupeJpaRepository.findByCode("GRP")).thenReturn(templateMailGroupe);
+
+        assertThatThrownBy(() -> service.sendMailGroupe("dest@univ.fr", conventionComplete(), new Utilisateur(), "GRP", new byte[]{1}))
+                .isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // sendTest : mail de prévisualisation sur convention fictive
+    // ------------------------------------------------------------------
+
+    @Test
+    void leMailDeTestSAppuieSurUneConventionFictive() {
+        CentreGestionJpaRepository centreGestionJpaRepository = mock(CentreGestionJpaRepository.class);
+        PreviewConventionFactory previewConventionFactory = mock(PreviewConventionFactory.class);
+        service.centreGestionJpaRepository = centreGestionJpaRepository;
+        service.previewConventionFactory = previewConventionFactory;
+        appliProperties.getMailer().setHost("smtp.univ.fr");
+        appliProperties.getMailer().setDisableDelivery(true);
+
+        when(templateMailJpaRepository.findByCode("TEST")).thenReturn(template("TEST"));
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(new CentreGestion());
+        Convention fictive = conventionComplete();
+        fictive.setSignataire(new Contact()); // sans téléphone : complété automatiquement
+        when(previewConventionFactory.createFictionalConvention(any())).thenReturn(fictive);
+        Avenant avenantFictif = new Avenant();
+        avenantFictif.setId(1);
+        when(previewConventionFactory.createFictionalAvenant(fictive)).thenReturn(avenantFictif);
+
+        SendMailTestDto dto = new SendMailTestDto();
+        dto.setTemplateMail("TEST");
+        dto.setTo("dest@univ.fr");
+        assertThatCode(() -> service.sendTest(dto, new Utilisateur())).doesNotThrowAnyException();
+        verify(previewConventionFactory).createFictionalConvention(any());
+
+        // destinataire vide : la convention fictive n'est même pas construite
+        SendMailTestDto sansDestinataire = new SendMailTestDto();
+        sansDestinataire.setTemplateMail("TEST");
+        sansDestinataire.setTo("");
+        service.sendTest(sansDestinataire, new Utilisateur());
+        verify(previewConventionFactory, times(1)).createFictionalConvention(any());
+
+        // template inconnu
+        SendMailTestDto inconnu = new SendMailTestDto();
+        inconnu.setTemplateMail("ABSENT");
+        assertThatThrownBy(() -> service.sendTest(inconnu, new Utilisateur())).isInstanceOf(AppException.class);
     }
 }
