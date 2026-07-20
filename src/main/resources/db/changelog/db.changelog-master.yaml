@@ -343,6 +343,9 @@ databaseChangeLog:
       file: 3.3.0-ajout-protection-social-organisme-accueil-convention.yaml
       relativeToChangelogFile: true
   - include:
+      file: 3.3.0-ajout-param-convention-protection-sociale.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 3.3.0-ajout-informations-complementaires-convention.yaml
       relativeToChangelogFile: true
   - include:
@@ -371,5 +374,11 @@ databaseChangeLog:
       file: 3.3.0-param-centre-gestion-selection-desactivation-auto-type-convention.yaml
       relativeToChangelogFile: true
   - include:
-      file: 3.3.0-convention-documents-etudiant.yaml
+      file: 3.3.0-utilisateur-centre-gestion-role.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-convention-documents-etudiant.yaml      
+      relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-courriel-perso-etudiant-taille.yaml
       relativeToChangelogFile: true

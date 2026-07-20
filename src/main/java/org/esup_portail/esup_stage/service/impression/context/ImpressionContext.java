@@ -135,6 +135,7 @@ public class ImpressionContext {
         private String codeCaisse;
         private List<HoraireIrregulierContext> horaireIrregulier = new ArrayList<>();
         private Boolean protectionSocialeOrganismeAccueil;
+        private String protectionSocialeOrganismeAccueilLibelle;
 
         public ConventionContext(Convention convention, CentreGestion centreEtablissement) {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -228,6 +229,7 @@ public class ImpressionContext {
                 ));
             }
             this.protectionSocialeOrganismeAccueil = convention.getProtectionSocialeOrganismeAccueil();
+            this.protectionSocialeOrganismeAccueilLibelle = this.protectionSocialeOrganismeAccueil == null ? "Non renseigné" : (this.protectionSocialeOrganismeAccueil ? "Oui" : "Non");
 
         }
     }

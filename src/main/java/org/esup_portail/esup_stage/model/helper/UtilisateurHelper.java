@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class UtilisateurHelper {
     public static boolean isAdmin(Utilisateur utilisateur) {
@@ -19,8 +20,12 @@ public class UtilisateurHelper {
     }
 
     public static boolean isRole(Utilisateur utilisateur, AppFonctionEnum[] fonctions, DroitEnum[] droits) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        return isRole(utilisateur.getRoles(), fonctions, droits);
+    }
+
+    public static boolean isRole(Collection<Role> roles, AppFonctionEnum[] fonctions, DroitEnum[] droits) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         boolean hasRight = false;
-        for (Role role : utilisateur.getRoles()) {
+        for (Role role : roles) {
             for (RoleAppFonction habilitation : role.getRoleAppFonctions()) {
                 if (Arrays.stream(fonctions).anyMatch(f -> f == habilitation.getAppFonction().getCode())) {
                     for (DroitEnum droit : droits) {

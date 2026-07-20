@@ -16,7 +16,7 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
     public CentreGestionRepository(EntityManager em) {
         super(em, CentreGestion.class, "cg");
         this.predicateWhitelist = Arrays.asList("id", "nomCentre", "niveauCentre.libelle");
-        this.specificFilterWhitelist = Arrays.asList("personnel");
+        this.specificFilterWhitelist = Arrays.asList("personnel", "centreIds");
     }
 
     public boolean etablissementExists() {
@@ -39,12 +39,18 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
         if (key.equals("personnel")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
         }
+        if (key.equals("centreIds")) {
+            clauses.add(getJsonArrayValues(parameter).isEmpty() ? "1 = 0" : "cg.id IN :centreIds");
+        }
     }
 
     @Override
     protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("personnel")) {
             query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
+        }
+        if (key.equals("centreIds") && !getJsonArrayValues(parameter).isEmpty()) {
+            query.setParameter("centreIds", getJsonArrayValues(parameter));
         }
     }
 }

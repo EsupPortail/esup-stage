@@ -136,6 +136,7 @@ public class PreviewConventionFactory {
         convention.setSujetStage("Projet d'integration et developpement");
         convention.setCommentaireDureeTravail("Temps plein avec horaires classiques");
         convention.setCourrielPersoEtudiant("jean.dupont.perso@example.com");
+        convention.setProtectionSocialeOrganismeAccueil(true);
         TempsTravail tempsTravail = new TempsTravail();
         tempsTravail.setId(1);
         tempsTravail.setLibelle("Temps plein");

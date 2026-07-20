@@ -50,6 +50,9 @@ public class PersonnelCentreGestion extends ObjetMetier implements Exportable {
     @JsonBackReference
     private CentreGestion centreGestion;
 
+    @Transient
+    private List<Role> roles = new ArrayList<>();
+
     @Column(nullable = false)
     private String uidPersonnel;
 

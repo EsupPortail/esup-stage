@@ -314,11 +314,19 @@
         <mat-divider class="mb-2"></mat-divider>
         <div class="row">
           <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2">En cochant la case approprié, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local :</div>
-            <mat-radio-group formControlName="protectionSocialeOrganismeAccueil">
-              <mat-radio-button [value]="true">OUI : cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français</mat-radio-button>
-              <mat-radio-button [value]="false">NON : la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant</mat-radio-button>
-            </mat-radio-group>
+            <div class="mb-2">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local. Décocher la case pour annuler la saisie :</div>
+            <div class="d-flex flex-column">
+              <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === true"
+                            [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
+                            (change)="setProtectionSocialeOrganismeAccueil(true, $event.checked)">
+                OUI : cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français
+              </mat-checkbox>
+              <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === false"
+                            [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
+                            (change)="setProtectionSocialeOrganismeAccueil(false, $event.checked)">
+                NON : la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant
+              </mat-checkbox>
+            </div>
           </div>
         </div>
 

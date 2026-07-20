@@ -390,6 +390,10 @@ export class StageComponent implements OnInit {
     }
   }
 
+  setProtectionSocialeOrganismeAccueil(value: boolean, checked: boolean): void {
+    this.form.get('protectionSocialeOrganismeAccueil')!.setValue(checked ? value : null);
+  }
+
   validateForm() : void{
     let status = 0;
     if (Object.keys(this.form.value).some(k => !!this.form.value[k])) status = 1;
