@@ -36,49 +36,53 @@ describe('SessionKeepAliveService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('pings while the user is active', fakeAsync(() => {
+  it('pings immediately on start (leading edge)', fakeAsync(() => {
+    service.start({ pingIntervalMs: INTERVAL });
+    expect(authService.pingSession).toHaveBeenCalledTimes(1);
+    service.stop();
+  }));
+
+  it('pings on each interval while the user is active', fakeAsync(() => {
     service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
+    authService.pingSession.calls.reset(); // on ignore le ping de démarrage
     tick(INTERVAL);
     expect(authService.pingSession).toHaveBeenCalledTimes(1);
-    service.stop();
-  }));
-
-  it('stops pinging once activity is older than the window (abandoned tab)', fakeAsync(() => {
-    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: INTERVAL });
-    tick(INTERVAL); // activité récente (entrée) -> 1 ping
-    tick(INTERVAL); // plus aucune activité depuis > fenêtre -> aucun ping
-    expect(authService.pingSession).toHaveBeenCalledTimes(1);
-    service.stop();
-  }));
-
-  it('keeps pinging as long as the user keeps interacting', fakeAsync(() => {
-    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: INTERVAL });
-    tick(INTERVAL);
     window.dispatchEvent(new KeyboardEvent('keydown'));
     tick(INTERVAL);
     expect(authService.pingSession).toHaveBeenCalledTimes(2);
     service.stop();
   }));
 
-  it('is idempotent: a second start() does not create a second interval', fakeAsync(() => {
-    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
-    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
-    tick(INTERVAL);
+  it('stops pinging once activity is older than the window (abandoned tab)', fakeAsync(() => {
+    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: INTERVAL });
+    authService.pingSession.calls.reset();
+    tick(INTERVAL); // activité (démarrage) encore dans la fenêtre -> 1 ping
+    tick(INTERVAL); // plus d'activité depuis > fenêtre -> aucun ping
     expect(authService.pingSession).toHaveBeenCalledTimes(1);
     service.stop();
   }));
 
   it('emits no ping after stop() (no leak)', fakeAsync(() => {
     service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
+    authService.pingSession.calls.reset();
     service.stop();
     tick(3 * INTERVAL);
     expect(authService.pingSession).not.toHaveBeenCalled();
   }));
 
+  it('is idempotent: a second start() does not create a second interval', fakeAsync(() => {
+    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
+    service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
+    // 1 ping de démarrage + 1 ping au tick = 2 (et pas 3, ce qui trahirait 2 timers)
+    tick(INTERVAL);
+    expect(authService.pingSession).toHaveBeenCalledTimes(2);
+    service.stop();
+  }));
+
   it('warns without clearing and stops on a 401 ping', fakeAsync(() => {
     authService.pingSession.and.returnValue(throwError(() => ({ status: 401 })));
     service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
-    tick(INTERVAL);
+    // le ping de démarrage suffit à déclencher la détection
     expect(messageService.setWarning).toHaveBeenCalledTimes(1);
     expect(service.isRunning()).toBeFalse();
   }));
@@ -87,21 +91,19 @@ describe('SessionKeepAliveService', () => {
     authService.pingSession.and.returnValue(throwError(() => ({ status: 401 })));
     authService.isCasRedirectInProgress.and.returnValue(true);
     service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
-    tick(INTERVAL);
     expect(messageService.setWarning).not.toHaveBeenCalled();
     service.stop();
   }));
 
-  it('ignores transient network errors and retries on the next tick', fakeAsync(() => {
-    authService.pingSession.and.returnValues(
-      throwError(() => ({ status: 0 })),
-      of({}),
+  it('ignores transient network errors and keeps running', fakeAsync(() => {
+    let call = 0;
+    authService.pingSession.and.callFake(() =>
+      call++ === 0 ? throwError(() => ({ status: 0 })) : of({}),
     );
     service.start({ pingIntervalMs: INTERVAL, activityWindowMs: 10 * INTERVAL });
-    tick(INTERVAL); // erreur réseau transitoire -> pas de warning, on continue
+    // ping de démarrage -> erreur réseau transitoire : pas de warning, on continue
     tick(INTERVAL); // ping suivant OK
     expect(messageService.setWarning).not.toHaveBeenCalled();
-    expect(authService.pingSession).toHaveBeenCalledTimes(2);
     expect(service.isRunning()).toBeTrue();
     service.stop();
   }));

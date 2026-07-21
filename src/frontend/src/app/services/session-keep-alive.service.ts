@@ -11,7 +11,8 @@ export interface KeepAliveOptions {
    *  du server.servlet.session.timeout. Défaut : 4 min. */
   pingIntervalMs?: number;
   /** Durée d'inactivité au-delà de laquelle on cesse de pinger (ms). Un onglet
-   *  abandonné laisse ainsi la session expirer. Défaut : identique à l'intervalle. */
+   *  abandonné laisse ainsi la session expirer. Doit être > pingIntervalMs pour
+   *  ne pas sauter de ping en régime actif. Défaut : 2 × l'intervalle. */
   activityWindowMs?: number;
 }
 
@@ -77,7 +78,11 @@ export class SessionKeepAliveService implements OnDestroy {
       return;
     }
     this.pingIntervalMs = options.pingIntervalMs ?? SessionKeepAliveService.DEFAULT_PING_INTERVAL_MS;
-    this.activityWindowMs = options.activityWindowMs ?? this.pingIntervalMs;
+    // Fenêtre d'activité DÉCOUPLÉE et plus large que l'intervalle : sinon, comme
+    // setInterval déclenche à "intervalle + ε", le calcul (now - lastActivity)
+    // dépasse la fenêtre et le ping est sauté juste au mauvais moment. On tolère
+    // par défaut 2 intervalles d'inactivité avant d'arrêter de pinger.
+    this.activityWindowMs = options.activityWindowMs ?? this.pingIntervalMs * 2;
     this.expiredNotified = false;
     // Entrer dans l'écran d'édition compte comme une activité.
     this.lastActivityAt = Date.now();
@@ -90,6 +95,10 @@ export class SessionKeepAliveService implements OnDestroy {
       });
       this.intervalId = setInterval(() => this.tick(), this.pingIntervalMs);
     });
+
+    // Ping immédiat (leading edge) : on rafraîchit la session dès l'entrée dans
+    // l'écran, sans attendre un intervalle entier (évite le trou de démarrage).
+    this.sendPing();
   }
 
   /**
@@ -111,6 +120,13 @@ export class SessionKeepAliveService implements OnDestroy {
   private tick(): void {
     // Pas d'activité récente : on laisse la session expirer (onglet abandonné).
     if (Date.now() - this.lastActivityAt > this.activityWindowMs) {
+      return;
+    }
+    this.sendPing();
+  }
+
+  private sendPing(): void {
+    if (this.expiredNotified) {
       return;
     }
     this.pingSub?.unsubscribe();
