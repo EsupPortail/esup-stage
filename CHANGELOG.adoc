@@ -1,5 +1,5 @@
 == Version stable
-https://github.com/EsupPortail/esup-stage/releases/tag/3.2.3[Esup-Stage v3.2.3]
+https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 
 == ESUP-Stage v3.3.0 (À venir)
 === Nouveautés
