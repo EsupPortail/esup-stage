@@ -61,6 +61,7 @@ class ConventionControllerTest {
     private ConventionJpaRepository conventionJpaRepository;
     private AppConfigService appConfigService;
     private ConventionService conventionService;
+    private org.esup_portail.esup_stage.service.HabilitationService habilitationService;
     private MailerService mailerService;
     private ImpressionService impressionService;
     private ConventionDocumentEtudiantService conventionDocumentEtudiantService;
@@ -96,6 +97,7 @@ class ConventionControllerTest {
         conventionJpaRepository = mock(ConventionJpaRepository.class);
         appConfigService = mock(AppConfigService.class);
         conventionService = mock(ConventionService.class);
+        habilitationService = mock(org.esup_portail.esup_stage.service.HabilitationService.class);
         mailerService = mock(MailerService.class);
         impressionService = mock(ImpressionService.class);
         conventionDocumentEtudiantService = mock(ConventionDocumentEtudiantService.class);
@@ -125,6 +127,7 @@ class ConventionControllerTest {
         controller.conventionJpaRepository = conventionJpaRepository;
         controller.appConfigService = appConfigService;
         controller.conventionService = conventionService;
+        controller.habilitationService = habilitationService;
         controller.mailerService = mailerService;
         controller.impressionService = impressionService;
         controller.conventionDocumentEtudiantService = conventionDocumentEtudiantService;
@@ -215,7 +218,8 @@ class ConventionControllerTest {
                 .extracting(AnneeUniversitaireDto::getAnnee).containsExactly("2025");
 
         connecte("ges1", Role.GES);
-        when(conventionJpaRepository.getGestionnaireAnnees("ges1")).thenReturn(List.of("2025/2026"));
+        when(habilitationService.getAuthorizedCentreIds(any(), any(), any())).thenReturn(List.of(3));
+        when(conventionJpaRepository.getAnneesByCentreIds(List.of(3))).thenReturn(List.of("2025/2026"));
         assertThat(controller.getListAnnees()).hasSize(1);
 
         connecte("ens1", Role.ENS);
@@ -253,7 +257,7 @@ class ConventionControllerTest {
         controller.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse());
         ArgumentCaptor<String> filtres = ArgumentCaptor.forClass(String.class);
         verify(conventionRepository).count(filtres.capture());
-        assertThat(filtres.getValue()).contains("etudiant.identEtudiant").contains("etu1");
+        assertThat(filtres.getValue()).contains("userScope").contains("\"uid\":\"etu1\"").contains("\"etudiant\":true");
 
         connecte("ens1", Role.ENS);
         controller.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse());
@@ -265,8 +269,8 @@ class ConventionControllerTest {
         List<String> tous = ArgumentCaptor.forClass(String.class).getAllValues();
         ArgumentCaptor<String> tousFiltres = ArgumentCaptor.forClass(String.class);
         verify(conventionRepository, org.mockito.Mockito.times(4)).count(tousFiltres.capture());
-        assertThat(tousFiltres.getAllValues().get(1)).contains("enseignant.uidEnseignant");
-        assertThat(tousFiltres.getAllValues().get(2)).contains("centreGestion.personnels");
+        assertThat(tousFiltres.getAllValues().get(1)).contains("\"enseignant\":true").contains("\"uid\":\"ens1\"");
+        assertThat(tousFiltres.getAllValues().get(2)).contains("userScope").contains("\"uid\":\"ges1\"");
         assertThat(tousFiltres.getAllValues().get(3)).isEqualTo("{}");
     }
 
@@ -395,7 +399,7 @@ class ConventionControllerTest {
         controller.unvalidate(42, "validationConvention");
         assertThat(convention.getValidationConvention()).isFalse();
 
-        verify(conventionService, org.mockito.Mockito.times(4)).canViewEditConvention(eq(convention), any());
+        verify(conventionService, org.mockito.Mockito.times(4)).canViewEditConvention(eq(convention), any(), any());
     }
 
     @Test
@@ -414,6 +418,10 @@ class ConventionControllerTest {
     void unEnseignantNeValideQueLaPedagogie() {
         connecte("ens1", Role.ENS);
         conventionValidable();
+        // La restriction « enseignant = validation pédagogique uniquement » est portée par
+        // ConventionService.checkValidationType (mocké ici) : on simule son refus.
+        org.mockito.Mockito.doThrow(new AppException(org.springframework.http.HttpStatus.BAD_REQUEST, "Type de validation inconnu"))
+                .when(conventionService).checkValidationType(any(Convention.class), any(), org.mockito.ArgumentMatchers.anyString());
 
         assertThatThrownBy(() -> controller.validate(42, "validationConvention"))
                 .isInstanceOf(AppException.class);

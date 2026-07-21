@@ -6,7 +6,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class ServiceControllerTest {
     private CentreGestionJpaRepository centreGestionJpaRepository;
     private StructureJpaRepository structureJpaRepository;
     private PaysJpaRepository paysJpaRepository;
-    private ConfidentialiteService confidentialiteService;
+    private ConfidentialiteAccessService confidentialiteAccessService;
 
     @BeforeEach
     void setUp() {
@@ -47,14 +47,14 @@ class ServiceControllerTest {
         centreGestionJpaRepository = mock(CentreGestionJpaRepository.class);
         structureJpaRepository = mock(StructureJpaRepository.class);
         paysJpaRepository = mock(PaysJpaRepository.class);
-        confidentialiteService = mock(ConfidentialiteService.class);
+        confidentialiteAccessService = mock(ConfidentialiteAccessService.class);
         controller.serviceRepository = serviceRepository;
         controller.serviceJpaRepository = serviceJpaRepository;
         controller.contactJpaRepository = contactJpaRepository;
         controller.centreGestionJpaRepository = centreGestionJpaRepository;
         controller.structureJpaRepository = structureJpaRepository;
         controller.paysJpaRepository = paysJpaRepository;
-        controller.confidentialiteService = confidentialiteService;
+        controller.confidentialiteAccessService = confidentialiteAccessService;
 
         when(serviceJpaRepository.saveAndFlush(any(Service.class))).thenAnswer(inv -> inv.getArgument(0));
     }
@@ -107,7 +107,8 @@ class ServiceControllerTest {
     @Test
     void laRechercheDUnGestionnaireEstRestreinteASesCentres() {
         connecte("ges1", Role.GES);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre(3)));
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre(3)));
         when(serviceRepository.countVisibleForCentres(List.of(3), "{}")).thenReturn(1L);
         when(serviceRepository.findPaginatedVisibleForCentres(List.of(3), 1, 50, "id", "asc", "{}"))
                 .thenReturn(List.of(service("Service RH", centre(3))));
@@ -115,7 +116,7 @@ class ServiceControllerTest {
         var reponse = controller.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse());
         assertThat(reponse.getTotal()).isEqualTo(1L);
 
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> controller.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse()))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
@@ -130,11 +131,12 @@ class ServiceControllerTest {
         assertThat(controller.getById(7).getNom()).isEqualTo("Service RH");
 
         connecte("ges1", Role.GES);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre(3)));
-        when(confidentialiteService.canViewService(any(CentreGestion.class), any(Service.class))).thenReturn(true);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre(3)));
+        when(confidentialiteAccessService.canViewService(anyList(), any(Service.class))).thenReturn(true);
         assertThat(controller.getById(7)).isNotNull();
 
-        when(confidentialiteService.canViewService(any(CentreGestion.class), any(Service.class))).thenReturn(false);
+        when(confidentialiteAccessService.canViewService(anyList(), any(Service.class))).thenReturn(false);
         assertThatThrownBy(() -> controller.getById(7))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
@@ -153,8 +155,10 @@ class ServiceControllerTest {
         assertThat(controller.getByStructure(5, -1)).hasSize(2);
 
         connecte("ges1", Role.GES);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre(3)));
-        when(confidentialiteService.canViewService(any(CentreGestion.class), any(Service.class))).thenReturn(true);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre(3)));
+        when(confidentialiteAccessService.canViewService(anyList(), any(Service.class))).thenReturn(true);
+        when(confidentialiteAccessService.canUseServiceForConvention(any(Service.class), any(CentreGestion.class), anyList())).thenReturn(true);
         when(centreGestionJpaRepository.findById(3)).thenReturn(centre(3));
 
         List<ServiceDto> filtres = controller.getByStructure(5, 3);
@@ -165,7 +169,7 @@ class ServiceControllerTest {
         when(centreGestionJpaRepository.findById(44)).thenReturn(null);
         assertThatThrownBy(() -> controller.getByStructure(5, 44)).isInstanceOf(AppException.class);
 
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> controller.getByStructure(5, -1)).isInstanceOf(AppException.class);
     }
 
@@ -208,6 +212,7 @@ class ServiceControllerTest {
     @Test
     void createPourUnGestionnaireUtiliseLeCentreDemande() {
         connecte("ges1", Role.GES);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
         when(paysJpaRepository.findById(1)).thenReturn(new Pays());
         when(structureJpaRepository.findById(5)).thenReturn(new Structure());
         CentreGestion demande = centre(4);

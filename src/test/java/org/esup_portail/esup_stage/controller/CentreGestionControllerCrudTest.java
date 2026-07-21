@@ -11,6 +11,8 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConfidentialiteService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.HabilitationService;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +49,10 @@ class CentreGestionControllerCrudTest {
     private AppConfigService appConfigService;
     private ConventionService conventionService;
     private ConfidentialiteJpaRepository confidentialiteJpaRepository;
+    private HabilitationService habilitationService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         controller = new CentreGestionController();
         centreGestionRepository = mock(CentreGestionRepository.class);
         centreGestionJpaRepository = mock(CentreGestionJpaRepository.class);
@@ -61,8 +64,11 @@ class CentreGestionControllerCrudTest {
         appConfigService = mock(AppConfigService.class);
         conventionService = mock(ConventionService.class);
         confidentialiteJpaRepository = mock(ConfidentialiteJpaRepository.class);
+        habilitationService = mock(HabilitationService.class);
+        UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository = mock(UtilisateurCentreGestionRoleJpaRepository.class);
 
         controller.centreGestionRepository = centreGestionRepository;
+        controller.utilisateurCentreGestionRoleJpaRepository = utilisateurCentreGestionRoleJpaRepository;
         controller.centreGestionJpaRepository = centreGestionJpaRepository;
         controller.critereGestionJpaRepository = critereGestionJpaRepository;
         controller.conventionJpaRepository = conventionJpaRepository;
@@ -72,11 +78,18 @@ class CentreGestionControllerCrudTest {
         controller.appConfigService = appConfigService;
         controller.conventionService = conventionService;
         controller.confidentialiteJpaRepository = confidentialiteJpaRepository;
-        controller.confidentialiteService = new org.esup_portail.esup_stage.service.ConfidentialiteService();
+        org.esup_portail.esup_stage.service.ConfidentialiteService confidentialiteService = new org.esup_portail.esup_stage.service.ConfidentialiteService();
+        ReflectionTestUtils.setField(confidentialiteService, "centreGestionJpaRepository", centreGestionJpaRepository);
+        controller.confidentialiteService = confidentialiteService;
+        controller.habilitationService = habilitationService;
 
         when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
         when(centreGestionJpaRepository.saveAndFlush(any(CentreGestion.class))).thenAnswer(inv -> inv.getArgument(0));
         when(confidentialiteJpaRepository.findById(anyString())).thenReturn(java.util.Optional.of(new Confidentialite()));
+        // Droit global accordé par défaut : les tests CRUD ne portent pas sur le contrôle d'accès,
+        // couvert séparément. Un administrateur est connecté par défaut (voir connecte).
+        when(habilitationService.hasGlobalRight(any(), any(), any())).thenReturn(true);
+        connecte("adm", Role.ADM);
     }
 
     @AfterEach
@@ -84,10 +97,15 @@ class CentreGestionControllerCrudTest {
         SecurityContextHolder.clearContext();
     }
 
-    private void connecte(String uid) {
+    private void connecte(String uid, String... roleCodes) {
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setUid(uid);
         utilisateur.setLogin(uid);
+        utilisateur.setRoles(java.util.Arrays.stream(roleCodes).map(code -> {
+            Role role = new Role();
+            role.setCode(code);
+            return role;
+        }).toList());
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(new CasUserDetailsImpl(utilisateur, List.of()), null));
     }

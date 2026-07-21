@@ -7,12 +7,14 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.ContactJpaRepository;
 import org.esup_portail.esup_stage.repository.ServiceJpaRepository;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -89,17 +91,17 @@ class PermissionEvaluatorsTest {
 
     // ---------------- ContactPermissionEvaluator ----------------
 
-    private ContactPermissionEvaluator contactEvaluator(ContactJpaRepository contactRepo, CentreGestionJpaRepository centreRepo) {
+    private ContactPermissionEvaluator contactEvaluator(ContactJpaRepository contactRepo, HabilitationService habilitationService) {
         ContactPermissionEvaluator evaluator = new ContactPermissionEvaluator();
         ReflectionTestUtils.setField(evaluator, "contactJpaRepository", contactRepo);
-        ReflectionTestUtils.setField(evaluator, "centreGestionJpaRepository", centreRepo);
+        ReflectionTestUtils.setField(evaluator, "habilitationService", habilitationService);
         return evaluator;
     }
 
     @Test
     void contactRestreintLEtudiantASesPropresContacts() {
         ContactJpaRepository contactRepo = mock(ContactJpaRepository.class);
-        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, mock(CentreGestionJpaRepository.class));
+        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, mock(HabilitationService.class));
         when(contactRepo.isOwner(3, 7)).thenReturn(true);
 
         assertThat(evaluator.hasPermission(utilisateur(7, "etu1", Role.ETU), null, new Object[]{3})).isTrue();
@@ -108,32 +110,31 @@ class PermissionEvaluatorsTest {
     @Test
     void contactAutoriseLeGestionnaireSurLesContactsDeSesCentres() {
         ContactJpaRepository contactRepo = mock(ContactJpaRepository.class);
-        CentreGestionJpaRepository centreRepo = mock(CentreGestionJpaRepository.class);
-        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, centreRepo);
-        when(centreRepo.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre(1), centre(2)));
+        HabilitationService habilitationService = mock(HabilitationService.class);
+        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, habilitationService);
+        when(habilitationService.isGestionnaire(any())).thenReturn(true);
+        when(habilitationService.getGestionnaireCentreIds(any())).thenReturn(List.of(1, 2));
         when(contactRepo.existsByIdAndCentreGestionIdIn(eq(3), eq(List.of(1, 2)))).thenReturn(true);
 
         assertThat(evaluator.hasPermission(utilisateur(9, "ges1", Role.GES), null, new Object[]{3})).isTrue();
     }
 
     @Test
-    void contactRefuseLeGestionnaireSansUidOuSansCentre() {
+    void contactRefuseLeGestionnaireSansCentre() {
         ContactJpaRepository contactRepo = mock(ContactJpaRepository.class);
-        CentreGestionJpaRepository centreRepo = mock(CentreGestionJpaRepository.class);
-        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, centreRepo);
+        HabilitationService habilitationService = mock(HabilitationService.class);
+        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, habilitationService);
+        when(habilitationService.isGestionnaire(any())).thenReturn(true);
+        // aucun centre rattaché → refus, sans interroger l'existence du contact
+        when(habilitationService.getGestionnaireCentreIds(any())).thenReturn(List.of());
 
-        // uid vide → refus immédiat, aucun accès au repository des centres
-        assertThat(evaluator.hasPermission(utilisateur(9, "  ", Role.GES), null, new Object[]{3})).isFalse();
-        verify(centreRepo, never()).findAllByGestionnaireUid(org.mockito.ArgumentMatchers.anyString());
-
-        // uid présent mais aucun centre rattaché → refus
-        when(centreRepo.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
         assertThat(evaluator.hasPermission(utilisateur(9, "ges1", Role.RESP_GES), null, new Object[]{3})).isFalse();
+        verify(contactRepo, never()).existsByIdAndCentreGestionIdIn(anyInt(), any());
     }
 
     @Test
     void contactAutoriseLesAutresRoles() {
-        ContactPermissionEvaluator evaluator = contactEvaluator(mock(ContactJpaRepository.class), mock(CentreGestionJpaRepository.class));
+        ContactPermissionEvaluator evaluator = contactEvaluator(mock(ContactJpaRepository.class), mock(HabilitationService.class));
 
         assertThat(evaluator.hasPermission(utilisateur(1, "ens1", Role.ENS), null, new Object[]{3})).isTrue();
     }

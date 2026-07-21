@@ -13,7 +13,7 @@ import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
 import org.esup_portail.esup_stage.service.AppConfigService;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.Structure.utils.CsvStructureImportUtils;
 import org.esup_portail.esup_stage.service.sirene.SireneService;
@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -67,6 +68,7 @@ class StructureControllerTest {
     private SireneService sireneService;
     private StructureService structureService;
     private SireneProperties sireneProperties;
+    private ConfidentialiteAccessService confidentialiteAccessService;
 
     @BeforeEach
     void setUp() {
@@ -83,6 +85,7 @@ class StructureControllerTest {
         sireneService = mock(SireneService.class);
         structureService = mock(StructureService.class);
         sireneProperties = new SireneProperties();
+        confidentialiteAccessService = mock(ConfidentialiteAccessService.class);
 
         ReflectionTestUtils.setField(controller, "structureRepository", structureRepository);
         ReflectionTestUtils.setField(controller, "structureJpaRepository", structureJpaRepository);
@@ -95,7 +98,7 @@ class StructureControllerTest {
         ReflectionTestUtils.setField(controller, "appConfigService", appConfigService);
         ReflectionTestUtils.setField(controller, "sireneService", sireneService);
         ReflectionTestUtils.setField(controller, "structureService", structureService);
-        ReflectionTestUtils.setField(controller, "confidentialiteService", new ConfidentialiteService());
+        ReflectionTestUtils.setField(controller, "confidentialiteAccessService", confidentialiteAccessService);
         ReflectionTestUtils.setField(controller, "objectMapper", new ObjectMapper());
         ReflectionTestUtils.setField(controller, "sireneProperties", sireneProperties);
 
@@ -210,7 +213,7 @@ class StructureControllerTest {
         Utilisateur gestionnaire = connecte("ges1", Role.GES);
         CentreGestion centre = new CentreGestion();
         centre.setId(11);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
         when(structureJpaRepository.findBySiret(SIRET_VALIDE)).thenReturn(null);
 
         StructureDto dto = controller.create(formulaireValide());
@@ -236,7 +239,7 @@ class StructureControllerTest {
     void createRefuseUnSiretInvalide() {
         connecte("ges1", Role.GES);
         CentreGestion centre = new CentreGestion();
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
         StructureFormDto dto = formulaireValide();
         dto.setNumeroSiret(SIRET_INVALIDE);
 
@@ -249,7 +252,7 @@ class StructureControllerTest {
     void lesSiretsLaPosteOntLeurPropreControle() {
         connecte("ges1", Role.GES);
         CentreGestion centre = new CentreGestion();
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
 
         StructureFormDto valide = formulaireValide();
         valide.setNumeroSiret(SIRET_LA_POSTE_VALIDE);
@@ -264,7 +267,7 @@ class StructureControllerTest {
     void createExigeApeOuActivitePrincipale() {
         connecte("ges1", Role.GES);
         CentreGestion centre = new CentreGestion();
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
         StructureFormDto dto = formulaireValide();
         dto.setActivitePrincipale(null);
         dto.setCodeNafN5(null);
@@ -304,6 +307,7 @@ class StructureControllerTest {
     @Test
     void laConfidentialiteEstModifiableParUnGestionnaire() {
         connecte("ges1", Role.GES);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
         Structure structure = new Structure();
         when(structureJpaRepository.findById(7)).thenReturn(structure);
         StructureConfidentialiteDto dto = new StructureConfidentialiteDto();
@@ -317,11 +321,12 @@ class StructureControllerTest {
     @Test
     void leCentreProprietaireEstControleParRole() {
         connecte("ges1", Role.GES);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
         Structure structure = new Structure();
         when(structureJpaRepository.findById(7)).thenReturn(structure);
         CentreGestion centre = new CentreGestion();
         centre.setId(11);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
         StructureCentreGestionProprietaireDto dto = new StructureCentreGestionProprietaireDto();
         dto.setIdCentreGestionProprietaire(11);
 
@@ -594,17 +599,16 @@ class StructureControllerTest {
 
         // gestionnaire sans centre rattaché : masqué
         connecte("ges1", Role.GES);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThat(controller.getById(7)).isNotNull();
 
         // gestionnaire dont le centre a (ou non) le droit de voir
-        ConfidentialiteService confidentialiteService = mock(ConfidentialiteService.class);
-        ReflectionTestUtils.setField(controller, "confidentialiteService", confidentialiteService);
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
         CentreGestion centre = new CentreGestion();
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre));
-        when(confidentialiteService.canViewStructureCoordinates(centre, structure)).thenReturn(true);
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.canViewStructureCoordinates(anyList(), eq(structure))).thenReturn(true);
         assertThat(controller.getById(7)).isNotNull();
-        when(confidentialiteService.canViewStructureCoordinates(centre, structure)).thenReturn(false);
+        when(confidentialiteAccessService.canViewStructureCoordinates(anyList(), eq(structure))).thenReturn(false);
         assertThat(controller.getById(7)).isNotNull();
     }
 
@@ -634,7 +638,7 @@ class StructureControllerTest {
 
         // gestionnaire sans centre rattaché
         connecte("ges1", Role.GES);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> controller.create(dtoGes))
                 .isInstanceOf(AppException.class)
                 .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
@@ -646,7 +650,7 @@ class StructureControllerTest {
         CentreGestion c2 = new CentreGestion();
         c2.setId(2);
         c2.setNomCentre("B");
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(c1, c2));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(c1, c2));
         assertThatThrownBy(() -> controller.create(dtoGes))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("Plusieurs centres");

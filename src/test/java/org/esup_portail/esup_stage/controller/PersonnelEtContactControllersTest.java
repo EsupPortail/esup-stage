@@ -6,7 +6,8 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
-import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +40,9 @@ class PersonnelEtContactControllersTest {
     private PersonnelCentreGestionController personnelController;
     private PersonnelCentreGestionRepository personnelCentreGestionRepository;
     private PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
+    private HabilitationService habilitationService;
+    private UtilisateurJpaRepository utilisateurJpaRepository;
+    private RoleJpaRepository roleJpaRepository;
 
     // ------------------------------------------------------------------
     // ContactController
@@ -48,14 +54,23 @@ class PersonnelEtContactControllersTest {
     private ServiceJpaRepository serviceJpaRepository;
     private CentreGestionJpaRepository centreGestionJpaRepository;
     private CiviliteJpaRepository civiliteJpaRepository;
+    private ConfidentialiteAccessService confidentialiteAccessService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         personnelController = new PersonnelCentreGestionController();
         personnelCentreGestionRepository = mock(PersonnelCentreGestionRepository.class);
         personnelCentreGestionJpaRepository = mock(PersonnelCentreGestionJpaRepository.class);
+        habilitationService = mock(HabilitationService.class);
+        utilisateurJpaRepository = mock(UtilisateurJpaRepository.class);
+        roleJpaRepository = mock(RoleJpaRepository.class);
         personnelController.personnelCentreGestionRepository = personnelCentreGestionRepository;
         personnelController.personnelCentreGestionJpaRepository = personnelCentreGestionJpaRepository;
+        personnelController.habilitationService = habilitationService;
+        personnelController.utilisateurJpaRepository = utilisateurJpaRepository;
+        personnelController.roleJpaRepository = roleJpaRepository;
+        // Droit global accordé : les tests du personnel ne portent pas sur le contrôle d'accès.
+        when(habilitationService.hasGlobalRight(any(), any(), any())).thenReturn(true);
 
         contactController = new ContactController();
         contactJpaRepository = mock(ContactJpaRepository.class);
@@ -68,7 +83,8 @@ class PersonnelEtContactControllersTest {
         contactController.serviceJpaRepository = serviceJpaRepository;
         contactController.centreGestionJpaRepository = centreGestionJpaRepository;
         contactController.civiliteJpaRepository = civiliteJpaRepository;
-        contactController.confidentialiteService = new ConfidentialiteService();
+        confidentialiteAccessService = mock(ConfidentialiteAccessService.class);
+        contactController.confidentialiteAccessService = confidentialiteAccessService;
     }
 
     @AfterEach
@@ -105,6 +121,9 @@ class PersonnelEtContactControllersTest {
     @Test
     void updateCopieLesChampsDuPersonnel() {
         PersonnelCentreGestion existant = new PersonnelCentreGestion();
+        CentreGestion centre = new CentreGestion();
+        centre.setId(3);
+        existant.setCentreGestion(centre);
         when(personnelCentreGestionJpaRepository.findById(7)).thenReturn(existant);
         when(personnelCentreGestionJpaRepository.saveAndFlush(existant)).thenReturn(existant);
 
@@ -122,6 +141,11 @@ class PersonnelEtContactControllersTest {
 
     @Test
     void deleteSupprimeLePersonnel() {
+        PersonnelCentreGestion existant = new PersonnelCentreGestion();
+        CentreGestion centre = new CentreGestion();
+        centre.setId(3);
+        existant.setCentreGestion(centre);
+        when(personnelCentreGestionJpaRepository.findById(7)).thenReturn(existant);
         personnelController.delete(7);
 
         verify(personnelCentreGestionJpaRepository).deleteById(7);
@@ -204,17 +228,19 @@ class PersonnelEtContactControllersTest {
         return contact;
     }
 
-    private CentreGestion centreGestionnaire(String uid, int id) {
+    private CentreGestion centreGestionnaire(int id) {
         CentreGestion centre = new CentreGestion();
         centre.setId(id);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid(uid)).thenReturn(List.of(centre));
+        when(confidentialiteAccessService.isGestionnaire(any())).thenReturn(true);
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre));
         return centre;
     }
 
     @Test
     void laRechercheDUnGestionnaireEstLimiteeASesCentres() {
         connecte("ges1", Role.GES);
-        centreGestionnaire("ges1", 3);
+        centreGestionnaire(3);
+        when(confidentialiteAccessService.getVisibleCentreIds(anyList())).thenReturn(List.of(3));
         when(contactRepository.countVisibleForCentres(List.of(3), "{}")).thenReturn(1L);
         when(contactRepository.findPaginatedVisibleForCentres(List.of(3), 1, 50, "id", "asc", "{}"))
                 .thenReturn(List.of(contactAvecCentre(3)));
@@ -224,7 +250,7 @@ class PersonnelEtContactControllersTest {
         assertThat(reponse.getData()).hasSize(1);
 
         // gestionnaire sans centre rattaché : accès refusé
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> contactController.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse()))
                 .isInstanceOf(AppException.class);
     }
@@ -232,7 +258,8 @@ class PersonnelEtContactControllersTest {
     @Test
     void getByIdPourUnGestionnairePasseParLaVisibilite() {
         connecte("ges1", Role.GES);
-        centreGestionnaire("ges1", 3);
+        centreGestionnaire(3);
+        when(confidentialiteAccessService.getVisibleCentreIds(anyList())).thenReturn(List.of(3));
         Contact contact = contactAvecCentre(3);
         when(contactJpaRepository.findVisibleByIdForCentres(9, List.of(3))).thenReturn(contact);
 
@@ -256,36 +283,35 @@ class PersonnelEtContactControllersTest {
     @Test
     void getByServiceFiltreLesContactsInvisiblesDuGestionnaire() {
         connecte("ges1", Role.GES);
-        CentreGestion centreDemandeur = centreGestionnaire("ges1", 3);
-        ConfidentialiteService confidentialiteService = mock(ConfidentialiteService.class);
-        contactController.confidentialiteService = confidentialiteService;
+        centreGestionnaire(3);
 
         Contact visible = contactAvecCentre(3);
         Contact invisible = contactAvecCentre(8);
         when(contactJpaRepository.findByService(7)).thenReturn(List.of(visible, invisible));
-        when(confidentialiteService.canViewContact(centreDemandeur, visible)).thenReturn(true);
-        when(confidentialiteService.canViewContact(centreDemandeur, invisible)).thenReturn(false);
+        when(confidentialiteAccessService.canViewContact(anyList(), eq(visible))).thenReturn(true);
+        when(confidentialiteAccessService.canViewContact(anyList(), eq(invisible))).thenReturn(false);
 
         assertThat(contactController.getByService(7, -1)).hasSize(1);
         assertThat(contactController.getByServiceWithDetail(7, null)).hasSize(1);
 
         // gestionnaire sans centre : refus
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> contactController.getByService(7, -1)).isInstanceOf(AppException.class);
     }
 
     @Test
     void getByServicePourUneConventionFiltreParCentreCompatible() {
         connecte("ges1", Role.GES);
-        CentreGestion centreDemandeur = centreGestionnaire("ges1", 3);
-        ConfidentialiteService confidentialiteService = mock(ConfidentialiteService.class);
-        contactController.confidentialiteService = confidentialiteService;
+        centreGestionnaire(3);
 
         Contact duCentreConvention = contactAvecCentre(5);
         Contact rattacheAuDemandeur = contactAvecCentre(3);
         Contact etranger = contactAvecCentre(8);
         when(contactJpaRepository.findByService(7)).thenReturn(List.of(duCentreConvention, rattacheAuDemandeur, etranger));
-        when(confidentialiteService.canViewContact(any(CentreGestion.class), any(Contact.class))).thenReturn(true);
+        when(confidentialiteAccessService.canViewContact(anyList(), any(Contact.class))).thenReturn(true);
+        when(confidentialiteAccessService.canUseContactForConvention(eq(duCentreConvention), any(CentreGestion.class), anyList())).thenReturn(true);
+        when(confidentialiteAccessService.canUseContactForConvention(eq(rattacheAuDemandeur), any(CentreGestion.class), anyList())).thenReturn(true);
+        when(confidentialiteAccessService.canUseContactForConvention(eq(etranger), any(CentreGestion.class), anyList())).thenReturn(false);
 
         CentreGestion centreConvention = new CentreGestion();
         centreConvention.setId(5);
@@ -293,8 +319,8 @@ class PersonnelEtContactControllersTest {
 
         assertThat(contactController.getByService(7, 5)).hasSize(2); // centre convention + centre du demandeur
 
-        // le contact étranger passe si son centre est sans confidentialité
-        when(confidentialiteService.isNoConfidentiality(etranger.getCentreGestion())).thenReturn(true);
+        // le contact étranger passe si son centre devient utilisable pour la convention
+        when(confidentialiteAccessService.canUseContactForConvention(eq(etranger), any(CentreGestion.class), anyList())).thenReturn(true);
         assertThat(contactController.getByService(7, 5)).hasSize(3);
 
         // centre de convention inconnu
@@ -368,7 +394,7 @@ class PersonnelEtContactControllersTest {
         connecte("ges1", Role.GES);
 
         // un seul centre rattaché : choisi automatiquement
-        CentreGestion centre = centreGestionnaire("ges1", 3);
+        CentreGestion centre = centreGestionnaire(3);
         assertThat(contactController.create(formulaireContact(null)).getCentreGestion()).isSameAs(centre);
 
         // choix explicite d'un centre rattaché
@@ -382,13 +408,13 @@ class PersonnelEtContactControllersTest {
         // plusieurs centres sans choix explicite : refus
         CentreGestion autre = new CentreGestion();
         autre.setId(4);
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of(centre, autre));
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of(centre, autre));
         assertThatThrownBy(() -> contactController.create(formulaireContact(null)))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("doit etre renseigne");
 
         // aucun centre rattaché : refus
-        when(centreGestionJpaRepository.findAllByGestionnaireUid("ges1")).thenReturn(List.of());
+        when(confidentialiteAccessService.getCentresDemandeur(any())).thenReturn(List.of());
         assertThatThrownBy(() -> contactController.create(formulaireContact(null)))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("Impossible de determiner");

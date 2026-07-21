@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.model.RoleAppFonction;
 import org.esup_portail.esup_stage.repository.AppFonctionJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.RoleRepository;
+import org.esup_portail.esup_stage.repository.UtilisateurCentreGestionRoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ class RoleControllerTest {
     private RoleJpaRepository roleJpaRepository;
     private AppFonctionJpaRepository appFonctionJpaRepository;
     private UtilisateurJpaRepository utilisateurJpaRepository;
+    private UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository;
 
     @BeforeEach
     void setUp() {
@@ -40,10 +42,12 @@ class RoleControllerTest {
         roleJpaRepository = mock(RoleJpaRepository.class);
         appFonctionJpaRepository = mock(AppFonctionJpaRepository.class);
         utilisateurJpaRepository = mock(UtilisateurJpaRepository.class);
+        utilisateurCentreGestionRoleJpaRepository = mock(UtilisateurCentreGestionRoleJpaRepository.class);
         controller.roleRepository = roleRepository;
         controller.roleJpaRepository = roleJpaRepository;
         controller.appFonctionJpaRepository = appFonctionJpaRepository;
         controller.utilisateurJpaRepository = utilisateurJpaRepository;
+        controller.utilisateurCentreGestionRoleJpaRepository = utilisateurCentreGestionRoleJpaRepository;
 
         when(roleJpaRepository.saveAndFlush(any(Role.class))).thenAnswer(inv -> inv.getArgument(0));
     }

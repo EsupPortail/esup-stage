@@ -13,6 +13,7 @@ import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.interceptor.SecureInterceptor;
 import org.esup_portail.esup_stage.security.permission.PermissionEvaluator;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,6 +146,21 @@ class SecureInterceptorTests {
         @Bean
         SecureInterceptor secureInterceptor() {
             return new SecureInterceptor();
+        }
+
+        @Bean
+        HabilitationService habilitationService() throws Exception {
+            // L'autorisation « droit global » est déléguée à HabilitationService depuis #10583 ;
+            // on l'accorde ici pour que ces tests portent uniquement sur l'évaluateur de permission.
+            HabilitationService habilitationService = mock(HabilitationService.class);
+            when(habilitationService.hasRight(any(), any(), any())).thenReturn(true);
+            return habilitationService;
+        }
+
+        @Bean
+        org.esup_portail.esup_stage.repository.UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository() {
+            // Satisfait l'injection de champ héritée de HabilitationService sur le bean mocké.
+            return mock(org.esup_portail.esup_stage.repository.UtilisateurCentreGestionRoleJpaRepository.class);
         }
 
         @Bean

@@ -94,6 +94,12 @@ class ConventionServiceTest {
         service.ldapService = ldapService;
         service.signatureService = signatureService;
         ReflectionTestUtils.setField(service, "structureService", structureService);
+        HabilitationService habilitationService = mock(HabilitationService.class);
+        service.habilitationService = habilitationService;
+        // Rôles effectifs = rôles globaux de l'utilisateur (pas de rôle spécifique par centre dans ces tests) :
+        // rend transparente l'indirection introduite par #10583 et préserve les scénarios existants.
+        when(habilitationService.getEffectiveRoles(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any()))
+                .thenAnswer(inv -> ((org.esup_portail.esup_stage.model.Utilisateur) inv.getArgument(0)).getRoles());
 
         configGenerale = new ConfigGeneraleDto();
         configGenerale.setCodeUniversite("UL");

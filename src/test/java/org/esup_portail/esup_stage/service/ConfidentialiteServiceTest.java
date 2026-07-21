@@ -5,13 +5,29 @@ import org.esup_portail.esup_stage.model.Confidentialite;
 import org.esup_portail.esup_stage.model.Contact;
 import org.esup_portail.esup_stage.model.NiveauCentre;
 import org.esup_portail.esup_stage.model.Structure;
+import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ConfidentialiteServiceTest {
 
     private final ConfidentialiteService service = new ConfidentialiteService();
+    private CentreGestionJpaRepository centreGestionJpaRepository;
+
+    @BeforeEach
+    void setUp() {
+        centreGestionJpaRepository = mock(CentreGestionJpaRepository.class);
+        ReflectionTestUtils.setField(service, "centreGestionJpaRepository", centreGestionJpaRepository);
+        // Centre ÉTABLISSEMENT configuré en confidentialité « libre » : chaque centre porteur
+        // conserve alors sa propre confidentialité effective (héritage non forcé).
+        when(centreGestionJpaRepository.getCentreEtablissement())
+                .thenReturn(centre(99, ConfidentialiteService.CONFIDENTIALITE_LIBRE));
+    }
 
     private CentreGestion centre(int id, String codeConfidentialite) {
         CentreGestion centre = new CentreGestion();
@@ -21,6 +37,14 @@ class ConfidentialiteServiceTest {
             confidentialite.setCode(codeConfidentialite);
             centre.setCodeConfidentialite(confidentialite);
         }
+        return centre;
+    }
+
+    private CentreGestion etablissement(int id, String codeConfidentialite) {
+        CentreGestion centre = centre(id, codeConfidentialite);
+        NiveauCentre niveau = new NiveauCentre();
+        niveau.setLibelle(ConfidentialiteService.NIVEAU_ETABLISSEMENT);
+        centre.setNiveauCentre(niveau);
         return centre;
     }
 
@@ -54,20 +78,21 @@ class ConfidentialiteServiceTest {
 
         assertThat(service.getEffectiveConfidentialityForCentre(porteur))
                 .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
-        assertThat(service.isTotalConfidentiality(porteur)).isTrue();
-        assertThat(service.isFreeConfidentiality(porteur)).isTrue();
     }
 
     @Test
-    void confidentialiteLibreSuitLeChoixDesConventionsOrphelines() {
-        CentreGestion porteur = centre(2, ConfidentialiteService.CONFIDENTIALITE_LIBRE);
+    void leCentreEtablissementLibreSuitLeChoixDesConventionsOrphelines() {
+        // Le choix « conventions orphelines » n'a de sens qu'au niveau du centre ÉTABLISSEMENT :
+        // c'est lui qui arbitre la confidentialité effective quand il est configuré en « libre ».
+        CentreGestion etablissement = etablissement(2, ConfidentialiteService.CONFIDENTIALITE_LIBRE);
         Confidentialite orpheline = new Confidentialite();
         orpheline.setCode(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
-        porteur.setCodeConfidentialiteConventionOrpheline(orpheline);
+        etablissement.setCodeConfidentialiteConventionOrpheline(orpheline);
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(etablissement);
 
-        assertThat(service.getEffectiveConfidentialityForCentre(porteur))
+        assertThat(service.getEffectiveConfidentialityForCentre(etablissement))
                 .isEqualTo(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
-        assertThat(service.canViewCentreData(centre(1, null), porteur)).isTrue();
+        assertThat(service.canViewCentreData(centre(1, null), etablissement)).isTrue();
     }
 
     @Test
@@ -81,10 +106,8 @@ class ConfidentialiteServiceTest {
 
         assertThat(service.canViewContact(demandeur, contact)).isTrue();
         assertThat(service.canViewContact(demandeur, (Contact) null)).isFalse();
-        assertThat(service.canViewContact(demandeur, porteurOuvert)).isTrue();
         assertThat(service.canViewService(demandeur, serviceAccueil)).isTrue();
         assertThat(service.canViewService(demandeur, (org.esup_portail.esup_stage.model.Service) null)).isFalse();
-        assertThat(service.canViewService(demandeur, porteurOuvert)).isTrue();
     }
 
     @Test
@@ -108,18 +131,6 @@ class ConfidentialiteServiceTest {
         assertThat(service.canViewStructureCoordinates(demandeur, confidentielle)).isFalse();
 
         assertThat(service.canViewStructureCoordinates(demandeur, (Structure) null)).isFalse();
-    }
-
-    @Test
-    void lesCoordonneesDeStructureAvecPorteurExplicite() {
-        CentreGestion demandeur = centre(1, null);
-        Structure confidentielle = new Structure();
-        confidentielle.setConfidentialiteCoordonnees(true);
-
-        assertThat(service.canViewStructureCoordinates(demandeur, confidentielle, centre(2, ConfidentialiteService.PAS_DE_CONFIDENTIALITE))).isTrue();
-        assertThat(service.canViewStructureCoordinates(demandeur, confidentielle, null)).isFalse();
-        assertThat(service.canViewStructureCoordinates(demandeur, (Structure) null, centre(2, null))).isFalse();
-        assertThat(service.canViewStructureCoordinates(demandeur, centre(2, ConfidentialiteService.PAS_DE_CONFIDENTIALITE))).isTrue();
     }
 
     @Test

@@ -3,11 +3,14 @@ package org.esup_portail.esup_stage.security.userdetails;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Etudiant;
+import org.esup_portail.esup_stage.model.PersonnelCentreGestion;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
@@ -26,6 +29,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -43,6 +47,7 @@ class CasUserDetailsServiceImplTest {
     private AppConfigService appConfigService;
     private ConfigMissingService configMissingService;
     private AppliProperties appliProperties;
+    private HabilitationService habilitationService;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +61,8 @@ class CasUserDetailsServiceImplTest {
         appConfigService = mock(AppConfigService.class);
         configMissingService = mock(ConfigMissingService.class);
         appliProperties = mock(AppliProperties.class);
+        habilitationService = mock(HabilitationService.class);
+        ReflectionTestUtils.setField(service, "habilitationService", habilitationService);
         ReflectionTestUtils.setField(service, "utilisateurJpaRepository", utilisateurJpaRepository);
         ReflectionTestUtils.setField(service, "roleJpaRepository", roleJpaRepository);
         ReflectionTestUtils.setField(service, "personnelCentreGestionJpaRepository", personnelCentreGestionJpaRepository);
@@ -152,20 +159,53 @@ class CasUserDetailsServiceImplTest {
     }
 
     @Test
-    void unEnseignantRattacheAUnCentreDevientAussiGestionnaire() {
+    void unEnseignantRattacheAUnCentreRecoitLeRoleGestionnaireSurCeCentre() {
+        // Depuis #10583, le rôle gestionnaire n'est plus ajouté aux rôles globaux : il est
+        // appliqué sur chaque centre de gestion auquel le personnel est rattaché.
+        when(utilisateurJpaRepository.findOneByLogin("ens1")).thenReturn(null);
+        LdapUser ldapUser = ldapUser("uid-ens1");
+        when(ldapService.search(eq("/etudiant"), any(LdapSearchDto.class))).thenReturn(List.of());
+        when(ldapService.search(eq("/tuteur"), any(LdapSearchDto.class))).thenReturn(List.of(ldapUser));
+        when(roleJpaRepository.findOneByCode(Role.ENS)).thenReturn(role(Role.ENS));
+        Role roleGes = role(Role.GES);
+        when(roleJpaRepository.findOneByCode(Role.GES)).thenReturn(roleGes);
+        PersonnelCentreGestion personnel = new PersonnelCentreGestion();
+        CentreGestion centre = new CentreGestion();
+        centre.setId(3);
+        personnel.setCentreGestion(centre);
+        when(personnelCentreGestionJpaRepository.findByUidPersonnel("uid-ens1")).thenReturn(List.of(personnel));
+        when(habilitationService.getRolesByUtilisateurAndCentre(anyInt(), eq(3))).thenReturn(List.of());
+        when(ldapService.searchByLogin("ens1")).thenReturn(ldapUser);
+
+        UserDetails details = service.loadUserDetails(authentification("ens1"));
+
+        // Rôle global : uniquement enseignant
+        assertThat(details.getAuthorities()).extracting(GrantedAuthority::getAuthority)
+                .containsExactly(Role.ENS);
+        // Rôle gestionnaire posé sur le centre de rattachement
+        verify(habilitationService).replaceCentreRoles(any(Utilisateur.class), eq(3), eq(List.of(roleGes)));
+    }
+
+    @Test
+    void unEnseignantDejaHabiliteSurSonCentreNEstPasReinitialise() {
         when(utilisateurJpaRepository.findOneByLogin("ens1")).thenReturn(null);
         LdapUser ldapUser = ldapUser("uid-ens1");
         when(ldapService.search(eq("/etudiant"), any(LdapSearchDto.class))).thenReturn(List.of());
         when(ldapService.search(eq("/tuteur"), any(LdapSearchDto.class))).thenReturn(List.of(ldapUser));
         when(roleJpaRepository.findOneByCode(Role.ENS)).thenReturn(role(Role.ENS));
         when(roleJpaRepository.findOneByCode(Role.GES)).thenReturn(role(Role.GES));
-        when(personnelCentreGestionJpaRepository.countPersonnelByLogin("uid-ens1")).thenReturn(1L);
+        PersonnelCentreGestion personnel = new PersonnelCentreGestion();
+        CentreGestion centre = new CentreGestion();
+        centre.setId(3);
+        personnel.setCentreGestion(centre);
+        when(personnelCentreGestionJpaRepository.findByUidPersonnel("uid-ens1")).thenReturn(List.of(personnel));
+        // des rôles existent déjà sur ce centre : on ne les écrase pas
+        when(habilitationService.getRolesByUtilisateurAndCentre(anyInt(), eq(3))).thenReturn(List.of(role(Role.RESP_GES)));
         when(ldapService.searchByLogin("ens1")).thenReturn(ldapUser);
 
-        UserDetails details = service.loadUserDetails(authentification("ens1"));
+        service.loadUserDetails(authentification("ens1"));
 
-        assertThat(details.getAuthorities()).extracting(GrantedAuthority::getAuthority)
-                .contains(Role.ENS, Role.GES);
+        verify(habilitationService, org.mockito.Mockito.never()).replaceCentreRoles(any(), anyInt(), any());
     }
 
     @Test

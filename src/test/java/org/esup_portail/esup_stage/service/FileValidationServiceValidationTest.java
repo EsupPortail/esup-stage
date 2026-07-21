@@ -2,6 +2,9 @@ package org.esup_portail.esup_stage.service;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.filespec.PdfFileSpec;
+import com.itextpdf.kernel.pdf.filespec.PdfStringFS;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
@@ -36,6 +39,15 @@ class FileValidationServiceValidationTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         PdfDocument document = new PdfDocument(new PdfWriter(os));
         document.addNewPage();
+        document.close();
+        return os.toByteArray();
+    }
+
+    private byte[] pdfAvec(java.util.function.Consumer<PdfDocument> personnalisation) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PdfDocument document = new PdfDocument(new PdfWriter(os));
+        document.addNewPage();
+        personnalisation.accept(document);
         document.close();
         return os.toByteArray();
     }
@@ -124,21 +136,24 @@ class FileValidationServiceValidationTest {
 
     @Test
     void lesElementsActifsSontInterdits() {
-        String pdfJs = "%PDF-1.4\n/JavaScript (alert)\n%%EOF";
-        assertThatThrownBy(() -> service.validatePdf(
-                pdf("js.pdf", "application/pdf", pdfJs.getBytes(StandardCharsets.ISO_8859_1)), 10))
+        // La détection repose désormais sur l'inspection structurelle du graphe d'objets PDF :
+        // les scénarios doivent être de vrais PDF (iText) portant les constructions interdites.
+        byte[] pdfJs = pdfAvec(document ->
+                document.getCatalog().setOpenAction(PdfAction.createJavaScript("app.alert('x');")));
+        assertThatThrownBy(() -> service.validatePdf(pdf("js.pdf", "application/pdf", pdfJs), 10))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("JavaScript");
 
-        String pdfLaunch = "%PDF-1.4\n/Launch (calc.exe)\n%%EOF";
-        assertThatThrownBy(() -> service.validatePdf(
-                pdf("launch.pdf", "application/pdf", pdfLaunch.getBytes(StandardCharsets.ISO_8859_1)), 10))
+        byte[] pdfLaunch = pdfAvec(document ->
+                document.getCatalog().setOpenAction(PdfAction.createLaunch(new PdfStringFS("calc.exe"))));
+        assertThatThrownBy(() -> service.validatePdf(pdf("launch.pdf", "application/pdf", pdfLaunch), 10))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("lancement de programme");
 
-        String pdfEmbedded = "%PDF-1.4\n/EmbeddedFile (virus)\n%%EOF";
-        assertThatThrownBy(() -> service.validatePdf(
-                pdf("embed.pdf", "application/pdf", pdfEmbedded.getBytes(StandardCharsets.ISO_8859_1)), 10))
+        byte[] pdfEmbedded = pdfAvec(document -> document.addFileAttachment("virus.txt",
+                PdfFileSpec.createEmbeddedFileSpec(document, "contenu".getBytes(StandardCharsets.ISO_8859_1),
+                        "piece jointe", "virus.txt", null, null, null)));
+        assertThatThrownBy(() -> service.validatePdf(pdf("embed.pdf", "application/pdf", pdfEmbedded), 10))
                 .isInstanceOf(AppException.class)
                 .hasMessageContaining("fichier intégré");
     }
