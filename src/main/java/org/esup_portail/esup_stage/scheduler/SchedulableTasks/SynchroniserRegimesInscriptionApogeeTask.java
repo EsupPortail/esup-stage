@@ -9,30 +9,8 @@ import org.springframework.stereotype.Component;
 @Component("SynchroniserRegimesInscriptionApogee")
 public class SynchroniserRegimesInscriptionApogeeTask implements SchedulableTask {
 
-    public static final String NAME = "SynchroniserRegimesInscriptionApogee";
-    public static final String DEFAULT_CRON_EXPRESSION = "0 0 2 * * ?";
-
     @Autowired
     private RegimeInscriptionApogeeService regimeInscriptionApogeeService;
-
-    @Override
-    public void init() {
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public String getCronExpression() {
-        return DEFAULT_CRON_EXPRESSION;
-    }
-
-    @Override
-    public boolean isEnable() {
-        return true;
-    }
 
     @Override
     public Runnable getRunnable() {

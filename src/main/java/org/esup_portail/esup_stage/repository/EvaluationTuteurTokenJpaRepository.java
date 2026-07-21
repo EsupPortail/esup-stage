@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.repository;
 
 import org.esup_portail.esup_stage.model.EvaluationTuteurToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,11 @@ public interface EvaluationTuteurTokenJpaRepository extends JpaRepository<Evalua
             """)
     List<EvaluationTuteurToken> findByConventionIdAndTuteurId(@Param("conventionId") Integer conventionId,
                                                               @Param("tuteurId") Integer tuteurId);
+
+    @Modifying
+    @Query("DELETE FROM EvaluationTuteurToken t WHERE t.convention.id = :idConvention")
+    int deleteByConventionId(@Param("idConvention") int idConvention);
+
+    @Query("SELECT COUNT(t.id) FROM EvaluationTuteurToken t WHERE t.contact.service.structure.id = :idStructure")
+    Long countByContactStructure(@Param("idStructure") int idStructure);
 }

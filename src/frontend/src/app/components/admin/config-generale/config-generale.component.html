@@ -90,6 +90,32 @@
               <input matInput formControlName="codeCesure" />
             </mat-form-field>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Archivage et purge des conventions : délais en années, à compter de la fin du stage pour l'archivage et de la date d'archivage pour la purge</div>
+            </div>
+            <mat-form-field class="col-md-4" appearance="fill">
+              <mat-label>Archivage sans gratification</mat-label>
+              <input matInput type="number" min="1" max="99" formControlName="dureeArchivageConventionAnnees" aria-label="Délai d'archivage des conventions sans gratification, en années après la fin du stage" />
+              <span matTextSuffix>an(s)</span>
+              <mat-error *ngIf="formGenerale.get('dureeArchivageConventionAnnees')?.hasError('required')">Le délai d'archivage est obligatoire.</mat-error>
+              <mat-error *ngIf="formGenerale.get('dureeArchivageConventionAnnees')?.hasError('min') || formGenerale.get('dureeArchivageConventionAnnees')?.hasError('max')">Le délai d'archivage doit être compris entre 1 et 99 ans.</mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-md-4" appearance="fill">
+              <mat-label>Archivage avec gratification</mat-label>
+              <input matInput type="number" min="1" max="99" formControlName="dureeArchivageConventionGratifieeAnnees" aria-label="Délai d'archivage des conventions avec gratification, en années après la fin du stage" />
+              <span matTextSuffix>an(s)</span>
+              <mat-error *ngIf="formGenerale.get('dureeArchivageConventionGratifieeAnnees')?.hasError('required')">Le délai d'archivage est obligatoire.</mat-error>
+              <mat-error *ngIf="formGenerale.get('dureeArchivageConventionGratifieeAnnees')?.hasError('min') || formGenerale.get('dureeArchivageConventionGratifieeAnnees')?.hasError('max')">Le délai d'archivage doit être compris entre 1 et 99 ans.</mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-md-4" appearance="fill">
+              <mat-label>Purge après archivage</mat-label>
+              <input matInput type="number" min="1" max="99" formControlName="dureePurgeConventionAnnees" aria-label="Délai de purge des conventions archivées, en années après l'archivage" />
+              <span matTextSuffix>an(s)</span>
+              <mat-error *ngIf="formGenerale.get('dureePurgeConventionAnnees')?.hasError('required')">Le délai de purge est obligatoire.</mat-error>
+              <mat-error *ngIf="formGenerale.get('dureePurgeConventionAnnees')?.hasError('min') || formGenerale.get('dureePurgeConventionAnnees')?.hasError('max')">Le délai de purge doit être compris entre 1 et 99 ans.</mat-error>
+            </mat-form-field>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button class="valid-button" mat-flat-button>Valider</button>
           </div>

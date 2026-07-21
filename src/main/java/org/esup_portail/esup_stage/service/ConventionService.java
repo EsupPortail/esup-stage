@@ -314,6 +314,16 @@ public class ConventionService {
     }
 
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
+        // Une convention archivée n'est visible que par les admins, et uniquement en lecture seule
+        if (convention != null && convention.getDateArchivage() != null) {
+            if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            if (droit != DroitEnum.LECTURE) {
+                throw new AppException(HttpStatus.FORBIDDEN, "La convention est archivée : elle n'est plus modifiable");
+            }
+            return;
+        }
         if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             return;
         }

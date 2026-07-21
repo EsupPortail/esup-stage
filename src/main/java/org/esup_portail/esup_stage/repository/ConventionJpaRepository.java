@@ -78,19 +78,19 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.natureTravail.id = :idNatureTravail")
     Long countConventionWithNatureTravail(@Param("idNatureTravail") int idNatureTravail);
 
-    @Query("SELECT c FROM Convention c WHERE c.loginCreation = ?1 AND c.validationCreation = FALSE AND c.creationEnMasse = FALSE")
+    @Query("SELECT c FROM Convention c WHERE c.loginCreation = ?1 AND c.validationCreation = FALSE AND c.creationEnMasse = FALSE AND c.dateArchivage IS NULL")
     Convention findBrouillon(@Param("login") String login);
 
-    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE AND c.dateArchivage IS NULL")
     List<Convention> getConventionEnAttenteGestionnaire(@Param("annee") String annee);
 
-    @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userUid AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    @Query("SELECT c FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE c.annee = :annee AND p.uidPersonnel = :userUid AND c.validationCreation = TRUE AND c.validationConvention = FALSE AND c.dateArchivage IS NULL")
     List<Convention> getConventionEnAttenteGestionnaire(@Param("annee") String annee, @Param("userUid") String userUid);
 
-    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.centreGestion.id IN :idsCentreGestion AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.centreGestion.id IN :idsCentreGestion AND c.validationCreation = TRUE AND c.validationConvention = FALSE AND c.dateArchivage IS NULL")
     List<Convention> getConventionEnAttenteGestionnaireByCentreIds(@Param("annee") String annee, @Param("idsCentreGestion") Collection<Integer> idsCentreGestion);
 
-    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userUid AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE")
+    @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.enseignant.uidEnseignant = :userUid AND c.validationCreation = TRUE AND c.validationPedagogique = FALSE AND c.dateArchivage IS NULL")
     List<Convention> getConventionEnAttenteEnseignant(@Param("annee") String annee, @Param("userUid") String userUid);
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion and c.ufr.id.code = :codeUfr")
@@ -99,16 +99,16 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.centreGestion.id = :idCentreGestion AND c.etape.id.code = :codeEtape AND c.etape.id.codeVersionEtape = :codeVersionEtape")
     Long countConventionRattacheEtape(@Param("idCentreGestion") int idCentreGestion, @Param("codeEtape") String codeEtape, @Param("codeVersionEtape") String codeVersionEtape);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid AND c.creationEnMasse = FALSE ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c JOIN c.centreGestion cg JOIN cg.personnels p WHERE p.uidPersonnel = :uid AND c.creationEnMasse = FALSE AND c.dateArchivage IS NULL ORDER BY c.annee")
     List<String> getGestionnaireAnnees(@Param("uid") String uid);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.centreGestion.id IN :idsCentreGestion AND c.creationEnMasse = FALSE ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.centreGestion.id IN :idsCentreGestion AND c.creationEnMasse = FALSE AND c.dateArchivage IS NULL ORDER BY c.annee")
     List<String> getAnneesByCentreIds(@Param("idsCentreGestion") Collection<Integer> idsCentreGestion);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :uid AND c.creationEnMasse = FALSE ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.enseignant.uidEnseignant = :uid AND c.creationEnMasse = FALSE AND c.dateArchivage IS NULL ORDER BY c.annee")
     List<String> getEnseignantAnnees(@Param("uid") String uid);
 
-    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :uid AND c.creationEnMasse = FALSE ORDER BY c.annee")
+    @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.etudiant.identEtudiant = :uid AND c.creationEnMasse = FALSE AND c.dateArchivage IS NULL ORDER BY c.annee")
     List<String> getEtudiantAnnees(@Param("uid") String uid);
 
     @Query("SELECT DISTINCT(c.annee) FROM Convention c WHERE c.creationEnMasse = FALSE ORDER BY c.annee")
@@ -116,18 +116,38 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Transactional
     @Modifying
-    @Query("UPDATE Convention c SET c.verificationAdministrative = TRUE WHERE c.centreGestion.id = :idCentreGestion AND c.validationPedagogique = TRUE AND c.validationConvention = TRUE")
+    @Query("UPDATE Convention c SET c.verificationAdministrative = TRUE WHERE c.centreGestion.id = :idCentreGestion AND c.validationPedagogique = TRUE AND c.validationConvention = TRUE AND c.dateArchivage IS NULL")
     void updateVerificationAdministrative(@Param("idCentreGestion") int idCentreGestion);
 
     @Query("SELECT c.id FROM Convention c WHERE c.id != :conventionId AND c.etudiant.identEtudiant = :uid AND c.validationCreation = TRUE AND ((c.dateDebutStage >= :dateDebut AND c.dateFinStage <= :dateFin) OR (c.dateDebutStage <= :dateDebut AND c.dateFinStage >= :dateDebut) OR (c.dateDebutStage <= :dateFin AND c.dateFinStage >= :dateFin))")
     List<Integer> findDatesChevauchent(@Param("uid") String uid, @Param("conventionId") int conventionId, @Param("dateDebut") Date dateDebut, @Param("dateFin") Date dateFin);
 
-    @Query("SELECT c FROM Convention c WHERE c.documentId IS NOT NULL AND (c.dateSignatureEtudiant IS NULL OR c.dateDepotEtudiant IS NULL OR c.dateSignatureEnseignant IS NULL OR c.dateDepotEnseignant IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateDepotTuteur IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateDepotSignataire IS NULL OR c.dateSignatureViseur IS NULL OR c.dateDepotViseur IS NULL)")
+    @Query("SELECT c FROM Convention c WHERE c.dateArchivage IS NULL AND c.documentId IS NOT NULL AND (c.dateSignatureEtudiant IS NULL OR c.dateDepotEtudiant IS NULL OR c.dateSignatureEnseignant IS NULL OR c.dateDepotEnseignant IS NULL OR c.dateSignatureTuteur IS NULL OR c.dateDepotTuteur IS NULL OR c.dateSignatureSignataire IS NULL OR c.dateDepotSignataire IS NULL OR c.dateSignatureViseur IS NULL OR c.dateDepotViseur IS NULL)")
     List<Convention> getSignatureInfoToUpdate();
 
     @Query("SELECT c FROM Convention c WHERE c.structure.id = :structureId")
     List<Convention> findByStructureId(@Param("structureId") int structureId);
 
-    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL")
+    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL AND c.dateArchivage IS NULL")
     List<Convention> findConventionNonSignees();
+
+    // Une convention est considérée "avec gratification" si le témoin est levé ou si un montant est renseigné
+    @Transactional
+    @Modifying
+    @Query("UPDATE Convention c SET c.dateArchivage = :dateArchivage WHERE c.dateArchivage IS NULL AND (" +
+            " ((c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))" +
+            "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilAvecGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilAvecGratification)))" +
+            " OR ((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = '')" +
+            "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilSansGratification)))" +
+            ")")
+    int archiverConventionsAvant(@Param("seuilSansGratification") Date seuilSansGratification, @Param("seuilAvecGratification") Date seuilAvecGratification, @Param("dateArchivage") Date dateArchivage);
+
+    @Query("SELECT c.id FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivage < :seuil")
+    List<Integer> findIdsConventionsAPurger(@Param("seuil") Date seuil);
+
+    @Query("SELECT c.id FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NULL")
+    List<Integer> findIdsConventionsFichiersAArchiver();
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.id = :idStructure")
+    Long countByStructure(@Param("idStructure") int idStructure);
 }

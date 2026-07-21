@@ -17,7 +17,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
-        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine", "archive");
     }
 
     @Override
@@ -165,6 +165,14 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("stageTermine")) {
             clauses.add("((FALSE = :stageTermine) OR c.dateFinStage < CURDATE())");
+        }
+        if (key.equals("archive")) {
+            // Les conventions archivées ne sont visibles que sur demande explicite (admin uniquement)
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("c.dateArchivage IS NOT NULL");
+            } else {
+                clauses.add("c.dateArchivage IS NULL");
+            }
         }
     }
 

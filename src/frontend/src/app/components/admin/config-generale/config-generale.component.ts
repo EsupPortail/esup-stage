@@ -88,6 +88,9 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
+      dureeArchivageConventionAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureeArchivageConventionGratifieeAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureePurgeConventionAnnees: [2, [Validators.required, Validators.min(1), Validators.max(99)]],
     });
 
     this.formTheme = this.fb.group({

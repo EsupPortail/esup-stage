@@ -428,6 +428,18 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Boolean protectionSocialeOrganismeAccueil;
 
+    @JsonView(Views.List.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivage;
+
+    // Date à laquelle les fichiers de la convention (documents déposés, PDF signés) ont été
+    // déplacés dans le dossier d'archives du serveur ; null = déplacement pas encore effectué
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivageFichiers;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);

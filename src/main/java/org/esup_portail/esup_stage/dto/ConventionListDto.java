@@ -48,6 +48,7 @@ public class ConventionListDto {
     private Date dateSignatureSignataire;
     private Date dateSignatureViseur;
     private String lieuStage;
+    private Date dateArchivage;
 
     public static ConventionListDto from(Convention convention) {
         ConventionListDto dto = new ConventionListDto();
@@ -79,6 +80,7 @@ public class ConventionListDto {
         dto.setDateSignatureSignataire(convention.getDateSignatureSignataire());
         dto.setDateSignatureViseur(convention.getDateSignatureViseur());
         dto.setLieuStage(convention.getLieuStage());
+        dto.setDateArchivage(convention.getDateArchivage());
         if (convention.getAvenants() != null) {
             dto.setAvenants(convention.getAvenants().stream().map(IdDto::from).toList());
         }

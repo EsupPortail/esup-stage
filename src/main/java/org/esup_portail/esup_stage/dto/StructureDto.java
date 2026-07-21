@@ -55,6 +55,9 @@ public class StructureDto {
     private String nomDirigeant;
     private String prenomDirigeant;
     private Boolean temEnServStructure;
+
+    @JsonView(Views.List.class)
+    private Date dateArchivage;
     private String batimentResidence;
     private String voie;
 
@@ -114,6 +117,7 @@ public class StructureDto {
         dto.setDateCreation(structure.getDateCreation());
         dto.setLoginModif(structure.getLoginModif());
         dto.setDateModif(structure.getDateModif());
+        dto.setDateArchivage(structure.getDateArchivage());
 
         if (!hideCoordinates) {
             dto.setTelephone(structure.getTelephone());

@@ -58,4 +58,13 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    // Délai (en années) après la fin du stage au bout duquel une convention SANS gratification est archivée
+    private int dureeArchivageConventionAnnees = 5;
+
+    // Délai (en années) après la fin du stage au bout duquel une convention AVEC gratification est archivée
+    private int dureeArchivageConventionGratifieeAnnees = 5;
+
+    // Délai (en années) après l'archivage au bout duquel une convention archivée est purgée définitivement
+    private int dureePurgeConventionAnnees = 2;
+
 }

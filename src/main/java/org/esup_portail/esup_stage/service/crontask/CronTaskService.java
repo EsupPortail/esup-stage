@@ -2,11 +2,14 @@ package org.esup_portail.esup_stage.service.crontask;
 
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.CronTask;
+import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.CronTaskJpaRepository;
-import org.esup_portail.esup_stage.scheduler.CronScheduler;
+import org.esup_portail.esup_stage.scheduler.SchedulableTasks.SchedulableTask;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,28 +22,34 @@ public class CronTaskService {
     private CronTaskJpaRepository cronTaskJpaRepository;
 
     @Autowired
-    private CronTaskJpaRepository CronTaskJpaRepository;
+    private ApplicationContext applicationContext;
 
     public List<CronTask> getActiveTasks() {
-        return CronTaskJpaRepository.findByActiveTrue();
+        return cronTaskJpaRepository.findByActiveTrue();
     }
 
     public CronTask updateLastExecution(Integer id) {
-        CronTask task = CronTaskJpaRepository.findById(id).orElseThrow();
+        CronTask task = cronTaskJpaRepository.findById(id).orElseThrow();
         task.setDateDernierExecution(new Date());
-        return CronTaskJpaRepository.save(task);
+        return cronTaskJpaRepository.save(task);
     }
 
-    public CronTask update(Integer id, String Nom, String ExpressionCron, Boolean Active) {
+    public CronTask update(Integer id, String nom, String expressionCron, Boolean active) {
         CronTask existingCronTask = cronTaskJpaRepository.findById(id).orElse(null);
-        if(existingCronTask == null) {
+        if (existingCronTask == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "CronTask not found");
         }
-        existingCronTask.setActive(Active);
-        existingCronTask.setExpressionCron(ExpressionCron);
-        existingCronTask.setNom(Nom);
+        // Le nom doit correspondre à un bean SchedulableTask, sinon la tâche ne sera plus jamais exécutée
+        checkSchedulableTaskExists(nom);
+        if (!CronExpression.isValidExpression(expressionCron)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Expression cron invalide : " + expressionCron);
+        }
+        existingCronTask.setActive(active);
+        existingCronTask.setExpressionCron(expressionCron);
+        existingCronTask.setNom(nom);
         existingCronTask.setDateModification(new Date());
-        existingCronTask.setLoginModification(ServiceContext.getUtilisateur().getLogin());
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        existingCronTask.setLoginModification(utilisateur != null ? utilisateur.getLogin() : "(auto)");
         return cronTaskJpaRepository.save(existingCronTask);
     }
 
@@ -48,4 +57,9 @@ public class CronTaskService {
         return cronTaskJpaRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "CronTask not found"));
     }
 
+    private void checkSchedulableTaskExists(String nom) {
+        if (nom == null || !applicationContext.containsBean(nom) || !(applicationContext.getBean(nom) instanceof SchedulableTask)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Aucune tâche planifiable ne correspond au nom : " + nom);
+        }
+    }
 }
