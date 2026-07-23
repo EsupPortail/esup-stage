@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { SILENT_REQUEST } from "../interceptors/http-context.tokens";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
@@ -28,6 +30,27 @@ export class AuthService {
         return EMPTY;
       })
     );
+  }
+
+  /**
+   * Ping léger et silencieux d'un endpoint authentifié.
+   *
+   * Sert au keep-alive : l'appel rafraîchit le lastAccessedTime de la session
+   * HTTP côté serveur sans afficher de loader ni de popup d'erreur (voir
+   * {@link SILENT_REQUEST}). Ne met volontairement pas à jour userConnected.
+   */
+  pingSession(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/users/connected", {
+      context: new HttpContext().set(SILENT_REQUEST, true),
+    });
+  }
+
+  /**
+   * Indique qu'une redirection CAS est déjà en cours (garde anti-boucle).
+   * S'appuie sur le marqueur posé par {@link handleUnauthorized} (valeur '1').
+   */
+  isCasRedirectInProgress(): boolean {
+    return sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1';
   }
 
   getAppVersion(): Observable<any> {
