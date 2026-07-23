@@ -27,7 +27,7 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
             for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(ege.convention.etape.id.code = :codeEtape" + i + " AND ege.convention.etape.id.codeUniversite = :codeUnivEtape" + i + " AND ege.convention.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.isEmpty()) {
+            if (!clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }

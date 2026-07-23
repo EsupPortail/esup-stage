@@ -1,0 +1,645 @@
+package org.esup_portail.esup_stage.controller;
+
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.enums.FolderEnum;
+import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.repository.*;
+import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
+import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.HabilitationService;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class CentreGestionControllerCrudTest {
+
+    private CentreGestionController controller;
+    private CentreGestionRepository centreGestionRepository;
+    private CentreGestionJpaRepository centreGestionJpaRepository;
+    private CritereGestionJpaRepository critereGestionJpaRepository;
+    private ConventionJpaRepository conventionJpaRepository;
+    private ContactJpaRepository contactJpaRepository;
+    private PersonnelCentreGestionJpaRepository personnelCentreGestionJpaRepository;
+    private ConsigneJpaRepository consigneJpaRepository;
+    private AppConfigService appConfigService;
+    private ConventionService conventionService;
+    private ConfidentialiteJpaRepository confidentialiteJpaRepository;
+    private HabilitationService habilitationService;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        controller = new CentreGestionController();
+        centreGestionRepository = mock(CentreGestionRepository.class);
+        centreGestionJpaRepository = mock(CentreGestionJpaRepository.class);
+        critereGestionJpaRepository = mock(CritereGestionJpaRepository.class);
+        conventionJpaRepository = mock(ConventionJpaRepository.class);
+        contactJpaRepository = mock(ContactJpaRepository.class);
+        personnelCentreGestionJpaRepository = mock(PersonnelCentreGestionJpaRepository.class);
+        consigneJpaRepository = mock(ConsigneJpaRepository.class);
+        appConfigService = mock(AppConfigService.class);
+        conventionService = mock(ConventionService.class);
+        confidentialiteJpaRepository = mock(ConfidentialiteJpaRepository.class);
+        habilitationService = mock(HabilitationService.class);
+        UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository = mock(UtilisateurCentreGestionRoleJpaRepository.class);
+
+        controller.centreGestionRepository = centreGestionRepository;
+        controller.utilisateurCentreGestionRoleJpaRepository = utilisateurCentreGestionRoleJpaRepository;
+        controller.centreGestionJpaRepository = centreGestionJpaRepository;
+        controller.critereGestionJpaRepository = critereGestionJpaRepository;
+        controller.conventionJpaRepository = conventionJpaRepository;
+        controller.contactJpaRepository = contactJpaRepository;
+        controller.personnelCentreGestionJpaRepository = personnelCentreGestionJpaRepository;
+        controller.consigneJpaRepository = consigneJpaRepository;
+        controller.appConfigService = appConfigService;
+        controller.conventionService = conventionService;
+        controller.confidentialiteJpaRepository = confidentialiteJpaRepository;
+        org.esup_portail.esup_stage.service.ConfidentialiteService confidentialiteService = new org.esup_portail.esup_stage.service.ConfidentialiteService();
+        ReflectionTestUtils.setField(confidentialiteService, "centreGestionJpaRepository", centreGestionJpaRepository);
+        controller.confidentialiteService = confidentialiteService;
+        controller.habilitationService = habilitationService;
+
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        when(centreGestionJpaRepository.saveAndFlush(any(CentreGestion.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(confidentialiteJpaRepository.findById(anyString())).thenReturn(java.util.Optional.of(new Confidentialite()));
+        // Droit global accordé par défaut : les tests CRUD ne portent pas sur le contrôle d'accès,
+        // couvert séparément. Un administrateur est connecté par défaut (voir connecte).
+        when(habilitationService.hasGlobalRight(any(), any(), any())).thenReturn(true);
+        connecte("adm", Role.ADM);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void connecte(String uid, String... roleCodes) {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setUid(uid);
+        utilisateur.setLogin(uid);
+        utilisateur.setRoles(java.util.Arrays.stream(roleCodes).map(code -> {
+            Role role = new Role();
+            role.setCode(code);
+            return role;
+        }).toList());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(new CasUserDetailsImpl(utilisateur, List.of()), null));
+    }
+
+    @Test
+    void searchNAffucheQueLesCentresValides() {
+        when(centreGestionRepository.count(anyString())).thenReturn(1L);
+        CentreGestion centre = new CentreGestion();
+        centre.setNomCentre("Centre Sciences");
+        when(centreGestionRepository.findPaginated(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+                .thenReturn(new ArrayList<>(List.of(centre)));
+
+        PaginatedResponse<?> reponse = controller.search(1, 50, "id", "asc", "{}", new MockHttpServletResponse());
+
+        assertThat(reponse.getTotal()).isEqualTo(1L);
+        assertThat(reponse.getData()).hasSize(1);
+        // le filtre validationCreation=true est injecté d'office
+        verify(centreGestionRepository).count(contains("validationCreation"));
+    }
+
+    @Test
+    void searchTrieLesCentresDeLUtilisateurEnPremier() {
+        connecte("ges1");
+        when(centreGestionRepository.count(anyString())).thenReturn(2L);
+        CentreGestion autre = new CentreGestion();
+        autre.setPersonnels(List.of());
+        CentreGestion mien = new CentreGestion();
+        PersonnelCentreGestion personnel = new PersonnelCentreGestion();
+        personnel.setUidPersonnel("ges1");
+        mien.setPersonnels(List.of(personnel));
+        when(centreGestionRepository.findPaginated(anyInt(), anyInt(), anyString(), anyString(), anyString()))
+                .thenReturn(new ArrayList<>(List.of(autre, mien)));
+
+        PaginatedResponse<?> reponse = controller.search(1, 50, "personnels", "asc", "{}", new MockHttpServletResponse());
+
+        assertThat(reponse.getData()).hasSize(2);
+    }
+
+    @Test
+    void brouillonExistantOuNeufSelonLUtilisateur() {
+        connecte("ges1");
+        CentreGestion brouillon = new CentreGestion();
+        when(centreGestionJpaRepository.findBrouillon("ges1")).thenReturn(brouillon);
+        assertThat(controller.getBrouillonByLogin()).isSameAs(brouillon);
+
+        when(centreGestionJpaRepository.findBrouillon("ges1")).thenReturn(null);
+        assertThat(controller.getBrouillonByLogin()).isNotNull();
+    }
+
+    @Test
+    void centreEtablissementIntrouvableEchoue() {
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(null);
+        assertThatThrownBy(() -> controller.getCentreEtablissement()).isInstanceOf(AppException.class);
+
+        CentreGestion etablissement = new CentreGestion();
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(etablissement);
+        assertThat(controller.getCentreEtablissement()).isSameAs(etablissement);
+    }
+
+    @Test
+    void getByIdRenvoieUnCentreVideSiInconnu() {
+        when(centreGestionJpaRepository.findById(7)).thenReturn(null);
+        assertThat(controller.getById(7)).isNotNull();
+
+        CentreGestion centre = new CentreGestion();
+        when(centreGestionJpaRepository.findById(8)).thenReturn(centre);
+        assertThat(controller.getById(8)).isSameAs(centre);
+    }
+
+    @Test
+    void createInitialiseSignatairesEtConsigne() {
+        ConfigGeneraleDto config = new ConfigGeneraleDto();
+        config.setCodeUniversite("UL");
+        when(appConfigService.getConfigGenerale()).thenReturn(config);
+        List<CentreGestionSignataire> signataires = List.of();
+        when(conventionService.initSignataires(any())).thenReturn(signataires);
+
+        CentreGestion centre = new CentreGestion();
+        CentreGestion cree = controller.create(centre);
+
+        assertThat(cree.getCodeUniversite()).isEqualTo("UL");
+        assertThat(cree.getSignataires()).isSameAs(signataires);
+        verify(consigneJpaRepository).saveAndFlush(any(Consigne.class));
+    }
+
+    @Test
+    void updatePropageLaVerificationAdministrative() {
+        CentreGestion centre = new CentreGestion();
+        centre.setId(5);
+        centre.setVerificationAdministrative(true);
+        Consigne consigne = new Consigne();
+        centre.setConsigne(consigne);
+        when(centreGestionJpaRepository.findById(5)).thenReturn(null);
+
+        CentreGestion resultat = controller.update(centre);
+
+        verify(conventionJpaRepository).updateVerificationAdministrative(5);
+        assertThat(resultat.getFicheEvaluation()).isNull();
+        assertThat(consigne.getCentreGestion()).isSameAs(centre);
+    }
+
+    @Test
+    void updateConserveLesCriteresExistantsSiAbsents() {
+        CentreGestion demande = new CentreGestion();
+        demande.setId(5);
+        CentreGestion actuel = new CentreGestion();
+        CritereGestion critere = new CritereGestion();
+        actuel.setCriteres(new ArrayList<>(List.of(critere)));
+        when(centreGestionJpaRepository.findById(5)).thenReturn(actuel);
+
+        CentreGestion resultat = controller.update(demande);
+
+        assertThat(resultat.getCriteres()).containsExactly(critere);
+    }
+
+    @Test
+    void validationCreationBasculeLeFlag() {
+        CentreGestion centre = new CentreGestion();
+        centre.setConsigne(new Consigne());
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+
+        CentreGestion resultat = controller.validationCreation(5);
+
+        assertThat(resultat.isValidationCreation()).isTrue();
+    }
+
+    @Test
+    void lesCompteursDelegentAuxRepositories() {
+        when(conventionJpaRepository.countConventionWithCentreGestion(5)).thenReturn(3L);
+        when(contactJpaRepository.countContactWithCentreGestion(5)).thenReturn(2L);
+        CentreGestion centre = new CentreGestion();
+        centre.setCriteres(new ArrayList<>(List.of(new CritereGestion())));
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+
+        assertThat(controller.countConventionWithCentre(5)).isEqualTo(3L);
+        assertThat(controller.countContactWithCentre(5)).isEqualTo(2L);
+        assertThat(controller.countCritereWithCentre(5)).isEqualTo(1);
+    }
+
+    @Test
+    void deleteNettoieLesRattachements() {
+        controller.delete(5);
+
+        verify(critereGestionJpaRepository).deleteCriteresByCentreId(5);
+        verify(personnelCentreGestionJpaRepository).deletePersonnelsByCentreId(5);
+        verify(centreGestionJpaRepository).deleteById(5);
+    }
+
+    // ------------------------------------------------------------------
+    // composantes et étapes
+    // ------------------------------------------------------------------
+
+    private org.esup_portail.esup_stage.service.apogee.ApogeeService apogeeService() {
+        org.esup_portail.esup_stage.service.apogee.ApogeeService apogeeService =
+                mock(org.esup_portail.esup_stage.service.apogee.ApogeeService.class);
+        controller.apogeeService = apogeeService;
+        return apogeeService;
+    }
+
+    private org.esup_portail.esup_stage.service.apogee.model.Composante composante(String code, String libelle) {
+        org.esup_portail.esup_stage.service.apogee.model.Composante composante =
+                new org.esup_portail.esup_stage.service.apogee.model.Composante();
+        composante.setCode(code);
+        composante.setLibelle(libelle);
+        return composante;
+    }
+
+    private CritereGestion critere(String code, String version, int idCentre) {
+        CritereGestion critereGestion = new CritereGestion();
+        CritereGestionId id = new CritereGestionId();
+        id.setCode(code);
+        id.setCodeVersionEtape(version);
+        critereGestion.setId(id);
+        critereGestion.setLibelle("Libellé " + code);
+        CentreGestion centre = new CentreGestion();
+        centre.setId(idCentre);
+        critereGestion.setCentreGestion(centre);
+        return critereGestion;
+    }
+
+    @Test
+    void lesComposantesDejaPrisesParUnAutreCentreSontMasquees() {
+        var apogee = apogeeService();
+        when(apogee.getListComposante()).thenReturn(new java.util.ArrayList<>(List.of(
+                composante("SCI", "Sciences"), composante("DRT", "Droit"))));
+        when(critereGestionJpaRepository.findComposantes())
+                .thenReturn(List.of(critere("DRT", "", 99))); // prise par le centre 99
+
+        var composantes = controller.getComposantes(5);
+
+        assertThat(composantes).extracting(org.esup_portail.esup_stage.service.apogee.model.Composante::getCode)
+                .containsExactly("SCI");
+    }
+
+    @Test
+    void lesComposantesDuCentreSontProjetees() {
+        when(critereGestionJpaRepository.findByCentreId(5)).thenReturn(List.of(critere("SCI", "", 5)));
+
+        var composantes = controller.getCentreComposante(5);
+
+        assertThat(composantes).hasSize(1);
+        assertThat(composantes.get(0).getCode()).isEqualTo("SCI");
+    }
+
+    @Test
+    void setComposanteAjouteEtSupprime() {
+        CentreGestion centre = new CentreGestion();
+        centre.setId(5);
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+        when(critereGestionJpaRepository.findByCentreId(5))
+                .thenReturn(List.of(critere("ANCIENNE", "", 5)));
+        when(conventionJpaRepository.countConventionRattacheUfr(5, "ANCIENNE")).thenReturn(0L);
+
+        controller.setComposante(5, List.of(composante("NOUVELLE", "Nouvelle")));
+
+        verify(critereGestionJpaRepository).delete(any(CritereGestion.class));
+        verify(critereGestionJpaRepository).save(any(CritereGestion.class));
+    }
+
+    @Test
+    void setComposanteRefuseLaSuppressionSiConventionRattachee() {
+        CentreGestion centre = new CentreGestion();
+        centre.setId(5);
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+        when(critereGestionJpaRepository.findByCentreId(5))
+                .thenReturn(List.of(critere("ANCIENNE", "", 5)));
+        when(conventionJpaRepository.countConventionRattacheUfr(5, "ANCIENNE")).thenReturn(2L);
+
+        assertThatThrownBy(() -> controller.setComposante(5, List.of()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("convention est déjà rattachée");
+    }
+
+    @Test
+    void lesEtapesDuCentreSontProjetees() {
+        when(critereGestionJpaRepository.findEtapesByCentreId(5))
+                .thenReturn(List.of(critere("L3", "1", 5)));
+
+        var etapes = controller.getCentreEtapes(5);
+
+        assertThat(etapes).hasSize(1);
+        assertThat(etapes.get(0).getCode()).isEqualTo("L3");
+        assertThat(etapes.get(0).getCodeVrsEtp()).isEqualTo("1");
+    }
+
+    @Test
+    void deleteEtapeRefuseSiConventionRattachee() {
+        when(critereGestionJpaRepository.findEtapeById("L3", "1")).thenReturn(critere("L3", "1", 5));
+        when(conventionJpaRepository.countConventionRattacheEtape(5, "L3", "1")).thenReturn(1L);
+
+        assertThatThrownBy(() -> controller.deleteEtape("L3", "1"))
+                .isInstanceOf(AppException.class);
+    }
+
+    @Test
+    void deleteEtapeSupprimeQuandLibre() {
+        when(critereGestionJpaRepository.findEtapeById("L3", "1")).thenReturn(critere("L3", "1", 5));
+        when(conventionJpaRepository.countConventionRattacheEtape(5, "L3", "1")).thenReturn(0L);
+
+        controller.deleteEtape("L3", "1");
+
+        verify(critereGestionJpaRepository).delete(any(CritereGestion.class));
+    }
+
+    @Test
+    void deleteEtapesCentreSupprimeToutOuRien() {
+        when(centreGestionJpaRepository.findById(5)).thenReturn(new CentreGestion());
+        when(critereGestionJpaRepository.findEtapesByCentreId(5))
+                .thenReturn(List.of(critere("L3", "1", 5)));
+        when(conventionJpaRepository.countConventionRattacheEtape(5, "L3", "1")).thenReturn(0L);
+
+        controller.deleteEtapesCentre(5);
+        verify(critereGestionJpaRepository).delete(any(CritereGestion.class));
+
+        when(centreGestionJpaRepository.findById(99)).thenReturn(null);
+        assertThatThrownBy(() -> controller.deleteEtapesCentre(99)).isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // étapes Apogée + exports
+    // ------------------------------------------------------------------
+
+    private org.esup_portail.esup_stage.service.apogee.model.EtapeApogee etapeApogee(String code, String version, String libelle) {
+        org.esup_portail.esup_stage.service.apogee.model.EtapeApogee etape =
+                new org.esup_portail.esup_stage.service.apogee.model.EtapeApogee();
+        etape.setCode(code);
+        etape.setCodeVrsEtp(version);
+        etape.setLibelle(libelle);
+        return etape;
+    }
+
+    @Test
+    void lesEtapesDejaPrisesParUnAutreCentreSontMasquees() {
+        var apogee = apogeeService();
+        when(apogee.getListEtape()).thenReturn(new ArrayList<>(List.of(
+                etapeApogee("L3", "1", "Licence 3"), etapeApogee("L2", "1", "Licence 2"))));
+        when(critereGestionJpaRepository.findEtapes()).thenReturn(List.of(critere("L3", "1", 99)));
+
+        var etapes = controller.getEtapes(5);
+
+        assertThat(etapes).extracting(org.esup_portail.esup_stage.service.apogee.model.EtapeApogee::getCode)
+                .containsExactly("L2");
+    }
+
+    @Test
+    void addEtapeAlimenteLaTableEtapeSiInconnue() {
+        ConfigGeneraleDto config = new ConfigGeneraleDto();
+        config.setCodeUniversite("UL");
+        when(appConfigService.getConfigGenerale()).thenReturn(config);
+        EtapeJpaRepository etapeJpaRepository = mock(EtapeJpaRepository.class);
+        controller.etapeJpaRepository = etapeJpaRepository;
+        when(centreGestionJpaRepository.findById(5)).thenReturn(new CentreGestion());
+        var dto = etapeApogee("M1", "2", "Master 1");
+
+        // étape inconnue : insérée dans la table Etape
+        when(etapeJpaRepository.findById("M1", "2", "UL")).thenReturn(null);
+        assertThat(controller.addEtape(5, dto)).isSameAs(dto);
+        verify(etapeJpaRepository).saveAndFlush(any(Etape.class));
+        verify(critereGestionJpaRepository).saveAndFlush(any(CritereGestion.class));
+
+        // étape déjà connue : pas de nouvelle insertion
+        when(etapeJpaRepository.findById("M1", "2", "UL")).thenReturn(new Etape());
+        controller.addEtape(5, dto);
+        verify(etapeJpaRepository, org.mockito.Mockito.times(1)).saveAndFlush(any(Etape.class));
+    }
+
+    @Test
+    void lesExportsDelegentAuRepository() {
+        when(centreGestionRepository.exportExcel("{}", "id", "asc", "{}")).thenReturn(new byte[]{1});
+        assertThat(controller.exportExcel("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody()).hasSize(1);
+
+        when(centreGestionRepository.exportCsv("{}", "id", "asc", "{}")).thenReturn(new StringBuilder("x"));
+        assertThat(controller.exportCsv("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody()).isEqualTo("x");
+    }
+
+    // ------------------------------------------------------------------
+    // normalisation de la confidentialité
+    // ------------------------------------------------------------------
+
+    private Confidentialite conf(String code) {
+        Confidentialite confidentialite = new Confidentialite();
+        confidentialite.setCode(code);
+        return confidentialite;
+    }
+
+    private void stubConfidentialitesParCode() {
+        when(confidentialiteJpaRepository.findById(anyString()))
+                .thenAnswer(inv -> java.util.Optional.of(conf(inv.getArgument(0))));
+    }
+
+    @Test
+    void leCentreEtablissementGereLaConfidentialiteDesOrphelines() {
+        stubConfidentialitesParCode();
+        when(conventionService.initSignataires(any())).thenReturn(List.of());
+        CentreGestion etab = new CentreGestion();
+        etab.setId(1);
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(etab);
+
+        // mode libre sans confidentialité orpheline : refus
+        CentreGestion demande = new CentreGestion();
+        demande.setId(1);
+        demande.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_LIBRE));
+        assertThatThrownBy(() -> controller.create(demande))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("orphelines");
+
+        // mode libre avec orpheline "totale" : accepté
+        demande.setCodeConfidentialiteConventionOrpheline(conf(ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        CentreGestion cree = controller.create(demande);
+        assertThat(cree.getCodeConfidentialite().getCode()).isEqualTo(ConfidentialiteService.CONFIDENTIALITE_LIBRE);
+        assertThat(cree.getCodeConfidentialiteConventionOrpheline().getCode()).isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+
+        // mode "totale" : la confidentialité orpheline suit celle du centre
+        CentreGestion totale = new CentreGestion();
+        totale.setId(1);
+        totale.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        assertThat(controller.create(totale).getCodeConfidentialiteConventionOrpheline().getCode())
+                .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+
+        // aucune confidentialité demandée : défaut "pas de confidentialité"
+        CentreGestion defaut = new CentreGestion();
+        defaut.setId(1);
+        assertThat(controller.create(defaut).getCodeConfidentialite().getCode())
+                .isEqualTo(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+    }
+
+    @Test
+    void laConfidentialiteDesCentresSuitCelleDeLEtablissement() {
+        stubConfidentialitesParCode();
+        when(conventionService.initSignataires(any())).thenReturn(List.of());
+        CentreGestion etab = new CentreGestion();
+        etab.setId(1);
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(etab);
+
+        // établissement en mode libre : le centre doit choisir
+        etab.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_LIBRE));
+        CentreGestion centre = new CentreGestion();
+        centre.setId(5);
+        assertThatThrownBy(() -> controller.create(centre))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("doit choisir");
+
+        // ... et ne peut pas choisir lui-même le mode libre
+        centre.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_LIBRE));
+        assertThatThrownBy(() -> controller.create(centre))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("ne peut pas persister");
+
+        // ... choix "totale" accepté
+        centre.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        assertThat(controller.create(centre).getCodeConfidentialite().getCode())
+                .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+
+        // établissement en mode imposé : le centre hérite quoi qu'il demande
+        etab.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        CentreGestion divergent = new CentreGestion();
+        divergent.setId(5);
+        divergent.setCodeConfidentialite(conf(ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+        assertThat(controller.create(divergent).getCodeConfidentialite().getCode())
+                .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+
+        // ... y compris sans demande explicite
+        CentreGestion sansChoix = new CentreGestion();
+        sansChoix.setId(5);
+        assertThat(controller.create(sansChoix).getCodeConfidentialite().getCode())
+                .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+
+        // ... demande conforme conservée
+        CentreGestion conforme = new CentreGestion();
+        conforme.setId(5);
+        conforme.setCodeConfidentialite(conf(ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        assertThat(controller.create(conforme).getCodeConfidentialite().getCode())
+                .isEqualTo(ConfidentialiteService.CONFIDENTIALITE_TOTALE);
+    }
+
+    @Test
+    void lesConfidentialitesSontExposees() {
+        when(confidentialiteJpaRepository.findAll()).thenReturn(List.of(new Confidentialite()));
+        assertThat(controller.getConfidentialites()).hasSize(1);
+
+        CentreGestion etab = new CentreGestion();
+        Confidentialite confidentialite = conf("1");
+        etab.setCodeConfidentialite(confidentialite);
+        when(centreGestionJpaRepository.getCentreEtablissement()).thenReturn(etab);
+        assertThat(controller.getEtablissementConfidentialite()).isSameAs(confidentialite);
+    }
+
+    // ------------------------------------------------------------------
+    // logo du centre
+    // ------------------------------------------------------------------
+
+    private java.nio.file.Path prepareLogoDir(java.nio.file.Path tempDir) throws Exception {
+        AppliProperties appliProperties = mock(AppliProperties.class);
+        when(appliProperties.getDataDir()).thenReturn(tempDir.toString());
+        controller.appliProperties = appliProperties;
+        java.nio.file.Path dossier = java.nio.file.Paths.get(tempDir.toString() + FolderEnum.CENTRE_GESTION_LOGOS);
+        java.nio.file.Files.createDirectories(dossier);
+        return dossier;
+    }
+
+    @Test
+    void leLogoEstInsereLuPuisSupprime(@TempDir java.nio.file.Path tempDir) throws Exception {
+        java.nio.file.Path dossier = prepareLogoDir(tempDir);
+        FichierJpaRepository fichierJpaRepository = mock(FichierJpaRepository.class);
+        when(fichierJpaRepository.saveAndFlush(any(Fichier.class))).thenAnswer(inv -> inv.getArgument(0));
+        controller.fichierJpaRepository = fichierJpaRepository;
+        FileValidationService fileValidationService = mock(FileValidationService.class);
+        byte[] pixels = {1, 2, 3, 4};
+        when(fileValidationService.validateImage(any())).thenReturn(new FileValidationService.ValidatedImage(pixels, "image/png", "png"));
+        controller.fileValidationService = fileValidationService;
+
+        CentreGestion centre = new CentreGestion();
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+        MockMultipartFile logo = new MockMultipartFile("logo", "logo.png", "image/png", pixels);
+
+        CentreGestion resultat = controller.insertLogoCentre(5, logo);
+        assertThat(resultat.getFichier()).isNotNull();
+        assertThat(resultat.getFichier().getNom()).endsWith(".png");
+        try (var fichiers = java.nio.file.Files.list(dossier)) {
+            assertThat(fichiers.count()).isEqualTo(1);
+        }
+
+        assertThat(controller.getLogoCentre(5).getBody()).isEqualTo(pixels);
+
+        controller.deleteLogoCentre(5);
+        assertThat(centre.getFichier()).isNull();
+        try (var fichiers = java.nio.file.Files.list(dossier)) {
+            assertThat(fichiers.count()).isZero();
+        }
+
+        // sans fichier : lecture nulle et suppression sans effet
+        assertThat(controller.getLogoCentre(5)).isNull();
+        controller.deleteLogoCentre(5);
+    }
+
+    @Test
+    void unLogoManquantSurLeDisqueEstSignale(@TempDir java.nio.file.Path tempDir) throws Exception {
+        prepareLogoDir(tempDir);
+        CentreGestion centre = new CentreGestion();
+        Fichier fichier = new Fichier();
+        fichier.setNom("disparu.png");
+        centre.setFichier(fichier);
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+
+        assertThatThrownBy(() -> controller.getLogoCentre(5))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("Logo non trouvé");
+
+        assertThatThrownBy(() -> controller.resizeLogoCentre(5, List.of(4, 4)))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("redimensionnement");
+    }
+
+    @Test
+    void resizeLogoRedimensionneLImage(@TempDir java.nio.file.Path tempDir) throws Exception {
+        java.nio.file.Path dossier = prepareLogoDir(tempDir);
+        CentreGestion centre = new CentreGestion();
+        Fichier fichier = new Fichier();
+        fichier.setNom("logo.png");
+        centre.setFichier(fichier);
+        when(centreGestionJpaRepository.findById(5)).thenReturn(centre);
+
+        java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(10, 10, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.nio.file.Path cheminLogo = dossier.resolve("0_logo.png");
+        javax.imageio.ImageIO.write(image, "png", cheminLogo.toFile());
+
+        controller.resizeLogoCentre(5, List.of(4, 6));
+
+        java.awt.image.BufferedImage redimensionnee = javax.imageio.ImageIO.read(cheminLogo.toFile());
+        assertThat(redimensionnee.getWidth()).isEqualTo(4);
+        assertThat(redimensionnee.getHeight()).isEqualTo(6);
+
+        // centre sans fichier : aucun traitement
+        when(centreGestionJpaRepository.findById(6)).thenReturn(new CentreGestion());
+        controller.resizeLogoCentre(6, List.of(4, 4));
+    }
+}
