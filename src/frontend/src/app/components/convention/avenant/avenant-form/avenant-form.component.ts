@@ -608,7 +608,7 @@ export class AvenantFormComponent implements OnInit {
       return true;
     }
 
-    const centreGestion = this.avenant.convention.centreGestion;
+    const centreGestion = this.convention.centreGestion;
 
     if (!centreGestion.autoriserImpressionAvenant) {
       return false;
