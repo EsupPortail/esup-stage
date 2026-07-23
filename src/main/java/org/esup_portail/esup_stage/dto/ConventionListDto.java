@@ -49,6 +49,7 @@ public class ConventionListDto {
     private Date dateSignatureViseur;
     private String lieuStage;
     private Date dateArchivage;
+    private Boolean gratification;
 
     public static ConventionListDto from(Convention convention) {
         ConventionListDto dto = new ConventionListDto();
@@ -81,6 +82,9 @@ public class ConventionListDto {
         dto.setDateSignatureViseur(convention.getDateSignatureViseur());
         dto.setLieuStage(convention.getLieuStage());
         dto.setDateArchivage(convention.getDateArchivage());
+        // Même critère que l'archivage : témoin levé ou montant renseigné
+        dto.setGratification(Boolean.TRUE.equals(convention.getGratificationStage())
+                || (convention.getMontantGratification() != null && !convention.getMontantGratification().isEmpty()));
         if (convention.getAvenants() != null) {
             dto.setAvenants(convention.getAvenants().stream().map(IdDto::from).toList());
         }

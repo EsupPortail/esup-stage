@@ -144,7 +144,6 @@ class ArchivageServiceTest {
 
     @Test
     void lArchivageUtiliseUnSeuilDeCinqAnsParDefaut() {
-        when(conventionJpaRepository.archiverConventionsAvant(any(), any(), any())).thenReturn(3);
         when(structureJpaRepository.desarchiverStructuresReutilisees()).thenReturn(0);
         when(structureJpaRepository.archiverStructuresSansConventionActive(any())).thenReturn(2);
 
@@ -152,11 +151,9 @@ class ArchivageServiceTest {
 
         ArgumentCaptor<Date> seuilSansGratification = ArgumentCaptor.forClass(Date.class);
         ArgumentCaptor<Date> seuilAvecGratification = ArgumentCaptor.forClass(Date.class);
-        ArgumentCaptor<Date> dateArchivage = ArgumentCaptor.forClass(Date.class);
-        verify(conventionJpaRepository).archiverConventionsAvant(seuilSansGratification.capture(), seuilAvecGratification.capture(), dateArchivage.capture());
+        verify(conventionJpaRepository).findIdsConventionsAArchiver(seuilSansGratification.capture(), seuilAvecGratification.capture());
         assertThat(anneeDe(seuilSansGratification.getValue())).isEqualTo(anneeDe(new Date()) - 5);
         assertThat(anneeDe(seuilAvecGratification.getValue())).isEqualTo(anneeDe(new Date()) - 5);
-        assertThat(dateArchivage.getValue()).isCloseTo(new Date(), 60_000);
         verify(structureJpaRepository).desarchiverStructuresReutilisees();
         verify(structureJpaRepository).archiverStructuresSansConventionActive(any());
     }
@@ -170,7 +167,7 @@ class ArchivageServiceTest {
 
         ArgumentCaptor<Date> seuilSansGratification = ArgumentCaptor.forClass(Date.class);
         ArgumentCaptor<Date> seuilAvecGratification = ArgumentCaptor.forClass(Date.class);
-        verify(conventionJpaRepository).archiverConventionsAvant(seuilSansGratification.capture(), seuilAvecGratification.capture(), any());
+        verify(conventionJpaRepository).findIdsConventionsAArchiver(seuilSansGratification.capture(), seuilAvecGratification.capture());
         assertThat(anneeDe(seuilSansGratification.getValue())).isEqualTo(anneeDe(new Date()) - 3);
         assertThat(anneeDe(seuilAvecGratification.getValue())).isEqualTo(anneeDe(new Date()) - 7);
     }
@@ -184,62 +181,67 @@ class ArchivageServiceTest {
 
         ArgumentCaptor<Date> seuilSansGratification = ArgumentCaptor.forClass(Date.class);
         ArgumentCaptor<Date> seuilAvecGratification = ArgumentCaptor.forClass(Date.class);
-        verify(conventionJpaRepository).archiverConventionsAvant(seuilSansGratification.capture(), seuilAvecGratification.capture(), any());
+        verify(conventionJpaRepository).findIdsConventionsAArchiver(seuilSansGratification.capture(), seuilAvecGratification.capture());
         assertThat(anneeDe(seuilSansGratification.getValue())).isEqualTo(anneeDe(new Date()) - 1);
         assertThat(anneeDe(seuilAvecGratification.getValue())).isEqualTo(anneeDe(new Date()) - 1);
     }
 
-    // ------------------------------------------------------------------
-    // tri des fichiers vers le dossier d'archives
-    // ------------------------------------------------------------------
-
-    private Convention conventionArchiveeAvecFichiers(int id) {
+    @Test
+    void lArchivageMarqueLaConventionDansLaMemeTransactionQueSesFichiers() throws IOException {
         Convention convention = new Convention();
-        convention.setId(id);
-        convention.setDateArchivage(new Date());
+        convention.setId(7);
         Etudiant etudiant = new Etudiant();
         etudiant.setNom("DUPONT");
         etudiant.setPrenom("Marie");
         convention.setEtudiant(etudiant);
-        when(conventionJpaRepository.findIdsConventionsFichiersAArchiver()).thenReturn(List.of(id));
-        when(conventionJpaRepository.findById(id)).thenReturn(convention);
-        return convention;
-    }
-
-    @Test
-    void lesFichiersDesConventionsArchiveesSontTriesDansLeDossierArchives() throws IOException {
-        Convention convention = conventionArchiveeAvecFichiers(7);
-        assertThat(convention.getDateArchivage()).isNotNull();
-        when(conventionDocumentEtudiantService.archiverFichiers(eq(convention), any(Path.class))).thenReturn(2);
-        // Un PDF signé présent sur le disque
+        when(conventionJpaRepository.findIdsConventionsAArchiver(any(), any())).thenReturn(List.of(7));
+        when(conventionJpaRepository.findById(7)).thenReturn(convention);
+        when(conventionDocumentEtudiantService.archiverFichiers(eq(convention), any(Path.class))).thenReturn(1);
         Files.createDirectories(tempDir.resolve("signatures"));
         Files.write(tempDir.resolve("signatures").resolve("Convention_7_DUPONT_Marie_signe.pdf"), "PDF".getBytes(StandardCharsets.UTF_8));
 
-        int nb = service.archiverFichiersConventions();
+        service.archiver();
 
-        assertThat(nb).isEqualTo(1);
-        Path racineArchives = tempDir.resolve("archives");
-        // Le PDF signé a été déplacé directement à la racine des archives (son nom contient l'id de la convention)
-        assertThat(tempDir.resolve("signatures").resolve("Convention_7_DUPONT_Marie_signe.pdf")).doesNotExist();
-        assertThat(racineArchives.resolve("Convention_7_DUPONT_Marie_signe.pdf")).exists();
-        // Les documents étudiants sont regroupés dans un dossier portant l'id de la convention
-        verify(conventionDocumentEtudiantService).archiverFichiers(eq(convention), eq(racineArchives.resolve("convention_7")));
-        // Le traitement est tracé pour ne pas être rejoué
+        // Fichiers déplacés ET convention marquée archivée dans le même traitement
+        assertThat(tempDir.resolve("archives").resolve("Convention_7_DUPONT_Marie_signe.pdf")).exists();
+        assertThat(convention.getDateArchivage()).isNotNull();
         assertThat(convention.getDateArchivageFichiers()).isNotNull();
         verify(conventionJpaRepository).save(convention);
+
+        // La convention traitée alimente le rapport exportable en Excel
+        byte[] excel = service.exportRapportExcel();
+        assertThat(excel).isNotEmpty();
+        // Signature ZIP d'un fichier xlsx (OOXML)
+        assertThat(excel[0]).isEqualTo((byte) 'P');
+        assertThat(excel[1]).isEqualTo((byte) 'K');
     }
 
     @Test
-    void unEchecDeTriDesFichiersEstRetenteALaProchaineExecution() throws IOException {
-        Convention convention = conventionArchiveeAvecFichiers(8);
+    void unEchecSurLesFichiersEmpecheLArchivageDeLaConvention() throws IOException {
+        Convention convention = new Convention();
+        convention.setId(8);
+        when(conventionJpaRepository.findIdsConventionsAArchiver(any(), any())).thenReturn(List.of(8));
+        when(conventionJpaRepository.findById(8)).thenReturn(convention);
         when(conventionDocumentEtudiantService.archiverFichiers(eq(convention), any(Path.class))).thenThrow(new IOException("disque en lecture seule"));
 
-        int nb = service.archiverFichiersConventions();
+        service.archiver();
 
-        // Aucun succès : la date reste nulle, la convention sera retraitée au prochain passage
-        assertThat(nb).isZero();
+        // La convention reste active : elle n'est jamais considérée archivée si ses fichiers n'ont pas été traités
+        assertThat(convention.getDateArchivage()).isNull();
         assertThat(convention.getDateArchivageFichiers()).isNull();
         verify(conventionJpaRepository, never()).save(convention);
+    }
+
+    @Test
+    void lesEtatsIncoherentsSontReparesAvantLArchivage() {
+        when(conventionJpaRepository.reactiverConventionsSansFichiersTraites()).thenReturn(3);
+
+        String bilan = service.archiver();
+
+        // Les conventions marquées archivées sans fichiers traités sont réactivées avant la
+        // sélection : elles repassent par le circuit d'archivage atomique
+        verify(conventionJpaRepository).reactiverConventionsSansFichiersTraites();
+        assertThat(bilan).contains("3 convention(s) à l'état incohérent réactivée(s)");
     }
 
     // ------------------------------------------------------------------

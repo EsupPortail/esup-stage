@@ -42,6 +42,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
   @Input() confirmMessage: string = "";
 
   @Output() updated = new EventEmitter<any>();
+  @Output() rowClick = new EventEmitter<any>();
 
   @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;

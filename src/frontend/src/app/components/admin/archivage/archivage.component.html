@@ -1,0 +1,192 @@
+<mat-card class="mb-3">
+  <mat-card-content>
+    <h2 class="section-title"><mat-icon aria-hidden="true">archive</mat-icon> Archivage et purge des conventions</h2>
+    <p class="intro">
+      Les conventions terminées depuis le délai configuré sont archivées (consultables en lecture seule par les seuls administrateurs, fichiers déplacés vers le dossier <code>archives</code> du serveur),
+      puis <strong>définitivement supprimées</strong> après le délai de purge. Délais paramétrables dans les <a routerLink="/param-global/config-generale">Paramètres généraux</a>.
+    </p>
+
+    <div class="row stats-row mb-2" *ngIf="statistiques">
+      <div class="col-md-4">
+        <div class="stat-tile">
+          <div class="stat-value">{{ statistiques.conventionsArchivees }}</div>
+          <div class="stat-label">Conventions archivées</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-tile">
+          <div class="stat-value">{{ statistiques.conventionsFichiersATrier }}</div>
+          <div class="stat-label">Fichiers en attente de tri vers le dossier d'archives</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-tile">
+          <div class="stat-value">{{ statistiques.structuresArchivees }}</div>
+          <div class="stat-label">Établissements d'accueil archivés</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container" *ngIf="statistiques">
+      <table class="table table-bordered table-sm taches-table" role="table">
+        <thead class="thead-light">
+        <tr role="row">
+          <th role="columnheader">Tâche planifiée</th>
+          <th role="columnheader">Active</th>
+          <th role="columnheader">Dernière exécution</th>
+          <th role="columnheader">Prochaine exécution</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr role="row" *ngIf="statistiques.tacheArchivage as tache">
+          <td role="cell">Archivage</td>
+          <td role="cell">
+            <mat-icon class="etat-icon" [ngClass]="tache.active ? 'etat-actif' : 'etat-inactif'" aria-hidden="true">{{ tache.active ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ tache.active ? 'Oui' : 'Non' }}
+          </td>
+          <td role="cell">{{ tache.dateDernierExecution ? (tache.dateDernierExecution | date: 'dd/MM/yyyy HH:mm') : 'Jamais' }}</td>
+          <td role="cell">{{ statistiques.prochaineExecutionArchivage ? (statistiques.prochaineExecutionArchivage | date: 'dd/MM/yyyy HH:mm') : 'Non planifiée' }}</td>
+        </tr>
+        <tr role="row" *ngIf="statistiques.tachePurge as tache">
+          <td role="cell">Purge</td>
+          <td role="cell">
+            <mat-icon class="etat-icon" [ngClass]="tache.active ? 'etat-actif' : 'etat-inactif'" aria-hidden="true">{{ tache.active ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ tache.active ? 'Oui' : 'Non' }}
+          </td>
+          <td role="cell">{{ tache.dateDernierExecution ? (tache.dateDernierExecution | date: 'dd/MM/yyyy HH:mm') : 'Jamais' }}</td>
+          <td role="cell">{{ statistiques.prochaineExecutionPurge ? (statistiques.prochaineExecutionPurge | date: 'dd/MM/yyyy HH:mm') : 'Non planifiée' }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="taches-note mb-0">
+      Planification (cron, activation) modifiable dans <a routerLink="/param-global/taches-planifiees">Tâches planifiées</a> ; lancement manuel via la section Simulation ci-dessous.
+    </p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-3">
+  <mat-card-content>
+    <h2 class="section-title"><mat-icon aria-hidden="true">preview</mat-icon> Simulation</h2>
+    <p>
+      Visualisez ce que traiteraient les tâches si elles s'exécutaient maintenant, <strong>sans rien modifier</strong>.
+      L'export reprend l'ensemble des conventions de la simulation affichée (filtres compris).
+    </p>
+    <div class="simulation-switch mb-2" role="group" aria-label="Type de simulation">
+      <button mat-flat-button [ngClass]="typeSimulation === 'archivage' ? 'valid-button' : ''" (click)="changeTypeSimulation('archivage')" [attr.aria-pressed]="typeSimulation === 'archivage'">
+        Archivage<span *ngIf="resume"> ({{ resume.conventionsAArchiver }})</span>
+      </button>
+      <button mat-flat-button [ngClass]="typeSimulation === 'purge' ? 'valid-button' : ''" (click)="changeTypeSimulation('purge')" [attr.aria-pressed]="typeSimulation === 'purge'">
+        Purge<span *ngIf="resume"> ({{ resume.conventionsAPurger }})</span>
+      </button>
+    </div>
+    <p *ngIf="resume && typeSimulation === 'archivage'" class="simulation-seuils">
+      {{ resume.conventionsAArchiverSansGratification }} convention(s) sans gratification terminée(s) avant le {{ resume.seuilArchivageSansGratification | date: 'dd/MM/yyyy' }},
+      {{ resume.conventionsAArchiverAvecGratification }} avec gratification terminée(s) avant le {{ resume.seuilArchivageAvecGratification | date: 'dd/MM/yyyy' }}.
+    </p>
+    <p *ngIf="resume && typeSimulation === 'purge'" class="simulation-seuils">
+      {{ resume.conventionsAPurger }} convention(s) archivée(s) avant le {{ resume.seuilPurge | date: 'dd/MM/yyyy' }} : elles seront définitivement supprimées au prochain passage de la purge.
+    </p>
+
+    <app-table [service]="archivageService" [columns]="columns" [sortColumn]="'id'" [sortOrder]="'desc'" [filters]="filters" [exportColumns]="exportColumns"
+               matSort [matSortActive]="'id'" [matSortDirection]="'desc'"
+               (matSortChange)="appTable ? appTable.sorting($event) : null"
+               (rowClick)="goToConvention($event)"
+               [noResultText]="'Aucune convention concernée par la simulation'">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>
+        <td mat-cell *matCellDef="let row">{{row.id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="etudiant.nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.etudiant?.nom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="etudiant.prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+        <td mat-cell *matCellDef="let row">{{row.etudiant?.prenom}}</td>
+      </ng-container>
+      <ng-container matColumnDef="structure.raisonSociale">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Établissement d'accueil</th>
+        <td mat-cell *matCellDef="let row">{{row.structure?.raisonSociale}}</td>
+      </ng-container>
+      <ng-container matColumnDef="annee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année</th>
+        <td mat-cell *matCellDef="let row">{{row.annee}}</td>
+      </ng-container>
+      <ng-container matColumnDef="dateFinStage">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Fin du stage</th>
+        <td mat-cell *matCellDef="let row">{{row.dateFinStage | date: 'dd/MM/yyyy'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="gratification">
+        <th mat-header-cell *matHeaderCellDef>Gratification</th>
+        <td mat-cell *matCellDef="let row">{{row.gratification ? 'Oui' : 'Non'}}</td>
+      </ng-container>
+      <ng-container matColumnDef="dateArchivage">
+        <th mat-header-cell *matHeaderCellDef>Archivée le</th>
+        <td mat-cell *matCellDef="let row">{{row.dateArchivage ? (row.dateArchivage | date: 'dd/MM/yyyy') : '—'}}</td>
+      </ng-container>
+    </app-table>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="lancement-zone" *ngIf="canEdit() && afficherLancement()">
+  <mat-card-content>
+  <ng-container *ngIf="!progression?.enCours">
+    <div class="lancement-archivage" *ngIf="typeSimulation === 'archivage' && resume?.conventionsAArchiver > 0">
+      <p class="lancement-explication">
+        Après vérification de la liste ci-dessus, vous pouvez lancer l'archivage : les conventions listées seront archivées et leurs fichiers déplacés.
+      </p>
+      <span (confirm)="lancer('archivage')" confirmMessage="Lancer l'archivage maintenant ? Les conventions listées dans la simulation seront archivées et leurs fichiers déplacés vers le dossier d'archives.">
+            <button mat-flat-button class="valid-button">
+              <mat-icon aria-hidden="true">archive</mat-icon>
+              Lancer l'archivage{{ resume ? ' (' + resume.conventionsAArchiver + ' convention(s))' : '' }}
+            </button>
+          </span>
+    </div>
+    <div class="lancement-purge" *ngIf="typeSimulation === 'purge' && resume?.conventionsAPurger > 0">
+      <p class="lancement-explication">
+        La purge supprime <strong>définitivement</strong> les conventions listées ci-dessus et leurs données : vérifiez la liste (ou exportez-la) avant de lancer le traitement.
+      </p>
+      <mat-checkbox [(ngModel)]="purgeVerifiee" [disabled]="progression?.enCours">
+        J'ai vérifié la liste des conventions à purger ci-dessus
+      </mat-checkbox>
+      <div class="mt-2">
+            <span (confirm)="lancer('purge')" confirmMessage="Lancer la purge maintenant ? Les conventions listées dans la simulation seront DÉFINITIVEMENT supprimées. Cette action est irréversible.">
+              <button mat-flat-button color="warn" [disabled]="!purgeVerifiee">
+                <mat-icon aria-hidden="true">delete_forever</mat-icon>
+                Lancer la purge{{ resume ? ' (' + resume.conventionsAPurger + ' convention(s))' : '' }}
+              </button>
+            </span>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="progression" *ngIf="progression?.enCours" role="status" aria-live="polite">
+    <div class="progression-libelle">
+      {{ progression.tache }} en cours — {{ progression.etape }}
+      <span *ngIf="progression.total > 0"> : {{ progression.traitees }}/{{ progression.total }} ({{ pourcentage() }} %)</span>
+    </div>
+    <mat-progress-bar [mode]="progression.total > 0 ? 'determinate' : 'indeterminate'" [value]="pourcentage()"
+                      [attr.aria-valuetext]="progression.total > 0 ? progression.traitees + ' sur ' + progression.total : 'En cours'">
+    </mat-progress-bar>
+    <div class="progression-annulation mt-2">
+      <span (confirm)="annuler()" confirmMessage="Annuler le traitement en cours ? Ce qui a déjà été traité est conservé, le reste sera repris au prochain lancement.">
+        <button mat-stroked-button [disabled]="annulationDemandee">
+          <mat-icon aria-hidden="true">cancel</mat-icon>
+          {{ annulationDemandee ? 'Annulation en cours…' : 'Annuler' }}
+        </button>
+      </span>
+    </div>
+  </div>
+  <div class="progression-fin" *ngIf="progression && !progression.enCours && progression.message">
+    <div class="progression-bilan" [ngClass]="progression.erreur ? 'bilan-erreur' : (progression.annule ? 'bilan-interrompu' : 'bilan-succes')">
+      <mat-icon aria-hidden="true">{{ progression.erreur ? 'error' : (progression.annule ? 'warning' : 'check_circle') }}</mat-icon>
+      {{ progression.message }}
+    </div>
+    <button mat-stroked-button *ngIf="progression.rapportDisponible" (click)="exporterRapport()">
+      <mat-icon aria-hidden="true">download</mat-icon>
+      Exporter les {{ progression.rapportNbLignes }} convention(s) traitée(s) (Excel)
+    </button>
+  </div>
+  </mat-card-content>
+</mat-card>

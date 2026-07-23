@@ -856,6 +856,16 @@ public class Convention extends ObjetMetier implements Exportable {
             case "lieuStage":
                 value = getLieuStage();
                 break;
+            case "gratificationStage":
+                // Même critère que l'archivage : témoin levé ou montant renseigné
+                value = Boolean.TRUE.equals(getGratificationStage())
+                        || (getMontantGratification() != null && !getMontantGratification().isEmpty()) ? "Oui" : "Non";
+                break;
+            case "dateArchivage":
+                if (getDateArchivage() != null) {
+                    value = df.format(getDateArchivage());
+                }
+                break;
             default:
                 break;
         }

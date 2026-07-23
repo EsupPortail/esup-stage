@@ -132,21 +132,50 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     List<Convention> findConventionNonSignees();
 
     // Une convention est considérée "avec gratification" si le témoin est levé ou si un montant est renseigné
+    String CRITERE_AVEC_GRATIFICATION = "(c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))";
+    String CRITERE_SANS_GRATIFICATION = "((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = ''))";
+
+    // Conventions dont le délai d'archivage est dépassé (fin de stage, ou création pour les
+    // conventions sans dates). Une convention marquée archivée sans que ses fichiers aient été
+    // traités est considérée comme restant à archiver (l'archivage n'est effectif que fichiers compris).
+    String CRITERE_ARCHIVABLE = "(c.dateArchivage IS NULL OR c.dateArchivageFichiers IS NULL) AND (" +
+            " (" + CRITERE_AVEC_GRATIFICATION + " AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilAvecGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilAvecGratification)))" +
+            " OR (" + CRITERE_SANS_GRATIFICATION + " AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilSansGratification)))" +
+            ")";
+
+    // L'archivage se fait convention par convention (fichiers + marquage dans la même
+    // transaction) : on sélectionne les identifiants éligibles, le service fait le reste
+    @Query("SELECT c.id FROM Convention c WHERE " + CRITERE_ARCHIVABLE + " ORDER BY c.id")
+    List<Integer> findIdsConventionsAArchiver(@Param("seuilSansGratification") Date seuilSansGratification, @Param("seuilAvecGratification") Date seuilAvecGratification);
+
+    // Réparation : une convention n'est considérée archivée que si ses fichiers ont été
+    // traités ; les états incohérents (ex. hérités d'une ancienne version ou d'un incident)
+    // sont réactivés puis repassent par le circuit d'archivage normal
     @Transactional
     @Modifying
-    @Query("UPDATE Convention c SET c.dateArchivage = :dateArchivage WHERE c.dateArchivage IS NULL AND (" +
-            " ((c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))" +
-            "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilAvecGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilAvecGratification)))" +
-            " OR ((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = '')" +
-            "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuilSansGratification)))" +
-            ")")
-    int archiverConventionsAvant(@Param("seuilSansGratification") Date seuilSansGratification, @Param("seuilAvecGratification") Date seuilAvecGratification, @Param("dateArchivage") Date dateArchivage);
+    @Query("UPDATE Convention c SET c.dateArchivage = NULL WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NULL")
+    int reactiverConventionsSansFichiersTraites();
 
-    @Query("SELECT c.id FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivage < :seuil")
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE (c.dateArchivage IS NULL OR c.dateArchivageFichiers IS NULL) AND " + CRITERE_AVEC_GRATIFICATION +
+            " AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuil) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuil))")
+    long countAArchiverAvecGratification(@Param("seuil") Date seuil);
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE (c.dateArchivage IS NULL OR c.dateArchivageFichiers IS NULL) AND " + CRITERE_SANS_GRATIFICATION +
+            " AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :seuil) OR (c.dateFinStage IS NULL AND c.dateCreation < :seuil))")
+    long countAArchiverSansGratification(@Param("seuil") Date seuil);
+
+    // Seules les conventions complètement archivées (fichiers traités) sont purgeables
+    @Query("SELECT c.id FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NOT NULL AND c.dateArchivage < :seuil")
     List<Integer> findIdsConventionsAPurger(@Param("seuil") Date seuil);
 
-    @Query("SELECT c.id FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NULL")
-    List<Integer> findIdsConventionsFichiersAArchiver();
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.dateArchivage IS NOT NULL")
+    long countArchivees();
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NULL")
+    long countFichiersATrier();
+
+    @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NOT NULL AND c.dateArchivage < :seuil")
+    long countArchiveesAvant(@Param("seuil") Date seuil);
 
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.structure.id = :idStructure")
     Long countByStructure(@Param("idStructure") int idStructure);

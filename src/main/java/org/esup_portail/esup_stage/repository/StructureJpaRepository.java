@@ -55,4 +55,7 @@ public interface StructureJpaRepository extends JpaRepository<Structure, Integer
 
     @Query("SELECT s.id FROM Structure s WHERE s.dateArchivage IS NOT NULL AND s.dateArchivage < :seuil")
     List<Integer> findIdsStructuresAPurger(@Param("seuil") Date seuil);
+
+    @Query("SELECT COUNT(s.id) FROM Structure s WHERE s.dateArchivage IS NOT NULL")
+    long countArchivees();
 }
