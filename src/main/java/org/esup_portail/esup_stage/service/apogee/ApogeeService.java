@@ -488,7 +488,16 @@ public class ApogeeService {
     }
 
     public List<RegimeInscriptionDto> getRegimesInscriptions() {
-        String response = call("/regimesInscriptions", new HashMap<>());
+        String response;
+        try {
+            response = call("/regimesInscriptions", new HashMap<>());
+        } catch (AppException e) {
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND) {
+                LOGGER.warn("Aucun régime d'inscription retourné par Apogée (endpoint /regimesInscriptions absent ou vide). Vérifier la version d'ESUP-SISCOL et du client WS-Apogée (>= 65070).");
+                return List.of();
+            }
+            throw e;
+        }
 
         try {
             ObjectMapper mapper = new ObjectMapper();
