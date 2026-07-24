@@ -30,6 +30,10 @@ public interface EvaluationTuteurTokenJpaRepository extends JpaRepository<Evalua
     @Query("DELETE FROM EvaluationTuteurToken t WHERE t.convention.id = :idConvention")
     int deleteByConventionId(@Param("idConvention") int idConvention);
 
+    @Modifying
+    @Query("DELETE FROM EvaluationTuteurToken t WHERE t.contact.id IN :ids")
+    int deleteByContactIdIn(@Param("ids") List<Integer> ids);
+
     @Query("SELECT COUNT(t.id) FROM EvaluationTuteurToken t WHERE t.contact.service.structure.id = :idStructure")
     Long countByContactStructure(@Param("idStructure") int idStructure);
 }
