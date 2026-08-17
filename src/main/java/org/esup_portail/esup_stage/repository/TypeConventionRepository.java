@@ -23,7 +23,7 @@ public class TypeConventionRepository extends PaginationRepository<TypeConventio
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("codeCtrl", codeCtrl);
         List<Integer> results = query.getResultList();
-        if (id == 0 && results.isEmpty()) {
+        if (id == 0 && !results.isEmpty()) {
             return true;
         }
 

@@ -3,6 +3,8 @@ package org.esup_portail.esup_stage.service.apogee;
 import org.esup_portail.esup_stage.dto.RegimeInscriptionDto;
 import org.esup_portail.esup_stage.model.RegimeInscriptionApogee;
 import org.esup_portail.esup_stage.repository.RegimeInscriptionApogeeJpaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class RegimeInscriptionApogeeService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegimeInscriptionApogeeService.class);
 
     private static final String TEM_EN_SERV_OUI = "O";
     private static final String TEM_EN_SERV_NON = "N";
@@ -43,6 +47,13 @@ public class RegimeInscriptionApogeeService {
                         (ancienLibelle, nouveauLibelle) -> nouveauLibelle,
                         LinkedHashMap::new
                 ));
+
+        // Sécurité : une réponse Apogée vide (endpoint absent, 404, indisponibilité temporaire...)
+        // ne doit pas désactiver en masse les régimes déjà synchronisés. On saute la synchro.
+        if (regimesApogeeParCode.isEmpty()) {
+            LOGGER.warn("Synchronisation des régimes d'inscription ignorée : aucune donnée retournée par Apogée. Les régimes existants sont conservés en l'état.");
+            return getRegimesInscriptions();
+        }
 
         Map<String, RegimeInscriptionApogee> regimesExistantsParCode = regimeInscriptionApogeeJpaRepository.findAll().stream()
                 .collect(Collectors.toMap(RegimeInscriptionApogee::getCode, regime -> regime));

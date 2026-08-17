@@ -1,63 +1,125 @@
 package org.esup_portail.esup_stage.service.ldap;
 
-import com.sun.net.httpserver.HttpServer;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
+import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+/**
+ * Le web service LDAP est simulé par une ExchangeFunction : {@code corpsReponse}
+ * fixe la réponse JSON et {@code statutForce} le code HTTP.
+ */
 class LdapServiceTest {
 
-    private HttpServer server;
-    private AtomicReference<String> rawQuery;
     private LdapService service;
+    private ReferentielProperties referentielProperties;
+    private String corpsReponse = "[]";
+    private HttpStatus statutForce = HttpStatus.OK;
+    private final AtomicReference<String> derniereUrl = new AtomicReference<>();
 
     @BeforeEach
-    void setUp() throws IOException {
-        rawQuery = new AtomicReference<>();
-        server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/bySupannAliasLogin", exchange -> {
-            rawQuery.set(exchange.getRequestURI().getRawQuery());
-            byte[] body = "{\"supannAliasLogin\":\"ldap-user\"}".getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().add("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, body.length);
-            exchange.getResponseBody().write(body);
-            exchange.close();
-        });
-        server.start();
-
-        ReferentielProperties properties = new ReferentielProperties();
-        properties.setLogin("login");
-        properties.setPassword("password");
-        properties.setLdapUrl("http://localhost:" + server.getAddress().getPort());
-
-        service = new LdapService(WebClient.builder());
-        ReflectionTestUtils.setField(service, "referentielProperties", properties);
+    void setUp() {
+        ExchangeFunction exchange = request -> {
+            derniereUrl.set(request.url().toString());
+            return Mono.just(ClientResponse.create(statutForce)
+                    .header("Content-Type", "application/json")
+                    .body(corpsReponse)
+                    .build());
+        };
+        service = new LdapService(WebClient.builder().exchangeFunction(exchange));
+        referentielProperties = mock(ReferentielProperties.class);
+        when(referentielProperties.getLdapUrl()).thenReturn("http://ldap.test");
+        when(referentielProperties.getLogin()).thenReturn("user");
+        when(referentielProperties.getPassword()).thenReturn("secret");
+        ReflectionTestUtils.setField(service, "referentielProperties", referentielProperties);
     }
 
-    @AfterEach
-    void tearDown() {
-        server.stop(0);
+    @Test
+    void searchRetourneLesUtilisateursTrouves() {
+        corpsReponse = "[{\"uid\":\"etu1\",\"mail\":\"etu1@univ.fr\"},{\"uid\":\"etu2\"}]";
+        LdapSearchDto criteres = new LdapSearchDto();
+        criteres.setCodEtu("12345");
+
+        List<LdapUser> utilisateurs = service.search("/etudiant", criteres);
+
+        assertThat(utilisateurs).hasSize(2);
+        assertThat(utilisateurs.get(0).getUid()).isEqualTo("etu1");
+        assertThat(utilisateurs.get(0).getMail()).isEqualTo("etu1@univ.fr");
+        assertThat(derniereUrl.get()).isEqualTo("http://ldap.test/etudiant");
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"john_doe", "john-doe", "john&doe", "john%doe"})
-    void searchByLoginEncodesSpecialCharacters(String login) {
-        LdapUser user = service.searchByLogin(login);
+    @Test
+    void searchEchoueSurUneReponseIllisible() {
+        corpsReponse = "pas du json";
 
-        assertThat(user.getSupannAliasLogin()).isEqualTo("ldap-user");
-        assertThat(URLDecoder.decode(rawQuery.get(), StandardCharsets.UTF_8)).isEqualTo("login=" + login);
+        assertThatThrownBy(() -> service.search("/etudiant", new LdapSearchDto()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("technique");
+    }
+
+    @Test
+    void searchEchoueSurUneErreurHttp() {
+        statutForce = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        assertThatThrownBy(() -> service.search("/etudiant", new LdapSearchDto()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("technique");
+    }
+
+    @Test
+    void searchExigeDesIdentifiantsConfigures() {
+        when(referentielProperties.getLogin()).thenReturn(null);
+
+        assertThatThrownBy(() -> service.search("/etudiant", new LdapSearchDto()))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("technique");
+    }
+
+    @Test
+    void searchByLoginRetourneLUtilisateur() {
+        corpsReponse = "{\"uid\":\"prof1\",\"mail\":\"prof1@univ.fr\"}";
+
+        LdapUser utilisateur = service.searchByLogin("prof1");
+
+        assertThat(utilisateur.getUid()).isEqualTo("prof1");
+        assertThat(derniereUrl.get()).startsWith("http://ldap.test/bySupannAliasLogin").contains("login=prof1");
+    }
+
+    @Test
+    void searchByLoginSansLoginRetourneNull() {
+        assertThat(service.searchByLogin(null)).isNull();
+        assertThat(service.searchByLogin("")).isNull();
+    }
+
+    @Test
+    void searchByLoginSansReponseRetourneNull() {
+        corpsReponse = "";
+
+        assertThat(service.searchByLogin("inconnu")).isNull();
+    }
+
+    @Test
+    void searchByLoginEchoueSurUneReponseIllisible() {
+        corpsReponse = "pas du json";
+
+        assertThatThrownBy(() -> service.searchByLogin("prof1"))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("technique");
     }
 }
