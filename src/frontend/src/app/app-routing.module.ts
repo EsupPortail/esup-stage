@@ -183,8 +183,8 @@ const routes: Routes = [
     canActivate: [AuthGuard, ConfigMissingGuard],
     data: {
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]},
-      title: 'Archivage des conventions',
-      sitemap: {label: 'Archivage des conventions', group: 'Paramétrage global', order: 8}
+      title: 'Archivage',
+      sitemap: {label: 'Archivage', group: 'Paramétrage global', order: 8}
     }
   },
   {

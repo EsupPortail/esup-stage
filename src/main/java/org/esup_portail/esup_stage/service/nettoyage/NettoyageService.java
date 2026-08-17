@@ -1,24 +1,42 @@
 package org.esup_portail.esup_stage.service.nettoyage;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.ArchivageProgressionDto;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.repository.ContactJpaRepository;
 import org.esup_portail.esup_stage.repository.EvaluationTuteurTokenJpaRepository;
 import org.esup_portail.esup_stage.repository.ServiceJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +86,277 @@ public class NettoyageService {
 
     @Autowired
     private AppliProperties appliProperties;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private org.esup_portail.esup_stage.repository.ContactRepository contactRepository;
+
+    @Autowired
+    private org.esup_portail.esup_stage.repository.ServiceRepository serviceRepository;
+
+    // Filtre « inutilisé » à passer aux repositories de pagination
+    private static final String FILTRE_INUTILISE = "{\"inutilise\":{\"specific\":true,\"value\":true}}";
+
+    /**
+     * Cache court des compteurs d'inutilisés : le dénombrement est coûteux (sous-requêtes
+     * d'existence sur toute la table) et la page d'administration l'interroge à chaque
+     * ouverture d'onglet. Le cache est invalidé dès qu'un nettoyage a supprimé des données.
+     */
+    private static final long TTL_CACHE_COMPTEURS_MS = 120_000;
+    private final java.util.Map<String, long[]> cacheCompteurs = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public long compterContactsInutilises() {
+        return compteurCache("contacts", () -> contactRepository.count(FILTRE_INUTILISE));
+    }
+
+    public long compterServicesInutilises() {
+        return compteurCache("services", () -> serviceRepository.count(FILTRE_INUTILISE));
+    }
+
+    private long compteurCache(String cle, java.util.function.Supplier<Long> calcul) {
+        long maintenant = System.currentTimeMillis();
+        long[] entree = cacheCompteurs.get(cle);
+        if (entree != null && entree[1] > maintenant) {
+            return entree[0];
+        }
+        long valeur = calcul.get();
+        cacheCompteurs.put(cle, new long[]{valeur, maintenant + TTL_CACHE_COMPTEURS_MS});
+        return valeur;
+    }
+
+    private void invaliderCacheCompteurs() {
+        cacheCompteurs.clear();
+    }
+
+    // Colonnes des exports/récapitulatifs, réutilisées par le rapport Excel du lancement manuel
+    private static final List<String> COLONNES_CONTACT = Arrays.asList("N° du contact", "Nom", "Prénom", "Mail", "Téléphone", "Fonction", "Service", "Établissement d'accueil", "Login création", "Date de création");
+    private static final List<String> COLONNES_SERVICE = Arrays.asList("N° du service", "Nom", "Voie", "Code postal", "Commune", "Établissement d'accueil", "Login création", "Date de création");
+
+    // ------------------------------------------------------------------
+    // Lancement manuel depuis la page d'administration : traitement asynchrone,
+    // suivi de progression (n/total), annulation et rapport Excel des supprimés.
+    // ------------------------------------------------------------------
+
+    private final ArchivageProgressionDto progression = new ArchivageProgressionDto();
+    private final AtomicBoolean annulationDemandee = new AtomicBoolean(false);
+    private final List<Object[]> rapport = Collections.synchronizedList(new ArrayList<>());
+    private volatile String rapportType = "";
+
+    private final ExecutorService executeurManuel = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "nettoyage-manuel");
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    @PreDestroy
+    public void arreterExecuteur() {
+        executeurManuel.shutdownNow();
+    }
+
+    /**
+     * Lance en arrière-plan le nettoyage des contacts ou des services inutilisés. Un seul
+     * traitement à la fois ; l'avancement est suivi via {@link #getProgression()}.
+     */
+    public void demarrerNettoyageManuel(String type) {
+        boolean services = "services".equalsIgnoreCase(type);
+        synchronized (progression) {
+            if (progression.isEnCours()) {
+                throw new AppException(HttpStatus.CONFLICT, "Un nettoyage est déjà en cours");
+            }
+            progression.setEnCours(true);
+            progression.setTache(services ? "Nettoyage des services" : "Nettoyage des contacts");
+            progression.setEtape("Démarrage");
+            progression.setTraitees(0);
+            progression.setTotal(0);
+            progression.setDateDebut(new Date());
+            progression.setDateFin(null);
+            progression.setMessage(null);
+            progression.setErreur(false);
+            progression.setAnnule(false);
+            progression.setRapportDisponible(false);
+            progression.setRapportNbLignes(0);
+        }
+        annulationDemandee.set(false);
+        rapport.clear();
+        rapportType = services ? "Services" : "Contacts";
+        executeurManuel.submit(() -> {
+            String bilan = null;
+            String erreur = null;
+            try {
+                bilan = services ? nettoyerServicesAvecSuivi() : nettoyerContactsAvecSuivi();
+            } catch (Exception e) {
+                log.error("Échec du nettoyage manuel {} : {}", type, e.getMessage(), e);
+                erreur = "Échec du nettoyage : " + e.getMessage();
+            }
+            // Des données ont été supprimées : les compteurs mis en cache ne sont plus valides
+            invaliderCacheCompteurs();
+            synchronized (progression) {
+                progression.setEnCours(false);
+                progression.setDateFin(new Date());
+                progression.setEtape("Terminé");
+                progression.setMessage(erreur != null ? erreur : bilan);
+                progression.setErreur(erreur != null);
+                progression.setAnnule(annulationDemandee.get());
+                progression.setRapportNbLignes(rapport.size());
+                progression.setRapportDisponible(!rapport.isEmpty());
+            }
+            annulationDemandee.set(false);
+        });
+    }
+
+    public void demanderAnnulation() {
+        synchronized (progression) {
+            if (!progression.isEnCours()) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Aucun nettoyage en cours");
+            }
+            progression.setEtape(progression.getEtape() + " (annulation en cours)");
+        }
+        annulationDemandee.set(true);
+        log.info("Annulation du nettoyage demandée");
+    }
+
+    public ArchivageProgressionDto getProgression() {
+        synchronized (progression) {
+            ArchivageProgressionDto copie = new ArchivageProgressionDto();
+            copie.setEnCours(progression.isEnCours());
+            copie.setTache(progression.getTache());
+            copie.setEtape(progression.getEtape());
+            copie.setTraitees(progression.getTraitees());
+            copie.setTotal(progression.getTotal());
+            copie.setDateDebut(progression.getDateDebut());
+            copie.setDateFin(progression.getDateFin());
+            copie.setMessage(progression.getMessage());
+            copie.setErreur(progression.isErreur());
+            copie.setAnnule(progression.isAnnule());
+            copie.setRapportDisponible(progression.isRapportDisponible());
+            copie.setRapportNbLignes(progression.getRapportNbLignes());
+            return copie;
+        }
+    }
+
+    private void progressionEtape(String etape, long total) {
+        synchronized (progression) {
+            progression.setEtape(etape);
+            progression.setTraitees(0);
+            progression.setTotal(total);
+        }
+    }
+
+    private void progressionAvance(long traitees) {
+        synchronized (progression) {
+            progression.setTraitees(traitees);
+        }
+    }
+
+    /**
+     * Nettoyage manuel des contacts : suppression par lots transactionnels (annulable entre
+     * lots) avec suivi de progression et alimentation du rapport exportable.
+     */
+    private String nettoyerContactsAvecSuivi() {
+        List<Object[]> lignes = contactJpaRepository.findInutilisesPourNettoyage(new Date());
+        progressionEtape("Suppression des contacts", lignes.size());
+        int supprimes = traiterParLots(lignes, lot -> {
+            List<Integer> ids = lot.stream().map(l -> (Integer) l[0]).collect(Collectors.toList());
+            // Les tokens expirés référençant ces contacts sont supprimés d'abord (clé étrangère)
+            evaluationTuteurTokenJpaRepository.deleteByContactIdIn(ids);
+            return contactJpaRepository.deleteByIdIn(ids);
+        });
+        return String.format("%s : %d contact(s) supprimé(s)",
+                estAnnule() ? "Nettoyage des contacts interrompu à la demande de l'utilisateur" : "Nettoyage des contacts terminé", supprimes);
+    }
+
+    private String nettoyerServicesAvecSuivi() {
+        List<Object[]> lignes = serviceJpaRepository.findInutilisesPourNettoyage();
+        progressionEtape("Suppression des services", lignes.size());
+        int supprimes = traiterParLots(lignes, lot -> {
+            List<Integer> ids = lot.stream().map(l -> (Integer) l[0]).collect(Collectors.toList());
+            return serviceJpaRepository.deleteByIdIn(ids);
+        });
+        return String.format("%s : %d service(s) supprimé(s)",
+                estAnnule() ? "Nettoyage des services interrompu à la demande de l'utilisateur" : "Nettoyage des services terminé", supprimes);
+    }
+
+    /**
+     * Supprime par lots transactionnels via la fonction fournie, en vérifiant l'annulation
+     * entre chaque lot, en avançant la progression et en alimentant le rapport avec les lignes
+     * effectivement supprimées.
+     */
+    private int traiterParLots(List<Object[]> lignes, Function<List<Object[]>, Integer> suppressionLot) {
+        int total = lignes.size();
+        int supprimes = 0;
+        int traites = 0;
+        int prochainPalier = PALIER_LOG;
+        for (int i = 0; i < total; i += TAILLE_LOT) {
+            if (estAnnule()) {
+                log.info("Nettoyage interrompu à la demande de l'utilisateur ({}/{})", traites, total);
+                break;
+            }
+            List<Object[]> lot = lignes.subList(i, Math.min(i + TAILLE_LOT, total));
+            supprimes += transactionTemplate.execute(status -> suppressionLot.apply(lot));
+            rapport.addAll(lot);
+            traites += lot.size();
+            progressionAvance(traites);
+            if (traites >= prochainPalier || traites == total) {
+                log.info("Nettoyage : {}/{} traité(s)", traites, total);
+                prochainPalier = traites + PALIER_LOG;
+            }
+        }
+        return supprimes;
+    }
+
+    private boolean estAnnule() {
+        return annulationDemandee.get();
+    }
+
+    /**
+     * Génère le classeur Excel des contacts/services supprimés par le dernier nettoyage manuel.
+     */
+    public byte[] exportRapportExcel() {
+        List<Object[]> lignes;
+        synchronized (rapport) {
+            lignes = new ArrayList<>(rapport);
+        }
+        boolean services = "Services".equals(rapportType);
+        List<String> colonnes = services ? COLONNES_SERVICE : COLONNES_CONTACT;
+        int nbCol = colonnes.size();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet(rapportType.isEmpty() ? "Nettoyage" : rapportType);
+            CellStyle entete = workbook.createCellStyle();
+            Font gras = workbook.createFont();
+            gras.setBold(true);
+            entete.setFont(gras);
+
+            Row ligneEntete = sheet.createRow(0);
+            for (int i = 0; i < nbCol; i++) {
+                Cell cell = ligneEntete.createCell(i);
+                cell.setCellValue(colonnes.get(i));
+                cell.setCellStyle(entete);
+            }
+
+            int numLigne = 1;
+            for (Object[] l : lignes) {
+                Row row = sheet.createRow(numLigne++);
+                // La dernière colonne (dateCreation) est une Date à formater ; les autres sont des chaînes/entiers
+                for (int i = 0; i < nbCol; i++) {
+                    Object valeur = i < l.length ? l[i] : null;
+                    Cell cell = row.createCell(i);
+                    if (i == nbCol - 1 && valeur instanceof Date date) {
+                        cell.setCellValue(df.format(date));
+                    } else {
+                        cell.setCellValue(valeur != null ? String.valueOf(valeur) : "");
+                    }
+                }
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la génération du fichier Excel");
+        }
+    }
 
     /**
      * Supprime les contacts qui ne sont plus référencés par aucune donnée active. Les éventuels

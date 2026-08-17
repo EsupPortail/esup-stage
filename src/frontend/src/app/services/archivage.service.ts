@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { PaginatedService } from "./paginated.service";
+
+// Requêtes d'arrière-plan (statistiques, résumé, polling de progression) : pas de loader
+// plein écran, qui bloquerait la page pendant des dénombrements coûteux.
+const SANS_LOADER = { headers: new HttpHeaders({ 'X-No-Loader': 'true' }) };
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +16,11 @@ export class ArchivageService implements PaginatedService {
   constructor(private http: HttpClient) { }
 
   getStatistiques(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/archivage/statistiques");
+    return this.http.get(environment.apiUrl + "/archivage/statistiques", SANS_LOADER);
   }
 
   getSimulationResume(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/archivage/simulation/resume");
+    return this.http.get(environment.apiUrl + "/archivage/simulation/resume", SANS_LOADER);
   }
 
   executer(type: string): Observable<any> {
@@ -24,7 +28,7 @@ export class ArchivageService implements PaginatedService {
   }
 
   getProgression(): Observable<any> {
-    return this.http.get(environment.apiUrl + "/archivage/progression");
+    return this.http.get(environment.apiUrl + "/archivage/progression", SANS_LOADER);
   }
 
   annuler(): Observable<any> {

@@ -1,3 +1,18 @@
+// Onglets pleine page : les cartes de chaque onglet respirent un peu
+.archivage-tabs {
+  .tab-icon {
+    margin-right: 0.4rem;
+    font-size: 1.1rem;
+    height: 1.1rem;
+    width: 1.1rem;
+  }
+
+  mat-card {
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+}
+
 .section-title {
   display: flex;
   align-items: center;
@@ -100,6 +115,15 @@
     .lancement-explication strong {
       color: #c62828;
     }
+  }
+
+  // Message informatif quand il n'y a rien à traiter (bouton alors désactivé)
+  .lancement-vide {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-style: italic;
+    margin-bottom: 0.75rem;
   }
 }
 

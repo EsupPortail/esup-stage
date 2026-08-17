@@ -113,6 +113,9 @@ public class ArchivageService {
     private CronTaskJpaRepository cronTaskJpaRepository;
 
     @Autowired
+    private org.esup_portail.esup_stage.service.crontask.CronTaskService cronTaskService;
+
+    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -674,15 +677,7 @@ public class ArchivageService {
     }
 
     private Date getProchaineExecution(CronTask cronTask) {
-        if (cronTask == null || !cronTask.isActive() || cronTask.getExpressionCron() == null) {
-            return null;
-        }
-        try {
-            LocalDateTime prochaine = CronExpression.parse(cronTask.getExpressionCron()).next(LocalDateTime.now());
-            return prochaine != null ? Date.from(prochaine.atZone(ZoneId.systemDefault()).toInstant()) : null;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return cronTaskService.getProchaineExecution(cronTask);
     }
 
     private int getDureePurgeAnnees() {

@@ -58,6 +58,25 @@ public class Service extends ObjetMetier implements Exportable {
 
     @Override
     public String getExportValue(String key) {
-        return null;
+        switch (key) {
+            case "id":
+                return String.valueOf(id);
+            case "nom":
+                return nom;
+            case "voie":
+                return voie;
+            case "codePostal":
+                return codePostal;
+            case "commune":
+                return commune;
+            case "structure":
+                return structure != null ? structure.getRaisonSociale() : "";
+            case "loginCreation":
+                return getLoginCreation();
+            case "dateCreation":
+                return getDateCreation() != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(getDateCreation()) : "";
+            default:
+                return "";
+        }
     }
 }

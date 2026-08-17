@@ -70,17 +70,25 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
      * Projection (et non entités) pour éviter tout N+1 et ne pas peupler le contexte de persistance :
      * colonnes id, nom, prenom, mail, tel, fonction, nom du service, raison sociale de la structure,
      * loginCreation, dateCreation.
+     *
+     * Performance : un seul critère par sous-requête, jamais de OR entre deux colonnes — un OR
+     * (ex. « cv.contact = c OR cv.signataire = c ») empêche MySQL d'utiliser les index de clé
+     * étrangère et dégénère en balayage complet pour chaque contact.
      */
     @Query("""
             SELECT c.id, c.nom, c.prenom, c.mail, c.tel, c.fonction, s.nom, st.raisonSociale, c.loginCreation, c.dateCreation
             FROM Contact c
             JOIN c.service s
             JOIN s.structure st
-            WHERE NOT EXISTS (SELECT 1 FROM Convention cv WHERE cv.contact = c OR cv.signataire = c)
+            WHERE NOT EXISTS (SELECT 1 FROM Convention cv1 WHERE cv1.contact = c)
+              AND NOT EXISTS (SELECT 1 FROM Convention cv2 WHERE cv2.signataire = c)
               AND NOT EXISTS (SELECT 1 FROM Avenant a WHERE a.contact = c)
-              AND NOT EXISTS (SELECT 1 FROM Offre o WHERE o.referent = c OR o.contactCand = c OR o.contactInfo = c OR o.contactProprio = c)
-              AND NOT EXISTS (SELECT 1 FROM AccordPartenariat ap WHERE ap.contact = c)
               AND NOT EXISTS (SELECT 1 FROM EvaluationTuteurToken et WHERE et.contact = c AND et.expiresAt >= :now)
+              AND NOT EXISTS (SELECT 1 FROM Offre o1 WHERE o1.referent = c)
+              AND NOT EXISTS (SELECT 1 FROM Offre o2 WHERE o2.contactCand = c)
+              AND NOT EXISTS (SELECT 1 FROM Offre o3 WHERE o3.contactInfo = c)
+              AND NOT EXISTS (SELECT 1 FROM Offre o4 WHERE o4.contactProprio = c)
+              AND NOT EXISTS (SELECT 1 FROM AccordPartenariat ap WHERE ap.contact = c)
             """)
     List<Object[]> findInutilisesPourNettoyage(@Param("now") Date now);
 

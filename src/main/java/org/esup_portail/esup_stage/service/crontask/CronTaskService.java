@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +57,27 @@ public class CronTaskService {
 
     public CronTask getById(Integer id) {
         return cronTaskJpaRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "CronTask not found"));
+    }
+
+    public CronTask getByNom(String nom) {
+        return cronTaskJpaRepository.findByNom(nom);
+    }
+
+    /**
+     * Prochaine date d'exécution planifiée d'une tâche, calculée depuis son expression cron.
+     *
+     * @return null si la tâche est absente, inactive ou porte une expression invalide
+     */
+    public Date getProchaineExecution(CronTask cronTask) {
+        if (cronTask == null || !cronTask.isActive() || cronTask.getExpressionCron() == null) {
+            return null;
+        }
+        try {
+            LocalDateTime prochaine = CronExpression.parse(cronTask.getExpressionCron()).next(LocalDateTime.now());
+            return prochaine != null ? Date.from(prochaine.atZone(ZoneId.systemDefault()).toInstant()) : null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private void checkSchedulableTaskExists(String nom) {
