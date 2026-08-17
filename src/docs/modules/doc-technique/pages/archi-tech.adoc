@@ -18,7 +18,7 @@ Node "Esup - Stage" {
     }
     
     Node "Backend" as backend {
-        [Spring boot 3.5.7] as spring
+        [Spring Boot 3.5.14] as spring
         [Java 21] as java
     }
     
@@ -28,19 +28,25 @@ Node "Esup - Stage" {
     note top of "Esup - Stage"
     Tomcat 10
     end note
-    
 
 database "Esup-Stage BD" as db {
     component "MariaDB" as mariadb
 }
 
+rectangle "Esup-SiScol" as esiscol {
+}
+
 frontend -[hidden]d- backend
 backend -[hidden]d- db
+db -[hidden]r- esiscol
 
 frontend -down-> backend
 backend -up-> frontend
+backend -down-> esiscol
+esiscol -up-> backend
 backend -down-> db
 db -up-> backend
+
 
 center footer Architecture de Esup-Stage
 @enduml

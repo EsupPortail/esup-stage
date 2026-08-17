@@ -1,0 +1,40 @@
+= Intégration et déploiement continus
+:author: Université de Lorraine
+:reftext: CI/CD
+:navtitle: CI/CD
+
+Deux workflows GitHub Actions automatisent la construction de l'application et la publication de la documentation.
+
+== Image Docker (`.github/workflows/docker-image.yml`)
+
+Déclenché sur *push* vers `dev`, `main`, `test` et `hotfix/**` :
+
+. installation de Java 21 (Temurin) et Node 20 ;
+. nettoyage de l'environnement npm (cache, `node_modules`, lock) puis build Angular ;
+. build Maven et lecture de la version du projet ;
+. construction de l'image Docker et *push vers Harbor* (`harbor.esup-portail.org`) avec deux tags :
+** `latest-<branche>` (ex : `latest-main`, `latest-dev`) ;
+** le numéro de version Maven.
+
+C'est cette image que consomme le `docker-compose.yml` fourni (variables `IMAGE_REPO`, `IMAGE_NAME`, `IMAGE_TAG` du fichier `.env` — voir xref:ROOT:ESUP-STAGE.adoc[]).
+
+== Publication de la documentation (`.github/workflows/publish.yml`)
+
+Déclenché sur *push* vers `main`, `dev` et `test` (ou manuellement) :
+
+. clone du dépôt et récupération des branches documentées ;
+. copie du `README.adoc` et du `CHANGELOG.adoc` de chaque branche vers `src/docs/modules/ROOT/pages/` (ils sont ainsi intégrés au site) ;
+. build Antora (`src/docs`, configuration `antora-playbook.yml`) ;
+. déploiement sur *GitHub Pages* : https://esupportail.github.io/esup-stage/
+
+[IMPORTANT]
+====
+Le playbook Antora ne construit le site que depuis les branches *`main`* et *`dev`* : une page ajoutée sur une branche de feature n'apparaît en ligne qu'après merge. Chaque branche produit sa propre version du site (sélecteur de version dans la barre latérale).
+====
+
+== Processus de release (résumé)
+
+. Tenir à jour `CHANGELOG.adoc` au fil des développements (sections Nouveautés / Améliorations / Corrections par version) ;
+. merger dans `main` ;
+. créer le tag et la release GitHub ;
+. le workflow Docker publie l'image correspondante ; le workflow de publication met à jour la documentation en ligne.

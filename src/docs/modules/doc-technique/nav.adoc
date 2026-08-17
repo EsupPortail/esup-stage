@@ -3,4 +3,5 @@
 * xref:decisions.adoc[]
 * xref:flux.adoc[]
 * xref:archi-tech.adoc[]
+* xref:ci-cd.adoc[]
 * xref:event-storming.adoc[]

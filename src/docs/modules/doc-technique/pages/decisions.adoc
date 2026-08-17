@@ -1,7 +1,37 @@
-= Décisions stratégique
+= Décisions stratégiques
 :author: Université de Lorraine
 :imagesdir: ../images/
+
+Cette page consigne les décisions structurantes du projet et leur justification.
+
+== Un stage a toujours une convention
 
 ****
 Un stage a toujours une convention
 ****
+
+Dans l'application, c'est la convention qui articule toute la gestion administrative du stage (voir xref:vocabulaire.adoc[le vocabulaire]).
+
+== Le contexte de base de données est définitif
+
+Le choix entre `baseline` (base neuve) et `legacy` (reprise pStage) est fait *une seule fois* à l'installation et ne change jamais ensuite : les migrations Liquibase appliquées dépendent de ce contexte (voir xref:ROOT:ESUP-STAGE.adoc[la documentation d'installation]).
+
+== La configuration peut être surchargée en base
+
+Le fichier `application.properties` reste la source d'amorçage, mais les propriétés peuvent être surchargées depuis l'interface d'administration et stockées en base, les secrets étant chiffrés (AES-GCM). Objectif : permettre aux administrateurs fonctionnels d'ajuster la configuration et de tester les connecteurs *sans redémarrage ni accès au serveur* (voir xref:exploitation:configuration-en-base.adoc[]).
+
+== Une seule solution de signature active à la fois
+
+La signature électronique s'active par la présence d'une configuration (Docaposte, ESUP-Signature ou webhook externe). Si plusieurs solutions sont configurées, *Docaposte est prioritaire* (voir xref:ROOT:signature.adoc[]).
+
+== Archiver avant de purger
+
+La conformité RGPD est traitée en deux temps : *archivage* (les données restent en base, en lecture seule pour les super-administrateurs) puis *purge* définitive après un second délai. Les traitements irréversibles (purge, nettoyage des contacts/services) sont livrés *inactifs par défaut* : chaque établissement les active explicitement (voir xref:exploitation:archivage-purge.adoc[]).
+
+== Les traitements récurrents sont pilotés en base
+
+Les batchs ne sont pas codés en dur : chaque tâche est décrite dans la table `CronTask` (expression cron, activation) et administrable depuis l'interface, avec exécution manuelle possible (voir xref:exploitation:taches-planifiees.adoc[]).
+
+== Les accès au SI de scolarité passent par ESUP-SIscol
+
+ESUP-Stage n'interroge jamais directement le LDAP, Apogée ou Pégase : tous les accès au SI de l'établissement passent par les API REST d'xref:ROOT:ESUP-SISCOL.adoc[ESUP-SIscol]. Cela isole les spécificités des SI et permet de supporter plusieurs SI de scolarité derrière une interface unique.

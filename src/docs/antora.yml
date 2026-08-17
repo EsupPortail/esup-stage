@@ -3,6 +3,7 @@ title: Esup-Stage
 prerelease: true
 nav:
 - modules/ROOT/nav.adoc
+- modules/exploitation/nav.adoc
 - modules/doc-technique/nav.adoc
 asciidoc:
   attributes:

@@ -173,7 +173,7 @@ L'application *se charge de créer les répertoires* suivants : si `appli.data_d
 
 == Génération de l'application (.war)
 
-WARNING: Si vous aviez déjà une version antérieure d'ESUP STAGE et que vous en installer une nouvelle, il est fortement recommandé de supprimer de supprimer le package-lock.json et les node_modules dans le dossier frontend avant de lancer la compilation.
+WARNING: Si vous aviez déjà une version antérieure d'ESUP STAGE et que vous en installer une nouvelle, il est fortement recommandé de supprimer le package-lock.json et les node_modules dans le dossier frontend avant de lancer la compilation.
 
 * Build du war de l'application : esup-stage-3.x.x.war
 
@@ -303,9 +303,6 @@ Dans le cas de l'utilisation d'un proxy (apache proxypass par exemple) il est co
     ProxyPassReverse / http://localhost:8080/
 </VirtualHost>
 ----
-
-TIP: Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
-
 
 TIP: Le fichier application.properties peut être positionné à la racine du tomcat et renseigné dans la commande d'exécution avec `-Dspring.config.location=$HOMEDIR/application.properties`
 
