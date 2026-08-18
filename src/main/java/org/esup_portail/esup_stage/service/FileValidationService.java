@@ -18,16 +18,24 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 
 @Service
 public class FileValidationService {
+
+    private static final long MAX_PROPERTIES_SIZE_BYTES = 64L * 1024L;
 
     public ValidatedImage validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -104,6 +112,77 @@ public class FileValidationService {
         } catch (IOException e) {
             throw rejectedPdf("le fichier n'a pas pu être lu correctement. Il est peut-être incomplet ou corrompu.");
         }
+    }
+
+    /**
+     * Valide un fichier de libellés au format {@code .properties} déposé par un administrateur.
+     * Le fichier doit être encodé en UTF-8, ne contenir que des clés connues de l'application et
+     * des valeurs en texte pur : ces valeurs sont insérées telles quelles dans le HTML converti en PDF.
+     *
+     * @param clesAutorisees clés reconnues par l'application
+     */
+    public ValidatedProperties validateProperties(MultipartFile file, Set<String> clesAutorisees) {
+        if (file == null) {
+            throw rejectedProperties("aucun fichier n'a été transmis.");
+        }
+        if (file.isEmpty()) {
+            throw rejectedProperties("le fichier transmis est vide.");
+        }
+        if (file.getSize() > MAX_PROPERTIES_SIZE_BYTES) {
+            throw rejectedProperties("la taille du fichier est de " + formatSize(file.getSize())
+                    + ", alors que la limite autorisée est de " + formatSize(MAX_PROPERTIES_SIZE_BYTES) + ".");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.toLowerCase(Locale.ROOT).endsWith(".properties")) {
+            throw rejectedProperties("l'extension du fichier doit être .properties.");
+        }
+
+        byte[] bytes;
+        try {
+            bytes = file.getBytes();
+        } catch (IOException e) {
+            throw rejectedProperties("le fichier n'a pas pu être lu correctement. Il est peut-être incomplet ou corrompu.");
+        }
+
+        String contenu = decodeUtf8Strict(bytes);
+
+        Properties proprietes = new Properties();
+        try {
+            proprietes.load(new StringReader(contenu));
+        } catch (IOException | IllegalArgumentException e) {
+            throw rejectedProperties("le contenu n'a pas pu être interprété. Vérifiez la syntaxe cle=valeur et les caractères d'échappement.");
+        }
+
+        for (String cle : proprietes.stringPropertyNames()) {
+            if (!clesAutorisees.contains(cle)) {
+                throw rejectedProperties("la clé « " + cle + " » n'est pas reconnue par l'application. "
+                        + "Partez du fichier proposé au téléchargement et n'en modifiez que les valeurs.");
+            }
+            String valeur = proprietes.getProperty(cle);
+            if (valeur != null && (valeur.contains("<") || valeur.contains(">"))) {
+                throw rejectedProperties("la valeur de la clé « " + cle + " » contient des chevrons. "
+                        + "Les libellés doivent être en texte pur, sans balise HTML.");
+            }
+        }
+
+        return new ValidatedProperties(bytes, proprietes);
+    }
+
+    private String decodeUtf8Strict(byte[] bytes) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            throw rejectedProperties("le fichier n'est pas encodé en UTF-8. Réenregistrez-le en UTF-8 depuis votre éditeur de texte, "
+                    + "sans quoi les caractères accentués seraient illisibles dans les documents imprimés.");
+        }
+    }
+
+    private AppException rejectedProperties(String reason) {
+        return new AppException(HttpStatus.BAD_REQUEST, "Fichier de libellés refusé : " + reason);
     }
 
     private void validatePdfSignature(byte[] bytes) {
@@ -228,6 +307,9 @@ public class FileValidationService {
     }
 
     public record ValidatedPdf(byte[] bytes, String contentType, String extension, String sha256) {
+    }
+
+    public record ValidatedProperties(byte[] bytes, Properties proprietes) {
     }
 
     private record ImageType(String contentType, String extension) {

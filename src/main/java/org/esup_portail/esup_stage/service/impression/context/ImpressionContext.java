@@ -10,7 +10,9 @@ import org.esup_portail.esup_stage.model.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -31,6 +33,11 @@ public class ImpressionContext {
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
     private ReponseEvaluationContext reponse = reponseEvaluationContext;
     private FicheEvaluationContext ficheEvaluation = ficheEvaluationContext;
+    /**
+     * Libellés insérés par l'application dans les fragments d'impression, dans la langue du document.
+     * Alimenté par {@code ImpressionService} depuis {@code LibelleImpressionService}.
+     */
+    private Map<String, String> libelles = new HashMap<>();
 
     public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {

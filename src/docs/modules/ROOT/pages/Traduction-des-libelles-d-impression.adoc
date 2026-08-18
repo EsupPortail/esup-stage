@@ -1,0 +1,187 @@
+= Traduction des libellés d'impression
+:sectnums:
+:imagesdir: ../../images
+:reftext: Traduction des libellés d'impression dans les conventions en langue étrangère
+
+Cette page décrit comment traduire les quelques libellés que l'application insère
+elle-même dans les conventions imprimées, afin qu'ils suivent la langue de la
+convention au lieu de rester en français.
+
+== Pourquoi cette page
+
+Le texte d'une convention est intégralement saisi par l'établissement dans
+*Administration > Templates de convention*, avec un modèle par couple type de
+convention / langue. C'est donc l'établissement qui rédige — et traduit — le
+contenu de la convention.
+
+À l'intérieur de ce texte, certaines variables ne sont pas remplacées par une
+simple valeur mais par un bloc construit par l'application. C'est le cas de la
+variable `${convention.protectionSocialeOrganismeAccueil}` : elle produit les
+deux cases à cocher de l'article 6.3, avec leurs libellés.
+
+Ces libellés-là ne font pas partie du modèle : ils ne peuvent pas être traduits
+en modifiant le modèle. Ils proviennent de fichiers de traduction, décrits
+ci-dessous, que vous pouvez compléter depuis
+*Administration > Paramètres généraux > onglet Langues*.
+
+[NOTE]
+====
+À ce jour, seuls les libellés de l'article 6.3 sont concernés. Les autres blocs
+construits par l'application (périodes d'interruption, horaires irréguliers,
+motifs d'avenant) restent en français, de même que le récapitulatif de la
+convention.
+====
+
+== Principe de résolution
+
+Pour chaque libellé, l'application retient la première valeur renseignée en
+parcourant les sources suivantes, de la plus spécifique à la plus générale :
+
+. le fichier déposé par l'établissement pour la langue de la convention,
+  `<répertoire de données>/i18n/impression_<code langue>.properties` ;
+. le fichier livré avec l'application pour cette langue,
+  `impression_<code langue>.properties` ;
+. le fichier français de référence, `impression_fr.properties`.
+
+La résolution se fait *libellé par libellé*, et non fichier par fichier : une
+valeur vide ou absente fait simplement passer au niveau suivant. Une traduction
+partielle est donc parfaitement valide, et les libellés non traduits restent
+affichés en français.
+
+.Exemple : fichier anglais ne traduisant qu'une partie des libellés
+[source,properties]
+----
+protectionSociale.oui.libelle=YES
+protectionSociale.oui.texte=this cover is added to the maintenance abroad of the rights arising from French law.
+protectionSociale.non.libelle=NO
+protectionSociale.non.texte=
+----
+
+Dans ce cas, la convention en anglais affichera `YES` et `NO` avec le texte
+anglais pour la première case, tandis que le texte de la seconde case restera
+en français.
+
+== Libellés disponibles
+
+[%header,cols="2m,3,4"]
+|===
+|Clé
+|Rôle dans la convention
+|Valeur française de référence
+
+|protectionSociale.oui.libelle
+|Intitulé de la première case à cocher
+|OUI
+
+|protectionSociale.oui.texte
+|Texte de la première case à cocher
+|cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.
+
+|protectionSociale.non.libelle
+|Intitulé de la seconde case à cocher
+|NON
+
+|protectionSociale.non.texte
+|Texte de la seconde case à cocher
+|la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
+|===
+
+[NOTE]
+====
+La phrase « Si aucune case n'est cochée, le 6.3-1 s'applique. » ne figure pas
+dans cette liste : elle fait partie du texte du modèle de convention, et se
+traduit donc directement dans *Administration > Templates de convention*, avec
+le reste de l'article 6.3.
+====
+
+[WARNING]
+====
+Ces libellés relèvent d'un article de la convention de stage et ont donc une
+portée juridique. Faites valider les traductions avant de les mettre en service.
+====
+
+== Format du fichier
+
+Le fichier est un fichier de propriétés Java classique.
+
+* Une ligne par libellé, sous la forme `clé=valeur`. Ne modifiez que ce qui se
+  trouve à droite du signe `=`.
+* Encodage *UTF-8 obligatoire*. Un fichier enregistré dans un autre encodage est
+  refusé au dépôt : sans cela, les caractères accentués seraient illisibles dans
+  les documents imprimés.
+* Les lignes commençant par `#` sont des commentaires.
+* Les valeurs sont du texte pur : les balises HTML sont interdites, la mise en
+  forme (gras, taille, police) est appliquée par l'application.
+* Seules les clés listées ci-dessus sont acceptées. Une clé inconnue — souvent
+  une faute de frappe — fait rejeter le fichier avec un message indiquant la clé
+  fautive.
+* Taille maximale : 64 Ko.
+
+Quelques règles d'échappement propres au format `.properties` :
+
+* une valeur trop longue peut se poursuivre sur la ligne suivante en terminant la
+  ligne par une barre oblique inverse ;
+* les caractères `=` et `:` doivent être échappés d'une barre oblique inverse
+  lorsqu'ils figurent dans une clé ; c'est inutile dans une valeur ;
+* une barre oblique inverse littérale s'écrit en la doublant ;
+* les échappements Unicode de la forme `\uXXXX` restent acceptés, mais sont
+  inutiles dès lors que le fichier est bien enregistré en UTF-8 : écrivez les
+  caractères accentués directement.
+
+== Procédure depuis l'application
+
+. Ouvrir *Administration > Paramètres généraux > onglet Langues*. Le tableau
+  liste les langues de convention actives, indique si un fichier a déjà été
+  déposé et combien de libellés sont traduits.
+. Cliquer sur l'icône de téléchargement de la langue à traiter. Le fichier
+  obtenu contient toutes les clés : il s'agit du fichier déjà déposé s'il en
+  existe un, sinon du fichier livré pour cette langue, sinon du fichier français.
+. Traduire les valeurs avec un éditeur de texte, puis enregistrer en UTF-8.
+. Cliquer sur l'icône de dépôt et sélectionner le fichier. Il est contrôlé puis
+  pris en compte immédiatement, sans redémarrage de l'application.
+. Vérifier le rendu : *Administration > Templates de convention*, sélectionner le
+  modèle de la langue concernée et utiliser la prévisualisation. Le bloc de
+  l'article 6.3 doit apparaître dans la langue du modèle.
+
+Pour revenir aux libellés livrés avec l'application, utiliser l'icône de
+suppression : elle efface le fichier déposé pour cette langue.
+
+== Dépôt manuel sur le serveur
+
+Les fichiers déposés sont enregistrés dans le sous-répertoire `i18n` du
+répertoire de données de l'application (propriété `dataDir`), sous le nom
+`impression_<code langue>.properties`, où `<code langue>` est le code de la
+langue de convention (`fr`, `en`, `es`, `al`, `it`, `fo`, ou tout code ajouté par
+l'établissement dans la nomenclature des langues).
+
+Un fichier peut y être déposé directement, par exemple lors d'une installation
+automatisée. Dans ce cas, l'application n'ayant pas été prévenue de la
+modification, elle continue de servir les libellés déjà chargés : redémarrez
+l'application, ou redéposez le fichier depuis l'onglet Langues, pour que le
+changement soit pris en compte.
+
+[CAUTION]
+====
+Le dépôt manuel ne passe pas par les contrôles de l'application. Vérifiez
+vous-même l'encodage UTF-8 et le nom des clés : un fichier illisible est ignoré
+et les libellés restent en français, une clé inconnue est ignorée avec un
+avertissement dans les journaux.
+====
+
+== Cas particuliers
+
+Libellé absent ou vide::
+La valeur du niveau suivant est utilisée, en dernier ressort le français. Aucun
+libellé n'est jamais vide dans le document imprimé.
+
+Langue ajoutée par l'établissement::
+Une langue créée dans la nomenclature des langues de convention n'a pas de
+fichier livré. Elle apparaît dans l'onglet Langues avec aucun libellé traduit et
+s'imprime en français tant qu'aucun fichier n'y est déposé.
+
+Convention sans langue renseignée::
+Les libellés français sont utilisés.
+
+Prévisualisation d'un modèle::
+Les libellés suivent la langue du modèle prévisualisé, et non celle des données
+fictives affichées dans l'aperçu.
