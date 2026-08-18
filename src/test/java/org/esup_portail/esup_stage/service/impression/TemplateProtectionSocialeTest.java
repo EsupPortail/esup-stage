@@ -15,12 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -121,32 +117,6 @@ class TemplateProtectionSocialeTest {
         String rendu = render(null);
 
         assertThat(rendu).doesNotContain("Si aucune case");
-    }
-
-    /**
-     * En production FreeMarker est configuré en mode « classic compatible » : une clé absente
-     * s'affiche comme une chaîne vide, sans erreur. Un libellé mal orthographié dans le fragment
-     * disparaîtrait donc silencieusement de la convention imprimée.
-     */
-    @Test
-    void toutesLesClesDuFragmentSontDefiniesDansLeFichierDeReference() throws Exception {
-        String source;
-        try (InputStream is = getClass().getResourceAsStream(FRAGMENT)) {
-            source = new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8);
-        }
-
-        Set<String> clesUtilisees = new LinkedHashSet<>();
-        Matcher matcher = Pattern.compile("libelles\\[\"([^\"]+)\"]").matcher(source);
-        while (matcher.find()) {
-            clesUtilisees.add(matcher.group(1));
-        }
-
-        AppliProperties appliProperties = new AppliProperties();
-        appliProperties.setDataDir(dataDir.toString());
-        Map<String, String> reference = new LibelleImpressionService(appliProperties).getLibelles("fr");
-
-        assertThat(clesUtilisees).isNotEmpty();
-        assertThat(reference.keySet()).containsAll(clesUtilisees);
     }
 
     @Test

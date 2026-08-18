@@ -15,21 +15,38 @@ convention / langue. C'est donc l'établissement qui rédige — et traduit — 
 contenu de la convention.
 
 À l'intérieur de ce texte, certaines variables ne sont pas remplacées par une
-simple valeur mais par un bloc construit par l'application. C'est le cas de la
-variable `${convention.protectionSocialeOrganismeAccueil}` : elle produit les
-deux cases à cocher de l'article 6.3, avec leurs libellés.
+simple valeur mais par un bloc entier construit par l'application : un tableau,
+une liste de cases à cocher, des intitulés de champs. Quatre variables sont dans
+ce cas :
 
-Ces libellés-là ne font pas partie du modèle : ils ne peuvent pas être traduits
-en modifiant le modèle. Ils proviennent de fichiers de traduction, décrits
+[%header,cols="2m,3"]
+|===
+|Variable du modèle
+|Bloc construit par l'application
+
+|convention.protectionSocialeOrganismeAccueil
+|Les deux cases à cocher de l'article 6.3 et leurs libellés
+
+|convention.periodesInterruptions
+|Le tableau des périodes d'interruption de stage
+
+|convention.horaireIrregulier
+|Le tableau des périodes de stage à horaires irréguliers
+
+|avenant.motifs
+|Les tableaux des motifs de modification de l'avenant, avec leurs intitulés de champs
+|===
+
+Les libellés de ces blocs ne font pas partie du modèle : ils ne peuvent pas être
+traduits en le modifiant. Ils proviennent de fichiers de traduction, décrits
 ci-dessous, que vous pouvez compléter depuis
 *Administration > Paramètres généraux > onglet Langues*.
 
 [NOTE]
 ====
-À ce jour, seuls les libellés de l'article 6.3 sont concernés. Les autres blocs
-construits par l'application (périodes d'interruption, horaires irréguliers,
-motifs d'avenant) restent en français, de même que le récapitulatif de la
-convention.
+Le récapitulatif de la convention est un document distinct, entièrement en
+français quelle que soit la langue de la convention. Il n'est pas concerné par
+cette page.
 ====
 
 == Principe de résolution
@@ -63,10 +80,123 @@ en français.
 
 == Libellés disponibles
 
+Le fichier compte 43 libellés, regroupés par usage. Les libellés `commun.` et
+`champ.` sont partagés par plusieurs blocs : les traduire une fois suffit.
+
+=== Libellés communs
+
+[%header,cols="2m,4"]
+|===
+|Clé
+|Valeur française de référence
+
+|commun.debut
+|Début
+
+|commun.fin
+|Fin
+
+|commun.neant
+|Néant
+
+|commun.anciennesValeurs
+|Anciennes valeurs :
+
+|commun.nouvellesValeurs
+|Nouvelles valeurs :
+
+|commun.du
+|du
+
+|commun.au
+|au
+|===
+
+Les clés `commun.du` et `commun.au` encadrent une période et s'affichent sous la
+forme `du 01/07/2026 au 15/07/2026`. En anglais, elles deviendraient `from` et
+`to`.
+
+=== Intitulés de champs
+
+Chaque valeur est suivie de la donnée correspondante. Les deux-points font partie
+du libellé : c'est ce qui permet d'adapter la ponctuation, le français plaçant
+une espace avant le signe là où l'anglais n'en met pas.
+
+[%header,cols="2m,4"]
+|===
+|Clé
+|Valeur française de référence
+
+|champ.nom
+|Nom :
+
+|champ.prenom
+|Prénom :
+
+|champ.nomPrenom
+|Nom / Prénom :
+
+|champ.civilite
+|Civilité :
+
+|champ.fonction
+|Fonction :
+
+|champ.telephone
+|Téléphone :
+
+|champ.email
+|Email :
+
+|champ.voie
+|Voie :
+
+|champ.codePostal
+|Code postal :
+
+|champ.commune
+|Commune :
+
+|champ.pays
+|Pays :
+
+|champ.sujet
+|Sujet :
+
+|champ.commentaire
+|Commentaire :
+
+|champ.motif
+|Motif :
+
+|champ.dateRupture
+|Date de rupture :
+
+|champ.dateDebutStage
+|Date début du stage :
+
+|champ.dateFinStage
+|Date fin du stage :
+
+|champ.periodesInterruptions
+|Périodes d'interruptions :
+
+|champ.montant
+|Montant :
+
+|champ.devise
+|Monnaie utilisée pour le paiement :
+
+|champ.modeVersement
+|Modalité de versement de la gratification :
+|===
+
+=== Article 6.3 — protection sociale issue de l'organisme d'accueil
+
 [%header,cols="2m,3,4"]
 |===
 |Clé
-|Rôle dans la convention
+|Rôle
 |Valeur française de référence
 
 |protectionSociale.oui.libelle
@@ -86,6 +216,55 @@ en français.
 |la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant.
 |===
 
+=== Tableaux de périodes de la convention
+
+[%header,cols="2m,4"]
+|===
+|Clé
+|Valeur française de référence
+
+|periodesInterruptions.titre
+|Périodes d'interruptions de stage
+
+|horaireIrregulier.titre
+|Périodes de stage
+
+|horaireIrregulier.heuresJournalieres
+|Heures journalières
+|===
+
+=== Motifs de modification de l'avenant
+
+[%header,cols="2m,4"]
+|===
+|Clé
+|Valeur française de référence
+
+|avenant.rupture.titre
+|Rupture de stage
+
+|avenant.sujet.titre
+|Modification du sujet de stage
+
+|avenant.periode.titre
+|Modification de la période de stage
+
+|avenant.gratification.titre
+|Modification du montant de la gratification
+
+|avenant.lieu.titre
+|Modification du lieu de stage
+
+|avenant.tuteur.titre
+|Modification du tuteur professionnel
+
+|avenant.enseignant.titre
+|Modification de l’enseignant référent
+
+|avenant.autre.titre
+|Autre modification
+|===
+
 [NOTE]
 ====
 La phrase « Si aucune case n'est cochée, le 6.3-1 s'applique. » ne figure pas
@@ -96,8 +275,9 @@ le reste de l'article 6.3.
 
 [WARNING]
 ====
-Ces libellés relèvent d'un article de la convention de stage et ont donc une
-portée juridique. Faites valider les traductions avant de les mettre en service.
+Les libellés de l'article 6.3 relèvent d'une clause de la convention de stage et
+ont donc une portée juridique. Faites valider ces traductions avant de les mettre
+en service.
 ====
 
 == Format du fichier
