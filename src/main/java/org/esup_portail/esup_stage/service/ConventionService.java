@@ -205,6 +205,7 @@ public class ConventionService {
         convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
         convention.setVolumeHoraireFormation(conventionFormDto.getVolumeHoraireFormation());
         convention.setProtectionSocialeOrganismeAccueil(conventionFormDto.getProtectionSocialeOrganismeAccueil());
+        convention.setAccordAnnuaireEtudiant(conventionFormDto.getAccordAnnuaireEtudiant());
 
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");

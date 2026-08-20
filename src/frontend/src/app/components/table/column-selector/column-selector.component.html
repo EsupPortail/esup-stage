@@ -2,6 +2,29 @@
   <div class="modal-container">
     <div class="header-banner">
       <h1 id="modal-title">Exporter</h1>
+      <button class="close-btn" type="button" (click)="cancel()" aria-label="Fermer la fenêtre d'export">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+
+    <div class="export-guide-backdrop" *ngIf="guideOuvert" (click)="fermerGuide()"></div>
+
+    <div class="export-guide" id="export-guide-panel" *ngIf="guideOuvert"
+         role="dialog" aria-modal="true" aria-labelledby="export-guide-title"
+         tabindex="-1" (keydown.escape)="fermerGuide($event)">
+      <div class="export-guide__header">
+        <mat-icon aria-hidden="true">help_outline</mat-icon>
+        <h2 id="export-guide-title">Guide d'utilisation</h2>
+        <button class="close-btn" type="button" (click)="fermerGuide()" aria-label="Fermer le guide">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </div>
+      <div class="export-guide__content" [innerHTML]="guideTexte"></div>
+      <div class="export-guide__actions">
+        <button class="valid-button" mat-flat-button type="button" (click)="fermerGuide()">
+          Fermer le guide
+        </button>
+      </div>
     </div>
 
     <div class="column-selector-dialog">
@@ -132,6 +155,14 @@
       </div>
 
       <div class="actions" role="group" aria-label="Actions principales">
+        <button *ngIf="guideTexte" type="button" class="guide-toggle" mat-stroked-button
+                (click)="ouvrirGuide()"
+                aria-haspopup="dialog"
+                [attr.aria-expanded]="guideOuvert"
+                aria-controls="export-guide-panel">
+          <mat-icon aria-hidden="true">help_outline</mat-icon>
+          <span>Guide d'utilisation</span>
+        </button>
         <button class="cancel-button" mat-flat-button
                 type="button"
                 (click)="cancel()"

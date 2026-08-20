@@ -382,3 +382,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-courriel-perso-etudiant-taille.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-accord-annuaire-etudiant.yaml
+      relativeToChangelogFile: true

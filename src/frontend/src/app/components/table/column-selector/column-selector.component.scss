@@ -1,17 +1,13 @@
-:root {
-  --primaryColor: #1976d2;
-  --primary-hover: #1565c0;
-  --primary-focus: #0d47a1;
-  --border-color: #ccc;
-  --border-hover: #999;
-  --selected-bg: #cce5ff;
-  --selected-border: #66afe9;
-  --focus-outline: 3px solid #4d90fe;
-  --focus-offset: 2px;
-}
-
 /* --- Modale --- */
 .modal-overlay {
+  /* Palette portée par l'élément racine du composant et non par :root : sous
+     l'encapsulation Angular, :root devient [_ngcontent-xxx]:root, qui ne
+     correspond à aucun élément. --primaryColor en est volontairement absent,
+     il provient du thème chargé à l'exécution (<link id="theme">) ; le
+     redéclarer ici écraserait la couleur de l'établissement. */
+  --border-color: #ccc;
+  --focus-outline: 3px solid #4d90fe;
+  --focus-offset: 2px;
   position: fixed;
   inset: 0;
   background-color: rgba(0,0,0,.65);
@@ -22,6 +18,11 @@
 }
 
 .modal-container {
+  /* Métriques du guide, portées par la modale (voir .modal-overlay pour le
+     pourquoi du non-usage de :root). Hauteur du bandeau : 2 x 1rem + ligne du h1. */
+  --banner-height: 4.5rem;
+  /* Plafond de hauteur du guide : au-delà, le texte défile. */
+  --guide-max-height: 48rem;
   position: relative;
   width: 100%;
   max-width: 60rem;
@@ -39,8 +40,9 @@
 .header-banner {
   position: sticky;
   top: 0;
-  background-color: var(--primaryColor);
-  padding: 1rem 1.5rem;
+  background-color: var(--primaryColor, #1976d2);
+  /* La croix étant hors flux, le titre reste centré sur toute la largeur. */
+  padding: 1rem 3.25rem;
   z-index: 10;
   border-radius: 8px 8px 0 0;
 }
@@ -51,6 +53,197 @@
   font-weight: 600;
   margin: 0;
   text-align: center;
+}
+
+/* Croix compacte, commune au bandeau de la modale et à l'en-tête du guide */
+.close-btn {
+  position: absolute;
+  top: 50%;
+  right: .75rem;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.close-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.header-banner .close-btn {
+  color: #fff;
+}
+
+.header-banner .close-btn:hover {
+  background-color: rgba(255, 255, 255, .2);
+}
+
+.header-banner .close-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.export-guide__header .close-btn {
+  color: #555;
+}
+
+.export-guide__header .close-btn:hover {
+  background-color: rgba(0, 0, 0, .08);
+}
+
+.export-guide__header .close-btn:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: 1px;
+}
+
+/* Accès au guide, en bas à gauche du pied de modale */
+.actions .guide-toggle {
+  margin-right: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  font-weight: 500;
+  color: var(--primaryColor, #1976d2);
+}
+
+.actions .guide-toggle mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Guide affiché en surimpression, la modale restant visible dessous --- */
+/* z-index supérieur à .list-header (100), .actions (95) et .column-actions (90),
+   sinon ces éléments sticky repassent devant le guide. */
+.export-guide-backdrop {
+  position: absolute;
+  top: var(--banner-height, 4.5rem);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  background-color: rgba(0, 0, 0, .45);
+  border-radius: 0 0 8px 8px;
+}
+
+.export-guide {
+  position: absolute;
+  z-index: 201;
+  top: calc(var(--banner-height, 4.5rem) + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+  /* La plus contraignante des deux limites : la place disponible dans la modale,
+     ou le plafond fixe. Le texte qui dépasse défile dans .export-guide__content. */
+  max-height: min(calc(100% - var(--banner-height, 4.5rem) - 2rem), var(--guide-max-height, 48rem));
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* En-tête volontairement distinct du bandeau bleu de la modale :
+   le guide doit se lire comme un panneau supplémentaire, pas comme un remplacement. */
+.export-guide__header {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 3rem 1rem 1.5rem;
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #ddd;
+  border-radius: 8px 8px 0 0;
+}
+
+.export-guide__header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.export-guide__header mat-icon {
+  color: var(--primaryColor, #1976d2);
+  flex: 0 0 auto;
+}
+
+/* Seule zone défilante : le texte s'affiche en entier, quelle que soit sa longueur */
+.export-guide__content {
+  flex: 1 1 auto;
+  /* min-height: 0 est indispensable : sans lui un enfant flex refuse de rétrécir
+     sous sa taille de contenu et déborderait au lieu de défiler. */
+  min-height: 0;
+  overflow: auto;
+  /* Évite que le défilement se propage à la modale une fois le guide en bout de course. */
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+  color: #333;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.export-guide__content > *:first-child {
+  margin-top: 0;
+}
+
+.export-guide__content > *:last-child {
+  margin-bottom: 0;
+}
+
+.export-guide__content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.export-guide__content table {
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.export-guide__content td,
+.export-guide__content th {
+  border: 1px solid var(--border-color, #ccc);
+  padding: .5rem .75rem;
+}
+
+.export-guide__content ul,
+.export-guide__content ol {
+  padding-left: 1.5rem;
+}
+
+.export-guide__actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 2px solid #eee;
+}
+
+.export-guide__actions button {
+  min-height: 44px;
+  padding: 0 2rem;
+  font-weight: 500;
+}
+
+.export-guide__actions button:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: var(--focus-offset);
 }
 
 /* --- Layout interne --- */
@@ -100,7 +293,7 @@
 
 /* Amélioration du focus pour la liste */
 .column-list:focus-within {
-  border-color: var(--primaryColor);
+  border-color: var(--primaryColor, #1976d2);
   box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
@@ -298,7 +491,7 @@ mat-checkbox {
 }
 
 mat-checkbox:focus-within .mat-checkbox-frame {
-  border-color: var(--primaryColor);
+  border-color: var(--primaryColor, #1976d2);
 }
 
 /* Amélioration des tabs Material */
@@ -325,7 +518,7 @@ mat-tab-group {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primaryColor), transparent);
+  background: linear-gradient(90deg, transparent, var(--primaryColor, #1976d2), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -345,7 +538,31 @@ mat-tab-group {
   }
 
   .header-banner {
+    padding: 1rem 3rem;
+  }
+
+  /* La modale occupe déjà tout l'écran : on garde une marge fine
+     pour que le guide reste perçu comme superposé. */
+  .export-guide-backdrop {
+    border-radius: 0;
+  }
+
+  .modal-container {
+    --banner-height: 3.75rem;
+    --guide-max-height: 32rem;
+  }
+
+  .export-guide {
+    width: calc(100% - 1rem);
+  }
+
+  .export-guide__content,
+  .export-guide__actions {
     padding: 1rem;
+  }
+
+  .export-guide__header {
+    padding: 1rem 3rem 1rem 1rem;
   }
 
   .header-banner h1 {
@@ -468,56 +685,5 @@ mat-tab-group {
 
   .cdk-drag-animating {
     transition: none;
-  }
-}
-
-/* Support du mode sombre */
-@media (prefers-color-scheme: dark) {
-  .modal-overlay {
-    background-color: rgba(0,0,0,.8);
-  }
-
-  .modal-container {
-    background: #1e1e1e;
-    color: #e0e0e0;
-  }
-
-  .column-selector-dialog > h2 {
-    color: #e0e0e0;
-  }
-
-  .column-list {
-    background-color: #2a2a2a;
-    border-color: #444;
-  }
-
-  .list-header {
-    background-color: #333;
-    border-color: #555;
-  }
-
-  .list-title {
-    color: #e0e0e0;
-  }
-
-  .list-item {
-    background: #2a2a2a;
-    border-color: #555;
-    color: #e0e0e0;
-  }
-
-  .list-item:hover {
-    background-color: #333;
-    border-color: #666;
-  }
-
-  .list-item.selected {
-    background-color: #1a3a52;
-    border-color: #2d5f8d;
-  }
-
-  .actions,
-  .column-actions {
-    border-color: #444;
   }
 }

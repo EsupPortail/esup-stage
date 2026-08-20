@@ -39,7 +39,8 @@
            [filters]="filters" [sortOrder]="sortDirection" matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'"
            (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucune convention trouvée'"
            [customTemplateRef]="validAction" (updated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns"
-           [templateMobile]="tableMobile" [loadWithoutFilters]="false">
+           [templateMobile]="tableMobile" [loadWithoutFilters]="false"
+           [exportGuideCode]="'GUIDE_EXPORT_EXCEL_CONVENTION'">
 
   <ng-container matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>

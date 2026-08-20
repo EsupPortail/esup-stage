@@ -241,6 +241,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
+      { id: 'accordAnnuaireEtudiant', libelle: 'Accord pour figurer dans l\'annuaire des étudiants', type: 'boolean', specific: true, colSpan: 4 },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
@@ -258,7 +259,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             numEtudiant: { title: 'N° étudiant' },
             etudiantNom: { title: 'Nom Étudiant' },
             etudiantPrenom: { title: 'Prénom Étudiant' },
-            elPersoEtudiant: { title: 'Mail perso étudiant' },
+            courrielPersoEtudiant: { title: 'Mail perso étudiant' },
             mailUniEtudiant: { title: 'Mail universitaire étudiant' },
             telEtudiant: { title: 'Téléphone perso étudiant' },
             telPortableEtudiant: { title: 'Téléphone portable étudiant' },
@@ -303,6 +304,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             avenant: { title: 'Avenant(s) à la convention' },
             dateCreation: { title: 'Date création convention' },
             dateModif: { title: 'Date modification convention' },
+            accordAnnuaireEtudiant: { title: 'Accord annuaire étudiant' },
           }
         },
         {

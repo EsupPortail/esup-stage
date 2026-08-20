@@ -428,6 +428,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Boolean protectionSocialeOrganismeAccueil;
 
+    @Column
+    private Boolean accordAnnuaireEtudiant;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
@@ -843,6 +846,9 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "lieuStage":
                 value = getLieuStage();
+                break;
+            case "accordAnnuaireEtudiant":
+                value = getAccordAnnuaireEtudiant() == null ? "Non renseigné" : (getAccordAnnuaireEtudiant() ? "Oui" : "Non");
                 break;
             default:
                 break;

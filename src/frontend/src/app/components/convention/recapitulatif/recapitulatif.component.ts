@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { PeriodeStageService } from "../../../services/periode-stage.service"
 import { ConventionService } from "../../../services/convention.service";
@@ -27,6 +27,7 @@ export class RecapitulatifComponent implements OnInit {
   nomPrenomModification: string = '';
   avenants: any[] = [];
   loadingAvenants = true;
+  canEditAccordAnnuaire: boolean = false;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeStageService: PeriodeStageService,
@@ -35,7 +36,8 @@ export class RecapitulatifComponent implements OnInit {
               private authService: AuthService,
               private router: Router,
               private userService: UserService,
-              private avenantService: AvenantService) {
+              private avenantService: AvenantService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -53,6 +55,10 @@ export class RecapitulatifComponent implements OnInit {
       natureTravailLibelle: this.getNomenclatureValue('natureTravail'),
       modeValidationStageLibelle: this.getNomenclatureValue('modeValidationStage'),
     };
+
+    // Le consentement annuaire reste modifiable après validation de la convention :
+    // l'étudiant doit pouvoir retirer son accord à tout moment.
+    this.canEditAccordAnnuaire = this.authService.isEtudiant() || this.authService.isGestionnaire() || this.authService.isAdmin();
 
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
@@ -168,6 +174,24 @@ export class RecapitulatifComponent implements OnInit {
     this.periodeStageService.getByConvention(this.tmpConvention.id).subscribe((response : any) => {
       this.periodesStage = response;
     })
+  }
+
+  setAccordAnnuaire(value: boolean, checked: boolean): void {
+    if (!checked) {
+      // Une des deux cases doit rester cochée. Le binding [checked] ne changeant pas de
+      // valeur, on force un cycle à null pour que la case décochée soit bien re-cochée.
+      const courant = this.tmpConvention.accordAnnuaireEtudiant;
+      this.tmpConvention.accordAnnuaireEtudiant = null;
+      this.changeDetectorRef.detectChanges();
+      this.tmpConvention.accordAnnuaireEtudiant = courant;
+      return;
+    }
+    const accord = value;
+    this.conventionService.updateAccordAnnuaire(this.tmpConvention.id, accord).subscribe((response: any) => {
+      this.tmpConvention.accordAnnuaireEtudiant = response.accordAnnuaireEtudiant;
+      this.convention.accordAnnuaireEtudiant = response.accordAnnuaireEtudiant;
+      this.messageService.setSuccess('Votre choix a bien été enregistré');
+    });
   }
 
   validate(): void {

@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
+import org.esup_portail.esup_stage.dto.AccordAnnuaireDto;
 import org.esup_portail.esup_stage.dto.AnneeUniversitaireDto;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
@@ -12,6 +13,7 @@ import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PeriodesDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
@@ -592,6 +594,7 @@ class ConventionControllerTest {
         patch("gratificationStage", Boolean.TRUE);
         patch("confidentiel", Boolean.FALSE);
         patch("protectionSocialeOrganismeAccueil", Boolean.TRUE);
+        patch("accordAnnuaireEtudiant", Boolean.TRUE);
         patch("nbHeuresHebdo", 35);
         patch("nbConges", 2);
         patch("dateDebutStage", "2026-02-01T00:00:00Z");
@@ -612,10 +615,40 @@ class ConventionControllerTest {
         assertThat(convention.getGratificationStage()).isTrue();
         assertThat(convention.getConfidentiel()).isFalse();
         assertThat(convention.getProtectionSocialeOrganismeAccueil()).isTrue();
+        assertThat(convention.getAccordAnnuaireEtudiant()).isTrue();
         assertThat(convention.getNbHeuresHebdo()).isEqualTo("35");
         assertThat(convention.getNbConges()).isEqualTo("2");
         assertThat(convention.getDateDebutStage()).isEqualTo(Date.from(Instant.parse("2026-02-01T00:00:00Z")));
         assertThat(convention.getDateFinStage()).isEqualTo(Date.from(Instant.parse("2026-06-30T00:00:00Z")));
+    }
+
+    @Test
+    void updateAccordAnnuaireResteAutoriseSurUneConventionNonModifiable() {
+        connecte("etu1", Role.ETU);
+        Convention convention = conventionDEtudiant("etu1", true);
+        // La convention n'est plus modifiable : le PATCH générique serait refusé,
+        // mais le retrait de l'accord annuaire doit rester possible.
+        when(conventionService.isConventionModifiable(eq(convention), any())).thenReturn(false);
+
+        AccordAnnuaireDto dto = new AccordAnnuaireDto();
+        dto.setAccordAnnuaireEtudiant(Boolean.FALSE);
+        controller.updateAccordAnnuaire(42, dto);
+
+        assertThat(convention.getAccordAnnuaireEtudiant()).isFalse();
+        verify(conventionService).canViewEditConvention(eq(convention), any(), eq(DroitEnum.MODIFICATION));
+        verify(conventionJpaRepository).saveAndFlush(convention);
+    }
+
+    @Test
+    void updateAccordAnnuaireRefuseUneConventionInconnue() {
+        connecte("etu1", Role.ETU);
+        when(conventionJpaRepository.findById(42)).thenReturn(null);
+
+        AccordAnnuaireDto dto = new AccordAnnuaireDto();
+        dto.setAccordAnnuaireEtudiant(Boolean.TRUE);
+
+        assertThatThrownBy(() -> controller.updateAccordAnnuaire(42, dto))
+                .isInstanceOf(AppException.class);
     }
 
     @Test

@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-accord-annuaire-etudiant-convention
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: accordAnnuaireEtudiant
+                  type : boolean
+  - changeSet:
+      id: 3.3.0-accord-annuaire-etudiant-contenu
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: TEXTE_ACCORD_ANNUAIRE_INTRO
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "L'établissement constitue un annuaire des étudiants ayant réalisé un stage, communiqué à de futurs étudiants en recherche de stage afin qu'ils puissent vous contacter. Les informations qui y figureraient sont : nom, prénom, téléphone, adresse électronique personnelle, adresse électronique de l'université, entreprise d'accueil, thématique et sujet du stage. Vous devez cocher l'une des deux cases ci-dessous. Votre choix reste modifiable à tout moment depuis le récapitulatif de votre convention."
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: LIBELLE_ACCORD_ANNUAIRE_OUI
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Je suis d'accord pour figurer dans un annuaire des étudiants qui sera communiqué à de futurs étudiants en recherche de stage"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: LIBELLE_ACCORD_ANNUAIRE_NON
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Je ne suis pas d'accord pour figurer dans un annuaire des étudiants qui sera communiqué à de futurs étudiants en recherche de stage"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: GUIDE_EXPORT_EXCEL_CONVENTION
+              - column:
+                  name: libelle
+                  valueBoolean: false
+              - column:
+                  name: texte
+                  value: ""
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()

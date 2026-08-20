@@ -250,4 +250,6 @@ public class ConventionFormDto {
 
     private Boolean protectionSocialeOrganismeAccueil;
 
+    private Boolean accordAnnuaireEtudiant;
+
 }

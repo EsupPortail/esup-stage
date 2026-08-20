@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ContenuService } from '../../../services/contenu.service';
 
 @Component({
     selector: 'app-column-selector',
@@ -15,9 +16,12 @@ export class ColumnSelectorComponent {
 
   selectedAvailableKeys = new Set<string>();
   selectedChosenKeys = new Set<string>();
+  guideTexte = '';
+  guideOuvert = false;
 
   constructor(
     public dialogRef: MatDialogRef<ColumnSelectorComponent>,
+    private contenuService: ContenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.sheets = data.sheets.map((sheet: any) => ({
@@ -25,6 +29,22 @@ export class ColumnSelectorComponent {
       availableColumns: [...sheet.availableColumns].sort(this.sortByTitle),
       selectedColumns: []
     }));
+
+    if (data.guideCode) {
+      this.contenuService.get(data.guideCode).subscribe((response: any) => {
+        this.guideTexte = response && response.texte ? response.texte : '';
+      });
+    }
+  }
+
+  ouvrirGuide(): void {
+    this.guideOuvert = true;
+  }
+
+  fermerGuide(event?: Event): void {
+    // Empêche l'échappement de remonter jusqu'à MatDialog, qui fermerait la modale d'export.
+    event?.stopPropagation();
+    this.guideOuvert = false;
   }
 
   private sortByTitle = (a: any, b: any) =>
