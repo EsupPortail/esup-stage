@@ -29,6 +29,10 @@ public class ContactPermissionEvaluator implements PermissionEvaluator {
             return contactJpaRepository.isOwner(id, user.getId());
         }
 
+        if (UtilisateurHelper.isRole(user, Role.ADM)) {
+            return true;
+        }
+
         // Gestionnaire (global ou rôle appliqué sur un centre) : restreint aux contacts de ses centres
         if (habilitationService.isGestionnaire(user)) {
             List<Integer> centreIds = habilitationService.getGestionnaireCentreIds(user);

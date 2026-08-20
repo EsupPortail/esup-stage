@@ -130,4 +130,68 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
 
     @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = false AND c.validationConvention = TRUE AND c.dateEnvoiSignature IS NOT NULL")
     List<Convention> findConventionNonSignees();
+
+    /**
+     * Conventions validées dont le tuteur professionnel n'a encore jamais été sollicité au titre
+     * du droit d'opposition et qui n'a pas déjà exprimé son refus.
+     * Le critère de validation reprend celui du filtre "isConventionValide" de ConventionRepository.
+     */
+    @Query("""
+            SELECT c
+            FROM Convention c
+            JOIN c.contact ct
+            WHERE (c.centreGestion.validationPedagogique = FALSE OR c.validationPedagogique = TRUE)
+              AND (c.centreGestion.validationConvention = FALSE OR c.validationConvention = TRUE)
+              AND ct.mail IS NOT NULL
+              AND ct.mail <> ''
+              AND (ct.refusEtreContacte IS NULL OR ct.refusEtreContacte = FALSE)
+              AND ct.dateEnvoiMailOpposition IS NULL
+            ORDER BY c.id DESC
+            """)
+    List<Convention> findConventionsTuteurProDroitOpposition();
+
+    /**
+     * Même sélection que {@link #findConventionsTuteurProDroitOpposition()} pour le signataire.
+     */
+    @Query("""
+            SELECT c
+            FROM Convention c
+            JOIN c.signataire s
+            WHERE (c.centreGestion.validationPedagogique = FALSE OR c.validationPedagogique = TRUE)
+              AND (c.centreGestion.validationConvention = FALSE OR c.validationConvention = TRUE)
+              AND s.mail IS NOT NULL
+              AND s.mail <> ''
+              AND (s.refusEtreContacte IS NULL OR s.refusEtreContacte = FALSE)
+              AND s.dateEnvoiMailOpposition IS NULL
+            ORDER BY c.id DESC
+            """)
+    List<Convention> findConventionsSignataireDroitOpposition();
+
+    /**
+     * Conventions validées les plus récentes sur lesquelles le contact est tuteur professionnel.
+     * Sert à l'envoi manuel du mail de droit d'opposition : le contexte du mail est celui de la
+     * dernière convention en date.
+     */
+    @Query("""
+            SELECT c
+            FROM Convention c
+            WHERE c.contact.id = :idContact
+              AND (c.centreGestion.validationPedagogique = FALSE OR c.validationPedagogique = TRUE)
+              AND (c.centreGestion.validationConvention = FALSE OR c.validationConvention = TRUE)
+            ORDER BY c.id DESC
+            """)
+    List<Convention> findConventionsValideesParTuteurPro(@Param("idContact") int idContact);
+
+    /**
+     * Même sélection que {@link #findConventionsValideesParTuteurPro(int)} pour le signataire.
+     */
+    @Query("""
+            SELECT c
+            FROM Convention c
+            WHERE c.signataire.id = :idContact
+              AND (c.centreGestion.validationPedagogique = FALSE OR c.validationPedagogique = TRUE)
+              AND (c.centreGestion.validationConvention = FALSE OR c.validationConvention = TRUE)
+            ORDER BY c.id DESC
+            """)
+    List<Convention> findConventionsValideesParSignataire(@Param("idContact") int idContact);
 }

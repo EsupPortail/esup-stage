@@ -42,6 +42,7 @@ export class ContactFormComponent implements OnInit {
       mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
       idCentreGestion: [this.idCentreGestion, []],
+      refusEtreContacte: [false, []],
     });
 
     if (this.contact) {
@@ -54,6 +55,7 @@ export class ContactFormComponent implements OnInit {
         fax: this.contact.fax,
         mail: this.contact.mail,
         idCentreGestion: this.contact.idCentreGestion ?? this.contact.centreGestionnaire?.id ?? null,
+        refusEtreContacte: this.contact.refusEtreContacte === true,
       });
     }
   }

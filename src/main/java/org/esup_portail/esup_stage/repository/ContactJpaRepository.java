@@ -44,6 +44,13 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Integer> {
             """)
     List<Contact> findByServiceVisibleForCentres(@Param("idService") int idService, @Param("centreIds") List<Integer> centreIds);
 
+    /**
+     * Plusieurs contacts peuvent partager la même adresse mail (même personne saisie sur plusieurs
+     * services) : la recherche renvoie donc une liste.
+     */
+    @Query("SELECT c FROM Contact c WHERE LOWER(c.mail) = :mail")
+    List<Contact> findByMailIgnoreCase(@Param("mail") String mail);
+
     @Query("SELECT COUNT(c.id) FROM Contact c WHERE c.service.id = :idService")
     Long countContactWithService(@Param("idService") int idService);
 

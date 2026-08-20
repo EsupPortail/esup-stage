@@ -7,6 +7,7 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
 import {StructureService} from "../../../services/structure.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
     selector: 'app-config-generale',
@@ -88,6 +89,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
+      mailOppositionContact: [null, [Validators.pattern(REGEX.EMAIL)]],
     });
 
     this.formTheme = this.fb.group({

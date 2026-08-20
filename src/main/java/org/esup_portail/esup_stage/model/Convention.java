@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
@@ -653,7 +654,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "mailSignataire":
                 if (getSignataire() != null) {
-                    value = getSignataire().getMail();
+                    value = getContactExportValue(getSignataire(), getSignataire().getMail());
                 }
                 break;
             case "fonctionSignataire":
@@ -828,12 +829,12 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "tuteurMail":
                 if (getContact() != null) {
-                    value = getContact().getMail();
+                    value = getContactExportValue(getContact(), getContact().getMail());
                 }
                 break;
             case "tuteurPhone":
                 if (getContact() != null) {
-                    value = getContact().getTel();
+                    value = getContactExportValue(getContact(), getContact().getTel());
                 }
                 break;
             case "tuteurFonction":
@@ -863,6 +864,17 @@ public class Convention extends ObjetMetier implements Exportable {
                 || "competences".equals(key)
                 || "details".equals(key)
                 || "commentaireStage".equals(key);
+    }
+
+    /**
+     * Droit d'opposition des contacts en entreprise : lorsqu'un contact a signalé qu'il ne
+     * souhaitait pas être contacté, ses coordonnées ne doivent plus figurer dans les extractions.
+     */
+    private String getContactExportValue(Contact contact, String value) {
+        if (contact != null && Boolean.TRUE.equals(contact.getRefusEtreContacte())) {
+            return DroitOpposition.MENTION_REFUS_ETRE_CONTACTE;
+        }
+        return value;
     }
 @Transient
     public boolean isAllSignedDateSetted() {

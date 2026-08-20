@@ -145,6 +145,15 @@ export class AppComponent implements OnInit, OnDestroy {
           icon: "fa-calendar",
         },
         {
+          libelle: 'Droit d\'opposition des contacts',
+          path: 'param-global/droit-opposition',
+          icon: "fa-user-slash",
+          canView: () => {
+            // L'écran enregistre des refus : inutile de le proposer en lecture seule
+            return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
+          },
+        },
+        {
           libelle : 'Configuration',
           path : 'param-global/config-app',
           icon: "fa-rocket"

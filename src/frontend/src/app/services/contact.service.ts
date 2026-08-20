@@ -39,6 +39,14 @@ export class ContactService implements PaginatedService {
     return this.http.delete(environment.apiUrl + "/contacts/" + id);
   }
 
+  enregistrerRefusEtreContacte(mails: string[]): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/contacts/refus-etre-contacte`, {mails});
+  }
+
+  solliciterDroitOpposition(id: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/contacts/${id}/solliciter-droit-opposition`, {});
+  }
+
   getMobileTitle(row: any): string {
     return `${row.id} - ${row.nom} ${row.prenom}`;
   }

@@ -141,6 +141,7 @@ import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/co
 import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accueil/centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
+import {DroitOppositionComponent} from "./components/admin/droit-opposition/droit-opposition.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';
@@ -277,6 +278,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CentreProprietaireDialogComponent,
     ColumnSelectorComponent,
     TachePlanifieComponent,
+    DroitOppositionComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
     ExportEvaluationComponent,
