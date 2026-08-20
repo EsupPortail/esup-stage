@@ -38,6 +38,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any = null;
   @Input() exportGuideCode: string = '';
+  @Input() exportPresets: any[] = [];
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
   @Input() confirmMessage: string = "";
@@ -503,7 +504,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
 
     const dialogRef = this.dialog.open(ColumnSelectorComponent, {
       width: '900px',
-      data: { sheets: normalized.sheets, guideCode: this.exportGuideCode }
+      data: { sheets: normalized.sheets, guideCode: this.exportGuideCode, presets: this.exportPresets }
     });
 
     dialogRef.afterClosed().subscribe((result) => {

@@ -18,6 +18,8 @@ export class ColumnSelectorComponent {
   selectedChosenKeys = new Set<string>();
   guideTexte = '';
   guideOuvert = false;
+  presets: any[] = [];
+  presetChoisi: any = null;
 
   constructor(
     public dialogRef: MatDialogRef<ColumnSelectorComponent>,
@@ -29,6 +31,8 @@ export class ColumnSelectorComponent {
       availableColumns: [...sheet.availableColumns].sort(this.sortByTitle),
       selectedColumns: []
     }));
+
+    this.presets = data.presets || [];
 
     if (data.guideCode) {
       this.contenuService.get(data.guideCode).subscribe((response: any) => {
@@ -159,6 +163,34 @@ export class ColumnSelectorComponent {
     const remain = sheet.selectedColumns.filter((c: any) => !this.selectedChosenKeys.has(c.key));
     sheet.selectedColumns = remain;                                          // retire de sélectionnées
     sheet.availableColumns = [...sheet.availableColumns, ...toMove].sort(this.sortByTitle); // remet et trie
+  }
+
+  // Applique un modèle : remise à zéro des deux onglets puis sélection des colonnes
+  // du modèle, dans son ordre. Chaque clé est dirigée vers le premier onglet qui la
+  // propose — certaines (etudiantNom, id...) figurent dans les deux, et les
+  // sélectionner deux fois n'apporterait rien : le backend fusionne les colonnes
+  // dans une seule feuille et la clé en double y serait écrasée.
+  appliquerPreset(preset: any): void {
+    if (!preset) return;
+
+    this.sheets.forEach(sheet => this.reset(sheet));
+    this.selectedAvailableKeys.clear();
+    this.selectedChosenKeys.clear();
+
+    for (const cle of preset.cles) {
+      const sheet = this.sheets.find(s => s.availableColumns.some((c: any) => c.key === cle));
+      if (!sheet) continue; // clé inconnue de cet écran : ignorée
+      const col = sheet.availableColumns.find((c: any) => c.key === cle);
+      sheet.availableColumns = sheet.availableColumns.filter((c: any) => c.key !== cle);
+      sheet.selectedColumns = [...sheet.selectedColumns, col];
+    }
+  }
+
+  // Bouton « Réinitialiser » : vide l'onglet courant et retire le modèle affiché,
+  // qui ne correspondrait plus à la sélection.
+  reinitialiser(sheet: any): void {
+    this.presetChoisi = null;
+    this.reset(sheet);
   }
 
   reset(sheet: any) {

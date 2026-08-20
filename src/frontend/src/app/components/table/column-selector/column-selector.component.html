@@ -148,7 +148,7 @@
       <div class="reset-btn">
         <button class="cancel-button" mat-stroked-button
                 type="button"
-                (click)="reset(currentSheet)"
+                (click)="reinitialiser(currentSheet)"
                 aria-label="Réinitialiser toutes les sélections">
           Réinitialiser
         </button>
@@ -163,6 +163,14 @@
           <mat-icon aria-hidden="true">help_outline</mat-icon>
           <span>Guide d'utilisation</span>
         </button>
+        <mat-form-field class="preset-select" appearance="fill" subscriptSizing="dynamic" *ngIf="presets.length">
+          <mat-label>Modèle de colonnes</mat-label>
+          <mat-select [(ngModel)]="presetChoisi" (ngModelChange)="appliquerPreset($event)"
+                      [matTooltip]="presetChoisi?.description || 'Charger un modèle remplace la sélection en cours.'"
+                      [attr.aria-label]="'Charger un modèle de colonnes prédéfini'">
+            <mat-option *ngFor="let preset of presets" [value]="preset">{{preset.libelle}}</mat-option>
+          </mat-select>
+        </mat-form-field>
         <button class="cancel-button" mat-flat-button
                 type="button"
                 (click)="cancel()"

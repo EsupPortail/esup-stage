@@ -109,7 +109,6 @@
 
 /* Accès au guide, en bas à gauche du pied de modale */
 .actions .guide-toggle {
-  margin-right: auto;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
@@ -244,6 +243,15 @@
 .export-guide__actions button:focus {
   outline: var(--focus-outline, 3px solid #4d90fe);
   outline-offset: var(--focus-offset);
+}
+
+/* --- Sélecteur de modèle de colonnes, dans la barre du bas --- */
+/* C'est lui qui pousse Annuler/Valider à droite : le bouton Guide et le
+   sélecteur forment le groupe de gauche. */
+.actions .preset-select {
+  flex: 0 1 18rem;
+  min-width: 12rem;
+  margin-right: auto;
 }
 
 /* --- Layout interne --- */
@@ -571,6 +579,11 @@ mat-tab-group {
 
   .column-selector-dialog {
     padding: 1rem;
+  }
+
+  .actions .preset-select {
+    flex: 1 1 100%;
+    margin-right: 0;
   }
 
   .column-selector-dialog > h2 {

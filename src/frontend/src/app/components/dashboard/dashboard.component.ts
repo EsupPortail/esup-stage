@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'nonSigne', libelle: 'Non signé' },
   ];
   exportColumns = {};
+  exportPresets: any[] = [];
   tableCanLoad = false;
   savedFilters: any[] = [];
 
@@ -340,6 +341,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       ]
     };
+
+    // Modèles de colonnes proposés dans la modale d'export. Une clé absente de
+    // exportColumns est ignorée à l'application : dashboard.component.spec.ts
+    // vérifie qu'elles existent toutes.
+    this.exportPresets = [
+      {
+        libelle: 'Annuaire des étudiants',
+        description: 'Coordonnées à communiquer aux futurs étudiants en recherche de stage',
+        cles: [
+          'etudiantNom', 'etudiantPrenom',
+          'telEtudiant', 'telPortableEtudiant',
+          'courrielPersoEtudiant', 'mailUniEtudiant',
+          'theme', 'sujetStage', 'annee',
+          'accordAnnuaireEtudiant',
+          'structure',
+        ],
+      },
+      {
+        libelle: 'Suivi pédagogique',
+        description: 'Rattachement pédagogique, enseignant référent et états de validation',
+        cles: [
+          'numEtudiant', 'etudiantNom', 'etudiantPrenom',
+          'codeUFR', 'ufr', 'codeEtape', 'etape', 'codeElp', 'libelleELP',
+          'enseignant', 'mailEnseignant',
+          'dateDebutStage', 'dateFinStage',
+          'validationPedagogique', 'validationConvention',
+          'annee',
+        ],
+      },
+      {
+        libelle: 'Contacts entreprise',
+        description: 'Structure d\u2019accueil, service et tuteur professionnel',
+        cles: [
+          'id', 'etudiantNom', 'etudiantPrenom',
+          'structure', 'structureSiret', 'structureAdresse', 'structureCP',
+          'structureCommune', 'structurePays',
+          'service',
+          'tuteur', 'tuteurMail', 'tuteurPhone', 'tuteurFonction',
+        ],
+      },
+    ];
   }
 
   setDataEnseignant():void{

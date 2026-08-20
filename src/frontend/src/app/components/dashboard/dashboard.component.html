@@ -40,7 +40,8 @@
            (matSortChange)="appTable ? appTable.sorting($event) : null" [noResultText]="'Aucune convention trouvée'"
            [customTemplateRef]="validAction" (updated)="countConvention()" [setAlerte]="true" [exportColumns]="exportColumns"
            [templateMobile]="tableMobile" [loadWithoutFilters]="false"
-           [exportGuideCode]="'GUIDE_EXPORT_EXCEL_CONVENTION'">
+           [exportGuideCode]="'GUIDE_EXPORT_EXCEL_CONVENTION'"
+           [exportPresets]="exportPresets">
 
   <ng-container matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
