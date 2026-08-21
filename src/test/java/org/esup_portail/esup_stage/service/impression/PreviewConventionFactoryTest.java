@@ -1,10 +1,12 @@
 package org.esup_portail.esup_stage.service.impression;
 
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.model.Avenant;
 import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.model.Pays;
 import org.esup_portail.esup_stage.repository.PaysJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +18,16 @@ class PreviewConventionFactoryTest {
 
     private PreviewConventionFactory factory;
     private PaysJpaRepository paysJpaRepository;
+    private AppConfigService appConfigService;
 
     @BeforeEach
     void setUp() {
         factory = new PreviewConventionFactory();
         paysJpaRepository = mock(PaysJpaRepository.class);
         factory.paysJpaRepository = paysJpaRepository;
+        appConfigService = mock(AppConfigService.class);
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        factory.appConfigService = appConfigService;
     }
 
     private CentreGestion centre() {

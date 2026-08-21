@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.service.impression;
 
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.PaysJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,14 @@ public class PreviewConventionFactory {
     @Autowired
     PaysJpaRepository paysJpaRepository;
 
+    @Autowired
+    AppConfigService appConfigService;
+
     public ImpressionContext createPreviewContext(CentreGestion centreGestion, CentreGestion centreEtablissement) {
         Convention convention = createFictionalConvention(centreGestion);
-        return new ImpressionContext(convention, null, centreEtablissement, null, null);
+        ImpressionContext impressionContext = new ImpressionContext(convention, null, centreEtablissement, null, null);
+        impressionContext.setConfig(new ImpressionContext.ConfigContext(appConfigService.getConfigGenerale()));
+        return impressionContext;
     }
 
     public Avenant createFictionalAvenant(Convention convention) {
