@@ -254,6 +254,27 @@
   margin-right: auto;
 }
 
+/* Croix d'effacement, compacte pour ne pas gonfler la barre du bas */
+.preset-clear {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  line-height: 0;
+  color: #666;
+}
+
+.preset-clear mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.preset-clear:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: 1px;
+}
+
 /* --- Layout interne --- */
 .column-selector-dialog {
   display: flex;

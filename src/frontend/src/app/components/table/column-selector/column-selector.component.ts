@@ -186,6 +186,16 @@ export class ColumnSelectorComponent {
     }
   }
 
+  // Croix du sélecteur : retire le modèle et vide la sélection de tous les onglets.
+  effacerPreset(event?: Event): void {
+    // Empêche le clic d'atteindre le champ, qui ouvrirait la liste déroulante.
+    event?.stopPropagation();
+    this.presetChoisi = null;
+    this.sheets.forEach(sheet => this.reset(sheet));
+    this.selectedAvailableKeys.clear();
+    this.selectedChosenKeys.clear();
+  }
+
   // Bouton « Réinitialiser » : vide l'onglet courant et retire le modèle affiché,
   // qui ne correspondrait plus à la sélection.
   reinitialiser(sheet: any): void {

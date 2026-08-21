@@ -108,6 +108,32 @@ describe('ColumnSelectorComponent', () => {
       expect(clesSelectionnees(c)).toEqual([[], []]);
     });
 
+    it('efface le modèle et vide tous les onglets via la croix', () => {
+      const c = creer();
+      c.presetChoisi = c.presets[0];
+      c.appliquerPreset(c.presets[0]);
+      expect(clesSelectionnees(c)).toEqual([['etudiantNom', 'theme'], ['structure']]);
+
+      c.effacerPreset();
+
+      expect(c.presetChoisi).toBeNull();
+      expect(clesSelectionnees(c)).toEqual([[], []]);
+      // les colonnes reviennent bien dans les listes « disponibles »
+      expect(c.sheets[0].availableColumns.length).toBe(4);
+      expect(c.sheets[1].availableColumns.length).toBe(3);
+    });
+
+    it('empêche la croix d\u2019ouvrir la liste déroulante', () => {
+      const c = creer();
+      c.presetChoisi = c.presets[0];
+      const event = new MouseEvent('click');
+      spyOn(event, 'stopPropagation');
+
+      c.effacerPreset(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+    });
+
     it('retire le modèle affiché lors d\u2019une réinitialisation', () => {
       const c = creer();
       c.presetChoisi = c.presets[0];

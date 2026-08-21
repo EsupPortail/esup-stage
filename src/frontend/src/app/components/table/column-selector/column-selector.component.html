@@ -170,6 +170,13 @@
                       [attr.aria-label]="'Charger un modèle de colonnes prédéfini'">
             <mat-option *ngFor="let preset of presets" [value]="preset">{{preset.libelle}}</mat-option>
           </mat-select>
+          <button matIconSuffix mat-icon-button type="button" class="preset-clear"
+                  *ngIf="presetChoisi"
+                  (click)="effacerPreset($event)"
+                  matTooltip="Retirer le modèle et vider les colonnes sélectionnées"
+                  aria-label="Retirer le modèle et vider les colonnes sélectionnées">
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
         </mat-form-field>
         <button class="cancel-button" mat-flat-button
                 type="button"
