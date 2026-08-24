@@ -331,6 +331,30 @@
           </div>
         </div>
 
+        <div class="text-title" *ngIf="!enMasse">Annuaire des étudiants ayant réalisé un stage</div>
+        <mat-divider class="mb-2" *ngIf="!enMasse"></mat-divider>
+        <div class="row" *ngIf="!enMasse">
+          <div class="col-sm-12 col-md-12 mb-2">
+            <div class="mb-2" [innerHTML]="'TEXTE_ACCORD_ANNUAIRE_INTRO'|contenu"></div>
+            <div class="d-flex flex-column">
+              <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === true"
+                            [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
+                            (change)="setAccordAnnuaireEtudiant(true, $event.checked)">
+                {{'LIBELLE_ACCORD_ANNUAIRE_OUI'|contenu}}
+              </mat-checkbox>
+              <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === false"
+                            [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
+                            (change)="setAccordAnnuaireEtudiant(false, $event.checked)">
+                {{'LIBELLE_ACCORD_ANNUAIRE_NON'|contenu}}
+              </mat-checkbox>
+            </div>
+            <div class="error-message mat-caption mt-2"
+                 *ngIf="form.get('accordAnnuaireEtudiant')!.hasError('required') && form.get('accordAnnuaireEtudiant')!.touched">
+              Vous devez cocher l'une des deux cases.
+            </div>
+          </div>
+        </div>
+
         <h4 class="text-title">Divers</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row" *ngIf="!enMasse">

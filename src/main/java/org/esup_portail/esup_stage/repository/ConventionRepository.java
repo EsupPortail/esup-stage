@@ -17,7 +17,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
-        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine", "archive", "simulation", "gratification");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine", "archive", "simulation", "gratification","accordAnnuaireEtudiant");
     }
 
     @Override
@@ -196,6 +196,12 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :simulationSeuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :simulationSeuilSansGratification)))" +
                         "))");
             }
+        }
+        if (key.equals("accordAnnuaireEtudiant")) {
+            // "Non" englobe le refus explicite et les conventions sans réponse enregistrée
+            clauses.add(getJsonBooleanValue(parameter)
+                    ? "c.accordAnnuaireEtudiant = TRUE"
+                    : "(c.accordAnnuaireEtudiant IS NULL OR c.accordAnnuaireEtudiant = FALSE)");
         }
     }
 

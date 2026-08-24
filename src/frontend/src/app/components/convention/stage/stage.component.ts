@@ -55,6 +55,7 @@ export class StageComponent implements OnInit {
     'idNatureTravail': [Validators.required],
     'idModeValidationStage': [Validators.required],
     'nbConges': [Validators.maxLength(MAX_LENTGH_INPUT.nbConges)],
+    'accordAnnuaireEtudiant': [Validators.required],
   }
 
   interruptionsStageTableColumns = ['dateDebutInterruption', 'dateFinInterruption', 'actions'];
@@ -214,6 +215,7 @@ export class StageComponent implements OnInit {
       avantagesNature: [this.convention.avantagesNature, this.fieldValidators['avantagesNature']],
       travailNuitFerie: [this.convention.travailNuitFerie, this.fieldValidators['travailNuitFerie']],
       protectionSocialeOrganismeAccueil: [this.convention.protectionSocialeOrganismeAccueil],
+      accordAnnuaireEtudiant: [this.convention.accordAnnuaireEtudiant, this.fieldValidators['accordAnnuaireEtudiant']],
     }, { emitEvent: false });
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
@@ -261,7 +263,7 @@ export class StageComponent implements OnInit {
     //Update validators that depends on booleans
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
-    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
+    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage','accordAnnuaireEtudiant'],!this.enMasse);
 
     this.loadInterruptionsStage();
     if (!this.form.get('horairesReguliers')?.value) {
@@ -392,6 +394,12 @@ export class StageComponent implements OnInit {
 
   setProtectionSocialeOrganismeAccueil(value: boolean, checked: boolean): void {
     this.form.get('protectionSocialeOrganismeAccueil')!.setValue(checked ? value : null);
+  }
+
+  setAccordAnnuaireEtudiant(value: boolean, checked: boolean): void {
+    const control = this.form.get('accordAnnuaireEtudiant')!;
+    control.markAsTouched();
+    control.setValue(checked ? value : null);
   }
 
   validateForm() : void{

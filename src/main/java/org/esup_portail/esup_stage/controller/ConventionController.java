@@ -286,6 +286,20 @@ public class  ConventionController {
         return convention;
     }
 
+    @PatchMapping("/{id}/accord-annuaire")
+    @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
+    public Convention updateAccordAnnuaire(@PathVariable("id") int id, @Valid @RequestBody AccordAnnuaireDto accordAnnuaireDto) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Volontairement sans contrôle de modifiabilité : l'étudiant doit pouvoir retirer son accord
+        // pour figurer dans l'annuaire à tout moment, y compris après validation de la convention.
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
+        convention.setAccordAnnuaireEtudiant(accordAnnuaireDto.getAccordAnnuaireEtudiant());
+        return conventionJpaRepository.saveAndFlush(convention);
+    }
+
     @GetMapping("/{annee}/en-attente-validation-alerte")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public int countConventionEnAttente(@PathVariable("annee") String annee) {
@@ -785,6 +799,9 @@ public class  ConventionController {
         }
         if(Objects.equals(conventionSingleFieldDto.getField(),"protectionSocialeOrganismeAccueil")) {
             convention.setProtectionSocialeOrganismeAccueil((Boolean) conventionSingleFieldDto.getValue());
+        }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "accordAnnuaireEtudiant")) {
+            convention.setAccordAnnuaireEtudiant((Boolean) conventionSingleFieldDto.getValue());
         }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")) {

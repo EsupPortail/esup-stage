@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'nonSigne', libelle: 'Non signé' },
   ];
   exportColumns = {};
+  exportPresets: any[] = [];
   tableCanLoad = false;
   savedFilters: any[] = [];
 
@@ -241,6 +242,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
+      { id: 'accordAnnuaireEtudiant', libelle: 'Accord pour figurer dans l\'annuaire des étudiants', type: 'boolean', specific: true, colSpan: 4 },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
@@ -263,7 +265,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             numEtudiant: { title: 'N° étudiant' },
             etudiantNom: { title: 'Nom Étudiant' },
             etudiantPrenom: { title: 'Prénom Étudiant' },
-            elPersoEtudiant: { title: 'Mail perso étudiant' },
+            courrielPersoEtudiant: { title: 'Mail perso étudiant' },
             mailUniEtudiant: { title: 'Mail universitaire étudiant' },
             telEtudiant: { title: 'Téléphone perso étudiant' },
             telPortableEtudiant: { title: 'Téléphone portable étudiant' },
@@ -308,6 +310,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             avenant: { title: 'Avenant(s) à la convention' },
             dateCreation: { title: 'Date création convention' },
             dateModif: { title: 'Date modification convention' },
+            accordAnnuaireEtudiant: { title: 'Accord annuaire étudiant' },
           }
         },
         {
@@ -343,6 +346,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       ]
     };
+
+    // Modèles de colonnes proposés dans la modale d'export. Une clé absente de
+    // exportColumns est ignorée à l'application : dashboard.component.spec.ts
+    // vérifie qu'elles existent toutes.
+    this.exportPresets = [
+      {
+        libelle: 'Annuaire des étudiants',
+        description: 'Coordonnées à communiquer aux futurs étudiants en recherche de stage',
+        cles: [
+          'etudiantNom', 'etudiantPrenom',
+          'telEtudiant', 'telPortableEtudiant',
+          'courrielPersoEtudiant', 'mailUniEtudiant',
+          'theme', 'sujetStage', 'annee',
+          'accordAnnuaireEtudiant',
+          'structure',
+        ],
+      },
+      {
+        libelle: 'Suivi pédagogique',
+        description: 'Rattachement pédagogique, enseignant référent et états de validation',
+        cles: [
+          'numEtudiant', 'etudiantNom', 'etudiantPrenom',
+          'codeUFR', 'ufr', 'codeEtape', 'etape', 'codeElp', 'libelleELP',
+          'enseignant', 'mailEnseignant',
+          'dateDebutStage', 'dateFinStage',
+          'validationPedagogique', 'validationConvention',
+          'annee',
+        ],
+      },
+      {
+        libelle: 'Contacts entreprise',
+        description: 'Structure d\u2019accueil, service et tuteur professionnel',
+        cles: [
+          'id', 'etudiantNom', 'etudiantPrenom',
+          'structure', 'structureSiret', 'structureAdresse', 'structureCP',
+          'structureCommune', 'structurePays',
+          'service',
+          'tuteur', 'tuteurMail', 'tuteurPhone', 'tuteurFonction',
+        ],
+      },
+    ];
   }
 
   setDataEnseignant():void{

@@ -1,7 +1,3 @@
-:root {
-  --primaryColor: #1976d2; /* fallback si non défini ailleurs */
-}
-
 /* --- Modale --- */
 .modal-overlay {
   position: fixed;
@@ -31,7 +27,7 @@
 .header-banner {
   position: sticky;
   top: 0;
-  background-color: var(--primaryColor);
+  background-color: var(--primaryColor, #1976d2);
   padding: .75rem 1.5rem;
   z-index: 10;
   border-radius: 8px 8px 0 0;

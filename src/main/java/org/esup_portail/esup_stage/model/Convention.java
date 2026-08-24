@@ -428,6 +428,9 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Boolean protectionSocialeOrganismeAccueil;
 
+    @Column
+    private Boolean accordAnnuaireEtudiant;
+
     @JsonView(Views.List.class)
     @Temporal(TemporalType.TIMESTAMP)
     @Column
@@ -865,6 +868,9 @@ public class Convention extends ObjetMetier implements Exportable {
                 if (getDateArchivage() != null) {
                     value = df.format(getDateArchivage());
                 }
+                break;
+            case "accordAnnuaireEtudiant":
+                value = getAccordAnnuaireEtudiant() == null ? "Non renseigné" : (getAccordAnnuaireEtudiant() ? "Oui" : "Non");
                 break;
             default:
                 break;

@@ -2,6 +2,29 @@
   <div class="modal-container">
     <div class="header-banner">
       <h1 id="modal-title">Exporter</h1>
+      <button class="close-btn" type="button" (click)="cancel()" aria-label="Fermer la fenêtre d'export">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+
+    <div class="export-guide-backdrop" *ngIf="guideOuvert" (click)="fermerGuide()"></div>
+
+    <div class="export-guide" id="export-guide-panel" *ngIf="guideOuvert"
+         role="dialog" aria-modal="true" aria-labelledby="export-guide-title"
+         tabindex="-1" (keydown.escape)="fermerGuide($event)">
+      <div class="export-guide__header">
+        <mat-icon aria-hidden="true">help_outline</mat-icon>
+        <h2 id="export-guide-title">Guide d'utilisation</h2>
+        <button class="close-btn" type="button" (click)="fermerGuide()" aria-label="Fermer le guide">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </div>
+      <div class="export-guide__content" [innerHTML]="guideTexte"></div>
+      <div class="export-guide__actions">
+        <button class="valid-button" mat-flat-button type="button" (click)="fermerGuide()">
+          Fermer le guide
+        </button>
+      </div>
     </div>
 
     <div class="column-selector-dialog">
@@ -125,13 +148,36 @@
       <div class="reset-btn">
         <button class="cancel-button" mat-stroked-button
                 type="button"
-                (click)="reset(currentSheet)"
+                (click)="reinitialiser(currentSheet)"
                 aria-label="Réinitialiser toutes les sélections">
           Réinitialiser
         </button>
       </div>
 
       <div class="actions" role="group" aria-label="Actions principales">
+        <button *ngIf="guideTexte" type="button" class="guide-toggle" mat-stroked-button
+                (click)="ouvrirGuide()"
+                aria-haspopup="dialog"
+                [attr.aria-expanded]="guideOuvert"
+                aria-controls="export-guide-panel">
+          <mat-icon aria-hidden="true">help_outline</mat-icon>
+          <span>Guide d'utilisation</span>
+        </button>
+        <mat-form-field class="preset-select" appearance="fill" subscriptSizing="dynamic" *ngIf="presets.length">
+          <mat-label>Modèle de colonnes</mat-label>
+          <mat-select [(ngModel)]="presetChoisi" (ngModelChange)="appliquerPreset($event)"
+                      [matTooltip]="presetChoisi?.description || 'Charger un modèle remplace la sélection en cours.'"
+                      [attr.aria-label]="'Charger un modèle de colonnes prédéfini'">
+            <mat-option *ngFor="let preset of presets" [value]="preset">{{preset.libelle}}</mat-option>
+          </mat-select>
+          <button matIconSuffix mat-icon-button type="button" class="preset-clear"
+                  *ngIf="presetChoisi"
+                  (click)="effacerPreset($event)"
+                  matTooltip="Retirer le modèle et vider les colonnes sélectionnées"
+                  aria-label="Retirer le modèle et vider les colonnes sélectionnées">
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        </mat-form-field>
         <button class="cancel-button" mat-flat-button
                 type="button"
                 (click)="cancel()"
