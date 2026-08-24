@@ -240,7 +240,7 @@
                   <div class="row align-items-start">
                     <label class="col-sm-12">Nombre d'heures de formation * :</label>
                     <mat-radio-group class="col-sm-12" formControlName="volumeHoraireFormationBool">
-                      <mat-radio-button class="mb-2" [value]="false" [disabled]="hasDefaultVolumeHoraire">Plus de 200 heures</mat-radio-button>
+                      <mat-radio-button class="mb-2" [value]="false">Plus de 200 heures</mat-radio-button>
                       <mat-radio-button [value]="true">
                         {{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)" }} :
                       </mat-radio-button>
