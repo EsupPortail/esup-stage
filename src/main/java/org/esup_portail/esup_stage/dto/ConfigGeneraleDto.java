@@ -58,6 +58,8 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    private String mailDpo;
+
     /**
      * Boîte mail générique sur laquelle les contacts en entreprise renvoient leur refus d'être
      * contactés. Alimente le lien mailto: des mails de droit d'opposition.

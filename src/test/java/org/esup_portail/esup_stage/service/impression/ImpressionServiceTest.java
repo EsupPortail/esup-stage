@@ -3,12 +3,14 @@ package org.esup_portail.esup_stage.service.impression;
 import com.itextpdf.io.image.ImageData;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,6 +86,9 @@ class ImpressionServiceTest {
         AppliProperties appliProperties = new AppliProperties();
         appliProperties.setDataDir(dataDir.toString());
         ReflectionTestUtils.setField(impressionService, "libelleImpressionService", new LibelleImpressionService(appliProperties));
+        AppConfigService appConfigService = mock(AppConfigService.class);
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
+        ReflectionTestUtils.setField(impressionService, "appConfigService", appConfigService);
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,9 @@ public class ImpressionService {
     ConventionService conventionService;
 
     @Autowired
+    AppConfigService appConfigService;
+
+    @Autowired
     FilenameSanitizerService filenameSanitizerService;
 
     @Autowired
@@ -82,6 +86,7 @@ public class ImpressionService {
         List<QuestionSupplementaire> questionSupplementaire = getQuestionsSupplementaires(centreEtablissement);
         List<QuestionEvaluation> questionEvaluations = questionEvaluationJpaRepository.findAll();
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
+        impressionContext.setConfig(new ImpressionContext.ConfigContext(appConfigService.getConfigGenerale()));
         impressionContext.setLibelles(libelleImpressionService.getLibelles(convention.getLangueConvention().getCode()));
 
         try {

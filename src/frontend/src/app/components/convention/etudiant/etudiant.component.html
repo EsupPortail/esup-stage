@@ -255,6 +255,7 @@
                   </mat-form-field>
                 </div>
                 <div class="row">
+                  <div class="col-sm-12 mb-2 alert alert-warning" *ngIf="aucunTypeConventionDisponible">{{ aucunTypeConventionMessage }}</div>
                   <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                     <mat-label>Type de convention</mat-label>
                     <mat-select formControlName="idTypeConvention" required>

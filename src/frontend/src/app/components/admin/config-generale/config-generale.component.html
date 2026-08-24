@@ -90,6 +90,13 @@
               <input matInput formControlName="codeCesure" />
             </mat-form-field>
           </div>
+          <div class="row mb-2">
+            <mat-form-field class="col-md-6" appearance="fill">
+              <mat-label>Adresse mail du délégué à la protection des données (article 13 de la convention)</mat-label>
+              <input matInput type="email" formControlName="mailDpo" />
+              <mat-error *ngIf="formGenerale.get('mailDpo')?.hasError('email')">L'adresse mail n'est pas valide.</mat-error>
+            </mat-form-field>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button class="valid-button" mat-flat-button>Valider</button>
           </div>

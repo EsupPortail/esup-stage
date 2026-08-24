@@ -31,6 +31,8 @@ export class CadreStageModalComponent implements OnInit {
   formConvention!: FormGroup;
 
   typeConventions: any[] = [];
+  aucunTypeConventionDisponible: boolean = false;
+  readonly aucunTypeConventionMessage = "Aucun type de convention n'est disponible pour ce régime d'inscription. Veuillez contacter votre gestionnaire de scolarité.";
   langueConventions: any[] = [];
 
   CPAMs: any[] = [];
@@ -105,6 +107,7 @@ export class CadreStageModalComponent implements OnInit {
           const autoTypeConventionDisabled = !!inscription.centreGestion?.desactiverSelectionAutomatiqueTypeConvention;
           const currentTypeConventionId = this.formConvention.get('idTypeConvention')?.value;
           this.typeConventions = inscription.typeConventionsDisponibles || (inscription.typeConvention ? [inscription.typeConvention] : []);
+          this.aucunTypeConventionDisponible = this.typeConventions.length === 0;
           const autoTypeConvention = autoTypeConventionDisabled
             ? null
             : (inscription.typeConvention || (this.typeConventions.length === 1 ? this.typeConventions[0] : null));
@@ -113,6 +116,10 @@ export class CadreStageModalComponent implements OnInit {
           if (autoTypeConvention) {
             this.formConvention.get('idTypeConvention')?.setValue(autoTypeConvention.id);
             this.formConvention.get('idTypeConvention')?.disable();
+          } else if (this.aucunTypeConventionDisponible) {
+            // Aucun type actif associé au régime et disposant d'un modèle : choix bloqué
+            this.formConvention.get('idTypeConvention')?.disable();
+            this.messageService.setWarning(this.aucunTypeConventionMessage);
           } else {
             const isCurrentTypeConventionStillAvailable = this.typeConventions.some((typeConvention: any) => typeConvention.id === currentTypeConventionId);
             if (!isCurrentTypeConventionStillAvailable) {
@@ -122,6 +129,7 @@ export class CadreStageModalComponent implements OnInit {
           }
         } else {
           this.typeConventions = [];
+          this.aucunTypeConventionDisponible = true;
         }
       });
 
@@ -133,11 +141,13 @@ export class CadreStageModalComponent implements OnInit {
       this.formConvention.get('idTypeConvention')?.valueChanges.subscribe((val: any) => {
         if (val) {
           this.langueConventionService.getListActiveByTypeConvention(val).subscribe((response: any) => {
-            this.langueConventions = response.data;
+            this.langueConventions = response.data || [];
+            if (this.langueConventions.length === 0) {
+              this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
+            }
           });
         } else {
           this.langueConventions = [];
-          this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
 
@@ -185,6 +195,10 @@ export class CadreStageModalComponent implements OnInit {
   }
 
   validate(): void {
+    if (this.aucunTypeConventionDisponible) {
+      this.messageService.setError(this.aucunTypeConventionMessage);
+      return;
+    }
     if (this.formConvention.valid) {
       const data = {...this.formConvention.getRawValue()};
       delete data.inscription;
