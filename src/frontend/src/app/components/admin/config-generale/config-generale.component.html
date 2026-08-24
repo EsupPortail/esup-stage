@@ -290,6 +290,68 @@
       </mat-card-content>
     </mat-card>
   </mat-tab>
+  <mat-tab label="Langues">
+    <mat-card>
+      <mat-card-content>
+        <div class="alert alert-info">
+          <p>
+            Certains blocs sont construits automatiquement par l'application dans la convention et l'avenant
+            imprimés, à l'endroit des variables prévues à cet effet : les cases à cocher de l'article 6.3, les
+            tableaux des périodes d'interruption et des horaires irréguliers, et les motifs de modification de
+            l'avenant. Leurs libellés ne font pas partie du texte que vous saisissez dans
+            <strong>Administration &gt; Templates de convention</strong>, et ne sont donc pas traduits avec lui.
+          </p>
+          <p class="mb-0">
+            Vous pouvez déposer ici un fichier de traduction par langue. Un libellé non traduit reste affiché en
+            français : une traduction partielle est donc possible. Téléchargez le fichier de la langue, traduisez
+            uniquement les valeurs situées à droite du signe <code>=</code>, enregistrez-le en UTF-8, puis déposez-le.
+            La procédure complète est décrite dans la documentation, page
+            « Traduction des libellés d'impression ».
+          </p>
+        </div>
+        <table mat-table [dataSource]="libellesImpression" *ngIf="libellesImpression.length > 0">
+          <ng-container matColumnDef="langue">
+            <th mat-header-cell *matHeaderCellDef>Langue</th>
+            <td mat-cell *matCellDef="let langue">{{langue.libelle}}</td>
+          </ng-container>
+          <ng-container matColumnDef="surcharge">
+            <th mat-header-cell *matHeaderCellDef>Fichier déposé</th>
+            <td mat-cell *matCellDef="let langue">
+              <span *ngIf="langue.surcharge">Oui, le {{langue.dateModification | date:'dd/MM/yyyy HH:mm'}}</span>
+              <span *ngIf="!langue.surcharge">Non</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="cles">
+            <th mat-header-cell *matHeaderCellDef>Libellés traduits</th>
+            <td mat-cell *matCellDef="let langue">{{langue.nbClesRenseignees}} / {{langue.nbClesTotal}}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let langue">
+              <button class="edit-button" mat-icon-button matTooltip="Télécharger le fichier de traduction"
+                      (click)="downloadFichierLibelles(langue)">
+                <span class="fa fa-download" aria-label="Télécharger"></span>
+              </button>
+              <button class="edit-button" mat-icon-button *ngIf="canEdit()" matTooltip="Déposer un fichier de traduction"
+                      (click)="libelleInput.click()">
+                <span class="fa fa-upload" aria-label="Déposer"></span>
+              </button>
+              <input #libelleInput type="file" accept=".properties" style="display:none"
+                     (change)="onLibelleFileChange(langue, $event)">
+              <button class="delete-button" mat-icon-button *ngIf="canDelete() && langue.surcharge"
+                      matTooltip="Supprimer le fichier déposé et revenir aux libellés livrés"
+                      (click)="deleteSurchargeLibelles(langue)">
+                <span class="fa fa-trash" aria-label="Supprimer"></span>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="libelleImpressionColumns"></tr>
+          <tr mat-row *matRowDef="let langue; columns: libelleImpressionColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
   <mat-tab label="&Eacute;tablissements d'accueil">
     <mat-card>
       <mat-card-content>

@@ -51,6 +51,9 @@ export class ConfigGeneraleComponent implements OnInit {
   logoFile: File|undefined;
   faviconFile: File|undefined;
 
+  libellesImpression: any[] = [];
+  libelleImpressionColumns = ['langue', 'surcharge', 'cles', 'actions'];
+
   centreGestion: any;
   primaryColor: string | WritableSignal<string> | undefined;
   secondaryColor: string | WritableSignal<string> | undefined;
@@ -152,6 +155,9 @@ export class ConfigGeneraleComponent implements OnInit {
       this.formSignature.patchValue(this.configSignature);
     });
 
+    // Récupération de l'état des libellés d'impression traduisibles
+    this.loadLibellesImpression();
+
     // Récupération des infos sirene
     this.structureService.getSireneInfo().subscribe((response: any) => {
       this.isSireneActive = response.isApiSireneActive;
@@ -181,6 +187,48 @@ export class ConfigGeneraleComponent implements OnInit {
       dangerColor: this.configTheme.dangerColor,
       warningColor: this.configTheme.warningColor,
       successColor: this.configTheme.successColor
+    });
+  }
+
+  loadLibellesImpression(): void {
+    this.configService.getLibellesImpression().subscribe((response: any) => {
+      this.libellesImpression = response;
+    });
+  }
+
+  downloadFichierLibelles(langue: any): void {
+    this.configService.getFichierLibellesImpression(langue.code).subscribe((blob: Blob) => {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `impression_${langue.code}.properties`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  onLibelleFileChange(langue: any, event: any): void {
+    const file = event.target.files.item(0);
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith('.properties')) {
+      this.messageService.setError('Le fichier doit avoir l\'extension .properties');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('fichier', file, file.name);
+    this.configService.updateLibellesImpression(langue.code, formData).subscribe((response: any) => {
+      this.libellesImpression = response;
+      this.messageService.setSuccess(`Libellés de la langue « ${langue.libelle} » mis à jour`);
+    });
+  }
+
+  deleteSurchargeLibelles(langue: any): void {
+    this.configService.deleteLibellesImpression(langue.code).subscribe((response: any) => {
+      this.libellesImpression = response;
+      this.messageService.setSuccess(`Libellés de la langue « ${langue.libelle} » réinitialisés`);
     });
   }
 

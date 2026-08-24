@@ -4,6 +4,7 @@ import com.itextpdf.io.image.ImageData;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
@@ -14,11 +15,13 @@ import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ImpressionServiceTest {
+
+    @TempDir
+    Path dataDir;
 
     private ImpressionService impressionService;
     private CentreGestionJpaRepository centreGestionJpaRepository;
@@ -77,6 +83,9 @@ class ImpressionServiceTest {
         ReflectionTestUtils.setField(impressionService, "questionEvaluationJpaRepository", questionEvaluationJpaRepository);
         ReflectionTestUtils.setField(impressionService, "freeMarkerConfigurer", freeMarkerConfigurer);
         ReflectionTestUtils.setField(impressionService, "filenameSanitizerService", new FilenameSanitizerService());
+        AppliProperties appliProperties = new AppliProperties();
+        appliProperties.setDataDir(dataDir.toString());
+        ReflectionTestUtils.setField(impressionService, "libelleImpressionService", new LibelleImpressionService(appliProperties));
         AppConfigService appConfigService = mock(AppConfigService.class);
         when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
         ReflectionTestUtils.setField(impressionService, "appConfigService", appConfigService);
