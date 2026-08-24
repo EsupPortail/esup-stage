@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service.impression.context;
 
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.*;
@@ -377,5 +378,20 @@ class ImpressionContextTest {
         assertThat(ctx.getService()).isNull();
         assertThat(ctx.getContact()).isNull();
         assertThat(ctx.getEnseignant()).isNull();
+    }
+
+    @Test
+    void leMailDuDpoEstRepriseDansLeContexteDeConfiguration() {
+        ConfigGeneraleDto configGenerale = new ConfigGeneraleDto();
+        configGenerale.setMailDpo("dpo@univ-example.fr");
+
+        assertThat(new ImpressionContext.ConfigContext(configGenerale).getMailDpo()).isEqualTo("dpo@univ-example.fr");
+    }
+
+    @Test
+    void leMailDuDpoEstVideSiLaConfigurationEstAbsenteOuNonRenseignee() {
+        assertThat(new ImpressionContext.ConfigContext(null).getMailDpo()).isEmpty();
+        assertThat(new ImpressionContext.ConfigContext(new ConfigGeneraleDto()).getMailDpo()).isEmpty();
+        assertThat(new ImpressionContext().getConfig().getMailDpo()).isNull();
     }
 }

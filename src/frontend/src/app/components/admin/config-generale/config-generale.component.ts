@@ -91,6 +91,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
+      mailDpo: [null, [Validators.email]],
     });
 
     this.formTheme = this.fb.group({

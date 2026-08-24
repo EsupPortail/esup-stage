@@ -4,6 +4,7 @@ import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.*;
 
@@ -26,6 +27,7 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
+    private ConfigContext config = new ConfigContext();
     private ReponseEvaluationContext reponseEvaluationContext = new ReponseEvaluationContext();
     private FicheEvaluationContext ficheEvaluationContext = new FicheEvaluationContext();
     private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
@@ -975,6 +977,17 @@ public class ImpressionContext {
             this.reponseTxt = reponseSupplementaire.getReponseTxt();
             this.reponseInt = reponseSupplementaire.getReponseInt();
             this.reponseBool = reponseSupplementaire.getReponseBool();
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class ConfigContext {
+        private String mailDpo;
+
+        public ConfigContext(ConfigGeneraleDto configGenerale) {
+            if (configGenerale == null) { this.mailDpo = ""; return; }
+            this.mailDpo = configGenerale.getMailDpo() != null ? configGenerale.getMailDpo() : "";
         }
     }
 
