@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ContenuService } from '../../../services/contenu.service';
 
 @Component({
     selector: 'app-column-selector',
@@ -15,9 +16,14 @@ export class ColumnSelectorComponent {
 
   selectedAvailableKeys = new Set<string>();
   selectedChosenKeys = new Set<string>();
+  guideTexte = '';
+  guideOuvert = false;
+  presets: any[] = [];
+  presetChoisi: any = null;
 
   constructor(
     public dialogRef: MatDialogRef<ColumnSelectorComponent>,
+    private contenuService: ContenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.sheets = data.sheets.map((sheet: any) => ({
@@ -25,6 +31,24 @@ export class ColumnSelectorComponent {
       availableColumns: [...sheet.availableColumns].sort(this.sortByTitle),
       selectedColumns: []
     }));
+
+    this.presets = data.presets || [];
+
+    if (data.guideCode) {
+      this.contenuService.get(data.guideCode).subscribe((response: any) => {
+        this.guideTexte = response && response.texte ? response.texte : '';
+      });
+    }
+  }
+
+  ouvrirGuide(): void {
+    this.guideOuvert = true;
+  }
+
+  fermerGuide(event?: Event): void {
+    // Empêche l'échappement de remonter jusqu'à MatDialog, qui fermerait la modale d'export.
+    event?.stopPropagation();
+    this.guideOuvert = false;
   }
 
   private sortByTitle = (a: any, b: any) =>
@@ -139,6 +163,44 @@ export class ColumnSelectorComponent {
     const remain = sheet.selectedColumns.filter((c: any) => !this.selectedChosenKeys.has(c.key));
     sheet.selectedColumns = remain;                                          // retire de sélectionnées
     sheet.availableColumns = [...sheet.availableColumns, ...toMove].sort(this.sortByTitle); // remet et trie
+  }
+
+  // Applique un modèle : remise à zéro des deux onglets puis sélection des colonnes
+  // du modèle, dans son ordre. Chaque clé est dirigée vers le premier onglet qui la
+  // propose — certaines (etudiantNom, id...) figurent dans les deux, et les
+  // sélectionner deux fois n'apporterait rien : le backend fusionne les colonnes
+  // dans une seule feuille et la clé en double y serait écrasée.
+  appliquerPreset(preset: any): void {
+    if (!preset) return;
+
+    this.sheets.forEach(sheet => this.reset(sheet));
+    this.selectedAvailableKeys.clear();
+    this.selectedChosenKeys.clear();
+
+    for (const cle of preset.cles) {
+      const sheet = this.sheets.find(s => s.availableColumns.some((c: any) => c.key === cle));
+      if (!sheet) continue; // clé inconnue de cet écran : ignorée
+      const col = sheet.availableColumns.find((c: any) => c.key === cle);
+      sheet.availableColumns = sheet.availableColumns.filter((c: any) => c.key !== cle);
+      sheet.selectedColumns = [...sheet.selectedColumns, col];
+    }
+  }
+
+  // Croix du sélecteur : retire le modèle et vide la sélection de tous les onglets.
+  effacerPreset(event?: Event): void {
+    // Empêche le clic d'atteindre le champ, qui ouvrirait la liste déroulante.
+    event?.stopPropagation();
+    this.presetChoisi = null;
+    this.sheets.forEach(sheet => this.reset(sheet));
+    this.selectedAvailableKeys.clear();
+    this.selectedChosenKeys.clear();
+  }
+
+  // Bouton « Réinitialiser » : vide l'onglet courant et retire le modèle affiché,
+  // qui ne correspondrait plus à la sélection.
+  reinitialiser(sheet: any): void {
+    this.presetChoisi = null;
+    this.reset(sheet);
   }
 
   reset(sheet: any) {

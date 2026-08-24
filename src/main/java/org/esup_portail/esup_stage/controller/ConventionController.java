@@ -286,6 +286,20 @@ public class  ConventionController {
         return convention;
     }
 
+    @PatchMapping("/{id}/accord-annuaire")
+    @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
+    public Convention updateAccordAnnuaire(@PathVariable("id") int id, @Valid @RequestBody AccordAnnuaireDto accordAnnuaireDto) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+        // Volontairement sans contrôle de modifiabilité : l'étudiant doit pouvoir retirer son accord
+        // pour figurer dans l'annuaire à tout moment, y compris après validation de la convention.
+        conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
+        convention.setAccordAnnuaireEtudiant(accordAnnuaireDto.getAccordAnnuaireEtudiant());
+        return conventionJpaRepository.saveAndFlush(convention);
+    }
+
     @GetMapping("/{annee}/en-attente-validation-alerte")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public int countConventionEnAttente(@PathVariable("annee") String annee) {
@@ -786,6 +800,9 @@ public class  ConventionController {
         if(Objects.equals(conventionSingleFieldDto.getField(),"protectionSocialeOrganismeAccueil")) {
             convention.setProtectionSocialeOrganismeAccueil((Boolean) conventionSingleFieldDto.getValue());
         }
+        if (Objects.equals(conventionSingleFieldDto.getField(), "accordAnnuaireEtudiant")) {
+            convention.setAccordAnnuaireEtudiant((Boolean) conventionSingleFieldDto.getValue());
+        }
 
         if (Objects.equals(conventionSingleFieldDto.getField(), "idStructure")) {
             int oldIdStructure = convention.getStructure() != null ? convention.getStructure().getId() : 0;
@@ -941,6 +958,16 @@ public class  ConventionController {
 
     private String addUserContextFilter(String filters) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        JSONObject jsonFiltersArchive = new JSONObject(filters);
+        // Les conventions archivées ne sont visibles que par les admins, sur demande explicite
+        // (filtre "archive"). Pour les autres, le filtre est forcé à false.
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) || !jsonFiltersArchive.has("archive")) {
+            Map<String, Object> archive = new HashMap<>();
+            archive.put("specific", true);
+            archive.put("value", false);
+            jsonFiltersArchive.put("archive", archive);
+        }
+        filters = jsonFiltersArchive.toString();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             JSONObject jsonFilters = new JSONObject(filters);
             // Périmètre des conventions visibles : union (OR) des centres de gestion sur lesquels

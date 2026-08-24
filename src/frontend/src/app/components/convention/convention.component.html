@@ -1,4 +1,8 @@
 <app-retour-liste *ngIf="convention && convention.validationCreation" [path]="back"></app-retour-liste>
+<div class="alert alert-warning" role="status" *ngIf="convention && convention.dateArchivage">
+  <mat-icon aria-hidden="true">archive</mat-icon>
+  Convention archivée le {{ convention.dateArchivage | date: 'dd/MM/yyyy' }} : consultation en lecture seule.
+</div>
 <mat-tab-group #tabGroup class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
   <mat-tab #etudiantTab *ngIf="!isConventionValide()">
     <ng-template mat-tab-label>

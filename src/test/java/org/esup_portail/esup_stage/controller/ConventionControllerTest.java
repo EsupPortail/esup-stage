@@ -1,6 +1,7 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
+import org.esup_portail.esup_stage.dto.AccordAnnuaireDto;
 import org.esup_portail.esup_stage.dto.AnneeUniversitaireDto;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
@@ -12,6 +13,7 @@ import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.dto.PeriodesDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
@@ -271,19 +273,36 @@ class ConventionControllerTest {
         verify(conventionRepository, org.mockito.Mockito.times(4)).count(tousFiltres.capture());
         assertThat(tousFiltres.getAllValues().get(1)).contains("\"enseignant\":true").contains("\"uid\":\"ens1\"");
         assertThat(tousFiltres.getAllValues().get(2)).contains("userScope").contains("\"uid\":\"ges1\"");
-        assertThat(tousFiltres.getAllValues().get(3)).isEqualTo("{}");
+        // L'admin n'a aucune restriction de périmètre, mais les conventions archivées restent
+        // masquées tant qu'il ne les demande pas explicitement.
+        assertThat(tousFiltres.getAllValues().get(3))
+                .doesNotContain("userScope")
+                .contains("\"archive\"")
+                .contains("\"value\":false");
+
+        // Seul l'admin peut lever ce masquage, en demandant explicitement les conventions archivées
+        controller.search(1, 50, "id", "asc", "{\"archive\":{\"specific\":true,\"value\":true}}", new MockHttpServletResponse());
+        ArgumentCaptor<String> filtresAvecArchive = ArgumentCaptor.forClass(String.class);
+        verify(conventionRepository, org.mockito.Mockito.times(5)).count(filtresAvecArchive.capture());
+        assertThat(filtresAvecArchive.getAllValues().get(4)).contains("\"value\":true");
     }
 
     @Test
     void lesExportsDeleguentAuRepository() {
         connecte("adm1", Role.ADM);
-        when(conventionRepository.exportExcel("{}", "id", "asc", "{}")).thenReturn(new byte[]{1});
-        when(conventionRepository.exportCsv("{}", "id", "asc", "{}")).thenReturn(new StringBuilder("csv"));
+        // Le filtre transmis au repository est enrichi selon le rôle : on ne le contraint pas ici
+        when(conventionRepository.exportExcel(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new byte[]{1});
+        when(conventionRepository.exportCsv(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new StringBuilder("csv"));
 
         assertThat(controller.exportExcel("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody())
                 .containsExactly((byte) 1);
         assertThat(controller.exportCsv("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody())
                 .isEqualTo("csv");
+
+        // Les exports appliquent le même masquage que la recherche : pas de convention archivée
+        ArgumentCaptor<String> filtres = ArgumentCaptor.forClass(String.class);
+        verify(conventionRepository).exportExcel(anyString(), anyString(), anyString(), filtres.capture());
+        assertThat(filtres.getValue()).contains("\"archive\"").contains("\"value\":false");
     }
 
     // ------------------------------------------------------------------
@@ -592,6 +611,7 @@ class ConventionControllerTest {
         patch("gratificationStage", Boolean.TRUE);
         patch("confidentiel", Boolean.FALSE);
         patch("protectionSocialeOrganismeAccueil", Boolean.TRUE);
+        patch("accordAnnuaireEtudiant", Boolean.TRUE);
         patch("nbHeuresHebdo", 35);
         patch("nbConges", 2);
         patch("dateDebutStage", "2026-02-01T00:00:00Z");
@@ -612,10 +632,40 @@ class ConventionControllerTest {
         assertThat(convention.getGratificationStage()).isTrue();
         assertThat(convention.getConfidentiel()).isFalse();
         assertThat(convention.getProtectionSocialeOrganismeAccueil()).isTrue();
+        assertThat(convention.getAccordAnnuaireEtudiant()).isTrue();
         assertThat(convention.getNbHeuresHebdo()).isEqualTo("35");
         assertThat(convention.getNbConges()).isEqualTo("2");
         assertThat(convention.getDateDebutStage()).isEqualTo(Date.from(Instant.parse("2026-02-01T00:00:00Z")));
         assertThat(convention.getDateFinStage()).isEqualTo(Date.from(Instant.parse("2026-06-30T00:00:00Z")));
+    }
+
+    @Test
+    void updateAccordAnnuaireResteAutoriseSurUneConventionNonModifiable() {
+        connecte("etu1", Role.ETU);
+        Convention convention = conventionDEtudiant("etu1", true);
+        // La convention n'est plus modifiable : le PATCH générique serait refusé,
+        // mais le retrait de l'accord annuaire doit rester possible.
+        when(conventionService.isConventionModifiable(eq(convention), any())).thenReturn(false);
+
+        AccordAnnuaireDto dto = new AccordAnnuaireDto();
+        dto.setAccordAnnuaireEtudiant(Boolean.FALSE);
+        controller.updateAccordAnnuaire(42, dto);
+
+        assertThat(convention.getAccordAnnuaireEtudiant()).isFalse();
+        verify(conventionService).canViewEditConvention(eq(convention), any(), eq(DroitEnum.MODIFICATION));
+        verify(conventionJpaRepository).saveAndFlush(convention);
+    }
+
+    @Test
+    void updateAccordAnnuaireRefuseUneConventionInconnue() {
+        connecte("etu1", Role.ETU);
+        when(conventionJpaRepository.findById(42)).thenReturn(null);
+
+        AccordAnnuaireDto dto = new AccordAnnuaireDto();
+        dto.setAccordAnnuaireEtudiant(Boolean.TRUE);
+
+        assertThatThrownBy(() -> controller.updateAccordAnnuaire(42, dto))
+                .isInstanceOf(AppException.class);
     }
 
     @Test

@@ -220,6 +220,27 @@ class ExportValueTest {
     }
 
     @Test
+    void accordAnnuaireExporteSesTroisEtats() {
+        Convention convention = new Convention();
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non renseigné");
+
+        convention.setAccordAnnuaireEtudiant(true);
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Oui");
+
+        convention.setAccordAnnuaireEtudiant(false);
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non");
+    }
+
+    @Test
+    void accordAnnuaireResteLisibleSurUneConventionConfidentielle() {
+        Convention convention = new Convention();
+        convention.setConfidentiel(true);
+        convention.setAccordAnnuaireEtudiant(false);
+
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non");
+    }
+
+    @Test
     void lesChampsSensiblesSontVidesQuandLaConventionEstConfidentielle() {
         Convention convention = conventionComplete();
         assertThat(convention.getExportValue("sujetStage")).isEqualTo("Développement");

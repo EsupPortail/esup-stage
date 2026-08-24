@@ -60,6 +60,15 @@ public class ConfigGeneraleDto {
 
     private String mailDpo;
 
+    // Délai (en années) après la fin du stage au bout duquel une convention SANS gratification est archivée
+    private int dureeArchivageConventionAnnees = 5;
+
+    // Délai (en années) après la fin du stage au bout duquel une convention AVEC gratification est archivée
+    private int dureeArchivageConventionGratifieeAnnees = 5;
+
+    // Délai (en années) après l'archivage au bout duquel une convention archivée est purgée définitivement
+    private int dureePurgeConventionAnnees = 2;
+
     /**
      * Boîte mail générique sur laquelle les contacts en entreprise renvoient leur refus d'être
      * contactés. Alimente le lien mailto: des mails de droit d'opposition.

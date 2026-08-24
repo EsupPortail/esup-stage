@@ -145,6 +145,14 @@ export class AppComponent implements OnInit, OnDestroy {
           icon: "fa-calendar",
         },
         {
+          libelle: 'Archivage',
+          path: 'param-global/archivage',
+          icon: "fa-box-archive",
+          canView: () => {
+            return this.authService.isAdmin();
+          }
+        },
+        {
           libelle: 'Droit d\'opposition des contacts',
           path: 'param-global/droit-opposition',
           icon: "fa-user-slash",

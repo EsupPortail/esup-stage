@@ -37,11 +37,14 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
   @Input() customTemplateRef: TemplateRef<any> | undefined;
   @Input() setAlerte: boolean = false;
   @Input() exportColumns: any = null;
+  @Input() exportGuideCode: string = '';
+  @Input() exportPresets: any[] = [];
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
   @Input() confirmMessage: string = "";
 
   @Output() updated = new EventEmitter<any>();
+  @Output() rowClick = new EventEmitter<any>();
 
   @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
@@ -502,7 +505,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
 
     const dialogRef = this.dialog.open(ColumnSelectorComponent, {
       width: '900px',
-      data: { sheets: normalized.sheets }
+      data: { sheets: normalized.sheets, guideCode: this.exportGuideCode, presets: this.exportPresets }
     });
 
     dialogRef.afterClosed().subscribe((result) => {

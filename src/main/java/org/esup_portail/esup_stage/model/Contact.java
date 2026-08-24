@@ -258,6 +258,29 @@ public class Contact extends ObjetMetier implements Exportable {
 
     @Override
     public String getExportValue(String key) {
-        return null;
+        switch (key) {
+            case "id":
+                return String.valueOf(id);
+            case "nom":
+                return nom;
+            case "prenom":
+                return prenom;
+            case "mail":
+                return mail;
+            case "tel":
+                return tel;
+            case "fonction":
+                return fonction;
+            case "service":
+                return service != null ? service.getNom() : "";
+            case "structure":
+                return service != null && service.getStructure() != null ? service.getStructure().getRaisonSociale() : "";
+            case "loginCreation":
+                return getLoginCreation();
+            case "dateCreation":
+                return getDateCreation() != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(getDateCreation()) : "";
+            default:
+                return "";
+        }
     }
 }

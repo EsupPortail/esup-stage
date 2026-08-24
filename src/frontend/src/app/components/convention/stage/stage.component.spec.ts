@@ -138,4 +138,42 @@ describe('StageComponent', () => {
     const result = component.calculHeuresTravails(periodes);
     expect(result).toBe(105); // 17.5 + 35 + 17.5 + 35
   });
+
+  describe('accord annuaire étudiant', () => {
+    it('exige un choix explicite', () => {
+      const control = component.form.get('accordAnnuaireEtudiant')!;
+      control.setValue(null);
+      expect(control.hasError('required')).toBeTrue();
+    });
+
+    it('rend les deux cases mutuellement exclusives', () => {
+      const control = component.form.get('accordAnnuaireEtudiant')!;
+
+      component.setAccordAnnuaireEtudiant(true, true);
+      expect(control.value).toBeTrue();
+      expect(control.valid).toBeTrue();
+
+      component.setAccordAnnuaireEtudiant(false, true);
+      expect(control.value).toBeFalse();
+      expect(control.valid).toBeTrue();
+    });
+
+    it('redevient invalide si la case est décochée', () => {
+      const control = component.form.get('accordAnnuaireEtudiant')!;
+
+      component.setAccordAnnuaireEtudiant(true, true);
+      component.setAccordAnnuaireEtudiant(true, false);
+
+      expect(control.value).toBeNull();
+      expect(control.hasError('required')).toBeTrue();
+    });
+
+    it('ne bloque pas la création en masse', () => {
+      component.toggleValidators(['accordAnnuaireEtudiant'], false);
+      const control = component.form.get('accordAnnuaireEtudiant')!;
+      control.setValue(null);
+
+      expect(control.valid).toBeTrue();
+    });
+  });
 });

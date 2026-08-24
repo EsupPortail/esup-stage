@@ -484,9 +484,12 @@ class StructureControllerTest {
         String filters = "{\"numeroSiret\":{\"value\":\"732\",\"type\":\"text\"}}";
         Structure locale = new Structure();
         locale.setNumeroSiret("111");
-        when(structureRepository.findPaginated(eq(1), eq(50), anyString(), anyString(), eq(filters)))
+        // Le filtre envoyé en base est enrichi du masquage des structures archivées : on ne le contraint
+        // pas ici. En revanche le stub Sirene ci-dessous exige les filtres d'origine, ce qui vérifie que
+        // ce masquage interne n'est pas transmis à l'API externe.
+        when(structureRepository.findPaginated(eq(1), eq(50), anyString(), anyString(), anyString()))
                 .thenReturn(new ArrayList<>(List.of(locale)));
-        when(structureRepository.count(filters)).thenReturn(1L);
+        when(structureRepository.count(anyString())).thenReturn(1L);
 
         Structure doublon = new Structure();
         doublon.setNumeroSiret("111");
@@ -509,9 +512,10 @@ class StructureControllerTest {
         String filters = "{\"numeroSiret\":{\"value\":\"732\",\"type\":\"text\"}}";
         Structure locale = new Structure();
         locale.setNumeroSiret("111");
-        when(structureRepository.findPaginated(eq(2), eq(50), anyString(), anyString(), eq(filters)))
+        // Filtre base enrichi (structures archivées masquées) ; l'API Sirene reçoit les filtres d'origine
+        when(structureRepository.findPaginated(eq(2), eq(50), anyString(), anyString(), anyString()))
                 .thenReturn(new ArrayList<>(List.of(locale)));
-        when(structureRepository.count(filters)).thenReturn(1L);
+        when(structureRepository.count(anyString())).thenReturn(1L);
 
         Structure doublon = new Structure();
         doublon.setNumeroSiret("111");
@@ -571,10 +575,11 @@ class StructureControllerTest {
 
     @Test
     void lesExportsDelegentAuRepository() {
-        when(structureRepository.exportExcel("{}", "id", "asc", "{}")).thenReturn(new byte[]{1, 2});
+        // Comme la recherche, les exports masquent les structures archivées : le filtre est enrichi
+        when(structureRepository.exportExcel(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new byte[]{1, 2});
         assertThat(controller.exportExcel("{}", "id", "asc", "{}", null).getBody()).hasSize(2);
 
-        when(structureRepository.exportCsv("{}", "id", "asc", "{}")).thenReturn(new StringBuilder("a;b"));
+        when(structureRepository.exportCsv(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new StringBuilder("a;b"));
         assertThat(controller.exportCsv("{}", "id", "asc", "{}", null).getBody()).isEqualTo("a;b");
     }
 

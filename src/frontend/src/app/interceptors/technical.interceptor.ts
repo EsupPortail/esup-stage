@@ -27,9 +27,18 @@ export class TechnicalInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const handleApogeeForbiddenLocally = request.headers.has('X-Handle-Apogee-Forbidden-Locally');
-    const requestToHandle = handleApogeeForbiddenLocally
+    // Requêtes de fond (polling...) : elles ne doivent pas afficher le loader plein écran
+    const skipLoader = request.headers.has('X-No-Loader');
+    let requestToHandle = handleApogeeForbiddenLocally
       ? request.clone({headers: request.headers.delete('X-Handle-Apogee-Forbidden-Locally')})
       : request;
+    if (skipLoader) {
+      requestToHandle = requestToHandle.clone({headers: requestToHandle.headers.delete('X-No-Loader')});
+    }
+    if (skipLoader) {
+      return next.handle(requestToHandle)
+        .pipe(catchError(error => this.handleError(error, requestToHandle, handleApogeeForbiddenLocally)));
+    }
     const inputs = ['input', 'select', 'button', 'textarea'];
     if (document.activeElement instanceof HTMLElement && inputs.indexOf(document.activeElement.tagName.toLowerCase()) > -1) {
       this.currentActiveElement = document.activeElement;

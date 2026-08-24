@@ -94,6 +94,10 @@ export class GestionEtabAccueilComponent implements OnInit {
       { id: 'typeStructure.id', libelle: 'Type d\'organisme', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
     ];
+    // Les structures archivées ne sont consultables que par les admins
+    if (this.authService.isAdmin()) {
+      this.filters.push({ id: 'archive', libelle: 'Structures archivées', type: 'boolean', specific: true });
+    }
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
