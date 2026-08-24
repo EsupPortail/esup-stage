@@ -273,19 +273,36 @@ class ConventionControllerTest {
         verify(conventionRepository, org.mockito.Mockito.times(4)).count(tousFiltres.capture());
         assertThat(tousFiltres.getAllValues().get(1)).contains("\"enseignant\":true").contains("\"uid\":\"ens1\"");
         assertThat(tousFiltres.getAllValues().get(2)).contains("userScope").contains("\"uid\":\"ges1\"");
-        assertThat(tousFiltres.getAllValues().get(3)).isEqualTo("{}");
+        // L'admin n'a aucune restriction de périmètre, mais les conventions archivées restent
+        // masquées tant qu'il ne les demande pas explicitement.
+        assertThat(tousFiltres.getAllValues().get(3))
+                .doesNotContain("userScope")
+                .contains("\"archive\"")
+                .contains("\"value\":false");
+
+        // Seul l'admin peut lever ce masquage, en demandant explicitement les conventions archivées
+        controller.search(1, 50, "id", "asc", "{\"archive\":{\"specific\":true,\"value\":true}}", new MockHttpServletResponse());
+        ArgumentCaptor<String> filtresAvecArchive = ArgumentCaptor.forClass(String.class);
+        verify(conventionRepository, org.mockito.Mockito.times(5)).count(filtresAvecArchive.capture());
+        assertThat(filtresAvecArchive.getAllValues().get(4)).contains("\"value\":true");
     }
 
     @Test
     void lesExportsDeleguentAuRepository() {
         connecte("adm1", Role.ADM);
-        when(conventionRepository.exportExcel("{}", "id", "asc", "{}")).thenReturn(new byte[]{1});
-        when(conventionRepository.exportCsv("{}", "id", "asc", "{}")).thenReturn(new StringBuilder("csv"));
+        // Le filtre transmis au repository est enrichi selon le rôle : on ne le contraint pas ici
+        when(conventionRepository.exportExcel(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new byte[]{1});
+        when(conventionRepository.exportCsv(eq("{}"), eq("id"), eq("asc"), anyString())).thenReturn(new StringBuilder("csv"));
 
         assertThat(controller.exportExcel("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody())
                 .containsExactly((byte) 1);
         assertThat(controller.exportCsv("{}", "id", "asc", "{}", new MockHttpServletResponse()).getBody())
                 .isEqualTo("csv");
+
+        // Les exports appliquent le même masquage que la recherche : pas de convention archivée
+        ArgumentCaptor<String> filtres = ArgumentCaptor.forClass(String.class);
+        verify(conventionRepository).exportExcel(anyString(), anyString(), anyString(), filtres.capture());
+        assertThat(filtres.getValue()).contains("\"archive\"").contains("\"value\":false");
     }
 
     // ------------------------------------------------------------------

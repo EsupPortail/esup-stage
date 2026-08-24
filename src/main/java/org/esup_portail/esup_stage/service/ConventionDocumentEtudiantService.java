@@ -140,6 +140,31 @@ public class ConventionDocumentEtudiantService {
                 .forEach(document -> deleteDocument(convention, document));
     }
 
+    /**
+     * Déplace les fichiers des documents déposés de la convention vers le dossier d'archives
+     * du serveur : ils ne sont alors plus téléchargeables depuis l'application mais restent
+     * triés sur le disque pour une suppression automatique externe (hors scope de l'appli).
+     *
+     * @return le nombre de fichiers déplacés
+     */
+    public int archiverFichiers(Convention convention, Path dossierArchive) throws IOException {
+        if (convention == null) {
+            return 0;
+        }
+        int nb = 0;
+        for (ConventionDocumentEtudiant document : documentRepository.findByConventionIdOrderByDateCreationDesc(convention.getId())) {
+            Path source = getDocumentPath(document);
+            if (!Files.exists(source)) {
+                continue;
+            }
+            Path cible = dossierArchive.resolve(source.getFileName());
+            Files.createDirectories(cible.getParent());
+            Files.move(source, cible, StandardCopyOption.REPLACE_EXISTING);
+            nb++;
+        }
+        return nb;
+    }
+
     private void deleteDocument(Convention convention, ConventionDocumentEtudiant document) {
         Path filePath = getDocumentPath(document);
 

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 
 @ApiController
 @RequestMapping("/cron")
@@ -71,5 +73,15 @@ public class CronTaskController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
     public void executeNow(@PathVariable("id") Integer id) {
         cronScheduler.executeTaskNow(id);
+    }
+
+    /**
+     * Identifiants des tâches actuellement en cours d'exécution (planifiées ou lancées manuellement).
+     * Interrogé périodiquement par l'écran d'administration pour afficher l'état à tous les utilisateurs.
+     */
+    @GetMapping("/running")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
+    public Set<Integer> running() {
+        return cronScheduler.getRunningTaskIds();
     }
 }

@@ -386,5 +386,11 @@ databaseChangeLog:
       file: 3.3.0-ajout-param-convention-mail-dpo.yaml
       relativeToChangelogFile: true
   - include:
+      file: 3.3.0-archivage-purge-conventions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-nettoyage-contacts-services.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 3.3.0-accord-annuaire-etudiant.yaml
       relativeToChangelogFile: true

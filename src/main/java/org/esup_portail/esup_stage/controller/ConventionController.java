@@ -958,6 +958,16 @@ public class  ConventionController {
 
     private String addUserContextFilter(String filters) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        JSONObject jsonFiltersArchive = new JSONObject(filters);
+        // Les conventions archivées ne sont visibles que par les admins, sur demande explicite
+        // (filtre "archive"). Pour les autres, le filtre est forcé à false.
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) || !jsonFiltersArchive.has("archive")) {
+            Map<String, Object> archive = new HashMap<>();
+            archive.put("specific", true);
+            archive.put("value", false);
+            jsonFiltersArchive.put("archive", archive);
+        }
+        filters = jsonFiltersArchive.toString();
         if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
             JSONObject jsonFilters = new JSONObject(filters);
             // Périmètre des conventions visibles : union (OR) des centres de gestion sur lesquels

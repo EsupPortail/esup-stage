@@ -56,6 +56,7 @@ import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nom
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
+import { ArchivageComponent } from './components/admin/archivage/archivage.component';
 import { MatRadioModule } from "@angular/material/radio";
 import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
@@ -207,6 +208,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     AdminRoleComponent,
     ConfirmComponent,
     ConfigGeneraleComponent,
+    ArchivageComponent,
     ContenuComponent,
     ContenuPipe,
     CentreGestionSearchComponent,

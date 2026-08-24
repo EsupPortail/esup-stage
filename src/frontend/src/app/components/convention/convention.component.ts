@@ -80,8 +80,12 @@ export class ConventionComponent implements OnInit {
           this.titleService.title = 'Gestion de la convention n°' + pathId
           + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
+          // Une convention archivée est en lecture seule pour tout le monde, admin compris
+          if (this.convention.dateArchivage) {
+            this.modifiable = false;
+          }
           // un admin a tout le temps les droits de modifications
-          if (this.authService.isAdmin()) {
+          else if (this.authService.isAdmin()) {
             this.modifiable = true;
           } else {
             const canModifConvention = !this.convention.validationConvention && this.authService.checkRights({ fonction: AppFonction.CONVENTION, droits: [Droit.MODIFICATION] });

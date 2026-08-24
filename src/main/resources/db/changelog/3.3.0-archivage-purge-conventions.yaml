@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-archivage-conventions-structures-columns
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: dateArchivage
+                  type: DATETIME
+        - addColumn:
+            tableName: Structure
+            columns:
+              - column:
+                  name: dateArchivage
+                  type: DATETIME
+
+  - changeSet:
+      id: 3.3.0-archivage-conventions-structures-index
+      author: thouveno9
+      changes:
+        - createIndex:
+            tableName: Convention
+            indexName: idx_Convention_dateArchivage
+            columns:
+              - column:
+                  name: dateArchivage
+        - createIndex:
+            tableName: Structure
+            indexName: idx_Structure_dateArchivage
+            columns:
+              - column:
+                  name: dateArchivage
+
+  - changeSet:
+      id: 3.3.0-archivage-fichiers-convention-column
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: dateArchivageFichiers
+                  type: DATETIME
+
+  - changeSet:
+      id: 3.3.0-add-cron-archiver-conventions
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'ArchiverConventions'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: ArchiverConventions
+              - column:
+                  name: expressionCron
+                  value: 0 30 2 1 1 ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: true
+
+  - changeSet:
+      id: 3.3.0-add-cron-purger-conventions
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'PurgerConventions'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: PurgerConventions
+              - column:
+                  name: expressionCron
+                  value: 0 30 3 1 1 ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: false

@@ -87,6 +87,7 @@
               <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
               <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
             </button>
+            <div *ngIf="isExecuting(task.id)" class="running-indicator" aria-live="polite">En cours…</div>
           </td>
         </tr>
         </tbody>
@@ -111,6 +112,7 @@
                 <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
                 <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
               </button>
+              <span *ngIf="isExecuting(task.id)" class="running-indicator" aria-live="polite">En cours…</span>
             </div>
           </mat-card-title>
         </mat-card-header>
