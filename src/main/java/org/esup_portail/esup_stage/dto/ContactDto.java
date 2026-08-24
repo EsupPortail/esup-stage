@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.esup_portail.esup_stage.model.Contact;
 import org.esup_portail.esup_stage.model.Service;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -60,6 +62,12 @@ public class ContactDto {
     @JsonView(Views.List.class)
     private String loginModif;
 
+    @JsonView(Views.List.class)
+    private Boolean refusEtreContacte;
+
+    @JsonView(Views.List.class)
+    private Date dateRefusEtreContacte;
+
     public ContactDto(Contact contact) {
         ContactDto dto = from(contact, false);
         this.id = dto.id;
@@ -77,6 +85,8 @@ public class ContactDto {
         this.idCentreGestion = dto.idCentreGestion;
         this.loginCreation = dto.loginCreation;
         this.loginModif = dto.loginModif;
+        this.refusEtreContacte = dto.refusEtreContacte;
+        this.dateRefusEtreContacte = dto.dateRefusEtreContacte;
     }
 
     public static ContactDto from(Contact contact, boolean hideSensitiveFields) {
@@ -90,6 +100,10 @@ public class ContactDto {
         dto.setIdCentreGestion(contact.getCentreGestion() != null ? contact.getCentreGestion().getId() : null);
         dto.setLoginCreation(contact.getLoginCreation());
         dto.setLoginModif(contact.getLoginModif());
+        // Le droit d'opposition reste visible de tous les profils : l'étudiant doit pouvoir
+        // constater le refus et le déclarer depuis les écrans tuteur pro / signataire.
+        dto.setRefusEtreContacte(contact.getRefusEtreContacte());
+        dto.setDateRefusEtreContacte(contact.getDateRefusEtreContacte());
 
         if (!hideSensitiveFields) {
             // Le centre gestionnaire (donnée RGPD) et les coordonnées ne sont exposés qu'aux

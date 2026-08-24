@@ -1,12 +1,16 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.ContactDetailDto;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
+import org.esup_portail.esup_stage.dto.DroitOppositionFormDto;
+import org.esup_portail.esup_stage.dto.DroitOppositionResultDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.userdetails.CasUserDetailsImpl;
 import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
+import org.esup_portail.esup_stage.service.DroitOppositionContactService;
 import org.esup_portail.esup_stage.service.HabilitationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +59,7 @@ class PersonnelEtContactControllersTest {
     private CentreGestionJpaRepository centreGestionJpaRepository;
     private CiviliteJpaRepository civiliteJpaRepository;
     private ConfidentialiteAccessService confidentialiteAccessService;
+    private DroitOppositionContactService droitOppositionContactService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -85,6 +90,8 @@ class PersonnelEtContactControllersTest {
         contactController.civiliteJpaRepository = civiliteJpaRepository;
         confidentialiteAccessService = mock(ConfidentialiteAccessService.class);
         contactController.confidentialiteAccessService = confidentialiteAccessService;
+        droitOppositionContactService = mock(DroitOppositionContactService.class);
+        contactController.droitOppositionContactService = droitOppositionContactService;
     }
 
     @AfterEach
@@ -435,6 +442,95 @@ class PersonnelEtContactControllersTest {
         // contact inconnu
         when(contactJpaRepository.findById(99)).thenReturn(null);
         assertThatThrownBy(() -> contactController.update(99, formulaireContact(null))).isInstanceOf(AppException.class);
+    }
+
+    // ------------------------------------------------------------------
+    // droit d'opposition des contacts en entreprise
+    // ------------------------------------------------------------------
+
+    @Test
+    void cocherLeRefusHorodateEtTraceSonOrigine() {
+        connecte("ges1", Role.GES);
+        when(civiliteJpaRepository.findById(1)).thenReturn(new Civilite());
+        when(contactJpaRepository.saveAndFlush(any(Contact.class))).thenAnswer(inv -> inv.getArgument(0));
+        Contact contact = contactAvecCentre(3);
+        when(contactJpaRepository.findById(9)).thenReturn(contact);
+
+        ContactFormDto formulaire = formulaireContact(null);
+        formulaire.setRefusEtreContacte(true);
+        Contact modifie = contactController.update(9, formulaire);
+
+        assertThat(modifie.getRefusEtreContacte()).isTrue();
+        assertThat(modifie.getDateRefusEtreContacte()).isNotNull();
+        assertThat(modifie.getOrigineRefusEtreContacte()).isEqualTo(DroitOpposition.ORIGINE_REFUS_MANUEL);
+    }
+
+    @Test
+    void unRefusDejaPoseNestPasReHorodateSiLeFormulaireLeRenvoie() {
+        connecte("ges1", Role.GES);
+        when(civiliteJpaRepository.findById(1)).thenReturn(new Civilite());
+        when(contactJpaRepository.saveAndFlush(any(Contact.class))).thenAnswer(inv -> inv.getArgument(0));
+        Contact contact = contactAvecCentre(3);
+        contact.setRefusEtreContacte(true);
+        java.util.Date dateOrigine = new java.util.Date(0);
+        contact.setDateRefusEtreContacte(dateOrigine);
+        contact.setOrigineRefusEtreContacte(DroitOpposition.ORIGINE_REFUS_MASSE);
+        when(contactJpaRepository.findById(9)).thenReturn(contact);
+
+        ContactFormDto formulaire = formulaireContact(null);
+        formulaire.setRefusEtreContacte(true);
+        Contact modifie = contactController.update(9, formulaire);
+
+        assertThat(modifie.getDateRefusEtreContacte()).isEqualTo(dateOrigine);
+        assertThat(modifie.getOrigineRefusEtreContacte()).isEqualTo(DroitOpposition.ORIGINE_REFUS_MASSE);
+    }
+
+    @Test
+    void unGestionnairePeutLeverUnRefus() {
+        connecte("ges1", Role.GES);
+        when(civiliteJpaRepository.findById(1)).thenReturn(new Civilite());
+        when(contactJpaRepository.saveAndFlush(any(Contact.class))).thenAnswer(inv -> inv.getArgument(0));
+        Contact contact = contactAvecCentre(3);
+        contact.setRefusEtreContacte(true);
+        contact.setDateRefusEtreContacte(new java.util.Date());
+        contact.setOrigineRefusEtreContacte(DroitOpposition.ORIGINE_REFUS_MANUEL);
+        when(contactJpaRepository.findById(9)).thenReturn(contact);
+
+        Contact modifie = contactController.update(9, formulaireContact(null));
+
+        assertThat(modifie.getRefusEtreContacte()).isFalse();
+        assertThat(modifie.getDateRefusEtreContacte()).isNull();
+        assertThat(modifie.getOrigineRefusEtreContacte()).isNull();
+    }
+
+    @Test
+    void unEtudiantPeutDeclarerUnRefusMaisPasLeLever() {
+        connecte("etu1", Role.ETU);
+        when(civiliteJpaRepository.findById(1)).thenReturn(new Civilite());
+        when(contactJpaRepository.saveAndFlush(any(Contact.class))).thenAnswer(inv -> inv.getArgument(0));
+        Contact contact = contactAvecCentre(3);
+        when(contactJpaRepository.findById(9)).thenReturn(contact);
+
+        ContactFormDto declarationRefus = formulaireContact(null);
+        declarationRefus.setRefusEtreContacte(true);
+        assertThat(contactController.update(9, declarationRefus).getRefusEtreContacte()).isTrue();
+
+        // le refus est désormais posé : l'étudiant ne peut plus revenir dessus
+        assertThatThrownBy(() -> contactController.update(9, formulaireContact(null)))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("gestionnaire");
+        assertThat(contact.getRefusEtreContacte()).isTrue();
+    }
+
+    @Test
+    void laSaisieEnMasseDelegueAuServiceDeDroitDOpposition() {
+        DroitOppositionResultDto attendu = new DroitOppositionResultDto();
+        when(droitOppositionContactService.enregistrerRefus(List.of("contact@acme.fr"))).thenReturn(attendu);
+
+        DroitOppositionFormDto formulaire = new DroitOppositionFormDto();
+        formulaire.setMails(List.of("contact@acme.fr"));
+
+        assertThat(contactController.enregistrerRefusEtreContacte(formulaire)).isSameAs(attendu);
     }
 
     @Test

@@ -69,4 +69,10 @@ public class ConfigGeneraleDto {
     // Délai (en années) après l'archivage au bout duquel une convention archivée est purgée définitivement
     private int dureePurgeConventionAnnees = 2;
 
+    /**
+     * Boîte mail générique sur laquelle les contacts en entreprise renvoient leur refus d'être
+     * contactés. Alimente le lien mailto: des mails de droit d'opposition.
+     */
+    private String mailOppositionContact;
+
 }

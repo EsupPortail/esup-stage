@@ -79,6 +79,11 @@
             <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
+        <div class="row input-group">
+          <mat-checkbox class="col-12" formControlName="refusEtreContacte">
+            {{'LIBELLE_REFUS_ETRE_CONTACTE'|contenu}}
+          </mat-checkbox>
+        </div>
       </form>
     </div>
 

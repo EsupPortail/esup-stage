@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.service;
 
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -37,6 +38,7 @@ class MailerServiceTest {
     private UtilisateurJpaRepository utilisateurJpaRepository;
     private EvaluationService evaluationService;
     private AppliProperties appliProperties;
+    private AppConfigService appConfigService;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +47,8 @@ class MailerServiceTest {
         templateMailGroupeJpaRepository = mock(TemplateMailGroupeJpaRepository.class);
         utilisateurJpaRepository = mock(UtilisateurJpaRepository.class);
         evaluationService = mock(EvaluationService.class);
+        appConfigService = mock(AppConfigService.class);
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
 
         appliProperties = new AppliProperties();
         AppliProperties.MailerProperties mailer = new AppliProperties.MailerProperties();
@@ -57,6 +61,7 @@ class MailerServiceTest {
         service.templateMailGroupeJpaRepository = templateMailGroupeJpaRepository;
         service.utilisateurJpaRepository = utilisateurJpaRepository;
         service.evaluationService = evaluationService;
+        service.appConfigService = appConfigService;
 
         when(evaluationService.buildEvaluationTuteurUrl(any(Convention.class))).thenReturn("http://eval");
     }

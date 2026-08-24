@@ -3,6 +3,7 @@ package org.esup_portail.esup_stage.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.esup_portail.esup_stage.constants.ValidationPatterns;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
@@ -28,6 +29,7 @@ import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.FileValidationService;
 import org.esup_portail.esup_stage.service.impression.LibelleImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -92,6 +94,7 @@ public class AppConfigController {
         if (configGeneraleDto.getTypeCentre() == TypeCentreEnum.VIDE) {
             configGeneraleDto.setTypeCentre(null);
         }
+        configGeneraleDto.setMailOppositionContact(normaliserMailOppositionContact(configGeneraleDto.getMailOppositionContact()));
         ObjectMapper mapper = new ObjectMapper();
         appConfig.setParametres(mapper.writeValueAsString(configGeneraleDto));
         appConfigJpaRepository.saveAndFlush(appConfig);
@@ -109,6 +112,23 @@ public class AppConfigController {
         }
 
         return appConfigService.getConfigGenerale();
+    }
+
+    /**
+     * La boîte générique de recueil des refus doit être une adresse mail simple : elle est injectée
+     * telle quelle dans le lien {@code mailto:} des mails de droit d'opposition. Une valeur mal
+     * formée produirait un lien inopérant côté contact, sans erreur visible.
+     */
+    private String normaliserMailOppositionContact(String mailOppositionContact) {
+        if (mailOppositionContact == null || mailOppositionContact.trim().isEmpty()) {
+            return null;
+        }
+        String normalise = mailOppositionContact.trim();
+        if (!normalise.matches(ValidationPatterns.EMAIL)) {
+            throw new AppException(HttpStatus.BAD_REQUEST,
+                    "L'adresse de la boîte mail de recueil des refus n'est pas valide (attendu : adresse@domaine.fr)");
+        }
+        return normalise;
     }
 
     @GetMapping("/alerte-mail")

@@ -73,6 +73,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
       tel: [null, [Validators.required, Validators.maxLength(50)]],
       mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
+      refusEtreContacte: [false, []],
     });
   }
 
@@ -190,6 +191,7 @@ export class SignataireComponent implements OnInit, OnChanges, OnDestroy {
       tel: this.contact.tel,
       fax: this.contact.fax,
       mail: this.contact.mail,
+      refusEtreContacte: this.contact.refusEtreContacte === true,
     });
     this.modif = true;
   }

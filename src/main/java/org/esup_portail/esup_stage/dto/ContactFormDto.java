@@ -45,4 +45,6 @@ public class ContactFormDto {
     private int idService;
 
     private Integer idCentreGestion;
+
+    private Boolean refusEtreContacte;
 }

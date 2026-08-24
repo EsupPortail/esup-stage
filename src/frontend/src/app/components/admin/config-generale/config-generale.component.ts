@@ -7,6 +7,7 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
 import {StructureService} from "../../../services/structure.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
     selector: 'app-config-generale',
@@ -95,6 +96,7 @@ export class ConfigGeneraleComponent implements OnInit {
       dureeArchivageConventionAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
       dureeArchivageConventionGratifieeAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
       dureePurgeConventionAnnees: [2, [Validators.required, Validators.min(1), Validators.max(99)]],
+      mailOppositionContact: [null, [Validators.pattern(REGEX.EMAIL)]],
     });
 
     this.formTheme = this.fb.group({

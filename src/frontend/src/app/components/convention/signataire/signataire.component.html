@@ -38,6 +38,10 @@
           <div class="col-sm-3 font-weight-bold">Fax</div>
           <div class="col-sm-9">{{contact.fax}}</div>
         </div>
+        <div class="row">
+          <div class="col-sm-3 font-weight-bold">Droit d'opposition</div>
+          <div class="col-sm-9">{{contact.refusEtreContacte ? ('LIBELLE_REFUS_ETRE_CONTACTE'|contenu) : 'Accepte d\'être contacté'}}</div>
+        </div>
       </div>
       <div *ngIf="(modif && (canEdit() || isCreatorContact(contact))) || (!contact.id && canCreate())">
         <mat-divider class="mb-2"></mat-divider>
@@ -79,6 +83,9 @@
             <input matInput formControlName="fax" />
             <mat-error><app-form-error [field]="form.get('fax')"></app-form-error></mat-error>
           </mat-form-field>
+          <mat-checkbox class="col-sm-12 mb-2" formControlName="refusEtreContacte">
+            {{'LIBELLE_REFUS_ETRE_CONTACTE'|contenu}}
+          </mat-checkbox>
         </div>
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
