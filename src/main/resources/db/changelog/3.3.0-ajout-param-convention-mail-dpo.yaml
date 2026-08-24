@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-param-convention-mail-dpo
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamConvention
+            columns:
+              - column:
+                  name: code
+                  value: config.mailDpo
+              - column:
+                  name: libelle
+                  value: Adresse mail du délégué à la protection des données (article 13)
+              - column:
+                  name: exemple
+                  value: dpo@univ-example.fr

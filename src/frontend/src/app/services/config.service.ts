@@ -54,6 +54,22 @@ export class ConfigService {
     return this.configTheme;
   }
 
+  getLibellesImpression(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/config/libelles-impression");
+  }
+
+  getFichierLibellesImpression(code: string): Observable<any> {
+    return this.http.get(environment.apiUrl + `/config/libelles-impression/${code}/fichier`, {responseType: 'blob'});
+  }
+
+  updateLibellesImpression(code: string, data: FormData): Observable<any> {
+    return this.http.post(environment.apiUrl + `/config/libelles-impression/${code}`, data);
+  }
+
+  deleteLibellesImpression(code: string): Observable<any> {
+    return this.http.delete(environment.apiUrl + `/config/libelles-impression/${code}`);
+  }
+
   getConfigSignature(): Observable<any> {
     return this.http.get(environment.apiUrl + "/config/signature");
   }

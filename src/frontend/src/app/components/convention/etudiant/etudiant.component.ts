@@ -7,7 +7,6 @@ import { CommuneService } from "../../../services/commune.service";
 import { CPAMService } from "../../../services/cpam.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { LdapService } from "../../../services/ldap.service";
-import { TypeConventionService } from "../../../services/type-convention.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
 import * as _ from "lodash";
 import { CentreGestionService } from "../../../services/centre-gestion.service";
@@ -52,6 +51,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
   formConvention!: FormGroup;
 
   typeConventions: any[] = [];
+  aucunTypeConventionDisponible: boolean = false;
+  readonly aucunTypeConventionMessage = "Aucun type de convention n'est disponible pour ce régime d'inscription. Veuillez contacter votre gestionnaire de scolarité.";
   langueConventions: any[] = [];
 
   CPAMs: any[] = [];
@@ -80,7 +81,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private messageService: MessageService,
     private ldapService: LdapService,
-    private typeConventionService: TypeConventionService,
     private langueConventionService: LangueConventionService,
     private centreGestionService: CentreGestionService,
     private conventionService: ConventionService,
@@ -144,6 +144,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
           const autoTypeConventionDisabled = !!inscription.centreGestion?.desactiverSelectionAutomatiqueTypeConvention;
           const currentTypeConventionId = this.formConvention.get('idTypeConvention')?.value;
           this.typeConventions = inscription.typeConventionsDisponibles || (inscription.typeConvention ? [inscription.typeConvention] : []);
+          this.aucunTypeConventionDisponible = this.typeConventions.length === 0;
           const autoTypeConvention = !autoTypeConventionDisabled
             ? (inscription.typeConvention || (this.typeConventions.length === 1 ? this.typeConventions[0] : null))
             : null;
@@ -164,6 +165,13 @@ export class EtudiantComponent implements OnInit, OnChanges {
             } else {
               this.formConvention.get('idTypeConvention')?.enable();
             }
+          } else if (this.aucunTypeConventionDisponible) {
+            // Aucun type actif associé au régime et disposant d'un modèle : choix bloqué
+            if (!this.convention?.id) {
+              this.formConvention.get('idTypeConvention')?.setValue(null);
+            }
+            this.formConvention.get('idTypeConvention')?.disable();
+            this.messageService.setWarning(this.aucunTypeConventionMessage);
           } else {
             const isCurrentTypeConventionStillAvailable = this.typeConventions.some((typeConvention: any) => typeConvention.id === currentTypeConventionId);
             if (!isCurrentTypeConventionStillAvailable && !this.convention?.id) {
@@ -205,7 +213,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
         } else {
           this.langueConventions = [];
           this.formConvention.get('codeLangueConvention')?.setValue(null);
-          this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
         }
       });
 
@@ -220,10 +227,6 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.formConvention.get('libelleCPAM')?.disable();
         }
       });
-    });
-
-    this.typeConventionService.getListActiveWithTemplate().subscribe((response: any) => {
-      this.typeConventions = response.data;
     });
 
     this.form.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
@@ -521,6 +524,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
   private loadLangues(idTypeConvention: number, currentCode?: string | null): void {
     this.langueConventionService.getListActiveByTypeConvention(idTypeConvention).subscribe((response: any) => {
       this.langueConventions = response.data || [];
+      if (this.langueConventions.length === 0) {
+        this.messageService.setWarning("Aucune langue disponible pour ce type de convention.");
+      }
       const langueControl = this.formConvention.get('codeLangueConvention');
       const hasCurrent = currentCode && this.langueConventions.some((l: any) => l.code === currentCode);
       if (!hasCurrent) {
@@ -531,6 +537,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
   }
 
   validate(): void {
+    if (this.aucunTypeConventionDisponible) {
+      this.messageService.setError(this.aucunTypeConventionMessage);
+      return;
+    }
     if (this.formConvention.valid) {
       // Contrôle code postal commune
       if (this.isFr() && !this.isCodePostalValid()) {

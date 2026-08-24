@@ -24,6 +24,7 @@ import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionEvaluationJpaRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
 import org.esup_portail.esup_stage.service.impression.context.ImpressionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,13 @@ public class ImpressionService {
     ConventionService conventionService;
 
     @Autowired
+    AppConfigService appConfigService;
+
+    @Autowired
     FilenameSanitizerService filenameSanitizerService;
+
+    @Autowired
+    LibelleImpressionService libelleImpressionService;
 
     public void generateConventionAvenantPDF(Convention convention, Avenant avenant, ByteArrayOutputStream ou, boolean isRecap) {
         if (convention.getNomenclature() == null) {
@@ -79,6 +86,8 @@ public class ImpressionService {
         List<QuestionSupplementaire> questionSupplementaire = getQuestionsSupplementaires(centreEtablissement);
         List<QuestionEvaluation> questionEvaluations = questionEvaluationJpaRepository.findAll();
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
+        impressionContext.setConfig(new ImpressionContext.ConfigContext(appConfigService.getConfigGenerale()));
+        impressionContext.setLibelles(libelleImpressionService.getLibelles(convention.getLangueConvention().getCode()));
 
         try {
 
@@ -425,6 +434,8 @@ public class ImpressionService {
                 // Création d'un contexte fictif pour le preview
                 CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
                 ImpressionContext impressionContext = previewConventionFactory.createPreviewContext(centreGestion, centreEtablissement);
+                // Les libellés suivent la langue du template prévisualisé, et non celle de la convention fictive
+                impressionContext.setLibelles(libelleImpressionService.getLibelles(templateConvention.getLangueConvention() != null ? templateConvention.getLangueConvention().getCode() : null));
 
                 // Traitement du template avec les données fictives
                 Configuration freeMarkerConfig = freeMarkerConfigurer.getConfiguration();
@@ -580,6 +591,7 @@ public class ImpressionService {
         List<QuestionSupplementaire> questionSupplementaire = getQuestionsSupplementaires(centreEtablissement);
         List<QuestionEvaluation> questionEvaluations = questionEvaluationJpaRepository.findAll();
         ImpressionContext impressionContext = new ImpressionContext(convention, avenant, centreEtablissement, questionSupplementaire, questionEvaluations);
+        impressionContext.setLibelles(libelleImpressionService.getLibelles(convention.getLangueConvention() != null ? convention.getLangueConvention().getCode() : null));
 
         try {
             // Récupération du texte HTML directement depuis les fichiers

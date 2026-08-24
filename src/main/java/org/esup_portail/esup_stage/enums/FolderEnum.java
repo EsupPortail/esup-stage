@@ -5,7 +5,8 @@ public enum FolderEnum {
     CONVENTION_DOCUMENTS_ETUDIANT("/conventions/documents-etudiant"),
     CENTRE_GESTION_LOGOS("/centregestion/logos"),
     IMAGES("/images"),
-    SIGNATURES("/signatures");
+    SIGNATURES("/signatures"),
+    LIBELLES_IMPRESSION("/i18n");
 
     private String value = "";
 

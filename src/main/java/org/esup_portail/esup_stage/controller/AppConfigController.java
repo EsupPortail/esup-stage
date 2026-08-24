@@ -3,29 +3,43 @@ package org.esup_portail.esup_stage.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigSignatureDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
+import org.esup_portail.esup_stage.dto.LibelleImpressionLangueDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.TypeCentreEnum;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AffectationId;
 import org.esup_portail.esup_stage.model.AppConfig;
+import org.esup_portail.esup_stage.model.LangueConvention;
 import org.esup_portail.esup_stage.repository.AffectationJpaRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
+import org.esup_portail.esup_stage.repository.LangueConventionJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.impression.LibelleImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -34,8 +48,16 @@ import java.util.List;
 @RequestMapping("/config")
 public class AppConfigController {
 
+    private static final Logger logger = LogManager.getLogger(AppConfigController.class);
+
     @Autowired
     AppConfigJpaRepository appConfigJpaRepository;
+
+    @Autowired
+    LangueConventionJpaRepository langueConventionJpaRepository;
+
+    @Autowired
+    LibelleImpressionService libelleImpressionService;
 
     @Autowired
     AffectationJpaRepository affectationJpaRepository;
@@ -174,6 +196,69 @@ public class AppConfigController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ConfigSignatureDto getSignature() {
         return appConfigService.getConfigSignature();
+    }
+
+    @GetMapping("/libelles-impression")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> getLibellesImpression() {
+        int nbClesTotal = libelleImpressionService.getClesAutorisees().size();
+        return langueConventionJpaRepository.findAll().stream()
+                .filter(langue -> "O".equals(langue.getTemEnServ()))
+                .map(langue -> {
+                    LibelleImpressionLangueDto dto = new LibelleImpressionLangueDto();
+                    dto.setCode(langue.getCode());
+                    dto.setLibelle(langue.getLibelle());
+                    dto.setNbClesTotal(nbClesTotal);
+                    dto.setNbClesRenseignees(libelleImpressionService.compterClesTraduites(langue.getCode()));
+                    Path chemin = libelleImpressionService.getCheminSurcharge(langue.getCode());
+                    if (Files.isRegularFile(chemin)) {
+                        dto.setSurcharge(true);
+                        try {
+                            dto.setDateModification(new Date(Files.getLastModifiedTime(chemin).toMillis()));
+                        } catch (IOException e) {
+                            logger.warn("Date de modification illisible pour {}", chemin, e);
+                        }
+                    }
+                    return dto;
+                })
+                .toList();
+    }
+
+    @GetMapping(value = "/libelles-impression/{code}/fichier", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
+    public ResponseEntity<byte[]> getFichierLibellesImpression(@PathVariable("code") String code) {
+        LangueConvention langue = getLangueConvention(code);
+        String nomFichier = libelleImpressionService.getNomFichier(langue.getCode());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomFichier + "\"")
+                .contentType(new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8))
+                .body(libelleImpressionService.getContenuFichierTravail(langue.getCode()));
+    }
+
+    @PostMapping("/libelles-impression/{code}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> updateLibellesImpression(@PathVariable("code") String code, @RequestParam("fichier") MultipartFile fichier) {
+        LangueConvention langue = getLangueConvention(code);
+        FileValidationService.ValidatedProperties validated = fileValidationService.validateProperties(fichier, libelleImpressionService.getClesAutorisees());
+        // Le nom du fichier déposé est ignoré : le chemin est construit à partir du code de langue validé
+        libelleImpressionService.ecrireSurcharge(langue.getCode(), validated.bytes());
+        return getLibellesImpression();
+    }
+
+    @DeleteMapping("/libelles-impression/{code}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> deleteLibellesImpression(@PathVariable("code") String code) {
+        LangueConvention langue = getLangueConvention(code);
+        libelleImpressionService.supprimerSurcharge(langue.getCode());
+        return getLibellesImpression();
+    }
+
+    private LangueConvention getLangueConvention(String code) {
+        LangueConvention langue = code == null ? null : langueConventionJpaRepository.findByCode(code);
+        if (langue == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Langue de convention " + code + " non trouvée");
+        }
+        return langue;
     }
 
     @PostMapping("/signature")

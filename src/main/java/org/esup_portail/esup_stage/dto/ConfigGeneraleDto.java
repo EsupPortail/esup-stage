@@ -58,4 +58,6 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    private String mailDpo;
+
 }
