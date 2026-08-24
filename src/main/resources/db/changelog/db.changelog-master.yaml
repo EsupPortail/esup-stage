@@ -383,6 +383,9 @@ databaseChangeLog:
       file: 3.3.0-courriel-perso-etudiant-taille.yaml
       relativeToChangelogFile: true
   - include:
+      file: 3.3.0-ajout-param-convention-mail-dpo.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 3.3.0-archivage-purge-conventions.yaml
       relativeToChangelogFile: true
   - include:

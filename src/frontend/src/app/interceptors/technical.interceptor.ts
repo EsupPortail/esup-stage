@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, ObservableInput } from 'rxjs';
 import { TokenService } from "../services/token.service";
@@ -6,14 +6,24 @@ import { environment } from "../../environments/environment";
 import { catchError, finalize } from "rxjs/operators";
 import { MessageService } from "../services/message.service";
 import { LoaderService } from "../services/loader.service";
+import { AuthService } from "../services/auth.service";
 
 @Injectable()
 export class TechnicalInterceptor implements HttpInterceptor {
 
   private nbRequests: number = 0;
   private currentActiveElement :any;
+  private unauthenticatedHandled: boolean = false;
 
-  constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService) {}
+  constructor(private tokenService: TokenService, private messageService: MessageService, private loaderService: LoaderService, private injector: Injector) {
+    // Voir AuthService : au retour depuis le bfcache, le drapeau doit repartir de zéro, sinon
+    // plus aucune fenêtre ne serait affichée sur les 401 suivants.
+    window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.unauthenticatedHandled = false;
+      }
+    });
+  }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const handleApogeeForbiddenLocally = request.headers.has('X-Handle-Apogee-Forbidden-Locally');
@@ -64,12 +74,7 @@ export class TechnicalInterceptor implements HttpInterceptor {
       throw error;
     }
     if (error?.status === 401) {
-      const authReason = error?.headers?.get?.("X-Auth-Reason");
-      if (authReason === "idle") {
-        this.messageService.setWarning("Vous avez été déconnecté suite à une période d'inactivité prolongée");
-      } else {
-        this.messageService.setWarning("Session non authentifiée. Merci de vous reconnecter.");
-      }
+      this.handleUnauthenticated(error);
       throw error;
     }
     if (error.error instanceof Blob) {
@@ -102,6 +107,40 @@ export class TechnicalInterceptor implements HttpInterceptor {
       }
     }
     throw error;
+  }
+
+  /**
+   * Une session expirée fait généralement échouer plusieurs requêtes en parallèle : on n'affiche
+   * la fenêtre qu'une seule fois, et sa fermeture (OK, Échap ou clic hors de la fenêtre) renvoie
+   * vers la page de connexion plutôt que de laisser l'utilisateur sur un écran inutilisable.
+   */
+  private handleUnauthenticated(error: any): void {
+    if (this.unauthenticatedHandled) {
+      return;
+    }
+    this.unauthenticatedHandled = true;
+    const authService = this.injector.get(AuthService);
+    authService.markSessionDialogPending();
+    const authReason = error?.headers?.get?.("X-Auth-Reason");
+    this.messageService.setWarning(this.getUnauthenticatedMessage(authReason), true, () => {
+      authService.reconnect();
+    });
+  }
+
+  private getUnauthenticatedMessage(authReason: string | null | undefined): string {
+    switch (authReason) {
+      case "idle":
+        return "<strong>Votre session a expiré.</strong><br>"
+          + "Par mesure de sécurité, vous avez été déconnecté après une période d'inactivité prolongée.<br>"
+          + "Cliquez sur OK pour revenir à la page de connexion.";
+      case "admin-logout":
+        return "<strong>Votre session a été fermée.</strong><br>"
+          + "Une nouvelle connexion à votre compte a été détectée, ou un administrateur a mis fin à votre session.<br>"
+          + "Cliquez sur OK pour revenir à la page de connexion.";
+      default:
+        return "<strong>Vous n'êtes plus authentifié.</strong><br>"
+          + "Cliquez sur OK pour revenir à la page de connexion.";
+    }
   }
 
   private isApogeeStudentForbiddenError(error: any, request?: HttpRequest<unknown>): boolean {

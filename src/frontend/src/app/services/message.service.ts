@@ -15,7 +15,7 @@ export class MessageService {
 
   constructor(private dialog: MatDialog) { }
 
-  setMessage(message: string, type: string, keep: boolean = true) {
+  setMessage(message: string, type: string, keep: boolean = true, onClose?: () => void) {
     this.type = type;
     switch (this.type) {
       case 'error':
@@ -35,7 +35,7 @@ export class MessageService {
     if (!keep) {
       setTimeout(() => this.close(), 1000 );
     }
-    this.open();
+    this.open(onClose);
   }
 
   setError(message: string, keep: boolean = true): void {
@@ -46,8 +46,8 @@ export class MessageService {
     this.setMessage(message, 'success', keep);
   }
 
-  setWarning(message: string, keep: boolean = true): void {
-    this.setMessage(message, 'warning', keep);
+  setWarning(message: string, keep: boolean = true, onClose?: () => void): void {
+    this.setMessage(message, 'warning', keep, onClose);
   }
 
   setAccessDenied(message: string, keep: boolean = true): void {
@@ -66,8 +66,11 @@ export class MessageService {
     return this.message;
   }
 
-  open(): void {
+  open(onClose?: () => void): void {
     this.dialogRef = this.dialog.open(MessageComponent, { minWidth: '30%' });
+    if (onClose) {
+      this.dialogRef.afterClosed().subscribe(() => onClose());
+    }
   }
 
   close(): void {

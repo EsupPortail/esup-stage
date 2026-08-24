@@ -58,6 +58,8 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    private String mailDpo;
+
     // Délai (en années) après la fin du stage au bout duquel une convention SANS gratification est archivée
     private int dureeArchivageConventionAnnees = 5;
 
