@@ -92,6 +92,9 @@ export class ConfigGeneraleComponent implements OnInit {
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
       mailDpo: [null, [Validators.email]],
+      dureeArchivageConventionAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureeArchivageConventionGratifieeAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureePurgeConventionAnnees: [2, [Validators.required, Validators.min(1), Validators.max(99)]],
     });
 
     this.formTheme = this.fb.group({
@@ -242,7 +245,9 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      const payload = this.formGenerale.getRawValue();
+      // La config générale est remplacée intégralement côté serveur : on fusionne avec la config
+      // chargée pour préserver les paramètres gérés sur d'autres écrans (ex. délais d'archivage)
+      const payload = { ...this.configGenerale, ...this.formGenerale.getRawValue() };
       this.configService.updateGenerale(payload).subscribe((response: any) => {
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');

@@ -17,7 +17,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
         this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
-        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine", "archive", "simulation", "gratification");
     }
 
     @Override
@@ -166,6 +166,37 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("stageTermine")) {
             clauses.add("((FALSE = :stageTermine) OR c.dateFinStage < CURDATE())");
         }
+        if (key.equals("archive")) {
+            // Les conventions archivées ne sont visibles que sur demande explicite (admin uniquement)
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("c.dateArchivage IS NOT NULL");
+            } else {
+                clauses.add("c.dateArchivage IS NULL");
+            }
+        }
+        if (key.equals("gratification")) {
+            // Même critère que l'archivage : témoin levé ou montant renseigné
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("(c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))");
+            } else {
+                clauses.add("((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = ''))");
+            }
+        }
+        if (key.equals("simulation")) {
+            // Simulation d'archivage/purge (page d'administration de l'archivage) : les dates
+            // seuils sont injectées dans le filtre par ArchivageController. Une convention
+            // marquée archivée sans fichiers traités reste "à archiver" et n'est pas purgeable.
+            if ("purge".equalsIgnoreCase(parameter.get("value").path("type").asText())) {
+                clauses.add("(c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NOT NULL AND c.dateArchivage < :simulationSeuilPurge)");
+            } else {
+                clauses.add("((c.dateArchivage IS NULL OR c.dateArchivageFichiers IS NULL) AND (" +
+                        " ((c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))" +
+                        "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :simulationSeuilAvecGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :simulationSeuilAvecGratification)))" +
+                        " OR ((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = '')" +
+                        "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :simulationSeuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :simulationSeuilSansGratification)))" +
+                        "))");
+            }
+        }
     }
 
     @Override
@@ -233,6 +264,15 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         }
         if (key.equals("stageTermine")) {
             query.setParameter("stageTermine", getJsonBooleanValue(parameter));
+        }
+        if (key.equals("simulation")) {
+            JsonNode value = parameter.get("value");
+            if ("purge".equalsIgnoreCase(value.path("type").asText())) {
+                query.setParameter("simulationSeuilPurge", new java.util.Date(value.get("seuilPurge").asLong()));
+            } else {
+                query.setParameter("simulationSeuilSansGratification", new java.util.Date(value.get("seuilSansGratification").asLong()));
+                query.setParameter("simulationSeuilAvecGratification", new java.util.Date(value.get("seuilAvecGratification").asLong()));
+            }
         }
     }
 

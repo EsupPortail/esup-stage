@@ -249,6 +249,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
 
+    // Les conventions archivées ne sont consultables que par les admins
+    if (this.authService.isAdmin()) {
+      this.filters.push({ id: 'archive', libelle: 'Conventions archivées', type: 'boolean', specific: true });
+    }
+
     this.exportColumns = {
       singleExcelSheet: [
         {

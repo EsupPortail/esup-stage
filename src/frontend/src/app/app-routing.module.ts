@@ -11,6 +11,7 @@ import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.component";
 import { ConfigGeneraleComponent } from "./components/admin/config-generale/config-generale.component";
+import { ArchivageComponent } from "./components/admin/archivage/archivage.component";
 import { ContenuComponent } from "./components/admin/contenu/contenu.component";
 import { CentreGestionSearchComponent } from "./components/centre-gestion-search/centre-gestion-search.component";
 import { CentreGestionComponent } from "./components/centre-gestion/centre-gestion.component";
@@ -174,6 +175,16 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
       title: 'Tâches planifiées',
       sitemap: {label: 'Tâches planifiées', group: 'Paramétrage global', order: 7}
+    }
+  },
+  {
+    path: 'param-global/archivage',
+    component: ArchivageComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]},
+      title: 'Archivage',
+      sitemap: {label: 'Archivage', group: 'Paramétrage global', order: 8}
     }
   },
   {

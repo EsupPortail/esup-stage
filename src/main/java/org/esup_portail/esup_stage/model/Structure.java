@@ -144,6 +144,10 @@ public class Structure extends ObjetMetier implements Exportable {
     @JoinColumn(name = "idCentreGestionProprietaire")
     private CentreGestion centreGestionProprietaire;
 
+    @JsonView(Views.List.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateArchivage;
+
     public Structure() {
     }
 
