@@ -16,16 +16,10 @@ public interface TypeConventionJpaRepository extends JpaRepository<TypeConventio
     @Query("SELECT tc FROM TypeConvention tc WHERE LOWER(tc.codeCtrl) = LOWER(:codeCtrl)")
     TypeConvention findByCodeCtrl(@Param("codeCtrl") String codeCtrl);
 
-    @Query("""
-            SELECT DISTINCT tc
-            FROM TypeConvention tc
-            JOIN tc.regimesInscription ri
-            WHERE LOWER(ri.code) = LOWER(:codeRegimeInscription)
-              AND tc.temEnServ = 'O'
-            ORDER BY tc.libelle
-            """)
-    List<TypeConvention> findAllActiveCompatibleByCodeRegimeInscription(@Param("codeRegimeInscription") String codeRegimeInscription);
-
+    /**
+     * Types de convention proposables pour un régime d'inscription : actifs, associés au régime
+     * et disposant d'au moins un modèle d'impression.
+     */
     @Query("""
             SELECT DISTINCT tc
             FROM TypeConvention tc
@@ -36,13 +30,4 @@ public interface TypeConventionJpaRepository extends JpaRepository<TypeConventio
             ORDER BY tc.libelle
             """)
     List<TypeConvention> findAllActiveByCodeRegimeInscription(@Param("codeRegimeInscription") String codeRegimeInscription);
-
-    @Query("""
-            SELECT DISTINCT tc
-            FROM TypeConvention tc
-            JOIN tc.templates template
-            WHERE tc.temEnServ = 'O'
-            ORDER BY tc.libelle
-            """)
-    List<TypeConvention> findAllActiveWithTemplate();
 }
