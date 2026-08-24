@@ -7,38 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Sollicite mensuellement les contacts en entreprise des conventions validées pour qu'ils puissent
- * signaler leur refus d'être contactés. Le nom du bean doit rester identique au champ
- * {@code CronTask.nom} : c'est ainsi que {@code CronScheduler} le résout.
+ * Sollicite les contacts en entreprise des conventions validées pour qu'ils puissent signaler leur
+ * refus d'être contactés. Un contact n'est sollicité qu'une seule fois : chaque exécution ne traite
+ * que les contacts nouvellement éligibles. Tâche inactive par défaut, elle suppose que la boîte
+ * mail générique de recueil des refus soit renseignée dans les paramètres généraux.
  */
 @Slf4j
 @Component("EnvoiMailDroitOppositionContact")
 public class EnvoiMailDroitOppositionContactTask implements SchedulableTask {
 
-    public static final String NAME = "EnvoiMailDroitOppositionContact";
-    public static final String DEFAULT_CRON_EXPRESSION = "0 0 3 1 * ?";
-
     @Autowired
     private DroitOppositionContactService droitOppositionContactService;
-
-    @Override
-    public void init() {
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public String getCronExpression() {
-        return DEFAULT_CRON_EXPRESSION;
-    }
-
-    @Override
-    public boolean isEnable() {
-        return true;
-    }
 
     @Override
     public Runnable getRunnable() {
