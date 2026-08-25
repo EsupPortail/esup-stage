@@ -28,6 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -857,6 +860,137 @@ class ConventionControllerTest {
         assertThatThrownBy(() -> controller.delete(42)).isInstanceOf(AppException.class);
         when(conventionJpaRepository.findById(99)).thenReturn(null);
         assertThatThrownBy(() -> controller.delete(99)).isInstanceOf(AppException.class);
+    }
+
+    /** Convention et centre de gestion sans aucune validation ni aucune étape de circuit activée. */
+    private Convention conventionSupprimable() {
+        Convention convention = conventionDEtudiant("etu1", true);
+        centreEtapes(convention.getCentreGestion(), false, false, false);
+        conventionEtapes(convention, false, false, false);
+        return convention;
+    }
+
+    private void centreEtapes(CentreGestion centre, Boolean validationConvention, Boolean validationPedagogique, Boolean verificationAdministrative) {
+        centre.setValidationConvention(validationConvention);
+        centre.setValidationPedagogique(validationPedagogique);
+        centre.setVerificationAdministrative(verificationAdministrative);
+    }
+
+    private void conventionEtapes(Convention convention, Boolean validationConvention, Boolean validationPedagogique, Boolean verificationAdministrative) {
+        convention.setValidationConvention(validationConvention);
+        convention.setValidationPedagogique(validationPedagogique);
+        convention.setVerificationAdministrative(verificationAdministrative);
+    }
+
+    /**
+     * Cas du bug : une étape non renseignée sur le centre de gestion vaut NULL en base.
+     * L'ancien contrôle déréférençait ce Boolean et remontait une erreur technique (NPE / HTTP 500).
+     */
+    @ParameterizedTest(name = "centre sans {0}")
+    @ValueSource(strings = {"validationConvention", "validationPedagogique", "verificationAdministrative"})
+    void deleteFonctionneQuandLeCentreNAPasLEtapeConfiguree(String etape) {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+        switch (etape) {
+            case "validationConvention" -> convention.getCentreGestion().setValidationConvention(null);
+            case "validationPedagogique" -> convention.getCentreGestion().setValidationPedagogique(null);
+            default -> convention.getCentreGestion().setVerificationAdministrative(null);
+        }
+
+        assertThat(controller.delete(42)).isSameAs(convention);
+        verify(conventionJpaRepository).delete(convention);
+    }
+
+    @Test
+    void deleteFonctionneQuandAucunFlagNEstRenseigne() {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+        centreEtapes(convention.getCentreGestion(), null, null, null);
+        conventionEtapes(convention, null, null, null);
+
+        assertThat(controller.delete(42)).isSameAs(convention);
+        verify(conventionJpaRepository).delete(convention);
+    }
+
+    /** Le circuit du centre ne conditionne plus la suppression : convention vierge => suppression possible. */
+    @Test
+    void deleteAutoriseUneConventionViergeMemeAvecUnCircuitComplet() {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+        centreEtapes(convention.getCentreGestion(), true, true, true);
+
+        assertThat(controller.delete(42)).isSameAs(convention);
+        verify(conventionJpaRepository).delete(convention);
+    }
+
+    /** À l'inverse, une validation déjà posée bloque, même si l'étape a été désactivée sur le centre depuis. */
+    @ParameterizedTest(name = "convention validée sur {0}, étape désactivée sur le centre")
+    @ValueSource(strings = {"validationConvention", "validationPedagogique", "verificationAdministrative"})
+    void deleteRefuseUneValidationPoseeSurUneEtapeDesactiveeSurLeCentre(String etape) {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+        switch (etape) {
+            case "validationConvention" -> convention.setValidationConvention(true);
+            case "validationPedagogique" -> convention.setValidationPedagogique(true);
+            default -> convention.setVerificationAdministrative(true);
+        }
+
+        assertThatThrownBy(() -> controller.delete(42))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("déjà été validée")
+                .extracting(e -> ((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(conventionJpaRepository, never()).delete(any(Convention.class));
+        verify(conventionDocumentEtudiantService, never()).deleteAllForConvention(any(Convention.class));
+    }
+
+    @Test
+    void deleteRemonteUn404SurUneConventionInexistante() {
+        connecte("ges1", Role.GES);
+        when(conventionJpaRepository.findById(99)).thenReturn(null);
+
+        assertThatThrownBy(() -> controller.delete(99))
+                .isInstanceOf(AppException.class)
+                .extracting(e -> ((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void deleteEstReserveAuProprietairePourUnEtudiant() {
+        connecte("etu2", Role.ETU);
+        Convention convention = conventionSupprimable();
+
+        assertThatThrownBy(() -> controller.delete(42))
+                .isInstanceOf(AppException.class)
+                .extracting(e -> ((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        verify(conventionJpaRepository, never()).delete(any(Convention.class));
+
+        connecte("etu1", Role.ETU);
+        assertThat(controller.delete(42)).isSameAs(convention);
+        verify(conventionJpaRepository).delete(convention);
+    }
+
+    @Test
+    void deleteRespecteLeControleDeDroitsSurLeCentre() {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+        doThrow(new AppException(HttpStatus.FORBIDDEN, "Accès non autorisé"))
+                .when(conventionService).canViewEditConvention(any(Convention.class), any(), eq(DroitEnum.MODIFICATION));
+
+        assertThatThrownBy(() -> controller.delete(42))
+                .isInstanceOf(AppException.class)
+                .extracting(e -> ((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+        verify(conventionJpaRepository, never()).delete(convention);
+    }
+
+    @Test
+    void deleteSupprimeLesDocumentsEtudiantAvantLaConvention() {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionSupprimable();
+
+        controller.delete(42);
+
+        org.mockito.InOrder ordre = org.mockito.Mockito.inOrder(conventionDocumentEtudiantService, conventionJpaRepository);
+        ordre.verify(conventionDocumentEtudiantService).deleteAllForConvention(convention);
+        ordre.verify(conventionJpaRepository).delete(convention);
     }
 
     @Test

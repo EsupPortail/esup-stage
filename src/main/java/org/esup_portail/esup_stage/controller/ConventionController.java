@@ -580,17 +580,11 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur(), DroitEnum.MODIFICATION);
-        // On n'autorise la suppression d'une convention si elle n'a aucune validation
-        boolean hasValidation = convention.getCentreGestion().getValidationConvention() && convention.getValidationConvention();
-        if (convention.getCentreGestion().getValidationConvention() && convention.getValidationConvention()) {
-            hasValidation = true;
-        }
-        if (convention.getCentreGestion().getValidationPedagogique() && convention.getValidationPedagogique()) {
-            hasValidation = true;
-        }
-        if (convention.getCentreGestion().getVerificationAdministrative() && convention.getVerificationAdministrative()) {
-            hasValidation = true;
-        }
+        // On n'autorise la suppression d'une convention que si elle n'a fait l'objet d'aucune validation,
+        // indépendamment du circuit de validation configuré sur le centre de gestion
+        boolean hasValidation = Boolean.TRUE.equals(convention.getValidationConvention())
+                || Boolean.TRUE.equals(convention.getValidationPedagogique())
+                || Boolean.TRUE.equals(convention.getVerificationAdministrative());
         if (hasValidation) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention a déjà été validée et ne peut être supprimée");
         }
