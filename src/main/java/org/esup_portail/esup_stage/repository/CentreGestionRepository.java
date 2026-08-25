@@ -29,7 +29,7 @@ public class CentreGestionRepository extends PaginationRepository<CentreGestion>
     @Override
     protected void formatFilters(String jsonString) {
         super.formatFilters(jsonString);
-        if (filters.has("personnel")) {
+        if (getFilters().has("personnel")) {
             addJoins("JOIN cg.personnels personnel");
         }
     }

@@ -42,13 +42,24 @@ public class PaginationRepository<T extends Exportable> {
     protected final EntityManager em;
     protected final Class<T> typeClass;
     protected final String alias;
-    protected JsonNode filters;
     protected List<String> predicateWhitelist = new ArrayList<>(); // whitelist pour éviter l'injection sql au niveau du order by
     protected List<String> specificFilterWhitelist = new ArrayList<>();
-    protected List<String> joins = new ArrayList<>();
-    protected JsonObject headers;
     protected String fixJoins;
-    private Map<String, String> filterParameterNames = new LinkedHashMap<>();
+
+    /**
+     * Les repositories sont des singletons Spring partagés par toutes les requêtes HTTP.
+     * L'état de construction de la requête (filtres, jointures, noms de paramètres) doit donc
+     * rester propre à l'appel en cours : porté par des champs d'instance, il était corrompu
+     * par les appels concurrents (ConcurrentModificationException, filtres d'un utilisateur
+     * appliqués à la requête d'un autre).
+     */
+    private final ThreadLocal<QueryContext> queryContext = new ThreadLocal<>();
+
+    private static final class QueryContext {
+        private JsonNode filters;
+        private final List<String> joins = new ArrayList<>();
+        private final Map<String, String> filterParameterNames = new LinkedHashMap<>();
+    }
 
     public PaginationRepository(EntityManager em, Class<T> typeClass, String alias) {
         this.em = em;
@@ -62,83 +73,129 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     public Long count(String filters) {
-        formatFilters(filters);
-        String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
-        List<String> clauses = getNonBlankClauses();
-        queryString += " " + String.join(" ", joins);
-        if (!clauses.isEmpty()) {
-            queryString += " WHERE " + String.join(" AND ", clauses);
-        }
+        QueryContext previousContext = openQueryContext(filters);
+        try {
+            String queryString = "SELECT COUNT(DISTINCT " + alias + ") FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
+            List<String> clauses = getNonBlankClauses();
+            queryString += " " + String.join(" ", currentContext().joins);
+            if (!clauses.isEmpty()) {
+                queryString += " WHERE " + String.join(" AND ", clauses);
+            }
 
-        TypedQuery<Long> query = em.createQuery(queryString, Long.class);
-        setParameters(query);
+            TypedQuery<Long> query = em.createQuery(queryString, Long.class);
+            setParameters(query);
 
-        logger.debug("Dynamic query string: {}", queryString);
-        Set<Parameter<?>> parameters = query.getParameters();
-        if (logger.isDebugEnabled()) {
-            logger.debug(
-                    "Parameters: {{{}}}",
-                    parameters.stream()
-                            .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
-                            .collect(Collectors.joining(", "))
-            );
+            logger.debug("Dynamic query string: {}", queryString);
+            Set<Parameter<?>> parameters = query.getParameters();
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "Parameters: {{{}}}",
+                        parameters.stream()
+                                .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
+                                .collect(Collectors.joining(", "))
+                );
+            }
+            return query.getSingleResult();
+        } finally {
+            closeQueryContext(previousContext);
         }
-        return query.getSingleResult();
     }
 
     public List<T> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
-        formatFilters(filters);
-        String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
-        List<String> clauses = getNonBlankClauses();
-        queryString += " " + String.join(" ", joins);
-        if (!clauses.isEmpty()) {
-            queryString += " WHERE " + String.join(" AND ", clauses);
-        }
-        if (predicate != null && predicateWhitelist.contains(predicate)) {
-            Map<String, String> predicates = orderBy(predicate, sortOrder);
-            queryString += " ORDER BY " + predicates.entrySet().stream().map(e -> alias + "." + e.getKey() + " " + e.getValue()).collect(Collectors.joining(", "));
-        }
+        QueryContext previousContext = openQueryContext(filters);
+        try {
+            String queryString = "SELECT DISTINCT " + alias + " FROM " + this.typeClass.getName() + " " + alias + (fixJoins != null ? " " + fixJoins : "");
+            List<String> clauses = getNonBlankClauses();
+            queryString += " " + String.join(" ", currentContext().joins);
+            if (!clauses.isEmpty()) {
+                queryString += " WHERE " + String.join(" AND ", clauses);
+            }
+            if (predicate != null && predicateWhitelist.contains(predicate)) {
+                Map<String, String> predicates = orderBy(predicate, sortOrder);
+                queryString += " ORDER BY " + predicates.entrySet().stream().map(e -> alias + "." + e.getKey() + " " + e.getValue()).collect(Collectors.joining(", "));
+            }
 
-        TypedQuery<T> query = em.createQuery(queryString, this.typeClass);
-        setParameters(query);
+            TypedQuery<T> query = em.createQuery(queryString, this.typeClass);
+            setParameters(query);
 
-        if (page > 0) {
-            query.setFirstResult((page - 1) * perPage);
-        }
-        if (perPage > 0) {
-            query.setMaxResults(perPage);
-        }
+            if (page > 0) {
+                query.setFirstResult((page - 1) * perPage);
+            }
+            if (perPage > 0) {
+                query.setMaxResults(perPage);
+            }
 
-        logger.debug("Dynamic query string: {}", queryString);
-        Set<Parameter<?>> parameters = query.getParameters();
-        if (logger.isDebugEnabled()) {
-            logger.debug(
-                    "Parameters: {{{}}}",
-                    parameters.stream()
-                            .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
-                            .collect(Collectors.joining(", "))
-            );
+            logger.debug("Dynamic query string: {}", queryString);
+            Set<Parameter<?>> parameters = query.getParameters();
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "Parameters: {{{}}}",
+                        parameters.stream()
+                                .map(p -> p.getName() + ": " + query.getParameterValue(p.getName()))
+                                .collect(Collectors.joining(", "))
+                );
+            }
+            return query.getResultList();
+        } finally {
+            closeQueryContext(previousContext);
         }
-        return query.getResultList();
+    }
+
+    /**
+     * Ouvre un état de construction propre à l'appel courant et y charge les filtres.
+     * Renvoie l'état précédent, à restaurer par {@link #closeQueryContext(QueryContext)},
+     * pour supporter les appels imbriqués (export qui relance une recherche par exemple).
+     */
+    private QueryContext openQueryContext(String jsonString) {
+        QueryContext previousContext = queryContext.get();
+        queryContext.set(new QueryContext());
+        try {
+            formatFilters(jsonString);
+        } catch (RuntimeException e) {
+            closeQueryContext(previousContext);
+            throw e;
+        }
+        return previousContext;
+    }
+
+    private void closeQueryContext(QueryContext previousContext) {
+        if (previousContext == null) {
+            queryContext.remove();
+        } else {
+            queryContext.set(previousContext);
+        }
+    }
+
+    private QueryContext currentContext() {
+        QueryContext context = queryContext.get();
+        if (context == null) {
+            throw new IllegalStateException("Aucune construction de requête en cours pour " + typeClass.getSimpleName());
+        }
+        return context;
+    }
+
+    /** Filtres de l'appel en cours, à n'utiliser que depuis {@link #formatFilters(String)} et les hooks spécifiques. */
+    protected JsonNode getFilters() {
+        return currentContext().filters;
     }
 
     protected void formatFilters(String jsonString) {
-        joins = new ArrayList<>();
-        filterParameterNames = new LinkedHashMap<>();
+        QueryContext context = currentContext();
         if (jsonString == null || jsonString.isBlank()) {
             jsonString = "{}";
         }
         try {
-            filters = JSON_MAPPER.readTree(jsonString);
+            context.filters = JSON_MAPPER.readTree(jsonString);
         } catch (JsonProcessingException e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
         }
-        if (filters == null || !filters.isObject()) {
+        if (context.filters == null || !context.filters.isObject()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
         }
     }
 
     protected void addJoins(String join) {
+        List<String> joins = currentContext().joins;
         if (!joins.contains(join)) {
             joins.add(join);
         }
@@ -154,6 +211,7 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private List<String> getClauses() {
+        JsonNode filters = getFilters();
         List<String> clauses = new ArrayList<>();
         Iterator<String> keys = filters.fieldNames();
         while (keys.hasNext()) {
@@ -189,6 +247,7 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private void setParameters(Query query) {
+        JsonNode filters = getFilters();
         Iterator<String> keys = filters.fieldNames();
         while (keys.hasNext()) {
             String key = keys.next();
@@ -266,7 +325,13 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private String getParameterName(String key) {
-        return filterParameterNames.computeIfAbsent(key, k -> "filter" + filterParameterNames.size());
+        Map<String, String> filterParameterNames = currentContext().filterParameterNames;
+        String parameterName = filterParameterNames.get(key);
+        if (parameterName == null) {
+            parameterName = "filter" + filterParameterNames.size();
+            filterParameterNames.put(key, parameterName);
+        }
+        return parameterName;
     }
 
     public boolean exists(String libelle, int id) {
@@ -337,14 +402,14 @@ public class PaginationRepository<T extends Exportable> {
         return JSON_MAPPER.createObjectNode();
     }
 
-    protected void formatHeaders(String headerString) {
-        headers = new Gson().fromJson(headerString, JsonObject.class);
+    protected JsonObject formatHeaders(String headerString) {
+        return new Gson().fromJson(headerString, JsonObject.class);
     }
 
     public byte[] exportExcel(String headerString, String predicate, String sortOrder, String filters) {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         Workbook wb = new HSSFWorkbook();
-        formatHeaders(headerString);
+        JsonObject headers = formatHeaders(headerString);
         if (headers == null || !headers.isJsonObject()) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Entête invalide pour l'export Excel");
         }
@@ -456,7 +521,7 @@ public class PaginationRepository<T extends Exportable> {
     public StringBuilder exportCsv(String headerString, String predicate, String sortOrder, String filters) {
         List<T> data = findPaginated(1, 0, predicate, sortOrder, filters);
         String newLine = System.lineSeparator();
-        formatHeaders(headerString);
+        JsonObject headers = formatHeaders(headerString);
 
         JsonObject columns = null;
         if (headers.has("multipleExcelSheets")) {

@@ -23,10 +23,10 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     @Override
     protected void formatFilters(String jsonString) {
         super.formatFilters(jsonString);
-        if (filters.has("centreGestion.personnels")) {
+        if (getFilters().has("centreGestion.personnels")) {
             addJoins("JOIN c.centreGestion.personnels personnel");
         }
-        if (filters.has("avenant")) {
+        if (getFilters().has("avenant")) {
             addJoins("LEFT JOIN c.avenants avenant");
         }
     }

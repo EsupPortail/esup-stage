@@ -33,7 +33,7 @@ public class TypeConventionRepository extends PaginationRepository<TypeConventio
     @Override
     protected void formatFilters(String jsonString) {
         super.formatFilters(jsonString);
-        if (filters.has("templatePDF")) {
+        if (getFilters().has("templatePDF")) {
             addJoins("JOIN tc.templates template");
         }
     }
