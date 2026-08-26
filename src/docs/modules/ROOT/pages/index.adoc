@@ -63,16 +63,12 @@ ainsi que les corrections et évolutions associées.
 '''
 
 === Tutoriels disponibles à ce jour
-
 * *Gestionnaires et responsables* +
   xref:attachment$2023-10-31-ESUP-STAGE-Manuel-UCA-v1.pdf[Consulter le tutoriel]
-
 * *Création de conventions de stage* +
   xref:attachment$2023-ESUP-STAGE_Tutoriel_Stage_Etudiant_UCA.pdf[Consulter le tutoriel]
-
 * *Saisir sa convention de stage* +
   xref:attachment$TUTORIEL-ETUDIANT-Formation-Initiale.pdf[Consulter le tutoriel]
-
 * *Guide du gestionnaire de stage* +
   xref:attachment$TUTORIEL-GESTIONNAIRE-Formation-Initiale.pdf[Consulter le tutoriel]
 
