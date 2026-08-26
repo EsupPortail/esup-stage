@@ -65,16 +65,16 @@ ainsi que les corrections et évolutions associées.
 === Tutoriels disponibles à ce jour
 
 * *Gestionnaires et responsables* +
-  xref:attachments$2023-10-31-ESUP-STAGE-Manuel-UCA-v1.pdf[Consulter le tutoriel]
+  xref:attachment$2023-10-31-ESUP-STAGE-Manuel-UCA-v1.pdf[Consulter le tutoriel]
 
 * *Création de conventions de stage* +
-  xref:attachments$2023-ESUP-STAGE_Tutoriel_Stage_Etudiant_UCA.pdf[Consulter le tutoriel]
+  xref:attachment$2023-ESUP-STAGE_Tutoriel_Stage_Etudiant_UCA.pdf[Consulter le tutoriel]
 
 * *Saisir sa convention de stage* +
-  xref:attachments$TUTORIEL_ETUDIANT-Formation_Initiale.pdf[Consulter le tutoriel]
+  xref:attachment$TUTORIEL_ETUDIANT-Formation_Initiale.pdf[Consulter le tutoriel]
 
 * *Guide du gestionnaire de stage* +
-  xref:attachments$TUTORIEL_GESTIONNAIRE-Formation_Initiale.pdf[Consulter le tutoriel]
+  xref:attachment$TUTORIEL_GESTIONNAIRE-Formation_Initiale.pdf[Consulter le tutoriel]
 
 === Liens vers le code source des applications
 
