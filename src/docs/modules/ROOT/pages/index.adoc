@@ -62,6 +62,20 @@ ainsi que les corrections et évolutions associées.
 
 '''
 
+=== Tutoriels disponibles à ce jour
+
+* *Gestionnaires et responsables* +
+  https://github.com/EsupPortail/esup-stage/blob/main/src/docs/modules/ROOT/docs/2023-10-31%20-%20ESUP-STAGE%20-%20Manuel%20UCA%20-%20v1.pdf[Consulter le tutoriel]
+
+* *Création de conventions de stage* +
+  https://github.com/EsupPortail/esup-stage/blob/main/src/docs/modules/ROOT/docs/2023-ESUP-STAGE_Tutoriel_Stage_Etudiant_UCA.pdf[Consulter le tutoriel]
+
+* *Saisir sa convention de stage* +
+  https://github.com/EsupPortail/esup-stage/blob/main/src/docs/modules/ROOT/docs/TUTORIEL%20ETUDIANT%20-%20Formation%20Initiale.pdf[Consulter le tutoriel]
+
+* *Guide du gestionnaire de stage* +
+  https://github.com/EsupPortail/esup-stage/blob/main/src/docs/modules/ROOT/docs/TUTORIEL%20GESTIONNAIRE%20-%20Formation%20Initiale.pdf[Consulter le tutoriel]
+
 === Liens vers le code source des applications
 
 [horizontal]
