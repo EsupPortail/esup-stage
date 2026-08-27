@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable, firstValueFrom, of, EMPTY } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { catchError, tap } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
 
@@ -10,11 +10,14 @@ import { Role } from "../constants/role";
   providedIn: 'root'
 })
 export class AuthService {
+  private static readonly SESSION_ESTABLISHED_KEY = 'sessionEstablished';
+
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
   private redirecting = false;
   private sessionDialogPending = false;
+  private sessionEstablished = false;
 
   private adminTechList: string[] = [];
   private adminTechLoaded = false;
@@ -34,8 +37,13 @@ export class AuthService {
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected").pipe(
-      catchError(() => {
-        this.redirectToLogin();
+      tap(() => this.markSessionEstablished()),
+      catchError((error) => {
+        // Une panne réseau ou une erreur serveur ne sont pas une perte de session : y répondre par
+        // un aller simple vers le CAS ferait perdre à l'utilisateur ce qu'il avait à l'écran.
+        if (error?.status === 401 || error?.status === 403) {
+          this.redirectToLogin();
+        }
         return EMPTY;
       })
     );
@@ -67,6 +75,55 @@ export class AuthService {
   }
 
   /**
+   * Vrai si une session applicative a déjà été ouverte dans cet onglet. C'est ce qui distingue
+   * « ma session vient de mourir » (fenêtre d'avertissement justifiée) de « je n'ai jamais été
+   * connecté » : au premier accès l'application démarre sans authentification, /frontend/** étant
+   * permitAll, et le 401 du premier appel API fait partie du démarrage normal.
+   */
+  hasEstablishedSession(): boolean {
+    if (this.sessionEstablished) {
+      return true;
+    }
+    try {
+      return sessionStorage.getItem(AuthService.SESSION_ESTABLISHED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Le drapeau est doublé en sessionStorage pour survivre à un rechargement de l'onglet, sans
+   * fuiter vers un autre onglet ni vers une fenêtre de navigation privée.
+   */
+  private markSessionEstablished(): void {
+    this.sessionEstablished = true;
+    try {
+      sessionStorage.setItem(AuthService.SESSION_ESTABLISHED_KEY, '1');
+    } catch {
+      // Ignore sessionStorage errors.
+    }
+  }
+
+  private clearSessionEstablished(): void {
+    this.sessionEstablished = false;
+    try {
+      sessionStorage.removeItem(AuthService.SESSION_ESTABLISHED_KEY);
+    } catch {
+      // Ignore sessionStorage errors.
+    }
+  }
+
+  /**
+   * Routes ouvertes à des visiteurs sans compte. Le routeur est en mode hash
+   * (app-routing.module.ts) : on lit window.location.hash et non Router.url, qui n'est pas encore
+   * résolu quand AppComponent.ngOnInit s'exécute.
+   */
+  isAnonymousPublicRoute(): boolean {
+    const route = (window.location.hash || '').replace(/^#\/?/, '').split(/[?;#]/)[0];
+    return route === 'evaluation-tuteur' || route.startsWith('evaluation-tuteur/');
+  }
+
+  /**
    * Signale qu'une fenêtre « session expirée » est ouverte. Tant qu'elle l'est, les redirections
    * silencieuses déclenchées par les appels en échec sont suspendues : sans ça l'utilisateur est
    * renvoyé vers le CAS avant même d'avoir pu lire le message.
@@ -94,22 +151,38 @@ export class AuthService {
   }
 
   private navigateToLogin(renew: boolean) {
+    // Page publique ouverte par quelqu'un qui n'a pas de compte : l'envoyer au CAS le sortirait de
+    // son formulaire. En revanche un utilisateur dont la session meurt sur une telle page doit
+    // toujours pouvoir se reconnecter, d'où le second test.
+    if (this.isAnonymousPublicRoute() && !this.hasEstablishedSession()) {
+      return;
+    }
     if (!this.redirecting) {
       this.redirecting = true;
       const currentPath = window.location.pathname;
       const loginPath = this.resolvePath(environment.loginUrl);
       if (currentPath !== loginPath) {
+        // On quitte l'application non authentifié : si la reconnexion échoue, le retour ne doit pas
+        // rouvrir une fenêtre « session expirée ». Le drapeau sera reposé au prochain /users/connected.
+        this.clearSessionEstablished();
         sessionStorage.setItem('redirectUrl', currentPath);
         const loginUrl = renew ? environment.loginUrl + '?renew=1' : environment.loginUrl;
-        // replace() plutôt que href= : la page expirée n'est pas empilée dans l'historique, un
-        // retour arrière depuis le CAS ne peut donc plus y ramener.
-        window.location.replace(this.resolveUrl(loginUrl));
+        this.replaceLocation(this.resolveUrl(loginUrl));
       }
     }
   }
 
+  /**
+   * replace() plutôt que href= : la page expirée n'est pas empilée dans l'historique, un retour
+   * arrière depuis le CAS ne peut donc plus y ramener. Isolé pour rester observable en test.
+   */
+  private replaceLocation(url: string): void {
+    window.location.replace(url);
+  }
+
   logout() {
     this.userConnected = undefined;
+    this.clearSessionEstablished();
     this.adminTechList = [];
     this.adminTechLoaded = false;
     this.adminTechLoadingPromise = undefined;

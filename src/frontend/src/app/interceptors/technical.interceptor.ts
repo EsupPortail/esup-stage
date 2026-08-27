@@ -113,6 +113,8 @@ export class TechnicalInterceptor implements HttpInterceptor {
    * Une session expirée fait généralement échouer plusieurs requêtes en parallèle : on n'affiche
    * la fenêtre qu'une seule fois, et sa fermeture (OK, Échap ou clic hors de la fenêtre) renvoie
    * vers la page de connexion plutôt que de laisser l'utilisateur sur un écran inutilisable.
+   * Un 401 reçu alors qu'aucune session n'a jamais été ouverte n'est pas une fin de session : il
+   * ne donne lieu qu'à une redirection silencieuse.
    */
   private handleUnauthenticated(error: any): void {
     if (this.unauthenticatedHandled) {
@@ -120,8 +122,17 @@ export class TechnicalInterceptor implements HttpInterceptor {
     }
     this.unauthenticatedHandled = true;
     const authService = this.injector.get(AuthService);
-    authService.markSessionDialogPending();
     const authReason = error?.headers?.get?.("X-Auth-Reason");
+    // Premier accès à l'application : le 401 fait partie du démarrage normal, l'application étant
+    // servie sans authentification (/frontend/** est permitAll côté back). On part au CAS sans
+    // fenêtre ; celle-ci est réservée à la perte d'une session réellement ouverte. Les deux tests
+    // sont volontairement redondants : le motif couvre le cas d'un sessionStorage indisponible, le
+    // drapeau celui d'un back non redéployé ou d'un proxy qui filtrerait l'en-tête.
+    if (authReason === "no-session" || !authService.hasEstablishedSession()) {
+      authService.redirectToLogin();
+      return;
+    }
+    authService.markSessionDialogPending();
     this.messageService.setWarning(this.getUnauthenticatedMessage(authReason), true, () => {
       authService.reconnect();
     });
