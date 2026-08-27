@@ -83,13 +83,11 @@ export class CadreStageModalComponent implements OnInit {
 
     forkJoin([
       this.configService.getConfigGenerale(),
-      this.typeConventionService.getListActiveWithTemplate(),
       this.cpamService.findAll(),
     ]).subscribe(([
       configGenerale,
-      {data: typesConventions},
       CPAMs,
-    ]: [any,any,any]) => {
+    ]: [any,any]) => {
       this.formConvention = this.fb.group({
         adresseEtudiant: [this.convention.adresseEtudiant, [Validators.required]],
         codePostalEtudiant: [this.convention.codePostalEtudiant, [Validators.required]],
@@ -162,19 +160,15 @@ export class CadreStageModalComponent implements OnInit {
         }
       });
 
-        this.CPAMs = CPAMs;
-        this.regions = [...new Set(CPAMs.map((r: any) => r.region))];
-        this.regions = this.regions.sort((a, b) => { return a.localeCompare(b) });
-        if (this.formConvention.get('regionCPAM')?.value) {
-          this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
-        } else {
-          this.formConvention.get('libelleCPAM')?.disable();
-        }
-      });
+      this.CPAMs = CPAMs;
+      this.regions = [...new Set(CPAMs.map((r: any) => r.region))];
+      this.regions = this.regions.sort((a, b) => { return a.localeCompare(b) });
+      if (this.formConvention.get('regionCPAM')?.value) {
+        this.setCPAMLibelles({value: this.formConvention.get('regionCPAM')?.value});
+      } else {
+        this.formConvention.get('libelleCPAM')?.disable();
+      }
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
   }
 
   choose(row: any): void {
