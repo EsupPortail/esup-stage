@@ -4,11 +4,13 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { ServiceService } from "../../../services/service.service";
 import { CommuneService } from "../../../services/commune.service";
 import { MessageService } from "../../../services/message.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
-  selector: 'app-service-accueil-form',
-  templateUrl: './service-accueil-form.component.html',
-  styleUrls: ['./service-accueil-form.component.scss']
+    selector: 'app-service-accueil-form',
+    templateUrl: './service-accueil-form.component.html',
+    styleUrls: ['./service-accueil-form.component.scss'],
+    standalone: false
 })
 export class ServiceAccueilFormComponent {
 
@@ -19,6 +21,7 @@ export class ServiceAccueilFormComponent {
   communes: any[] = [];
 
   form: any;
+  idCentreGestion: number | null = null;
 
   constructor(public serviceService: ServiceService,
               public communeService: CommuneService,
@@ -30,6 +33,7 @@ export class ServiceAccueilFormComponent {
     this.service = data.service
     this.etab = data.etab
     this.countries = data.countries
+    this.idCentreGestion = data.idCentreGestion ?? null
     if (this.service) {
       this.form = this.fb.group({
         nom: [this.service.nom, [Validators.required, Validators.maxLength(70)]],
@@ -38,7 +42,7 @@ export class ServiceAccueilFormComponent {
         batimentResidence: [this.service.batimentResidence, [Validators.maxLength(200)]],
         commune: [this.service.commune, [Validators.required, Validators.maxLength(200)]],
         idPays: [this.service.pays ? this.service.pays.id : null, [Validators.required]],
-        telephone: [this.service.telephone, [Validators.maxLength(20)]],
+        telephone: [this.service.telephone, [Validators.pattern(REGEX.PHONE), Validators.maxLength(50)]],
       });
     }else{
       this.form = this.fb.group({
@@ -48,7 +52,7 @@ export class ServiceAccueilFormComponent {
         batimentResidence: [this.etab.batimentResidence, [Validators.maxLength(200)]],
         commune: [this.etab.commune, [Validators.required, Validators.maxLength(200)]],
         idPays: [this.etab.pays ? this.etab.pays.id : null, [Validators.required]],
-        telephone: [this.etab.telephone, [Validators.maxLength(20)]],
+        telephone: [this.etab.telephone, [Validators.pattern(REGEX.PHONE),Validators.maxLength(50)]],
       });
     }
     this.communeService.getPaginated(1, 0, 'lib', 'asc', "").subscribe((response: any) => {
@@ -88,6 +92,9 @@ export class ServiceAccueilFormComponent {
       } else {
         //ajoute idStructure à l'objet service
         data.idStructure = this.etab.id;
+        if (this.idCentreGestion) {
+          data.idCentreGestion = this.idCentreGestion;
+        }
         this.serviceService.create(data).subscribe((response: any) => {
           this.service = response;
           this.dialogRef.close(this.service);

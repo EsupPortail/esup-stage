@@ -4,9 +4,10 @@ import { MessageService } from "../../../services/message.service";
 import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-validation-creation',
-  templateUrl: './validation-creation.component.html',
-  styleUrls: ['./validation-creation.component.scss']
+    selector: 'app-validation-creation',
+    templateUrl: './validation-creation.component.html',
+    styleUrls: ['./validation-creation.component.scss'],
+    standalone: false
 })
 export class ValidationCreationComponent implements OnInit {
 

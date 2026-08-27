@@ -1,0 +1,75 @@
+/* Navigation */
+nav[aria-label="Plan du site"] {
+  max-width: 900px;
+}
+
+/* Groupes de sections */
+.fr-mb-4w {
+  margin-bottom: 2rem;
+}
+
+/* Titres des sections */
+.fr-h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fr-h4::before {
+  content: "";
+  width: 4px;
+  height: 1.1rem;
+  background: var(--primaryColor);;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Liste */
+.fr-list {
+  list-style: none;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.fr-list li {
+  margin-bottom: 0.5rem;
+  position: relative;
+  margin-left: 1rem;
+}
+
+.fr-list li::before {
+  content: "•";
+  position: absolute;
+  left: -1rem;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+/* Liens */
+.fr-list a {
+  color: #475569;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.fr-list a:hover {
+  color: var(--primaryColor);
+  text-decoration: underline;
+}
+
+.fr-list a:focus {
+  outline: 2px solid var(--primaryColor);;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .fr-h4 {
+    font-size: 1rem;
+  }
+}

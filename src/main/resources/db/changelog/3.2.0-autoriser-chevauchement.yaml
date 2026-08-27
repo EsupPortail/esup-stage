@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-autoriser-chevauchement
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: autoriserChevauchement
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false

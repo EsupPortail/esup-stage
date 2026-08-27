@@ -1,6 +1,6 @@
 # Configuration de l'image Tomcat pour exécution de l'application
-FROM tomcat:10.1.48-jre21-temurin-noble AS tomcat-server
-ARG VERSION
+FROM tomcat:10.1.55-jre21-temurin-noble AS tomcat-server
+ARG VERSION=3.2.0
 COPY target/esup-stage-$VERSION.war /usr/local/tomcat/webapps/ROOT.war
 
 # Installer tzdata pour gérer les fuseaux horaires (si ce n'est pas déjà inclus)

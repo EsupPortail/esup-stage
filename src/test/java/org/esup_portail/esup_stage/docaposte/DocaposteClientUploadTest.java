@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.enums.TypeSignatureEnum;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.service.FilenameSanitizerService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,7 @@ class DocaposteClientUploadTest{
         client.impressionService = impressionService;
         client.conventionJpaRepository = conventionRepo;
         client.avenantJpaRepository = avenantRepo;
+        client.filenameSanitizerService = new FilenameSanitizerService();
         client.setWebServiceTemplate(webServiceTemplate);
 
         doAnswer(inv -> {

@@ -3,10 +3,14 @@ package org.esup_portail.esup_stage.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.esup_portail.esup_stage.constants.ValidationPatterns;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.dto.ConfigAlerteMailDto;
 import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConfigSignatureDto;
 import org.esup_portail.esup_stage.dto.ConfigThemeDto;
+import org.esup_portail.esup_stage.dto.LibelleImpressionLangueDto;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppConfigCodeEnum;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -16,17 +20,28 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Affectation;
 import org.esup_portail.esup_stage.model.AffectationId;
 import org.esup_portail.esup_stage.model.AppConfig;
+import org.esup_portail.esup_stage.model.LangueConvention;
 import org.esup_portail.esup_stage.repository.AffectationJpaRepository;
 import org.esup_portail.esup_stage.repository.AppConfigJpaRepository;
+import org.esup_portail.esup_stage.repository.LangueConventionJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.impression.LibelleImpressionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +50,16 @@ import java.util.List;
 @RequestMapping("/config")
 public class AppConfigController {
 
+    private static final Logger logger = LogManager.getLogger(AppConfigController.class);
+
     @Autowired
     AppConfigJpaRepository appConfigJpaRepository;
+
+    @Autowired
+    LangueConventionJpaRepository langueConventionJpaRepository;
+
+    @Autowired
+    LibelleImpressionService libelleImpressionService;
 
     @Autowired
     AffectationJpaRepository affectationJpaRepository;
@@ -44,15 +67,18 @@ public class AppConfigController {
     @Autowired
     AppConfigService appConfigService;
 
+    @Autowired
+    FileValidationService fileValidationService;
+
     @JsonView(Views.Etu.class)
     @GetMapping("/generale/etu")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGeneraleEtu() {
         return appConfigService.getConfigGenerale();
     }
 
     @GetMapping("/generale")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ConfigGeneraleDto getConfigGenerale() {
         return appConfigService.getConfigGenerale();
     }
@@ -68,6 +94,7 @@ public class AppConfigController {
         if (configGeneraleDto.getTypeCentre() == TypeCentreEnum.VIDE) {
             configGeneraleDto.setTypeCentre(null);
         }
+        configGeneraleDto.setMailOppositionContact(normaliserMailOppositionContact(configGeneraleDto.getMailOppositionContact()));
         ObjectMapper mapper = new ObjectMapper();
         appConfig.setParametres(mapper.writeValueAsString(configGeneraleDto));
         appConfigJpaRepository.saveAndFlush(appConfig);
@@ -87,8 +114,25 @@ public class AppConfigController {
         return appConfigService.getConfigGenerale();
     }
 
+    /**
+     * La boîte générique de recueil des refus doit être une adresse mail simple : elle est injectée
+     * telle quelle dans le lien {@code mailto:} des mails de droit d'opposition. Une valeur mal
+     * formée produirait un lien inopérant côté contact, sans erreur visible.
+     */
+    private String normaliserMailOppositionContact(String mailOppositionContact) {
+        if (mailOppositionContact == null || mailOppositionContact.trim().isEmpty()) {
+            return null;
+        }
+        String normalise = mailOppositionContact.trim();
+        if (!normalise.matches(ValidationPatterns.EMAIL)) {
+            throw new AppException(HttpStatus.BAD_REQUEST,
+                    "L'adresse de la boîte mail de recueil des refus n'est pas valide (attendu : adresse@domaine.fr)");
+        }
+        return normalise;
+    }
+
     @GetMapping("/alerte-mail")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL,AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE},forbiddenEtu = true)
     public ConfigAlerteMailDto getConfigAlerteMail() {
         return appConfigService.getConfigAlerteMail();
     }
@@ -129,27 +173,20 @@ public class AppConfigController {
         configThemeDto.setDateModification(new Date());
 
         if (logo != null) {
-            // Autorisation de l'upload d'images uniquement
-            if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-            }
-
+            FileValidationService.ValidatedImage validatedLogo = fileValidationService.validateImage(logo);
             ConfigThemeDto.File64 logo64 = new ConfigThemeDto.File64();
-            logo64.setContentType(logo.getContentType());
-            logo64.setBase64(Base64.getEncoder().encodeToString(logo.getBytes()));
+            logo64.setContentType(validatedLogo.contentType());
+            logo64.setBase64(Base64.getEncoder().encodeToString(validatedLogo.bytes()));
             configThemeDto.setLogo(logo64);
         } else {
             configThemeDto.setLogo(configThemeDtoOrigin.getLogo());
         }
 
         if (favicon != null) {
-            // Autorisation de l'upload d'images uniquement
-            if (favicon.getContentType() == null || !favicon.getContentType().startsWith("image/")) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-            }
+            FileValidationService.ValidatedImage validatedFavicon = fileValidationService.validateImage(favicon);
             ConfigThemeDto.File64 favicon64 = new ConfigThemeDto.File64();
-            favicon64.setContentType(favicon.getContentType());
-            favicon64.setBase64(Base64.getEncoder().encodeToString(favicon.getBytes()));
+            favicon64.setContentType(validatedFavicon.contentType());
+            favicon64.setBase64(Base64.getEncoder().encodeToString(validatedFavicon.bytes()));
             configThemeDto.setFavicon(favicon64);
         } else {
             configThemeDto.setFavicon(configThemeDtoOrigin.getFavicon());
@@ -176,9 +213,72 @@ public class AppConfigController {
     }
 
     @GetMapping("/signature")
-    @Secure(forbiddenEtu = true)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
     public ConfigSignatureDto getSignature() {
         return appConfigService.getConfigSignature();
+    }
+
+    @GetMapping("/libelles-impression")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> getLibellesImpression() {
+        int nbClesTotal = libelleImpressionService.getClesAutorisees().size();
+        return langueConventionJpaRepository.findAll().stream()
+                .filter(langue -> "O".equals(langue.getTemEnServ()))
+                .map(langue -> {
+                    LibelleImpressionLangueDto dto = new LibelleImpressionLangueDto();
+                    dto.setCode(langue.getCode());
+                    dto.setLibelle(langue.getLibelle());
+                    dto.setNbClesTotal(nbClesTotal);
+                    dto.setNbClesRenseignees(libelleImpressionService.compterClesTraduites(langue.getCode()));
+                    Path chemin = libelleImpressionService.getCheminSurcharge(langue.getCode());
+                    if (Files.isRegularFile(chemin)) {
+                        dto.setSurcharge(true);
+                        try {
+                            dto.setDateModification(new Date(Files.getLastModifiedTime(chemin).toMillis()));
+                        } catch (IOException e) {
+                            logger.warn("Date de modification illisible pour {}", chemin, e);
+                        }
+                    }
+                    return dto;
+                })
+                .toList();
+    }
+
+    @GetMapping(value = "/libelles-impression/{code}/fichier", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE}, forbiddenEtu = true)
+    public ResponseEntity<byte[]> getFichierLibellesImpression(@PathVariable("code") String code) {
+        LangueConvention langue = getLangueConvention(code);
+        String nomFichier = libelleImpressionService.getNomFichier(langue.getCode());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomFichier + "\"")
+                .contentType(new MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8))
+                .body(libelleImpressionService.getContenuFichierTravail(langue.getCode()));
+    }
+
+    @PostMapping("/libelles-impression/{code}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> updateLibellesImpression(@PathVariable("code") String code, @RequestParam("fichier") MultipartFile fichier) {
+        LangueConvention langue = getLangueConvention(code);
+        FileValidationService.ValidatedProperties validated = fileValidationService.validateProperties(fichier, libelleImpressionService.getClesAutorisees());
+        // Le nom du fichier déposé est ignoré : le chemin est construit à partir du code de langue validé
+        libelleImpressionService.ecrireSurcharge(langue.getCode(), validated.bytes());
+        return getLibellesImpression();
+    }
+
+    @DeleteMapping("/libelles-impression/{code}")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.SUPPRESSION}, forbiddenEtu = true)
+    public List<LibelleImpressionLangueDto> deleteLibellesImpression(@PathVariable("code") String code) {
+        LangueConvention langue = getLangueConvention(code);
+        libelleImpressionService.supprimerSurcharge(langue.getCode());
+        return getLibellesImpression();
+    }
+
+    private LangueConvention getLangueConvention(String code) {
+        LangueConvention langue = code == null ? null : langueConventionJpaRepository.findByCode(code);
+        if (langue == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Langue de convention " + code + " non trouvée");
+        }
+        return langue;
     }
 
     @PostMapping("/signature")

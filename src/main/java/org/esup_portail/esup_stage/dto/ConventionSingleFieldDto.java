@@ -9,6 +9,8 @@ public class ConventionSingleFieldDto {
 
     private Object value;
 
+    private String dureeExceptionnellePeriode;
+
     public String getField() {
         return field;
     }
@@ -23,5 +25,13 @@ public class ConventionSingleFieldDto {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public String getDureeExceptionnellePeriode() {
+        return dureeExceptionnellePeriode;
+    }
+
+    public void setDureeExceptionnellePeriode(String dureeExceptionnellePeriode) {
+        this.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
     }
 }

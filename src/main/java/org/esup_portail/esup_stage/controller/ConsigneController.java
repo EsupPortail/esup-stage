@@ -54,7 +54,7 @@ public class ConsigneController {
     private CentreGestionJpaRepository centreGestionJpaRepository;
 
     @GetMapping("/centres/{idCentreGestion}")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Consigne getByCentreGestion(@PathVariable("idCentreGestion") int idCentreGestion) {
         return consigneJpaRepository.findByIdCentreGestion(idCentreGestion);
     }
@@ -144,7 +144,7 @@ public class ConsigneController {
     }
 
     @GetMapping("/{idConsigne}/documents/{idDoc}/download")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE,AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> downloadDoc(@PathVariable("idConsigne") int idConsigne, @PathVariable("idDoc") int idDoc) {
         ConsigneDocument consigneDocument = consigneDocumentJpaRepository.findById(idDoc);
         if (consigneDocument == null) {
@@ -164,7 +164,7 @@ public class ConsigneController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     @Transactional
     public void deleteConsigne(@PathVariable("id") int id){
         Consigne consigne = consigneJpaRepository.findById(id);

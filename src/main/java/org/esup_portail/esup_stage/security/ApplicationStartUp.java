@@ -8,6 +8,7 @@ import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.repository.RoleJpaRepository;
 import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class ApplicationStartUp {
     @Autowired
     private AppliProperties appliProperties;
 
+    @Autowired
+    private ConfigMissingService configMissingService;
+
     @EventListener(ApplicationReadyEvent.class)
     public void createAdminTechs() {
         for (String username : appliProperties.getAdminTechnique()) {
@@ -74,6 +78,10 @@ public class ApplicationStartUp {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initUid() {
+        if (configMissingService.hasMissingKeys()) {
+            log.warn("Configuration du référentiel (LDAP) incomplète : initialisation des uid ignorée au démarrage");
+            return;
+        }
         log.info("Récupération de l'uid des utilisateurs déjà existants");
         List<Utilisateur> utilisateurs = utilisateurRepository.findNoUid();
         log.info("{} utilisateurs sans uid - recherche dans le LDAP", utilisateurs.size());

@@ -21,7 +21,7 @@
           </mat-form-field>
 
           <button type="button" mat-fab class="add-button" matTooltip="Ajouter" (click)="addPeriode()">
-            <i class="fa fa-plus"></i>
+            <span class="fa fa-plus" aria-label="Ajouter"></span>
           </button>
         </div>
       </form>
@@ -43,8 +43,8 @@
                 <app-form-error [field]="heuresJournalieresForm.get(periode.formControlName)"></app-form-error>
               </mat-error>
             </mat-form-field>
-            <button type="button" mat-fab color="warn" class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
-              <i class="fa fa-trash-alt"></i>
+            <button type="button" mat-fab class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
+              <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
             </button>
           </div>
         </div>

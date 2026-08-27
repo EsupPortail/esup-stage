@@ -1,10 +1,11 @@
 package org.esup_portail.esup_stage.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.esup_portail.esup_stage.constants.ValidationPatterns;
 import org.hibernate.validator.constraints.URL;
 
 @Data
@@ -32,7 +33,7 @@ public class StructureFormDto {
     @Size(max = 20)
     private String fax;
 
-    @Email
+    @Pattern(regexp = ValidationPatterns.EMAIL, message = "L'adresse mail n'est pas valide")
     @Size(max = 255)
     private String mail;
 
@@ -72,7 +73,9 @@ public class StructureFormDto {
     @Size(max = 20)
     private String numeroRNE;
 
-    @NotNull
     private Boolean verrouillageSynchroStructureSirene;
 
+    private Boolean confidentialiteCoordonnees;
+
+    private Integer idCentreGestionProprietaire;
 }

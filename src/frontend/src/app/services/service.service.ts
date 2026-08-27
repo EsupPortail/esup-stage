@@ -19,10 +19,6 @@ export class ServiceService implements PaginatedService {
     return this.http.get(`${environment.apiUrl}/services/export/${format}`, {params: {headers, predicate, sortOrder, filters}, responseType: 'blob'});
   }
 
-  getById(id: number): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/services/${id}`);
-  }
-
   getByStructure(id: number, idCentreGestion: any): Observable<any> {
     return this.http.get(`${environment.apiUrl}/services/getByStructure/${id}`, {params: {idCentreGestion}});
   }

@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CronService } from '../../../services/cron.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, timer } from 'rxjs';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { MessageService } from '../../../services/message.service';
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-config',
-  templateUrl: './tache-planifie.component.html',
-  styleUrl: './tache-planifie.component.scss'
+    selector: 'app-config',
+    templateUrl: './tache-planifie.component.html',
+    styleUrl: './tache-planifie.component.scss',
+    standalone: false
 })
-export class TachePlanifieComponent implements OnInit {
+export class TachePlanifieComponent implements OnInit, OnDestroy {
   cronTasks: any[] = [];
   private originalCronTasks: any;
   page: number = 1;
@@ -19,12 +22,62 @@ export class TachePlanifieComponent implements OnInit {
   sortOrder: string = 'asc';
   filtersObj: any = {};
   private filterTimeout: any;
-  executingTasks: Set<number> = new Set(); // Pour tracker les tâches en cours d'exécution
+
+  // État « en cours » partagé, renvoyé par le serveur : visible par tous les utilisateurs
+  runningTaskIds: Set<number> = new Set();
+  // Tâches lancées depuis cet écran, pour n'afficher le message de fin qu'à celui qui l'a lancée
+  private launchedByMe: Set<number> = new Set();
+  private readonly destroy$ = new Subject<void>();
+  private readonly pollIntervalMs = 4000;
 
   constructor(private cronService: CronService, private messageService: MessageService) {}
 
   ngOnInit() {
     this.getPaginated(this.page, this.itemsPerPage, this.sortPredicate, this.sortOrder, this.filters);
+    this.startPollingRunning();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Interroge périodiquement l'état « en cours » du serveur (sans loader plein écran)
+  private startPollingRunning() {
+    timer(0, this.pollIntervalMs)
+      .pipe(
+        switchMap(() => this.cronService.getRunning().pipe(catchError(() => of(null)))),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((ids: number[] | null) => {
+        if (ids === null) {
+          return;
+        }
+        this.onRunningUpdated(new Set(ids));
+      });
+  }
+
+  private onRunningUpdated(nouvelEtat: Set<number>) {
+    // Tâches qui viennent de se terminer (présentes avant, absentes maintenant)
+    const terminees: number[] = [];
+    this.runningTaskIds.forEach(id => {
+      if (!nouvelEtat.has(id)) {
+        terminees.push(id);
+      }
+    });
+    this.runningTaskIds = nouvelEtat;
+
+    if (terminees.length > 0) {
+      // Une exécution s'est achevée : on rafraîchit pour afficher la nouvelle date de dernière exécution
+      this.getPaginated(this.page, this.itemsPerPage, this.sortPredicate, this.sortOrder, this.filters);
+      terminees.forEach(id => {
+        if (this.launchedByMe.has(id)) {
+          const task = this.cronTasks.find(t => t.id === id);
+          this.messageService.setSuccess(`Tâche "${task?.nom ?? id}" terminée`);
+          this.launchedByMe.delete(id);
+        }
+      });
+    }
   }
 
   getPaginated(page: number, perPage: number, predicate: string, sortOrder: string, filters: string) {
@@ -68,28 +121,29 @@ export class TachePlanifieComponent implements OnInit {
   }
 
   executeTask(taskId: number, taskName: string) {
-    if (this.executingTasks.has(taskId)) {
+    if (this.isExecuting(taskId)) {
       return;
     }
 
-    this.executingTasks.add(taskId);
-
     this.cronService.executeNow(taskId).subscribe({
       next: () => {
-        this.messageService.setSuccess(`Tâche "${taskName}" exécutée avec succès`);
-        this.executingTasks.delete(taskId);
-        // Rafraîchir pour mettre à jour la dernière date d'exécution
-        this.getPaginated(this.page, this.itemsPerPage, this.sortPredicate, this.sortOrder, this.filters);
+        // Marquage optimiste : le polling confirmera et détectera la fin
+        this.runningTaskIds.add(taskId);
+        this.launchedByMe.add(taskId);
+        this.messageService.setSuccess(`Tâche "${taskName}" lancée`);
       },
       error: err => {
-        this.messageService.setError(`Erreur lors de l'exécution de la tâche "${taskName}" : ${err.error?.message || err.message}`);
-        this.executingTasks.delete(taskId);
+        if (err?.status === 409) {
+          this.messageService.setWarning(`La tâche "${taskName}" est déjà en cours d'exécution`);
+        } else {
+          this.messageService.setError(`Erreur lors du lancement de la tâche "${taskName}" : ${err.error?.message || err.message}`);
+        }
       }
     });
   }
 
   isExecuting(taskId: number): boolean {
-    return this.executingTasks.has(taskId);
+    return this.runningTaskIds.has(taskId);
   }
 
   onPageChange(event: PageEvent) {

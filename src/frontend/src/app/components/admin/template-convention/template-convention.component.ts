@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectorRef, ViewEncapsulation, AfterViewInit, OnDestroy} from '@angular/core';
 import { TableComponent } from "../../table/table.component";
 import { TemplateConventionService } from "../../../services/template-convention.service";
 import { ParamConventionService } from "../../../services/param-convention.service";
@@ -78,12 +78,13 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-template-convention',
-  templateUrl: './template-convention.component.html',
-  styleUrls: ['./template-convention.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-template-convention',
+    templateUrl: './template-convention.component.html',
+    styleUrls: ['./template-convention.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
-export class TemplateConventionComponent implements OnInit {
+export class TemplateConventionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   columns = ['typeConvention.libelle', 'langueConvention.code', 'action'];
   sortColumn = 'typeConvention.libelle';
@@ -103,6 +104,7 @@ export class TemplateConventionComponent implements OnInit {
 
   createTabIndex = 1
   editTabIndex = 2;
+  activeEditorTabIndex = -1;
   data: any = {};
   form: FormGroup;
 
@@ -153,8 +155,10 @@ export class TemplateConventionComponent implements OnInit {
   public isLayoutReady = false;
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
-  public ngAfterViewInit():void{
+  private editorRenderFrame?: number;
+  public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -264,13 +268,6 @@ export class TemplateConventionComponent implements OnInit {
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -316,16 +313,6 @@ export class TemplateConventionComponent implements OnInit {
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -361,55 +348,6 @@ export class TemplateConventionComponent implements OnInit {
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
@@ -417,7 +355,7 @@ export class TemplateConventionComponent implements OnInit {
     };
 
     this.isLayoutReady = true;
-    this.changeDetector.detectChanges();
+    this.renderEditorsForActiveTab(this.tabs?.selectedIndex ?? 0);
   }
 
   resetTitle(): void {
@@ -425,6 +363,7 @@ export class TemplateConventionComponent implements OnInit {
   }
 
   tabChanged(event: MatTabChangeEvent): void {
+    this.renderEditorsForActiveTab(event.index);
     if (event.index !== this.editTabIndex) {
       this.resetTitle();
       this.data = {};
@@ -504,5 +443,25 @@ export class TemplateConventionComponent implements OnInit {
       return option.code === value.code;
     }
     return false;
+  }
+
+  private renderEditorsForActiveTab(tabIndex: number): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
+    this.activeEditorTabIndex = -1;
+    this.editorRenderFrame = requestAnimationFrame(() => {
+      this.editorRenderFrame = requestAnimationFrame(() => {
+        this.activeEditorTabIndex = tabIndex;
+        this.changeDetector.detectChanges();
+        this.editorRenderFrame = undefined;
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
   }
 }

@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 @RequestMapping("/template-convention")
 public class TemplateConventionController {
 
+    private static final Pattern FREEMARKER_NATIVE_DIRECTIVE_PATTERN = Pattern.compile("<\\s*(?:[#@]|/\\s*[#@])");
+
     @Autowired
     TemplateConventionRepository templateConventionRepository;
 
@@ -116,6 +118,9 @@ public class TemplateConventionController {
     }
 
     private void checkTemplateConvention(TemplateConventionDto templateConventionDto) {
+        checkNoNativeFreemarkerDirective(templateConventionDto.getTexte());
+        checkNoNativeFreemarkerDirective(templateConventionDto.getTexteAvenant());
+
         // récupération des champs personnalisés existants
         List<ParamConvention> champs = paramConventionJpaRepository.findAll();
 
@@ -129,6 +134,12 @@ public class TemplateConventionController {
         liste = extractChamps(templateConventionDto.getTexteAvenant());
         for (String champ : liste) {
             checkChamp(champs, champ);
+        }
+    }
+
+    private void checkNoNativeFreemarkerDirective(String texte) {
+        if (texte != null && FREEMARKER_NATIVE_DIRECTIVE_PATTERN.matcher(texte).find()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Les directives FreeMarker natives ne sont pas autorisees");
         }
     }
 

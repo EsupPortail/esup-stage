@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-create-maintenance-table
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: Maintenance
+            columns:
+              - column:
+                  name: idMaintenance
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: datDebMaint
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: datFinMaint
+                  type: datetime
+              - column:
+                  name: datAlertMaint
+                  type: datetime
+              - column:
+                  name: message
+                  type: varchar(500)
+              - column:
+                  name: createdBy
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: createdAt
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_maintenance_deb_fin
+            tableName: Maintenance
+            columns:
+              - column:
+                  name: datDebMaint
+              - column:
+                  name: datFinMaint
+        - createIndex:
+            indexName: idx_maintenance_alert
+            tableName: Maintenance
+            columns:
+              - column:
+                  name: datAlertMaint

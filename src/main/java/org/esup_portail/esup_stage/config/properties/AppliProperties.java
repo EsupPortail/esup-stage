@@ -3,7 +3,6 @@ package org.esup_portail.esup_stage.config.properties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -14,15 +13,19 @@ import java.util.stream.Stream;
 @Data
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "appli")
-@Component
 public class AppliProperties {
     private DatasourceProperties datasource;
-    private MailerProperties mailer;
+    private MailerProperties mailer = new MailerProperties();
     private String url;
     private String localApi;
     private String adminTechnique;
     private String dataDir;
     private List<String> tokens;
+    private String jwtSecret;
+    private Long nbJoursValideToken;
+    private String configEncryptionKey;
+    private FooterProperties footer;
+    private String logsDir;
 
     public String getLocalApi() {
         String result = url;
@@ -80,5 +83,14 @@ public class AppliProperties {
         private String from;
         private boolean disableDelivery;
         private String deliveryAddress;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class FooterProperties {
+        private String github;
+        private String site;
+        private String support;
+        private String wiki;
     }
 }

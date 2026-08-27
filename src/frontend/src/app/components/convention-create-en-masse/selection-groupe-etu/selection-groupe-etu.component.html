@@ -2,8 +2,8 @@
   <mat-card-content>
     <div class="mb-3">
       <form [formGroup]="form" (submit)="validate()" novalidate>
-        <div class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</div>
-        <div class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</div>
+        <h4 class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</h4>
+        <h4 class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</h4>
         <mat-divider class="mb-2"></mat-divider>
         <div class="row mb-2">
           <mat-form-field class="col-6" appearance="fill">
@@ -18,16 +18,30 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-flat-button color="primary" [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">{{'BOUTON_VALIDER'|contenu}}</button>
+          <button class="valid-button" mat-flat-button [disabled]="selectedAdd.length === 0 && selectedRemove.length === 0">
+            @if (!groupeEtudiant) {
+              {{'BOUTON_VALIDER'|contenu}}
+            } @else if (selectedAdd.length === 0 && selectedRemove.length === 0) {
+              Modifier
+            } @else {
+              @if (selectedAdd.length > 0 && selectedRemove.length > 0) { Ajouter et retirer }
+              @else if (selectedAdd.length > 0) { Ajouter }
+              @else { Retirer }
+              {{ selectedAdd.length + selectedRemove.length | i18nPlural:{
+                '=1': "l'étudiant sélectionné",
+                'other': 'les # étudiants sélectionnés'
+              } }}
+            }
+          </button>
         </div>
       </form>
     </div>
 
     <div class="mb-3" *ngIf="groupeEtudiant && groupeEtudiant.etudiantGroupeEtudiants.length > 0">
-      <div class="text-title">Retirer des étudiants du groupe</div>
+      <h4 class="text-title">Retirer des étudiants du groupe</h4>
       <mat-divider class="mb-2"></mat-divider>
       <app-table [service]="etudiantGroupeEtudiantService" [columns]="groupeEtudiantColumns" [sortColumn]="sortColumn" [filters]="groupeEtudiantFilters" [sortOrder]="sortDirection"
-                 matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+                 matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(appTable,$event)"
                  [noResultText]="'Aucun étudiant trouvé'">
 
         <ng-container matColumnDef="select">
@@ -46,28 +60,28 @@
         </ng-container>
 
         <ng-container matColumnDef="numEtudiant">
-          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
         </ng-container>
 
         <ng-container matColumnDef="nom">
-          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
         </ng-container>
 
         <ng-container matColumnDef="prenom">
-          <th mat-header-cell *matHeaderCellDef>Prénom</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
         </ng-container>
 
         <ng-container matColumnDef="mail">
-          <th mat-header-cell *matHeaderCellDef>Mail</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
           <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
         </ng-container>
 
         <ng-container matColumnDef="ufr.libelle">
           <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
-          <td mat-cell *matCellDef="let row">{{row.convention.ufr ? row.convention.ufr.libelle : ''}}</td>
+          <td mat-cell *matCellDef="let row" matTooltip="{{row.convention.ufr?.libelle??''}}">{{row.convention.ufr?.id?.code??''}}</td>
         </ng-container>
         <ng-container matColumnDef="etape.libelle">
           <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
@@ -81,7 +95,7 @@
     </div>
 
     <div class="mb-3">
-      <div class="text-title">Ajouter des étudiants au groupe</div>
+      <h4 class="text-title">Ajouter des étudiants au groupe</h4>
       <mat-divider class="mb-2"></mat-divider>
       <div class="table-filters">
         <form [formGroup]="formAddEtudiants" class="mt-2 mb-3" (submit)="search()">
@@ -131,7 +145,7 @@
           <div class="row">
             <div class="col-12 text-right">
               <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button color="primary" class="ml-2">Rechercher</button>
+              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button class="ml-2 valid-button">Rechercher</button>
             </div>
           </div>
         </form>

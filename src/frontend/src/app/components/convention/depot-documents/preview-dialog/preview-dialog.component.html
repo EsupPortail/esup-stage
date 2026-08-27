@@ -1,0 +1,59 @@
+<div mat-dialog-title class="preview-header">
+  <div class="preview-title">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <span class="preview-title__name">{{ data.document.nomReel }}</span>
+  </div>
+
+  <div class="preview-actions">
+    <span
+      *ngIf="data.canDelete"
+      (confirm)="delete()"
+      [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + data.document.nomReel + ' ?'">
+      <button
+        mat-icon-button
+        matTooltip="Supprimer"
+        aria-label="Supprimer le document">
+        <mat-icon class="preview-action-icon preview-action-icon--warn">delete</mat-icon>
+      </button>
+    </span>
+    <button
+      mat-icon-button
+      matTooltip="Télécharger"
+      aria-label="Télécharger le document"
+      (click)="download()">
+      <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Fermer"
+      aria-label="Fermer la preview"
+      (click)="close()">
+      <mat-icon class="preview-action-icon preview-action-icon--primary">close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-dialog-content class="preview-content">
+
+  <div class="preview-state" *ngIf="loading">
+    <mat-spinner diameter="36"></mat-spinner>
+    <p>Chargement de l'aperçu...</p>
+  </div>
+
+  <div class="preview-state preview-state--error" *ngIf="!loading && previewFailed">
+    <mat-icon>error_outline</mat-icon>
+    <p>L'aperçu de ce document n'a pas pu être affiché.</p>
+    <button mat-stroked-button color="primary" (click)="download()">
+      <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
+      Télécharger le document
+    </button>
+  </div>
+
+  <iframe
+    *ngIf="!loading && !previewFailed && safePdfUrl"
+    [src]="safePdfUrl"
+    class="preview-frame"
+    title="Aperçu du document">
+  </iframe>
+
+</mat-dialog-content>

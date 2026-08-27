@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import { GroupeEtudiantService } from "../../services/groupe-etudiant.service";
+import {GroupeEtudiant, GroupeEtudiantService} from "../../services/groupe-etudiant.service";
 import { UfrService } from "../../services/ufr.service";
 import { EtapeService } from "../../services/etape.service";
 import { forkJoin } from 'rxjs';
@@ -8,16 +8,18 @@ import { ConventionService } from "../../services/convention.service";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
+import { getProgressText } from '../../utils/text-progress-bar.utils';
 
 @Component({
-  selector: 'app-convention-create-en-masse',
-  templateUrl: './convention-create-en-masse.component.html',
-  styleUrls: ['./convention-create-en-masse.component.scss']
+    selector: 'app-convention-create-en-masse',
+    templateUrl: './convention-create-en-masse.component.html',
+    styleUrls: ['./convention-create-en-masse.component.scss'],
+    standalone: false
 })
 export class ConventionCreateEnMasseComponent implements OnInit {
 
   conventionTabIndex: number = 0;
-
+  protected readonly getProgressText = getProgressText;
   sharedData: any = {};
   groupeEtudiant: any;
   allValid = false;
@@ -46,6 +48,15 @@ export class ConventionCreateEnMasseComponent implements OnInit {
 
   ngOnInit(): void {
     this.sharedData.columns = ['select','numEtudiant','nom', 'prenom', 'mail', 'ufr.libelle', 'etape.libelle', 'annee'];
+    this.sharedData.sortColumns = {
+      'numEtudiant': 'etudiant.numEtudiant',
+      'nom': 'etudiant.nom_etudiant.prenom',
+      'prenom': 'etudiant.prenom_etudiant.nom',
+      'mail': 'etudiant.mail',
+      'ufr.libelle': 'convention.ufr.libelle_etudiant.nom_etudiant.prenom',
+      'etape.libelle': 'convention.etape.libelle_etudiant.nom_etudiant.prenom',
+      'annee': 'convention.annee_etudiant.nom_etudiant.prenom',
+    };
     this.sharedData.filters = [
       { id: 'etudiant.nom', libelle: 'Nom'},
       { id: 'etudiant.prenom', libelle: 'Prénom'},
@@ -61,18 +72,14 @@ export class ConventionCreateEnMasseComponent implements OnInit {
       if (pathId === 'create') {
         this.titleService.title = 'Création de conventions en masse';
         // Récupération du groupeEtudiant au mode brouillon
-        this.groupeEtudiantService.getBrouillon().subscribe((response: any) => {
-          this.groupeEtudiant = response;
-          this.majFilter();
-          this.majStatus();
+        this.groupeEtudiantService.getBrouillon().subscribe((response: GroupeEtudiant) => {
+          this.updateGroupeEtudiant(response)
         });
       } else {
         this.titleService.title = 'Modification de conventions en masse';
         // Récupération du groupeEtudiant correspondant à l'id
-        this.groupeEtudiantService.getById(pathId).subscribe((response: any) => {
-          this.groupeEtudiant = response;
-          this.majFilter();
-          this.majStatus();
+        this.groupeEtudiantService.getById(pathId).subscribe((response: GroupeEtudiant) => {
+          this.updateGroupeEtudiant(response);
         });
       }
     });
@@ -221,8 +228,9 @@ export class ConventionCreateEnMasseComponent implements OnInit {
     this.tabs[0].init = true;
   }
 
-  updateGroupeEtudiant(data: any): void {
+  updateGroupeEtudiant(data?: GroupeEtudiant): void {
     this.groupeEtudiant = data;
+    this.titleService.subtitle = this.groupeEtudiant?.nom
     this.majFilter();
     this.majStatus();
   }

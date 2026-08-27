@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-delegataire-viseur
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: nomDelegataireViseur
+                  type: varchar(255)
+              - column:
+                  name: prenomDelegataireViseur
+                  type: varchar(255)
+              - column:
+                  name: qualiteDelegataireViseur
+                  type: varchar(255)
+              - column:
+                  name: mailDelegataireViseur
+                  type: varchar(255)

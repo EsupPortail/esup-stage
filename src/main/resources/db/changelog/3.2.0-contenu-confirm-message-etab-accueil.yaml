@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-contenu-confirm-message-etab-accueil
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: CONFIRM_MESSAGE_ETAB_ACCUEIL
+              - column:
+                  name: libelle
+                  value: 1
+              - column:
+                  name: texte
+                  value: "Attention : ne créer un nouvel établissement que si vous êtes certain qu'il n'existe pas dans la liste des établissements disponible en utilisant les filtres de recherche ci-dessus."
+              - column:
+                    name: loginCreation
+                    value: liquibase
+              - column:
+                    name: dateCreation
+                    value: now()
