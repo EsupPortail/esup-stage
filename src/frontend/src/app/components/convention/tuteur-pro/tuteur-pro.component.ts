@@ -14,9 +14,10 @@ import {REGEX} from "../../../utils/regex.utils";
 import { ReplaySubject, Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-tuteur-pro',
-  templateUrl: './tuteur-pro.component.html',
-  styleUrls: ['./tuteur-pro.component.scss']
+    selector: 'app-tuteur-pro',
+    templateUrl: './tuteur-pro.component.html',
+    styleUrls: ['./tuteur-pro.component.scss'],
+    standalone: false
 })
 export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -67,6 +68,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
       mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
+      refusEtreContacte: [false, []],
     });
 
     this.searchForm = this.fb.group({
@@ -124,15 +126,15 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
 
   chooseStaff(row: any): void {
     this.contact = {};
-    let civilite = 'M.' ? this.civilites.find(c => c.libelle === 'Mr') : this.civilites.find(c => c.libelle === 'Mme')
     this.form.setValue({
       nom: row.sn.join(' '),
       prenom: row.givenName.join(' '),
-      idCivilite: civilite ? civilite.id : null,
+      idCivilite: this.resolveCiviliteIdFromLdap(row),
       fonction: row.eduPersonPrimaryAffiliation,
       tel: row.telephoneNumber,
       fax: '',
       mail: row.mail,
+      refusEtreContacte: false,
     });
     this.modif = true;
   }
@@ -153,6 +155,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       tel: this.contact.tel,
       fax: this.contact.fax,
       mail: this.contact.mail,
+      refusEtreContacte: this.contact.refusEtreContacte === true,
     });
     this.modif = true;
     this.isNewContact = false;
@@ -185,8 +188,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
         //ajoute idService à l'objet contact
         data.idService = this.service.id;
 
-        //ajout idCentreGestion à l'objet contact
-        data.idCentreGestion = this.centreGestion.id;
+        data.idCentreGestion = this.centreGestion?.id;
         this.contactService.create(data).subscribe((response: any) => {
           this.messageService.setSuccess('Contact créé');
           this.contact = response;
@@ -232,6 +234,25 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
+  private resolveCiviliteIdFromLdap(row: any): number | null {
+    const raw = Array.isArray(row?.supannCivilite) ? row.supannCivilite[0] : row?.supannCivilite;
+
+    const isMale = typeof raw === 'string'
+      ? raw.trim().toLowerCase().startsWith('m')
+      : undefined;
+
+    const maleLabels = ['mr', 'm.', 'monsieur'];
+    const femaleLabels = ['mme', 'madame'];
+
+    const match = this.civilites.find((c: any) => {
+      const lib = String(c?.libelle || '').trim().toLowerCase();
+      if (isMale === true)  return maleLabels.includes(lib);
+      if (isMale === false) return femaleLabels.includes(lib);
+      return false;
+    });
+
+    return match ? match.id : null;
+  }
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();

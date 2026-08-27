@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Centre proprietaire</h1>
+
+<form [formGroup]="form" (ngSubmit)="valid()">
+  <div mat-dialog-content>
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Centre de gestion proprietaire</mat-label>
+      <mat-select formControlName="idCentreGestionProprietaire" required>
+        <mat-option *ngFor="let centre of data.centres" [value]="centre.id">
+          {{centre.nomCentre}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('idCentreGestionProprietaire')?.hasError('required')">
+        Ce champ est obligatoire.
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button type="button" mat-button class="cancel-button" (click)="cancel()">Annuler</button>
+    <button type="submit" mat-flat-button class="valid-button">Valider</button>
+  </div>
+</form>

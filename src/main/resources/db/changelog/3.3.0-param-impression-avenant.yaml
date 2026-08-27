@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-param-impression-avenant
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: autoriserImpressionAvenant
+                  type: boolean
+                  defaultValueBoolean: false
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: conditionValidationImpressionAvenant
+                  type: INT
+                  defaultValue: 0

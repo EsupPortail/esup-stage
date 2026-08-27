@@ -1,0 +1,9 @@
+databaseChangeLog:
+- changeSet:
+    id: 3.3.0-courriel-perso-etudiant-taille
+    author: thouveno9
+    changes:
+    - modifyDataType:
+        columnName: courrielPersoEtudiant
+        newDataType: VARCHAR(255)
+        tableName: Convention

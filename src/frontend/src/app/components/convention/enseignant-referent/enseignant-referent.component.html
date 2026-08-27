@@ -1,5 +1,37 @@
 <mat-accordion>
-  <mat-expansion-panel [expanded]="!enseignant" *ngIf="modifiable">
+
+  <mat-expansion-panel class="etab-search-panel" [disabled]="!enseignant" [expanded]="enseignant">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Enseignant</mat-panel-title>
+      <mat-panel-description>
+        <div class="w-100 text-right">
+          <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-user"></mat-icon>
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div *ngIf="enseignant" class="mt-3 mb-3">
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
+        <div class="col-sm-9">{{enseignant.nom + ' ' + enseignant.prenom}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Fonction</div>
+        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Téléphone</div>
+        <div class="col-sm-9">{{enseignant.tel}}</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 font-weight-bold">Mail</div>
+        <div class="col-sm-9">{{enseignant.mail}}</div>
+      </div>
+    </div>
+
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="etab-search-panel" [expanded]="!enseignant" *ngIf="modifiable">
     <mat-expansion-panel-header>
       <mat-panel-title>Recherchez un enseignant via son nom et/ou son prénom</mat-panel-title>
     </mat-expansion-panel-header>
@@ -16,6 +48,22 @@
         </mat-form-field>
       </div>
     </form>
+    <div class="row mb-3" *ngIf="disableAutoSearch">
+      <div class="col-sm-12 col-md-6 text-left">
+        <button
+          type="button"
+          class="valid-button"
+          mat-button
+          mat-flat-button
+          (click)="runSearchEnseignant()"
+          [disabled]="!hasPendingSearchEnseignant">
+          Lancer la recherche
+        </button>
+        <span *ngIf="hasPendingSearchEnseignant" class="pending-search-hint">
+          Modifications en attente
+        </span>
+      </div>
+    </div>
 
     <div class="alert alert-info" *ngIf="enseignants.length > 10">La recherche est limitée à 10 enseignants. Veuillez affiner la recherche si l'enseignant n'apparaît pas.</div>
     <table mat-table [dataSource]="enseignants | slice:0:10">
@@ -41,10 +89,10 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-button mat-stroked-button (click)="choose(row)" color="primary">
-            <span *ngIf="true"><i class="fa fa-check"></i> Sélectionner</span>
+          <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
+            <span *ngIf="true"><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
             <ng-template #notSelected>
-              <i class="fa fa-check-circle"></i> Sélectionner
+              <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
             </ng-template>
           </button>
         </td>
@@ -55,34 +103,6 @@
     </table>
 
   </mat-expansion-panel>
-  <mat-expansion-panel [disabled]="!enseignant" [expanded]="enseignant">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Enseignant</mat-panel-title>
-      <mat-panel-description>
-        <div class="w-100 text-right">
-          <mat-icon fontSet="fa" fontIcon="fa-user"></mat-icon>
-        </div>
-      </mat-panel-description>
-    </mat-expansion-panel-header>
 
-    <div *ngIf="enseignant" class="mt-3 mb-3">
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Nom / Prénom</div>
-        <div class="col-sm-9">{{enseignant.nom + ' ' + enseignant.prenom}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Fonction</div>
-        <div class="col-sm-9">{{enseignant.typePersonne}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Téléphone</div>
-        <div class="col-sm-9">{{enseignant.tel}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 font-weight-bold">Mail</div>
-        <div class="col-sm-9">{{enseignant.mail}}</div>
-      </div>
-    </div>
-
-  </mat-expansion-panel>
 </mat-accordion>
+

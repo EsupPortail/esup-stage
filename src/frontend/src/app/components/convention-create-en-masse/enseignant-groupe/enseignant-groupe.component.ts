@@ -11,9 +11,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EnseignantGroupeModalComponent } from './enseignant-groupe-modal/enseignant-groupe-modal.component';
 
 @Component({
-  selector: 'app-enseignant-groupe',
-  templateUrl: './enseignant-groupe.component.html',
-  styleUrls: ['./enseignant-groupe.component.scss']
+    selector: 'app-enseignant-groupe',
+    templateUrl: './enseignant-groupe.component.html',
+    styleUrls: ['./enseignant-groupe.component.scss'],
+    standalone: false
 })
 export class EnseignantGroupeComponent implements OnInit, OnChanges {
 

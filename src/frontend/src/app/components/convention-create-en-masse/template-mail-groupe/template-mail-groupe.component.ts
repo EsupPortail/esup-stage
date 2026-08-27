@@ -80,10 +80,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-template-mail-groupe',
-  templateUrl: './template-mail-groupe.component.html',
-  styleUrls: ['./template-mail-groupe.component.scss'],
-  encapsulation : ViewEncapsulation.None
+    selector: 'app-template-mail-groupe',
+    templateUrl: './template-mail-groupe.component.html',
+    styleUrls: ['./template-mail-groupe.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
 
@@ -106,6 +107,7 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
   editTabIndex = 1;
   data: any = {};
   form: FormGroup;
+  isMobile = false;
 
   @ViewChild('tableList') appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
@@ -130,6 +132,8 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
     this.templateMailGroupeService.getParams().subscribe((response: any) => {
       this.params = response;
     });
+    this.updateIsMobile();
+    window.addEventListener('resize', this.updateIsMobile);
   }
 
   public isLayoutReady = false;
@@ -137,6 +141,7 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
   public config: EditorConfig = {};
   public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -246,13 +251,6 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -298,16 +296,6 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -343,55 +331,6 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
         }
       },
       placeholder: 'Type or paste your content here!',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
@@ -458,5 +397,14 @@ export class TemplateMailGroupeComponent implements OnInit, AfterViewInit {
       data: row,
     });
   }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.updateIsMobile);
+  }
+
+  private updateIsMobile = (): void => {
+    this.isMobile = window.matchMedia('(max-width: 768px)').matches;
+  };
+
 
 }

@@ -11,9 +11,10 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal/tuteur-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-tuteur-accueil-groupe',
-  templateUrl: './tuteur-accueil-groupe.component.html',
-  styleUrls: ['./tuteur-accueil-groupe.component.scss']
+    selector: 'app-tuteur-accueil-groupe',
+    templateUrl: './tuteur-accueil-groupe.component.html',
+    styleUrls: ['./tuteur-accueil-groupe.component.scss'],
+    standalone: false
 })
 export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 

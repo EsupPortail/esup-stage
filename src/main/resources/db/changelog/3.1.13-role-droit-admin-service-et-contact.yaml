@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.1.13-role-droit-admin-service-et-contact
+      author: thouveno9
+      context: baseline
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: Role
+        - tableExists:
+            tableName: AppFonction
+        - tableExists:
+            tableName: RoleAppFonction
+        - sqlCheck:
+            expectedResult: 1
+            sql: |
+              SELECT COUNT(*)
+              FROM Role r
+              JOIN AppFonction af ON af.codeAppFonction = 'SERVICE_CONTACT_ACC'
+              WHERE r.code = 'ADM'
+        - sqlCheck:
+            expectedResult: 0
+            sql: |
+              SELECT COUNT(*)
+              FROM RoleAppFonction raf
+              JOIN Role r ON r.idRole = raf.idRole
+              JOIN AppFonction af ON af.idAppFonction = raf.idAppFonction
+              WHERE r.code = 'ADM'
+                AND af.codeAppFonction = 'SERVICE_CONTACT_ACC'
+      changes:
+        - insert:
+            tableName: RoleAppFonction
+            columns:
+              - column:
+                  name: idRole
+                  valueComputed: (SELECT idRole FROM Role WHERE code = 'ADM')
+              - column:
+                  name: idAppFonction
+                  valueComputed: (SELECT idAppFonction FROM AppFonction WHERE codeAppFonction = 'SERVICE_CONTACT_ACC')
+              - column:
+                  name: lecture
+                  valueBoolean: true
+              - column:
+                  name: creation
+                  valueBoolean: true
+              - column:
+                  name: modification
+                  valueBoolean: true
+              - column:
+                  name: suppression
+                  valueBoolean: true
+              - column:
+                  name: validation
+                  valueBoolean: true

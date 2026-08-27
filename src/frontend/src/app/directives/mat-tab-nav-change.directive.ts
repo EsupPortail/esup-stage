@@ -3,7 +3,8 @@ import { MatTabGroup } from "@angular/material/tabs";
 import { TechnicalService } from "../services/technical.service";
 
 @Directive({
-  selector: 'mat-tab-group'
+    selector: 'mat-tab-group',
+    standalone: false
 })
 export class MatTabNavChangeDirective {
 

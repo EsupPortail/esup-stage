@@ -137,6 +137,17 @@ public class Structure extends ObjetMetier implements Exportable {
     @Column
     private boolean temDiffusibleSirene;
 
+    @Column(nullable = false)
+    private boolean confidentialiteCoordonnees = false;
+
+    @ManyToOne
+    @JoinColumn(name = "idCentreGestionProprietaire")
+    private CentreGestion centreGestionProprietaire;
+
+    @JsonView(Views.List.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateArchivage;
+
     public Structure() {
     }
 
@@ -163,7 +174,7 @@ public class Structure extends ObjetMetier implements Exportable {
                 }
                 break;
             case "commune":
-                value = getCommune();
+                value = isConfidentialiteCoordonnees() ? "" : getCommune();
                 break;
             case "typeStructure":
                 if (getTypeStructure() != null) {

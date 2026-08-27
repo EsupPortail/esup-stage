@@ -6,18 +6,17 @@ import { MenuService } from "../../services/menu.service";
 import { ConventionService } from "../../services/convention.service";
 
 @Component({
-  selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
-  animations: [
-    trigger('indicatorRotate', [
-      state('collapsed', style({transform: 'rotate(90deg)'})),
-      state('expanded', style({transform: 'rotate(180deg)'})),
-      transition('expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4,0.0,0.2,1)')
-      ),
-    ])
-  ]
+    selector: 'app-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: ['./menu.component.scss'],
+    animations: [
+        trigger('indicatorRotate', [
+            state('collapsed', style({ transform: 'rotate(0deg)' })),
+            state('expanded', style({ transform: 'rotate(90deg)' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4,0.0,0.2,1)')),
+        ])
+    ],
+    standalone: false
 })
 export class MenuComponent implements OnInit {
 
@@ -25,6 +24,7 @@ export class MenuComponent implements OnInit {
   @HostBinding('attr.aria-expanded') ariaExpanded = this.expanded;
   @Input() item: any;
   @Input() depth: number = 0;
+  submenuId: string = '';
 
   constructor(
     private menuService: MenuService,
@@ -34,6 +34,7 @@ export class MenuComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.submenuId = `submenu-${Math.random().toString(36).slice(2, 8)}`;
     this.setExpanded(this.router.url);
     this.menuService.currentUrl.subscribe((url: string) => {
       this.setExpanded(url);
@@ -66,5 +67,13 @@ export class MenuComponent implements OnInit {
     if (item.children && item.children.length) {
       this.expanded = !this.expanded;
     }
+  }
+
+  toggleChildren() {
+    this.expanded = !this.expanded;
+  }
+
+  get hasChildren(): boolean {
+    return !!(this.item.children && this.item.children.length);
   }
 }

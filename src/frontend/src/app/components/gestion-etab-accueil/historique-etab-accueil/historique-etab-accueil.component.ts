@@ -13,15 +13,14 @@ interface JsonDifference {
 }
 
 @Component({
-  selector: 'app-historique-etab-accueil',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDividerModule
-  ],
-  templateUrl: './historique-etab-accueil.component.html',
-  styleUrl: './historique-etab-accueil.component.scss'
+    selector: 'app-historique-etab-accueil',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatDividerModule
+    ],
+    templateUrl: './historique-etab-accueil.component.html',
+    styleUrl: './historique-etab-accueil.component.scss'
 })
 export class HistoriqueEtabAccueilComponent implements OnInit {
   differences: JsonDifference[] = [];
@@ -74,15 +73,9 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
           currentState = JSON.parse(currentState);
         }
 
-        // Affiche les objets pour le debug
-        console.log('Previous state:', previousState);
-        console.log('Current state:', currentState);
-
         // Compare les objets et stocke les différences
         this.differences = this.compareObjects(previousState, currentState);
 
-        // Affiche les différences pour le debug
-        console.log('Differences:', this.differences);
       } catch (error) {
         console.error('Erreur lors du parsing JSON:', error);
       }
@@ -107,16 +100,14 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
       if (isObject(prevValue) || isObject(currValue)) {
         // Recursion si sous-objet
         differences.push(...this.compareObjects(prevValue || {}, currValue || {}, fullPath));
-      } else {
-        if (this.displayFieldMapping[fullPath] && JSON.stringify(prevValue) !== JSON.stringify(currValue)) {
-          differences.push({
-            field: fullPath,
-            displayName: this.displayFieldMapping[fullPath],
-            previousValue: this.formatValue(prevValue),
-            currentValue: this.formatValue(currValue),
-            type: Array.isArray(prevValue) || Array.isArray(currValue) ? 'array' : 'primitive'
-          });
-        }
+      } else if (this.displayFieldMapping[fullPath] && JSON.stringify(prevValue) !== JSON.stringify(currValue)) {
+        differences.push({
+          field: fullPath,
+          displayName: this.displayFieldMapping[fullPath],
+          previousValue: this.formatValue(prevValue),
+          currentValue: this.formatValue(currValue),
+          type: Array.isArray(prevValue) || Array.isArray(currValue) ? 'array' : 'primitive'
+        });
       }
     });
 
@@ -132,7 +123,6 @@ export class HistoriqueEtabAccueilComponent implements OnInit {
   }
 
   close(): void {
-    console.log(this.differences);
     this.dialogRef.close();
   }
 }

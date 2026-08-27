@@ -1,0 +1,12 @@
+<nav aria-label="Plan du site">
+  <div *ngFor="let group of groups" class="fr-mb-4w">
+    <h4 class="fr-h4">{{ group.name }}</h4>
+    <ul class="fr-list">
+      <li *ngFor="let item of group.items">
+        <a [routerLink]="item.url">
+          {{ item.label }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

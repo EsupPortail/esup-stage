@@ -4,9 +4,10 @@ import { GroupeEtudiantService } from "../../../../services/groupe-etudiant.serv
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-infos-stage-modal',
-  templateUrl: './infos-stage-modal.component.html',
-  styleUrls: ['./infos-stage-modal.component.scss']
+    selector: 'app-infos-stage-modal',
+    templateUrl: './infos-stage-modal.component.html',
+    styleUrls: ['./infos-stage-modal.component.scss'],
+    standalone: false
 })
 export class InfosStageModalComponent implements OnInit {
 

@@ -2,9 +2,11 @@ package org.esup_portail.esup_stage.enums;
 
 public enum FolderEnum {
     CENTRE_GESTION_CONSIGNE_DOCS("/centregestion/consigne-documents"),
+    CONVENTION_DOCUMENTS_ETUDIANT("/conventions/documents-etudiant"),
     CENTRE_GESTION_LOGOS("/centregestion/logos"),
     IMAGES("/images"),
-    SIGNATURES("/signatures");
+    SIGNATURES("/signatures"),
+    LIBELLES_IMPRESSION("/i18n");
 
     private String value = "";
 

@@ -1,12 +1,16 @@
-:root {
-  --primaryColor: #1976d2; /* fallback si non défini ailleurs */
-}
-
 /* --- Modale --- */
 .modal-overlay {
+  /* Palette portée par l'élément racine du composant et non par :root : sous
+     l'encapsulation Angular, :root devient [_ngcontent-xxx]:root, qui ne
+     correspond à aucun élément. --primaryColor en est volontairement absent,
+     il provient du thème chargé à l'exécution (<link id="theme">) ; le
+     redéclarer ici écraserait la couleur de l'établissement. */
+  --border-color: #ccc;
+  --focus-outline: 3px solid #4d90fe;
+  --focus-offset: 2px;
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,.5);
+  background-color: rgba(0,0,0,.65);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,14 +18,19 @@
 }
 
 .modal-container {
+  /* Métriques du guide, portées par la modale (voir .modal-overlay pour le
+     pourquoi du non-usage de :root). Hauteur du bandeau : 2 x 1rem + ligne du h1. */
+  --banner-height: 4.5rem;
+  /* Plafond de hauteur du guide : au-delà, le texte défile. */
+  --guide-max-height: 48rem;
   position: relative;
   width: 100%;
   max-width: 60rem;
-  max-height: 100vh;
+  max-height: 90vh;
   margin: 1rem;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -31,17 +40,239 @@
 .header-banner {
   position: sticky;
   top: 0;
-  background-color: var(--primaryColor);
-  padding: .75rem 1.5rem;
+  background-color: var(--primaryColor, #1976d2);
+  /* La croix étant hors flux, le titre reste centré sur toute la largeur. */
+  padding: 1rem 3.25rem;
   z-index: 10;
   border-radius: 8px 8px 0 0;
 }
+
 .header-banner h1 {
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
   text-align: center;
+}
+
+/* Croix compacte, commune au bandeau de la modale et à l'en-tête du guide */
+.close-btn {
+  position: absolute;
+  top: 50%;
+  right: .75rem;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.close-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.header-banner .close-btn {
+  color: #fff;
+}
+
+.header-banner .close-btn:hover {
+  background-color: rgba(255, 255, 255, .2);
+}
+
+.header-banner .close-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.export-guide__header .close-btn {
+  color: #555;
+}
+
+.export-guide__header .close-btn:hover {
+  background-color: rgba(0, 0, 0, .08);
+}
+
+.export-guide__header .close-btn:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: 1px;
+}
+
+/* Accès au guide, en bas à gauche du pied de modale */
+.actions .guide-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  font-weight: 500;
+  color: var(--primaryColor, #1976d2);
+}
+
+.actions .guide-toggle mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Guide affiché en surimpression, la modale restant visible dessous --- */
+/* z-index supérieur à .list-header (100), .actions (95) et .column-actions (90),
+   sinon ces éléments sticky repassent devant le guide. */
+.export-guide-backdrop {
+  position: absolute;
+  top: var(--banner-height, 4.5rem);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  background-color: rgba(0, 0, 0, .45);
+  border-radius: 0 0 8px 8px;
+}
+
+.export-guide {
+  position: absolute;
+  z-index: 201;
+  top: calc(var(--banner-height, 4.5rem) + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+  /* La plus contraignante des deux limites : la place disponible dans la modale,
+     ou le plafond fixe. Le texte qui dépasse défile dans .export-guide__content. */
+  max-height: min(calc(100% - var(--banner-height, 4.5rem) - 2rem), var(--guide-max-height, 48rem));
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* En-tête volontairement distinct du bandeau bleu de la modale :
+   le guide doit se lire comme un panneau supplémentaire, pas comme un remplacement. */
+.export-guide__header {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 3rem 1rem 1.5rem;
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #ddd;
+  border-radius: 8px 8px 0 0;
+}
+
+.export-guide__header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.export-guide__header mat-icon {
+  color: var(--primaryColor, #1976d2);
+  flex: 0 0 auto;
+}
+
+/* Seule zone défilante : le texte s'affiche en entier, quelle que soit sa longueur */
+.export-guide__content {
+  flex: 1 1 auto;
+  /* min-height: 0 est indispensable : sans lui un enfant flex refuse de rétrécir
+     sous sa taille de contenu et déborderait au lieu de défiler. */
+  min-height: 0;
+  overflow: auto;
+  /* Évite que le défilement se propage à la modale une fois le guide en bout de course. */
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+  color: #333;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.export-guide__content > *:first-child {
+  margin-top: 0;
+}
+
+.export-guide__content > *:last-child {
+  margin-bottom: 0;
+}
+
+.export-guide__content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.export-guide__content table {
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.export-guide__content td,
+.export-guide__content th {
+  border: 1px solid var(--border-color, #ccc);
+  padding: .5rem .75rem;
+}
+
+.export-guide__content ul,
+.export-guide__content ol {
+  padding-left: 1.5rem;
+}
+
+.export-guide__actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 2px solid #eee;
+}
+
+.export-guide__actions button {
+  min-height: 44px;
+  padding: 0 2rem;
+  font-weight: 500;
+}
+
+.export-guide__actions button:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: var(--focus-offset);
+}
+
+/* --- Sélecteur de modèle de colonnes, dans la barre du bas --- */
+/* C'est lui qui pousse Annuler/Valider à droite : le bouton Guide et le
+   sélecteur forment le groupe de gauche. */
+.actions .preset-select {
+  flex: 0 1 18rem;
+  min-width: 12rem;
+  margin-right: auto;
+}
+
+/* Croix d'effacement, compacte pour ne pas gonfler la barre du bas */
+.preset-clear {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  line-height: 0;
+  color: #666;
+}
+
+.preset-clear mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.preset-clear:focus {
+  outline: var(--focus-outline, 3px solid #4d90fe);
+  outline-offset: 1px;
 }
 
 /* --- Layout interne --- */
@@ -49,36 +280,50 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* évite chevauchement avec actions */
-  padding: 1rem;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.column-selector-dialog > h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #333;
 }
 
 .column-selector-scrollable {
   flex: 1 1 auto;
-  min-height: 0;   /* nécessaire pour scroll dans flex */
+  min-height: 0;
   overflow: auto;
-  margin-top: 2vh;
-  margin-bottom: 2vh;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .column-selector-container {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 /* --- Listes --- */
 .column-list {
   position: relative;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background-color: #fafafa;
+  border: 2px solid #ddd;
+  border-radius: 6px;
   min-width: 16rem;
-  min-height: 200px;
-  max-height: 400px;
+  min-height: 250px;
+  max-height: 350px;
   overflow-y: auto;
   flex: 1 1 0;
+}
+
+/* Amélioration du focus pour la liste */
+.column-list:focus-within {
+  border-color: var(--primaryColor, #1976d2);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
 .list-header {
@@ -88,63 +333,153 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f9f9f9;
-  padding: .5rem 0;
+  background-color: #f0f0f0;
+  padding: .75rem 1rem;
   margin: 0;
-  border-bottom: 1px solid #e5e5e5;
-  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+  border-bottom: 2px solid #ddd;
 }
 
 .list-title {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: .75rem;
   margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: .25rem;
-  padding-top: .5rem;
+  gap: .5rem;
+  padding: .75rem;
   position: relative;
   z-index: 0;
-  margin-left: .2rem;
-  margin-right: .2rem;
+  /* Optimisation GPU pour fluidité */
+  transform: translate3d(0, 0, 0);
 }
-
 
 .list-item {
   position: relative;
   z-index: 0;
   background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: .5rem;
+  border-radius: 6px;
+  padding: .75rem 1rem;
   cursor: grab;
   user-select: none;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  /* Optimisation performance drag & drop */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* État sélectionné inchangé */
+.list-item:active {
+  cursor: grabbing;
+}
+
 .list-item.selected {
-  background-color: #cce5ff;
-  border-color: #66afe9;
+  border: 2px solid black;
+  font-weight: 500;
 }
 
+/* Indicateur visuel de dragging - optimisé */
+.cdk-drag-preview {
+  opacity: 0.95;
+  box-shadow: 0 5px 20px rgba(0,0,0,.25);
+  border-radius: 6px;
+  /* Force accélération GPU */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
 
-/* --- Colonne d’actions entre listes --- */
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: #e0e0e0;
+  border-style: dashed;
+  /* Pas de transition sur placeholder */
+  transition: none !important;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Optimisation du drag handle */
+.cdk-drag {
+  touch-action: none;
+}
+
+/* --- Colonne d'actions entre listes --- */
 .column-actions {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem; /* espace entre les boutons */
+  gap: 1.5rem;
+  padding: 1rem 0;
 }
 
+.column-actions button[mat-icon-button] {
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
 
+.column-actions button[mat-icon-button]:hover:not(:disabled) {
+  background-color: rgba(25, 118, 210, 0.08);
+  transform: scale(1.1);
+}
+
+.column-actions button[mat-icon-button]:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+.column-actions button[mat-icon-button]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Rotation des icônes en mode mobile */
+.column-actions button[mat-icon-button] mat-icon {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 960px) {
+  .column-actions button[mat-icon-button].arrow-forward mat-icon {
+    transform: rotate(90deg);
+  }
+
+  .column-actions button[mat-icon-button].arrow-back mat-icon {
+    transform: rotate(90deg);
+  }
+}
+
+/* --- Boutons et actions --- */
 .reset-btn {
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.reset-btn button {
+  min-height: 40px;
+  padding: 0 1.5rem;
+  font-weight: 500;
+}
+
+.reset-btn button:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
 }
 
 .actions {
@@ -152,20 +487,77 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #eee;
   align-self: stretch;
   flex-wrap: wrap;
 }
+
 .actions > button {
   flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.actions > button:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+.actions > button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+/* Amélioration des checkboxes Material */
+mat-checkbox {
+  margin: 0;
+}
+
+mat-checkbox:focus-within .mat-checkbox-frame {
+  border-color: var(--primaryColor, #1976d2);
+}
+
+/* Amélioration des tabs Material */
+mat-tab-group {
+  margin-bottom: 1rem;
+}
+
+.mat-tab-label {
+  min-width: 120px;
+  height: 48px;
+  font-weight: 500;
+}
+
+.mat-tab-label:focus {
+  outline: var(--focus-outline);
+  outline-offset: -3px;
+}
+
+/* --- Indicateurs visuels supplémentaires --- */
+.list-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primaryColor, #1976d2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.column-list:focus-within .list-header::after {
+  opacity: 1;
 }
 
 /* ====== MOBILE / TABLET ====== */
 @media (max-width: 960px) {
-
   .modal-container {
     max-width: 100%;
     max-height: 100dvh;
@@ -174,32 +566,74 @@
     border-radius: 0;
   }
 
+  .header-banner {
+    padding: 1rem 3rem;
+  }
+
+  /* La modale occupe déjà tout l'écran : on garde une marge fine
+     pour que le guide reste perçu comme superposé. */
+  .export-guide-backdrop {
+    border-radius: 0;
+  }
+
+  .modal-container {
+    --banner-height: 3.75rem;
+    --guide-max-height: 32rem;
+  }
+
+  .export-guide {
+    width: calc(100% - 1rem);
+  }
+
+  .export-guide__content,
+  .export-guide__actions {
+    padding: 1rem;
+  }
+
+  .export-guide__header {
+    padding: 1rem 3rem 1rem 1rem;
+  }
+
+  .header-banner h1 {
+    font-size: 1.25rem;
+  }
+
   .column-selector-dialog {
-    padding: .75rem;
+    padding: 1rem;
+  }
+
+  .actions .preset-select {
+    flex: 1 1 100%;
+    margin-right: 0;
+  }
+
+  .column-selector-dialog > h2 {
+    font-size: 1.125rem;
   }
 
   .column-selector-scrollable {
-    margin-top: .5rem;
-    margin-bottom: .5rem;
+    margin-top: .75rem;
+    margin-bottom: .75rem;
   }
 
-  /* Empile les blocs : disponibles -> actions -> sélectionnées */
   .column-selector-container {
     flex-direction: column;
-    gap: .75rem;
+    gap: 1rem;
   }
 
   .column-list {
     min-width: 100%;
     max-height: 40vh;
+    min-height: 200px;
   }
 
   .list-header {
-    padding: .5rem 0;
+    padding: .75rem;
   }
 
   .list-item {
-    padding: .625rem;
+    padding: .875rem;
+    min-height: 48px;
   }
 
   .column-actions {
@@ -207,23 +641,23 @@
     top: 0;
     z-index: 90;
     background: #fff;
-    border-bottom: 1px solid #eee;
-    padding: .5rem 0;
-
+    border-bottom: 2px solid #eee;
+    padding: .75rem 0;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: .75rem;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
   }
 
   .column-actions button[mat-icon-button] {
-    width: 44px;
-    height: 44px;
+    min-width: 52px;
+    min-height: 52px;
   }
 
   .reset-btn {
     justify-content: center;
-    padding-right: 0;
+    margin-top: .75rem;
   }
 
   .actions {
@@ -231,19 +665,59 @@
     bottom: 0;
     background: #fff;
     z-index: 95;
-    padding: .75rem;
-    border-top: 1px solid #eee;
-    gap: .75rem;
+    padding: 1rem;
+    border-top: 2px solid #eee;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .actions > button {
+    flex: 1 1 auto;
+    min-width: 120px;
   }
 }
 
 @media (max-width: 600px) {
   .header-banner h1 {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
   }
+
+  .column-selector-dialog > h2 {
+    font-size: 1rem;
+  }
+
   .column-list {
-    max-height: 38vh;
+    max-height: 35vh;
+  }
+
+  .list-item {
+    font-size: 0.9rem;
   }
 }
 
+/* Mode de contraste élevé */
+@media (prefers-contrast: high) {
+  .list-item {
+    border-width: 3px;
+  }
 
+  .list-item.selected {
+    border-width: 3px;
+  }
+
+  .column-list {
+    border-width: 3px;
+  }
+}
+
+/* Réduction des animations pour les utilisateurs sensibles */
+@media (prefers-reduced-motion: reduce) {
+  .column-actions button,
+  .actions > button {
+    transition: none;
+  }
+
+  .cdk-drag-animating {
+    transition: none;
+  }
+}

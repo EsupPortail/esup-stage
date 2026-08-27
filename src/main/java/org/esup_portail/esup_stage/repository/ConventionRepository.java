@@ -1,10 +1,9 @@
 package org.esup_portail.esup_stage.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Convention;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,7 +16,8 @@ public class ConventionRepository extends PaginationRepository<Convention> {
 
     public ConventionRepository(EntityManager em) {
         super(em, Convention.class, "c");
-        this.predicateWhitelist = Arrays.asList("id", "prenom", "nom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
+        this.predicateWhitelist = Arrays.asList("id", "etudiant.nom", "etudiant.prenom", "etudiant.nom_etudiant.prenom", "structure.raisonSociale", "dateDebutStage", "dateFinStage", "ufr.libelle", "etape.libelle", "enseignant.prenom", "sujetStage", "lieuStage", "annee");
+        this.specificFilterWhitelist = Arrays.asList("centreGestion.personnels", "centreGestion.ids", "userScope", "enseignant.uidEnseignant", "etudiant.identEtudiant", "etape.id", "ufr.id", "etudiant", "enseignant", "avenant", "etatValidation", "etatGestionnaire", "isConventionValide", "lieuStage", "structure", "stageTermine", "archive", "simulation", "gratification","accordAnnuaireEtudiant");
     }
 
     @Override
@@ -32,9 +32,26 @@ public class ConventionRepository extends PaginationRepository<Convention> {
     }
 
     @Override
-    protected void addSpecificParameter(String key, JSONObject parameter, List<String> clauses) {
+    protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("centreGestion.personnels")) {
             clauses.add("personnel.uidPersonnel = :" + key.replace(".", ""));
+        }
+        if (key.equals("centreGestion.ids")) {
+            clauses.add(getJsonArrayValues(parameter).isEmpty() ? "1 = 0" : "c.centreGestion.id IN :centreGestionIds");
+        }
+        if (key.equals("userScope")) {
+            List<String> ors = new ArrayList<>();
+            JsonNode centreIdsNode = parameter.get("centreIds");
+            if (centreIdsNode != null && centreIdsNode.isArray() && centreIdsNode.size() > 0) {
+                ors.add("c.centreGestion.id IN :userScopeCentreIds");
+            }
+            if (parameter.has("enseignant") && parameter.get("enseignant").asBoolean()) {
+                ors.add("c.enseignant.uidEnseignant = :userScopeUid");
+            }
+            if (parameter.has("etudiant") && parameter.get("etudiant").asBoolean()) {
+                ors.add("c.etudiant.identEtudiant = :userScopeUid");
+            }
+            clauses.add(ors.isEmpty() ? "1 = 0" : "(" + String.join(" OR ", ors) + ")");
         }
         if (key.equals("enseignant.uidEnseignant")) {
             clauses.add("c.enseignant.uidEnseignant = :" + key.replace(".", ""));
@@ -43,25 +60,25 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("c.etudiant.identEtudiant = :" + key.replace(".", ""));
         }
         if (key.equals("etape.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(c.etape.id.code = :codeEtape" + i + " AND c.etape.id.codeUniversite = :codeUnivEtape" + i + " AND c.etape.id.codeVersionEtape = :versionEtape" + i + ")");
             }
-            if (clauseOr.size() > 0) {
+            if (!clauseOr.isEmpty()) {
                 clauses.add("(" + String.join(" OR ", clauseOr) + ")");
             }
         }
         if (key.equals("ufr.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<String> clauseOr = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
+            for (int i = 0; i < jsonArray.size(); ++i) {
                 clauseOr.add("(c.ufr.id.code = :codeUfr" + i + " AND c.ufr.id.codeUniversite = :codeUnivUfr" + i + ")");
             }
             clauses.add("(" + String.join(" OR ", clauseOr) + ")");
         }
         if (key.equals("etudiant")) {
-            String value = parameter.getString("value").toLowerCase();
+            String value = getJsonTextValue(parameter).toLowerCase();
             String[] parts = value.split(" ");
             String clause = "LOWER(c.etudiant.identEtudiant) LIKE :etudiant OR LOWER(c.etudiant.nom) LIKE :etudiant OR LOWER(c.etudiant.prenom) LIKE :etudiant OR" +
                     " LOWER(c.etudiant.mail) LIKE :etudiant OR LOWER(c.etudiant.numEtudiant) LIKE :etudiant";
@@ -81,17 +98,17 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             clauses.add("(LOWER(c.enseignant.uidEnseignant) LIKE :enseignant OR LOWER(c.enseignant.nom) LIKE :enseignant OR LOWER(c.enseignant.prenom) LIKE :enseignant OR LOWER(c.enseignant.mail) LIKE :enseignant)");
         }
         if (key.equals("avenant")) {
-            if (parameter.getBoolean("value")) {
+            if (getJsonBooleanValue(parameter)) {
                 clauses.add("(avenant.id IS NOT NULL)");
             } else {
                 clauses.add("(avenant.id IS NULL)");
             }
         }
         if (key.equals("etatValidation")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
+            JsonNode jsonArray = parameter.get("value");
             List<String> clauseAnd = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                String code = jsonArray.getString(i);
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                String code = jsonArray.get(i).asText();
                 switch (code) {
                     case "validationPedagogique":
                         clauseAnd.add("c.validationPedagogique = TRUE");
@@ -99,11 +116,17 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                     case "validationConvention":
                         clauseAnd.add("c.validationConvention = TRUE");
                         break;
+                    case "verificationAdministrative":
+                        clauseAnd.add("c.verificationAdministrative = TRUE");
+                        break;
                     case "nonValidationPedagogique":
                         clauseAnd.add("c.validationPedagogique = FALSE");
                         break;
                     case "nonValidationConvention":
                         clauseAnd.add("c.validationConvention = FALSE");
+                        break;
+                    case "nonVerificationAdministrative":
+                        clauseAnd.add("c.verificationAdministrative = FALSE");
                         break;
                     case "signe":
                         clauseAnd.add("c.dateSignatureEnseignant IS NOT NULL AND c.dateSignatureEtudiant IS NOT NULL AND c.dateSignatureSignataire IS NOT NULL AND c.dateSignatureTuteur IS NOT NULL AND c.dateSignatureViseur IS NOT NULL");
@@ -118,7 +141,7 @@ public class ConventionRepository extends PaginationRepository<Convention> {
                         break;
                 }
             }
-            if (clauseAnd.size() > 0) {
+            if (!clauseAnd.isEmpty()) {
                 clauses.add("(" + String.join(" AND ", clauseAnd) + ")");
             }
         }
@@ -143,38 +166,93 @@ public class ConventionRepository extends PaginationRepository<Convention> {
         if (key.equals("stageTermine")) {
             clauses.add("((FALSE = :stageTermine) OR c.dateFinStage < CURDATE())");
         }
+        if (key.equals("archive")) {
+            // Les conventions archivées ne sont visibles que sur demande explicite (admin uniquement)
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("c.dateArchivage IS NOT NULL");
+            } else {
+                clauses.add("c.dateArchivage IS NULL");
+            }
+        }
+        if (key.equals("gratification")) {
+            // Même critère que l'archivage : témoin levé ou montant renseigné
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("(c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))");
+            } else {
+                clauses.add("((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = ''))");
+            }
+        }
+        if (key.equals("simulation")) {
+            // Simulation d'archivage/purge (page d'administration de l'archivage) : les dates
+            // seuils sont injectées dans le filtre par ArchivageController. Une convention
+            // marquée archivée sans fichiers traités reste "à archiver" et n'est pas purgeable.
+            if ("purge".equalsIgnoreCase(parameter.get("value").path("type").asText())) {
+                clauses.add("(c.dateArchivage IS NOT NULL AND c.dateArchivageFichiers IS NOT NULL AND c.dateArchivage < :simulationSeuilPurge)");
+            } else {
+                clauses.add("((c.dateArchivage IS NULL OR c.dateArchivageFichiers IS NULL) AND (" +
+                        " ((c.gratificationStage = TRUE OR (c.montantGratification IS NOT NULL AND c.montantGratification <> ''))" +
+                        "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :simulationSeuilAvecGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :simulationSeuilAvecGratification)))" +
+                        " OR ((c.gratificationStage IS NULL OR c.gratificationStage = FALSE) AND (c.montantGratification IS NULL OR c.montantGratification = '')" +
+                        "  AND ((c.dateFinStage IS NOT NULL AND c.dateFinStage < :simulationSeuilSansGratification) OR (c.dateFinStage IS NULL AND c.dateCreation < :simulationSeuilSansGratification)))" +
+                        "))");
+            }
+        }
+        if (key.equals("accordAnnuaireEtudiant")) {
+            // "Non" englobe le refus explicite et les conventions sans réponse enregistrée
+            clauses.add(getJsonBooleanValue(parameter)
+                    ? "c.accordAnnuaireEtudiant = TRUE"
+                    : "(c.accordAnnuaireEtudiant IS NULL OR c.accordAnnuaireEtudiant = FALSE)");
+        }
     }
 
     @Override
-    protected void setSpecificParameterValue(String key, JSONObject parameter, Query query) {
+    protected void setSpecificParameterValue(String key, JsonNode parameter, Query query) {
         if (key.equals("centreGestion.personnels")) {
-            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+            query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
+        }
+        if (key.equals("centreGestion.ids") && !getJsonArrayValues(parameter).isEmpty()) {
+            query.setParameter("centreGestionIds", getJsonArrayValues(parameter));
+        }
+        if (key.equals("userScope")) {
+            JsonNode centreIdsNode = parameter.get("centreIds");
+            if (centreIdsNode != null && centreIdsNode.isArray() && centreIdsNode.size() > 0) {
+                List<Object> centreIds = new ArrayList<>();
+                for (JsonNode item : centreIdsNode) {
+                    centreIds.add(item.asInt());
+                }
+                query.setParameter("userScopeCentreIds", centreIds);
+            }
+            boolean useUid = (parameter.has("enseignant") && parameter.get("enseignant").asBoolean())
+                    || (parameter.has("etudiant") && parameter.get("etudiant").asBoolean());
+            if (useUid && parameter.has("uid")) {
+                query.setParameter("userScopeUid", parameter.get("uid").asText());
+            }
         }
         if (key.equals("enseignant.uidEnseignant")) {
-            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+            query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
         }
         if (key.equals("etudiant.identEtudiant")) {
-            query.setParameter(key.replace(".", ""), parameter.getString("value"));
+            query.setParameter(key.replace(".", ""), getJsonTextValue(parameter));
         }
         if (key.equals("etape.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonEtapeId = jsonArray.getJSONObject(i);
-                query.setParameter("codeEtape" + i, jsonEtapeId.getString("code"));
-                query.setParameter("codeUnivEtape" + i, jsonEtapeId.getString("codeUniversite"));
-                query.setParameter("versionEtape" + i, jsonEtapeId.getString("codeVersionEtape"));
+            JsonNode jsonArray = parameter.get("value");
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                JsonNode jsonEtapeId = jsonArray.get(i);
+                query.setParameter("codeEtape" + i, jsonEtapeId.get("code").asText());
+                query.setParameter("codeUnivEtape" + i, jsonEtapeId.get("codeUniversite").asText());
+                query.setParameter("versionEtape" + i, jsonEtapeId.get("codeVersionEtape").asText());
             }
         }
         if (key.equals("ufr.id")) {
-            JSONArray jsonArray = parameter.getJSONArray("value");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonUfrId = jsonArray.getJSONObject(i);
-                query.setParameter("codeUfr" + i, jsonUfrId.getString("code"));
-                query.setParameter("codeUnivUfr" + i, jsonUfrId.getString("codeUniversite"));
+            JsonNode jsonArray = parameter.get("value");
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                JsonNode jsonUfrId = jsonArray.get(i);
+                query.setParameter("codeUfr" + i, jsonUfrId.get("code").asText());
+                query.setParameter("codeUnivUfr" + i, jsonUfrId.get("codeUniversite").asText());
             }
         }
         if (key.equals("etudiant")) {
-            String value = parameter.getString("value").toLowerCase();
+            String value = getJsonTextValue(parameter).toLowerCase();
             query.setParameter("etudiant", "%" + value + "%");
             String[] parts = value.split(" ");
             for (int i = 0; i < parts.length; i++) {
@@ -182,16 +260,25 @@ public class ConventionRepository extends PaginationRepository<Convention> {
             }
         }
         if (key.equals("enseignant")) {
-            query.setParameter("enseignant", "%" + parameter.getString("value").toLowerCase() + "%");
+            query.setParameter("enseignant", "%" + getJsonTextValue(parameter).toLowerCase() + "%");
         }
         if (key.equals("lieuStage")) {
-            query.setParameter("lieuStage", "%" + parameter.getString("value").toLowerCase() + "%");
+            query.setParameter("lieuStage", "%" + getJsonTextValue(parameter).toLowerCase() + "%");
         }
         if (key.equals("structure")) {
-            query.setParameter("structure", "%" + parameter.getString("value").toLowerCase() + "%");
+            query.setParameter("structure", "%" + getJsonTextValue(parameter).toLowerCase() + "%");
         }
         if (key.equals("stageTermine")) {
-            query.setParameter("stageTermine", parameter.getBoolean("value"));
+            query.setParameter("stageTermine", getJsonBooleanValue(parameter));
+        }
+        if (key.equals("simulation")) {
+            JsonNode value = parameter.get("value");
+            if ("purge".equalsIgnoreCase(value.path("type").asText())) {
+                query.setParameter("simulationSeuilPurge", new java.util.Date(value.get("seuilPurge").asLong()));
+            } else {
+                query.setParameter("simulationSeuilSansGratification", new java.util.Date(value.get("seuilSansGratification").asLong()));
+                query.setParameter("simulationSeuilAvecGratification", new java.util.Date(value.get("seuilAvecGratification").asLong()));
+            }
         }
     }
 

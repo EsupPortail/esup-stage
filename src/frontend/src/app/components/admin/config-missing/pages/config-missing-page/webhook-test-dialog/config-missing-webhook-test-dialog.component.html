@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Tester le webhook</h1>
+<div mat-dialog-content>
+  <p>Saisir le chemin à ajouter à l'URL.</p>
+  <form [formGroup]="form" novalidate (submit)="confirm()">
+    <div class="row">
+      <mat-form-field class="col-12" appearance="fill">
+        <mat-label>Chemin</mat-label>
+        <input matInput formControlName="suffix" placeholder="/ping" required>
+        <mat-error *ngIf="form.get('suffix')?.hasError('required')">Champ obligatoire</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <div class="col-12 text-right">
+        <button class="cancel-button mr-2" type="button" mat-flat-button (click)="close()">Annuler</button>
+        <button class="valid-button" mat-flat-button type="submit">Valider</button>
+      </div>
+    </div>
+  </form>
+</div>

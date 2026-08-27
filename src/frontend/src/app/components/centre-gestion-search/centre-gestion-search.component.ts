@@ -9,9 +9,10 @@ import { SortDirection } from "@angular/material/sort";
 import { ConfirmDeleteCentreComponent } from './confirm-delete-centre/confirm-delete-centre.component';
 
 @Component({
-  selector: 'app-centre-gestion-search',
-  templateUrl: './centre-gestion-search.component.html',
-  styleUrls: ['./centre-gestion-search.component.scss']
+    selector: 'app-centre-gestion-search',
+    templateUrl: './centre-gestion-search.component.html',
+    styleUrls: ['./centre-gestion-search.component.scss'],
+    standalone: false
 })
 export class CentreGestionSearchComponent implements OnInit, OnDestroy, AfterViewInit {
 

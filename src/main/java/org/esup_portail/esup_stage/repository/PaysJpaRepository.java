@@ -11,6 +11,12 @@ public interface PaysJpaRepository extends JpaRepository<Pays, Integer> {
 
     Pays findById(int id);
 
+    @Query("SELECT p FROM Pays p WHERE p.cog = :cog")
+    Pays findByCog(@Param("cog") int cog);
+
     @Query("SELECT p FROM Pays p WHERE LOWER(p.iso2) = LOWER(:iso2)")
     Pays findByIso2(@Param("iso2") String iso2);
+
+    @Query("SELECT p FROM Pays p WHERE LOWER(p.lib) = LOWER(:lib)")
+    Pays findByLib(@Param("lib") String lib);
 }
