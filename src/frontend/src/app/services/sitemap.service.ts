@@ -30,7 +30,7 @@ export class SitemapService {
 
           if (authorized) {
             items.push({
-              url: '/' + fullPath,
+              url: this.getSitemapUrl(fullPath),
               label: meta.label,
               group: meta.group,
               order: meta.order
@@ -84,5 +84,9 @@ export class SitemapService {
     if (!parent) { return child; }
     if (!child) { return parent; }
     return `${parent.replace(/\/$/, '')}/${child.replace(/^\//, '')}`;
+  }
+
+  private getSitemapUrl(fullPath: string): string {
+    return `/${fullPath}`.replace(/\/:id$/, '/create');
   }
 }

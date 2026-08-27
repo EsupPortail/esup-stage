@@ -22,8 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.Collator;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static java.util.Arrays.sort;
+import static java.util.Comparator.comparing;
 
 @ApiController
 @RequestMapping("/etudiants")
@@ -123,16 +127,24 @@ public class EtudiantController {
     }
 
     @PostMapping("/diplome-etape")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION},forbiddenEtu = true)
-    public EtudiantDiplomeEtapeResponse[] getLdapUsers(@Valid @RequestBody EtudiantDiplomeEtapeSearch search) {
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.CREATION}, forbiddenEtu = true)
+      public EtudiantDiplomeEtapeResponse[] getLdapUsers(@Valid @RequestBody EtudiantDiplomeEtapeSearch search) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
-        if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
-            List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur));
-            if (!etudiantSecurityService.isRechercheDiplomeEtapeInCentreGestionUtilisateur(search, criteresCentresGestionUtilisateur)) {
-                return new EtudiantDiplomeEtapeResponse[0];
-            }
+          if (etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)) {
+              List<CritereGestion> criteresCentresGestionUtilisateur = etudiantSecurityService.getCriteresCentresGestionUtilisateur(etudiantSecurityService.getIdsCentresGestionUtilisateur(utilisateur)
+          );
+          if (!etudiantSecurityService.isRechercheDiplomeEtapeInCentreGestionUtilisateur(search, criteresCentresGestionUtilisateur)) {
+            return new EtudiantDiplomeEtapeResponse[0];
         }
+      }
 
-        return apogeeService.getEtudiantsParDiplomeEtape(search);
-    }
+      EtudiantDiplomeEtapeResponse[] etudiantsParDiplomeEtape = apogeeService.getEtudiantsParDiplomeEtape(search);
+      Collator collator = Collator.getInstance();
+      sort(
+            etudiantsParDiplomeEtape,
+            comparing(EtudiantDiplomeEtapeResponse::getNom, collator)
+                    .thenComparing(EtudiantDiplomeEtapeResponse::getPrenom, collator)
+      );
+      return etudiantsParDiplomeEtape;
+   }
 }

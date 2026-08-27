@@ -76,14 +76,14 @@
                 <div class="row">
                   <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="regions.length > 0">
                     <mat-label>Région CPAM</mat-label>
-                    <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
+                    <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)">
                       <mat-option *ngFor="let region of regions" [value]="region">{{region}}</mat-option>
                     </mat-select>
                     <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
                   </mat-form-field>
                   <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                     <mat-label>Libellé CPAM</mat-label>
-                    <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
+                    <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" />
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
                       <mat-option *ngFor="let libelle of libelles" [value]="libelle">
                         {{libelle}}
@@ -93,7 +93,7 @@
                   </mat-form-field>
                   <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                     <mat-label>Adresse CPAM</mat-label>
-                    <input matInput formControlName="adresseCPAM" required />
+                    <input matInput formControlName="adresseCPAM" />
                     <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
                   </mat-form-field>
                 </div>

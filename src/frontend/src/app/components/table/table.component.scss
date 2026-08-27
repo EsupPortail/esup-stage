@@ -12,14 +12,15 @@
 
 
 .app-table {
+  /* Scroll horizontal seulement — pas de max-height pour éviter un 2e scroll vertical */
   overflow-x: auto;
-  max-height: 650px;
-  display: block; /* Ajout pour forcer le conteneur à être un bloc */
+  overflow-y: visible;
+  display: block;
 
   .mat-table {
-    width: 100%; /* Force le tableau à occuper 100% de la largeur disponible */
-    table-layout: auto; /* Permet une répartition automatique des colonnes */
-    word-wrap: break-word; /* Gère les longues chaînes sans débordement */
+    width: 100%;
+    table-layout: auto;
+    word-wrap: break-word;
   }
 }
 

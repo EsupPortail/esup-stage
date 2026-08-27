@@ -5,6 +5,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
@@ -13,6 +14,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
@@ -56,6 +58,7 @@ class SignatureServiceHistoriqueTest {
     private AppliProperties appliProperties;
     private LdapService ldapService;
     private ImpressionService impressionService;
+    private AppConfigService appConfigService;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +72,8 @@ class SignatureServiceHistoriqueTest {
         appliProperties = mock(AppliProperties.class);
         ldapService = mock(LdapService.class);
         impressionService = mock(ImpressionService.class);
+        appConfigService = mock(AppConfigService.class);
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
         ReflectionTestUtils.setField(service, "conventionJpaRepository", conventionJpaRepository);
         ReflectionTestUtils.setField(service, "avenantJpaRepository", avenantJpaRepository);
         ReflectionTestUtils.setField(service, "signatureProperties", signatureProperties);
@@ -78,6 +83,7 @@ class SignatureServiceHistoriqueTest {
         ReflectionTestUtils.setField(service, "appliProperties", appliProperties);
         ReflectionTestUtils.setField(service, "ldapService", ldapService);
         ReflectionTestUtils.setField(service, "impressionService", impressionService);
+        ReflectionTestUtils.setField(service, "appConfigService", appConfigService);
     }
 
     private Convention conventionSignature() {
