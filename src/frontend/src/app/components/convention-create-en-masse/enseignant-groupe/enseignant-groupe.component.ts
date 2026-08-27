@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {EtudiantGroupeEtudiant, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
@@ -50,6 +50,10 @@ export class EnseignantGroupeComponent implements OnInit, OnChanges {
   ngOnChanges(): void{
     this.appTable?.update();
     this.selected = [];
+  }
+
+  isAlerte(etudiant: EtudiantGroupeEtudiant): boolean {
+    return !this.groupeEtudiant.convention.enseignant && !etudiant.convention.enseignant;
   }
 
   sorting(appTable: TableComponent|undefined, event: Sort): void {
