@@ -72,9 +72,9 @@ ainsi que les corrections et évolutions associées.
 * *Guide du gestionnaire de stage* +
   xref:attachment$TUTORIEL_GESTIONNAIRE-Formation_Initiale.pdf[Consulter le tutoriel]
 
-=== Liens vers le code source des applications
-
 '''
+
+=== Liens vers le code source des applications
 
 [horizontal]
 .L'application ESUP-Stage se compose de deux applications que sont :
