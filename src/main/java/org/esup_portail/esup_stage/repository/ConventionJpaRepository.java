@@ -243,4 +243,7 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
             ORDER BY c.id DESC
             """)
     List<Convention> findConventionsValideesParSignataire(@Param("idContact") int idContact);
+
+    @Query("SELECT c FROM Convention c WHERE c.temConventionSignee = TRUE AND c.documentId IS NOT NULL")
+    List<Convention> findConventionsSignees();
 }

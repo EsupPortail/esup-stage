@@ -1,32 +1,14 @@
 == Version stable
-https://github.com/EsupPortail/esup-stage/releases/tag/3.1.12[Esup-Stage v3.1.12]
-
-== ESUP-Stage v3.2.0 (À venir)
-=== Nouveautés
-- Afficher dans les conventions le prénom, sexe d'état civil et prenom2 (#309), (#186), (#114), (#4).
-- Ajout d'un filtre "Pays" dans le tableau de bord (#125).
-- Mise à jour de l'interface de sélection des établissements d'accueil, service, tuteur professionnel et signataire (#220).
-- Ajout d'un paramètre permettant d'autoriser ou non l'impression d'une convention suite à la validation d'un avenant.
-- Ajout d'un paramètre autorisant le chevauchement de dates de convention pour les étudiants (#176), (#117).
-- Création d’un délégataire pour le viseur d’un centre de gestion.
-- Création d'un bouton permettant de désactiver la synchro des données d'un établissement.
-
-=== Améliorations
-- Permettre de saisir un stage d'une durée de 1 jour (#200).
-- Suppression du champ "Pays de la convention" dans l'onglet Stage.
-- Finalisation du module de gestion des évaluations de stage (#97).
-
-=== Corrections
-- Correction du problème de mise à jour des signataires suite à la création d'un avenant pour changement de tuteur.
-- Correction du problème de création d'un avenant avant validation de la convention (#207).
-- Erreur lors de l'envoi du numéro de téléphone à Docaposte.
+https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 
 == ESUP-Stage v3.3.0 (À venir)
 === Nouveautés
 - Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
 - Création d'un paramètre permettant d'autoriser l'impression de l'avenant sous conditions (#218).
 - Intégration de la conformité au RPGD.
-- Ajouter la vérification administrative dans le filtre de recherche du tableau de bord.
+- Ajout de la vérification administrative dans le filtre de recherche du tableau de bord.
+- Fonctionnalité de dépôt de documents par les étudiants.
+- Ajout d'un champ d'informations complémentaires dans l'onglet Stage (existait déjà dans Pstage).
 
 === Améliorations
 - Permettre d'associer de 1 à n régimes d'inscription par type de convention.
@@ -34,11 +16,14 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.1.12[Esup-Stage v3.1.12
 - Demander à l’étudiant de répondre au choix proposé par l’article 6.3.
 - Installation de l’application dans une webapp spécifique.
 - Amélioration du message d’erreur en cas d’inactivité.
-- Suppression du champ url dans centre de gestion
+- Suppression du champ url dans centre de gestion.
 - Augmentation du nombre de caractères maximum des champs mails.
+- Rendre facultatif le numéro de téléphone des organismes d'accueil (#415).
+- Finalisation de la gestion de la confidentialité.
 
 === Corrections
 - Création d'un script de migration pour que legacy ait le même schéma que baseline.
+- Intégration des corrections d'anomalies de l'UNISTRA sur la création de convention en masse.
 
 == ESUP-Stage v3.4.0 (À venir)
 === Nouveautés

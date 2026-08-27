@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { TableComponent } from "../../table/table.component";
-import { GroupeEtudiantService } from "../../../services/groupe-etudiant.service";
+import {EtudiantGroupeEtudiant, GroupeEtudiantService} from "../../../services/groupe-etudiant.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal/tuteur-accueil-groupe-modal.component';
 
@@ -19,8 +19,8 @@ import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal
 export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 
@@ -81,11 +81,27 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     }
   }
 
+  isAlerte(etudiant: EtudiantGroupeEtudiant): boolean {
+    return !this.groupeEtudiant.convention.contact && !etudiant.convention.contact;
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
+  }
+
   isSelected(data: any): boolean {
     return this.selected.find((r: any) => {return r.id === data.id}) !== undefined;
   }
 
+  hasService(data: EtudiantGroupeEtudiant): boolean {
+    return !!(this.groupeEtudiant.convention.service??data.convention.service);
+  }
+
   toggleSelected(data: any): void {
+    if (!this.hasService(data)) return
     const index = this.selected.findIndex((r: any) => {return r.id === data.id});
     if (index > -1) {
       this.selected.splice(index, 1);
@@ -100,6 +116,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
       return;
     }
     this.appTable?.data.forEach((d: any) => {
+      if (!this.hasService(d)) return
       const index = this.selected.findIndex((s: any) => s.id === d.id);
       if (index === -1) {
         this.selected.push(d);
@@ -111,6 +128,7 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
     let allSelected = true;
     if(this.appTable?.data){
       this.appTable?.data.forEach((data: any) => {
+        if (!this.hasService(data)) return
         const index = this.selected.findIndex((r: any) => {return r.id === data.id});
         if (index === -1) {
            allSelected = false;

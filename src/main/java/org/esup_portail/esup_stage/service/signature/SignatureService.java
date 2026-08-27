@@ -38,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -74,6 +75,11 @@ public class SignatureService {
     private AppConfigService appConfigService;
     @Autowired(required = false)
     private DocaposteClient docaposteClient;
+
+    // Compteurs de tentatives de récupération du PDF signé, en mémoire (pas de persistance BDD).
+    // Remis à zéro au redémarrage de l'application ; bornés par le paramètre général nombreMaxTentativesRecuperationPdfSigne.
+    private final Map<Integer, Integer> tentativesRecuperationConvention = new ConcurrentHashMap<>();
+    private final Map<Integer, Integer> tentativesRecuperationAvenant = new ConcurrentHashMap<>();
 
     public SignatureService(WebClient.Builder builder) {
         this.webClient = builder.build();
@@ -437,10 +443,13 @@ public class SignatureService {
         }
         conventionJpaRepository.save(convention);
 
-        // Si toutes les dates sont renseignées, on récupère le PDF signé
         if (convention.isAllSignedDateSetted()) {
-            MetadataDto metadataDto = getPublicMetadata(convention);
-            downloadSignedPdf(convention.getDocumentId(), metadataDto);
+            try {
+                MetadataDto metadataDto = getPublicMetadata(convention);
+                downloadSignedPdf(convention.getDocumentId(), metadataDto);
+            } catch (Exception e) {
+                logger.error("Échec de la récupération du PDF signé de la convention " + convention.getId() + ", nouvel essai lors de la tâche horaire", e);
+            }
         }
     }
 
@@ -489,10 +498,15 @@ public class SignatureService {
         }
         avenantJpaRepository.save(avenant);
 
-        // Si toutes les dates sont renseignées, on récupère le PDF signé
+        // Si toutes les dates sont renseignées, on récupère le PDF signé.
+        // L'échec du téléchargement ne bloque pas : la tâche horaire retentera (cf. recupererPdfSigneManquant).
         if (avenant.isAllSignedDateSetted()) {
-            MetadataDto metadataDto = getPublicMetadata(avenant.getConvention(), avenant.getId());
-            downloadSignedPdf(avenant.getDocumentId(), metadataDto);
+            try {
+                MetadataDto metadataDto = getPublicMetadata(avenant.getConvention(), avenant.getId());
+                downloadSignedPdf(avenant.getDocumentId(), metadataDto);
+            } catch (Exception e) {
+                logger.error("Échec de la récupération du PDF signé de l'avenant {}, nouvel essai lors de la tâche horaire",avenant.getId(), e);
+            }
         }
     }
 
@@ -569,7 +583,87 @@ public class SignatureService {
                 idx++;
             }
         }
+
+        // Reprise du téléchargement du PDF signé pour les conventions/avenants signés dont le fichier est absent
+        recupererPdfSigneManquant();
+
         log.info("Fin de updateAuto()");
+    }
+
+    /**
+     * Indique si le PDF signé est présent sur le serveur pour la convention.
+     */
+    public boolean isSignedPdfPresent(Convention convention) {
+        if (convention == null || !convention.isAllSignedDateSetted()) {
+            return false;
+        }
+        MetadataDto metadataDto = getPublicMetadata(convention);
+        return Files.exists(Paths.get(getSignatureFilePath(metadataDto.getTitle())));
+    }
+
+    /**
+     * Parcourt les conventions et avenants signés dont le PDF signé n'est pas encore présent sur le serveur
+     * et tente de le télécharger auprès du prestataire de signature électronique.
+     * <ul>
+     *     <li>Succès : le fichier est stocké et plus aucune tentative n'est faite (idempotent via la présence du fichier).</li>
+     *     <li>Échec : on incrémente un compteur en mémoire, on journalise, et on retentera à l'exécution suivante,
+     *     dans la limite du paramètre général nombreMaxTentativesRecuperationPdfSigne.</li>
+     * </ul>
+     * Aucun mail n'est envoyé par cette reprise : la notification reste liée au premier passage à l'état signé.
+     */
+    public void recupererPdfSigneManquant() {
+        int limite = appConfigService.getConfigGenerale().getNombreMaxTentativesRecuperationPdfSigne();
+        log.info("Début de la reprise de récupération des PDF signés (limite {} tentatives)", limite);
+
+        for (Convention convention : conventionJpaRepository.findConventionsSignees()) {
+            try {
+                MetadataDto metadataDto = getPublicMetadata(convention);
+                if (Files.exists(Paths.get(getSignatureFilePath(metadataDto.getTitle())))) {
+                    tentativesRecuperationConvention.remove(convention.getId());
+                    continue;
+                }
+                if (tentativesRecuperationConvention.getOrDefault(convention.getId(), 0) >= limite) {
+                    continue;
+                }
+                downloadSignedPdf(convention.getDocumentId(), metadataDto);
+                if (Files.exists(Paths.get(getSignatureFilePath(metadataDto.getTitle())))) {
+                    tentativesRecuperationConvention.remove(convention.getId());
+                    log.info("PDF signé récupéré pour la convention id={}", convention.getId());
+                } else {
+                    int nb = tentativesRecuperationConvention.merge(convention.getId(), 1, Integer::sum);
+                    log.warn("PDF signé toujours indisponible pour la convention id={} (tentative {}/{})", convention.getId(), nb, limite);
+                }
+            } catch (Exception e) {
+                int nb = tentativesRecuperationConvention.merge(convention.getId(), 1, Integer::sum);
+                log.error("Erreur lors de la récupération du PDF signé de la convention id={} (tentative {}/{}) : {}", convention.getId(), nb, limite, e.getMessage(), e);
+            }
+        }
+
+        for (Avenant avenant : avenantJpaRepository.findAvenantsSignes()) {
+            try {
+                MetadataDto metadataDto = getPublicMetadata(avenant.getConvention(), avenant.getId());
+                if (Files.exists(Paths.get(getSignatureFilePath(metadataDto.getTitle())))) {
+                    tentativesRecuperationAvenant.remove(avenant.getId());
+                    continue;
+                }
+                if (tentativesRecuperationAvenant.getOrDefault(avenant.getId(), 0) >= limite) {
+                    continue;
+                }
+                downloadSignedPdf(avenant.getDocumentId(), metadataDto);
+                if (Files.exists(Paths.get(getSignatureFilePath(metadataDto.getTitle())))) {
+                    tentativesRecuperationAvenant.remove(avenant.getId());
+                    log.info("PDF signé récupéré pour l'avenant id={}", avenant.getId());
+                } else {
+                    int nb = tentativesRecuperationAvenant.merge(avenant.getId(), 1, Integer::sum);
+                    log.warn("PDF signé toujours indisponible pour l'avenant id={} (tentative {}/{})", avenant.getId(), nb, limite);
+                }
+            } catch (Exception e) {
+                int nb = tentativesRecuperationAvenant.merge(avenant.getId(), 1, Integer::sum);
+                log.error("Erreur lors de la récupération du PDF signé de l'avenant id={} (tentative {}/{}) : {}", avenant.getId(), nb, limite, e.getMessage(), e);
+            }
+        }
+
+        log.info("Fin de la reprise de récupération des PDF signés");
     }
 
     public void update(Convention convention){
