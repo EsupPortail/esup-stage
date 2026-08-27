@@ -75,4 +75,7 @@ public class ConfigGeneraleDto {
      */
     private String mailOppositionContact;
 
+    // Nombre maximum de tentatives de récupération automatique du PDF signé (tâche horaire UpdateSignature)
+    private int nombreMaxTentativesRecuperationPdfSigne = 5;
+
 }

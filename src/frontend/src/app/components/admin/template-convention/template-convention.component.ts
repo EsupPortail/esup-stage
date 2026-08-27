@@ -8,6 +8,7 @@ import { LangueConventionService } from "../../../services/langue-convention.ser
 import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import { AuthService } from "../../../services/auth.service";
+import { SessionKeepAliveService } from "../../../services/session-keep-alive.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../../services/title.service";
@@ -124,6 +125,7 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit, OnDes
     private typeConventionService: TypeConventionService,
     private langueConventionService: LangueConventionService,
     private authService: AuthService,
+    private sessionKeepAlive: SessionKeepAliveService,
     private fb: FormBuilder,
     private titleService: TitleService,
     private changeDetector: ChangeDetectorRef
@@ -378,6 +380,16 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit, OnDes
       this.form.get('typeConvention')?.disable();
       this.form.get('langueConvention')?.disable();
     }
+    // Keep-alive de session : actif uniquement sur les onglets d'édition longue
+    // (Création / Édition), arrêté sur la liste pour ne pas maintenir la session
+    // en vie inutilement.
+    if (event.index === this.createTabIndex || event.index === this.editTabIndex) {
+      // Intervalle 2 min : sûr même avec un timeout de session court (test à 3 min)
+      // comme en prod (timeout Spring par défaut 30 min).
+      this.sessionKeepAlive.start({ pingIntervalMs: 2 * 60 * 1000 });
+    } else {
+      this.sessionKeepAlive.stop();
+    }
   }
 
   canEdit(): boolean {
@@ -463,5 +475,6 @@ export class TemplateConventionComponent implements OnInit, AfterViewInit, OnDes
     if (this.editorRenderFrame) {
       cancelAnimationFrame(this.editorRenderFrame);
     }
+    this.sessionKeepAlive.stop();
   }
 }

@@ -444,6 +444,10 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Date dateArchivageFichiers;
 
+    // Non persisté : indique si le PDF signé est effectivement présent sur le serveur (calculé côté contrôleur)
+    @Transient
+    private boolean documentSigneDisponible;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
