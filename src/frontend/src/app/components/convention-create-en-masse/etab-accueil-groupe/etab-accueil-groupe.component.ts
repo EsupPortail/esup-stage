@@ -6,20 +6,21 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EtabAccueilGroupeModalComponent } from './etab-accueil-groupe-modal/etab-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-etab-accueil-groupe',
-  templateUrl: './etab-accueil-groupe.component.html',
-  styleUrls: ['./etab-accueil-groupe.component.scss']
+    selector: 'app-etab-accueil-groupe',
+    templateUrl: './etab-accueil-groupe.component.html',
+    styleUrls: ['./etab-accueil-groupe.component.scss'],
+    standalone: false
 })
 export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 
@@ -51,8 +52,15 @@ export class EtabAccueilGroupeComponent implements OnInit, OnChanges {
     this.selected = [];
   }
 
-  isAlerte(etudiant:EtudiantGroupeEtudiant) {
-    return !this.groupeEtudiant?.convention.structure && !etudiant.convention.structure
+  isAlerte(etudiant: EtudiantGroupeEtudiant) {
+    return !this.groupeEtudiant?.convention.structure && !etudiant.convention.structure;
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   isSelected(data: any): boolean {

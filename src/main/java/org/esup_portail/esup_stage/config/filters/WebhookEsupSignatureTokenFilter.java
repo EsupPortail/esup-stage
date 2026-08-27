@@ -44,6 +44,6 @@ public class WebhookEsupSignatureTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Éviter d'exécuter le filtre si l'URL n'est pas "/webhook"
-        return !request.getRequestURI().startsWith(EsupSignatureConfiguration.PATH_FILTER);
+        return !request.getServletPath().startsWith(EsupSignatureConfiguration.PATH_FILTER);
     }
 }

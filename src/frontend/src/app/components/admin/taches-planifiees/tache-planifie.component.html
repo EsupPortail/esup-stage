@@ -78,16 +78,16 @@
           <td role="cell">{{ task.loginModification }}</td>
           <td role="cell" class="text-center">
             <button
+              class="valid-button execute-button"
               mat-mini-fab
-              color="primary"
               (click)="executeTask(task.id, task.nom)"
               [disabled]="isExecuting(task.id)"
               [attr.aria-label]="isExecuting(task.id) ? 'Exécution en cours de ' + task.nom : 'Exécuter la tâche ' + task.nom"
-              matTooltip="Exécuter la tâche maintenant"
-              class="execute-button">
+              matTooltip="Exécuter la tâche maintenant">
               <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
               <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
             </button>
+            <div *ngIf="isExecuting(task.id)" class="running-indicator" aria-live="polite">En cours…</div>
           </td>
         </tr>
         </tbody>
@@ -103,16 +103,16 @@
               <span class="task-id">#{{ task.id }}</span>
               <span class="task-name">{{ task.nom }}</span>
               <button
+                class="valid-button execute-button-mobile"
                 mat-mini-fab
-                color="primary"
                 (click)="executeTask(task.id, task.nom)"
                 [disabled]="isExecuting(task.id)"
                 [attr.aria-label]="isExecuting(task.id) ? 'Exécution en cours de ' + task.nom : 'Exécuter la tâche ' + task.nom"
-                matTooltip="Exécuter maintenant"
-                class="execute-button-mobile">
+                matTooltip="Exécuter maintenant">
                 <mat-icon *ngIf="!isExecuting(task.id)" aria-hidden="true">play_arrow</mat-icon>
                 <mat-spinner *ngIf="isExecuting(task.id)" diameter="24" aria-label="Chargement"></mat-spinner>
               </button>
+              <span *ngIf="isExecuting(task.id)" class="running-indicator" aria-live="polite">En cours…</span>
             </div>
           </mat-card-title>
         </mat-card-header>

@@ -4,14 +4,14 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">Rupture de stage</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">${libelles["avenant.rupture.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Date de rupture : </strong>${avenant.dateRupture}</span><br/>
-                    <span class="text-small"><strong>Commentaire : </strong>${avenant.commentaireRupture}</span>
+                    <span class="text-small"><strong>${libelles["champ.dateRupture"]} </strong>${avenant.dateRupture}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.commentaire"]} </strong>${avenant.commentaireRupture}</span>
                 </p>
             </td>
         </tr>
@@ -39,19 +39,19 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du sujet de stage</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.sujet.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Sujet : </strong>${convention.sujetStage}</span>
+                    <span class="text-small"><strong>${libelles["champ.sujet"]} </strong>${convention.sujetStage}</span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Sujet : </strong>${avenant.sujetStage}</span>
+                    <span class="text-small"><strong>${libelles["champ.sujet"]} </strong>${avenant.sujetStage}</span>
                 </p>
             </td>
         </tr>
@@ -79,43 +79,43 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification de la période de stage</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.periode.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Date début du stage : </strong>${convention.dateDebutStage}</span><br/>
-                    <span class="text-small"><strong>Date fin du stage : </strong>${convention.dateFinStage}</span>
+                    <span class="text-small"><strong>${libelles["champ.dateDebutStage"]} </strong>${convention.dateDebutStage}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.dateFinStage"]} </strong>${convention.dateFinStage}</span>
                 </p>
                 <#if convention.periodesInterruptions?size gt 0>
                 <p>
-                    <span class="text-small"><strong>Périodes d'interruptions :</strong></span>
+                    <span class="text-small"><strong>${libelles["champ.periodesInterruptions"]}</strong></span>
                 </p>
                 <ul>
                     <#list convention.periodesInterruptions as periode>
-                    <li>du ${periode.dateDebutInterruption} au ${periode.dateFinInterruption}</li>
+                    <li>${libelles["commun.du"]} ${periode.dateDebutInterruption} ${libelles["commun.au"]} ${periode.dateFinInterruption}</li>
                     </#list>
                 </ul>
                 </#if>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
                     <#if avenant.dateDebutStage != ''>
-                        <span class="text-small"><strong>Date début du stage : </strong>${avenant.dateDebutStage}</span>
+                        <span class="text-small"><strong>${libelles["champ.dateDebutStage"]} </strong>${avenant.dateDebutStage}</span>
                     </#if>
                     <#if avenant.dateFinStage != ''>
-                        <span class="text-small"><strong>Date fin du stage : </strong>${avenant.dateFinStage}</span>
+                        <span class="text-small"><strong>${libelles["champ.dateFinStage"]} </strong>${avenant.dateFinStage}</span>
                     </#if>
                 </p>
                 <#if avenant.periodesInterruptions?size gt 0>
                 <p>
-                    <span class="text-small"><strong>Périodes d'interruptions :</strong></span>
+                    <span class="text-small"><strong>${libelles["champ.periodesInterruptions"]}</strong></span>
                 </p>
                 <ul>
                     <#list avenant.periodesInterruptions as periode>
-                    <li>du ${periode.dateDebutInterruption} au ${periode.dateFinInterruption}</li>
+                    <li>${libelles["commun.du"]} ${periode.dateDebutInterruption} ${libelles["commun.au"]} ${periode.dateFinInterruption}</li>
                     </#list>
                 </ul>
                 </#if>
@@ -145,49 +145,49 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du montant de la gratification</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.gratification.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
                     <span class="text-small">
-                        <strong>Montant : </strong>
+                        <strong>${libelles["champ.montant"]} </strong>
                         <#if convention.montantGratification?has_content>
                             ${convention.montantGratification} ${convention.uniteGratificationLibelle} ${convention.uniteDureeGratificationLibelle}
                         <#else>
-                            Néant
+                            ${libelles["commun.neant"]}
                         </#if>
                     </span><br/>
                     <span class="text-small">
-                        <strong>Monnaie utilisée pour le paiement : </strong>
+                        <strong>${libelles["champ.devise"]} </strong>
                         <#if convention.deviseGratification?has_content>
                             ${convention.deviseGratification}
                         <#else>
-                            Néant
+                            ${libelles["commun.neant"]}
                         </#if>
                     </span><br/>
                     <span class="text-small">
-                        <strong>Modalité de versement de la gratification : </strong>
+                        <strong>${libelles["champ.modeVersement"]} </strong>
                         <#if convention.modeVersGratificationLibelle?has_content>
                                 ${convention.modeVersGratificationLibelle}
                         <#else>
-                            Néant
+                            ${libelles["commun.neant"]}
                         </#if>
                     </span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
                     <#if avenant.montantGratification != ''>
-                        <span class="text-small"><strong>Montant : </strong>${avenant.montantGratification} ${avenant.uniteGratificationLibelle} ${avenant.uniteDureeGratificationLibelle}</span>
+                        <span class="text-small"><strong>${libelles["champ.montant"]} </strong>${avenant.montantGratification} ${avenant.uniteGratificationLibelle} ${avenant.uniteDureeGratificationLibelle}</span>
                     </#if>
                     <#if avenant.deviseGratification != ''>
-                        <span class="text-small"><strong>Monnaie utilisée pour le paiement : </strong>${avenant.deviseGratification}</span>
+                        <span class="text-small"><strong>${libelles["champ.devise"]} </strong>${avenant.deviseGratification}</span>
                     </#if>
                     <#if avenant.modeVersGratificationLibelle != ''>
-                        <span class="text-small"><strong>Modalité de versement de la gratification : </strong>${avenant.modeVersGratificationLibelle}</span>
+                        <span class="text-small"><strong>${libelles["champ.modeVersement"]} </strong>${avenant.modeVersGratificationLibelle}</span>
                     </#if>
                 </p>
             </td>
@@ -216,27 +216,27 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du lieu de stage</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.lieu.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom : </strong>${service.nom}</span><br/>
-                    <span class="text-small"><strong>Voie : </strong>${service.voie}</span><br/>
-                    <span class="text-small"><strong>Code postal : </strong>${service.codePostal}</span><br/>
-                    <span class="text-small"><strong>Commune : </strong>${service.commune}</span><br/>
-                    <span class="text-small"><strong>Pays : </strong>${service.paysLibelle}</span>
+                    <span class="text-small"><strong>${libelles["champ.nom"]} </strong>${service.nom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.voie"]} </strong>${service.voie}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.codePostal"]} </strong>${service.codePostal}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.commune"]} </strong>${service.commune}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.pays"]} </strong>${service.paysLibelle}</span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom : </strong>${avenant.service.nom}</span><br/>
-                    <span class="text-small"><strong>Voie : </strong>${avenant.service.voie}</span><br/>
-                    <span class="text-small"><strong>Code postal : </strong>${avenant.service.codePostal}</span><br/>
-                    <span class="text-small"><strong>Commune : </strong>${avenant.service.commune}</span><br/>
-                    <span class="text-small"><strong>Pays : </strong>${avenant.service.paysLibelle}</span>
+                    <span class="text-small"><strong>${libelles["champ.nom"]} </strong>${avenant.service.nom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.voie"]} </strong>${avenant.service.voie}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.codePostal"]} </strong>${avenant.service.codePostal}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.commune"]} </strong>${avenant.service.commune}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.pays"]} </strong>${avenant.service.paysLibelle}</span>
                 </p>
             </td>
         </tr>
@@ -264,29 +264,29 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification du tuteur professionnel</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.tuteur.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom : </strong>${contact.nom}</span><br/>
-                    <span class="text-small"><strong>Prénom : </strong>${contact.prenom}</span><br/>
-                    <span class="text-small"><strong>Civilité : </strong>${contact.civiliteLibelle}</span><br/>
-                    <span class="text-small"><strong>Fonction : </strong>${contact.fonction}</span><br/>
-                    <span class="text-small"><strong>Téléphone : </strong>${contact.tel}</span><br/>
-                    <span class="text-small"><strong>Email : </strong>${contact.mail}</span>
+                    <span class="text-small"><strong>${libelles["champ.nom"]} </strong>${contact.nom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.prenom"]} </strong>${contact.prenom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.civilite"]} </strong>${contact.civiliteLibelle}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.fonction"]} </strong>${contact.fonction}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.telephone"]} </strong>${contact.tel}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.email"]} </strong>${contact.mail}</span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom : </strong>${avenant.contact.nom}</span><br/>
-                    <span class="text-small"><strong>Prénom : </strong>${avenant.contact.prenom}</span><br/>
-                    <span class="text-small"><strong>Civilité : </strong>${avenant.contact.civiliteLibelle}</span><br/>
-                    <span class="text-small"><strong>Fonction : </strong>${avenant.contact.fonction}</span><br/>
-                    <span class="text-small"><strong>Téléphone : </strong>${avenant.contact.tel}</span><br/>
-                    <span class="text-small"><strong>Email : </strong>${avenant.contact.mail}</span>
+                    <span class="text-small"><strong>${libelles["champ.nom"]} </strong>${avenant.contact.nom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.prenom"]} </strong>${avenant.contact.prenom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.civilite"]} </strong>${avenant.contact.civiliteLibelle}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.fonction"]} </strong>${avenant.contact.fonction}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.telephone"]} </strong>${avenant.contact.tel}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.email"]} </strong>${avenant.contact.mail}</span>
                 </p>
             </td>
         </tr>
@@ -314,25 +314,25 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">Modification de l’enseignant référent</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);" colspan="2">${libelles["avenant.enseignant.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Anciennes valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.anciennesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom / Prénom : </strong>${enseignant.nom} ${enseignant.prenom}</span><br/>
-                    <span class="text-small"><strong>Fonction : </strong>${enseignant.fonction}</span><br/>
-                    <span class="text-small"><strong>Téléphone : </strong>${enseignant.tel}</span><br/>
-                    <span class="text-small"><strong>Email : </strong>${enseignant.mail}</span>
+                    <span class="text-small"><strong>${libelles["champ.nomPrenom"]} </strong>${enseignant.nom} ${enseignant.prenom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.fonction"]} </strong>${enseignant.fonction}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.telephone"]} </strong>${enseignant.tel}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.email"]} </strong>${enseignant.mail}</span>
                 </p>
             </td>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Nouvelles valeurs :</u></span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>${libelles["commun.nouvellesValeurs"]}</u></span>
                 <p>
-                    <span class="text-small"><strong>Nom / Prénom : </strong>${avenant.enseignant.nom} ${avenant.enseignant.prenom}</span><br/>
-                    <span class="text-small"><strong>Fonction : </strong>${avenant.enseignant.fonction}</span><br/>
-                    <span class="text-small"><strong>Téléphone : </strong>${avenant.enseignant.tel}</span><br/>
-                    <span class="text-small"><strong>Email : </strong>${avenant.enseignant.mail}</span>
+                    <span class="text-small"><strong>${libelles["champ.nomPrenom"]} </strong>${avenant.enseignant.nom} ${avenant.enseignant.prenom}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.fonction"]} </strong>${avenant.enseignant.fonction}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.telephone"]} </strong>${avenant.enseignant.tel}</span><br/>
+                    <span class="text-small"><strong>${libelles["champ.email"]} </strong>${avenant.enseignant.mail}</span>
                 </p>
             </td>
         </tr>
@@ -360,12 +360,12 @@
         <colgroup><col style="width:50%;"><col style="width:50%;"></colgroup>
         <tbody>
         <tr>
-            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">Autre modification</td>
+            <td style="text-align:center;border:1px solid hsl(0, 0%, 0%);">${libelles["avenant.autre.titre"]}</td>
         </tr>
         <tr>
             <td style="border:1px solid hsl(0, 0%, 0%);vertical-align:top;">
                 <p>
-                    <span class="text-small"><strong>Motif : </strong>${avenant.motifAvenant}</span>
+                    <span class="text-small"><strong>${libelles["champ.motif"]} </strong>${avenant.motifAvenant}</span>
                 </p>
             </td>
         </tr>

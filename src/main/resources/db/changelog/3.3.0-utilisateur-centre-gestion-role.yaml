@@ -1,0 +1,101 @@
+databaseChangeLog:
+- changeSet:
+    id: 3.3.0-utilisateur-centre-gestion-role-create
+    author: thouveno9
+    changes:
+    - createTable:
+        tableName: UtilisateurCentreGestionRole
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: idUtilisateurCentreGestionRole
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idUtilisateur
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idCentreGestion
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: idRole
+            type: INT
+    - addUniqueConstraint:
+        columnNames: idUtilisateur, idCentreGestion, idRole
+        constraintName: uniq_UtilisateurCentreGestionRole
+        tableName: UtilisateurCentreGestionRole
+    - createIndex:
+        columns:
+        - column:
+            name: idUtilisateur
+        indexName: idx_UtilisateurCentreGestionRole_Utilisateur
+        tableName: UtilisateurCentreGestionRole
+    - createIndex:
+        columns:
+        - column:
+            name: idCentreGestion
+        indexName: idx_UtilisateurCentreGestionRole_CentreGestion
+        tableName: UtilisateurCentreGestionRole
+    - addForeignKeyConstraint:
+        baseColumnNames: idUtilisateur
+        baseTableName: UtilisateurCentreGestionRole
+        constraintName: fk_UCGR_Utilisateur
+        referencedColumnNames: idUtilisateur
+        referencedTableName: Utilisateur
+    - addForeignKeyConstraint:
+        baseColumnNames: idCentreGestion
+        baseTableName: UtilisateurCentreGestionRole
+        constraintName: fk_UCGR_CentreGestion
+        referencedColumnNames: idCentreGestion
+        referencedTableName: CentreGestion
+    - addForeignKeyConstraint:
+        baseColumnNames: idRole
+        baseTableName: UtilisateurCentreGestionRole
+        constraintName: fk_UCGR_Role
+        referencedColumnNames: idRole
+        referencedTableName: Role
+- changeSet:
+    id: 3.1.12-utilisateur-centre-gestion-role-migrate
+    author: codex
+    changes:
+    - sql:
+        sql: >
+          INSERT INTO UtilisateurCentreGestionRole (idUtilisateur, idCentreGestion, idRole)
+          SELECT DISTINCT u.idUtilisateur, pc.idCentreGestion, rResp.idRole
+          FROM PersonnelCentreGestion pc
+          JOIN Utilisateur u ON LOWER(u.uid) = LOWER(pc.uidPersonnel)
+          JOIN UtilisateurRole urResp ON urResp.idUtilisateur = u.idUtilisateur
+          JOIN Role rResp ON rResp.idRole = urResp.idRole AND rResp.code = 'RESP_GES'
+          WHERE NOT EXISTS (
+            SELECT 1 FROM UtilisateurCentreGestionRole existing
+            WHERE existing.idUtilisateur = u.idUtilisateur
+              AND existing.idCentreGestion = pc.idCentreGestion
+              AND existing.idRole = rResp.idRole
+          )
+    - sql:
+        sql: >
+          INSERT INTO UtilisateurCentreGestionRole (idUtilisateur, idCentreGestion, idRole)
+          SELECT DISTINCT u.idUtilisateur, pc.idCentreGestion, rGes.idRole
+          FROM PersonnelCentreGestion pc
+          JOIN Utilisateur u ON LOWER(u.uid) = LOWER(pc.uidPersonnel)
+          JOIN Role rGes ON rGes.code = 'GES'
+          WHERE NOT EXISTS (
+            SELECT 1 FROM UtilisateurRole ur
+            JOIN Role r ON r.idRole = ur.idRole
+            WHERE ur.idUtilisateur = u.idUtilisateur
+              AND r.code = 'RESP_GES'
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM UtilisateurCentreGestionRole existing
+            WHERE existing.idUtilisateur = u.idUtilisateur
+              AND existing.idCentreGestion = pc.idCentreGestion
+              AND existing.idRole = rGes.idRole
+          )

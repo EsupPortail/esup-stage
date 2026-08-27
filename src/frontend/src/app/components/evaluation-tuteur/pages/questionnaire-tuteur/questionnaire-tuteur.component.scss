@@ -1,0 +1,70 @@
+.questionnaire-container {
+  background: #ffffff;;
+  color: #1f2937;
+  max-width: 1200px;
+  margin: clamp(24px, 6vh, 72px) auto;
+  padding: clamp(20px, 3vw, 40px);
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  line-height: 1.6;
+  overflow-x: hidden;   /* bloque le scroll horizontal */
+  box-sizing: border-box;
+
+  .text-acceuil-tuteur {
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+    p { margin: 0 0 1rem; }
+  }
+}
+.questionnaire-container .row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.questionnaire-container [class*="col-"] {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.btn-terminer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  background: var(--success);
+}
+
+.btn-page-suivante {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.btn-page-précédente {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 16px 0 8px;
+  flex-wrap: wrap;
+}
+
+.btn-container button {
+  min-width: 140px;
+  transition: transform .06s ease, box-shadow .2s ease;
+  outline: none;
+}
+
+.btn-container button:hover { transform: translateY(-2px); }
+.btn-container button:active { transform: translateY(0); }
+.btn-container button:focus-visible {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--ring) 25%, transparent);
+}
+
+.tab-content{
+  margin-top: 16px;
+}

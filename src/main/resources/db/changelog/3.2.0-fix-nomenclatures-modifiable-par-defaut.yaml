@@ -1,0 +1,153 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-fix-contrat-offre-modifiable
+      author: thouveno9
+      comment: "Rendre modifiables les nomenclatures initialisées sans valeur explicite de modifiable"
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: ContratOffre
+        - columnExists:
+            tableName: ContratOffre
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: ContratOffre
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-mode-validation-stage-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: ModeValidationStage
+        - columnExists:
+            tableName: ModeValidationStage
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: ModeValidationStage
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-niveau-formation-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: NiveauFormation
+        - columnExists:
+            tableName: NiveauFormation
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: NiveauFormation
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-origine-stage-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: OrigineStage
+        - columnExists:
+            tableName: OrigineStage
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: OrigineStage
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-statut-juridique-modifiable-v2
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: StatutJuridique
+        - columnExists:
+            tableName: StatutJuridique
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: StatutJuridique
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-temps-travail-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: TempsTravail
+        - columnExists:
+            tableName: TempsTravail
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: TempsTravail
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-type-offre-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: TypeOffre
+        - columnExists:
+            tableName: TypeOffre
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: TypeOffre
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"
+
+  - changeSet:
+      id: 3.2.0-fix-type-structure-modifiable
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: TypeStructure
+        - columnExists:
+            tableName: TypeStructure
+            columnName: modifiable
+      changes:
+        - update:
+            tableName: TypeStructure
+            columns:
+              - column:
+                  name: modifiable
+                  valueBoolean: true
+            where: "modifiable IS NULL OR modifiable = 0"

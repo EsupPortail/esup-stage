@@ -10,4 +10,6 @@ import java.util.List;
 public interface CronTaskJpaRepository extends JpaRepository<CronTask, Integer> {
 
     List<CronTask> findByActiveTrue();
+
+    CronTask findByNom(String nom);
 }

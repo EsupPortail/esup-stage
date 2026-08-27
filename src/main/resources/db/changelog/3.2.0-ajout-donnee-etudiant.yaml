@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+     id : 3.2.0-ajout-colonne-prenomEtatCivil
+     author: thouveno9
+     changes:
+       - addColumn:
+           tableName: Etudiant
+           columns:
+               - column:
+                   name: prenomEtatCivil
+                   type: varchar(100)
+                   constraints:
+                    nullable: true
+  - changeSet :
+     id : 3.2.0-ajout-colonne-sexEtatCivil
+     author: thouveno9
+     changes:
+       - addColumn:
+           tableName: Etudiant
+           columns:
+             - column:
+                 name: sexEtatCivil
+                 type: varchar(100)
+                 constraints:
+                  nullable: true
+  - changeSet:
+     id: 3.2.0-ajout-colonne-prenom2
+     author: thouveno9
+     changes:
+       - addColumn:
+           tableName: Etudiant
+           columns:
+             - column:
+                 name: prenom2
+                 type: varchar(100)
+                 constraints:
+                  nullable: true

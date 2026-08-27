@@ -1,0 +1,136 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-droit-opposition-contact-contact
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Contact
+            columns:
+              - column:
+                  name: refusEtreContacte
+                  type: boolean
+              - column:
+                  name: dateRefusEtreContacte
+                  type: datetime
+              - column:
+                  name: origineRefusEtreContacte
+                  type: VARCHAR(20)
+              - column:
+                  name: dateEnvoiMailOpposition
+                  type: datetime
+
+  - changeSet:
+      id: 3.3.0-droit-opposition-contact-template-mail
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: DROIT_OPPOSITION_TUTEUR_PRO
+              - column:
+                  name: libelle
+                  value: Droit d'opposition - tuteur professionnel
+              - column:
+                  name: objet
+                  value: "Vos coordonnées dans le cadre de votre rôle de tuteur de stage / Your contact details as an internship supervisor"
+              - column:
+                  name: texte
+                  value: "<p>Bonjour ${tuteurPro.prenom} ${tuteurPro.nom},</p><p>Vous êtes tuteur professionnel d'un ou plusieurs étudiants en stage au sein de notre établissement. À ce titre, vos coordonnées professionnelles sont enregistrées dans notre application de gestion des conventions de stage et peuvent être utilisées pour vous adresser des informations relatives aux stages.</p><p>Conformément à la réglementation sur la protection des données, vous pouvez vous opposer à être contacté par notre établissement. Si vous ne souhaitez pas être contacté, <a href=\"${lienOpposition}\">cliquez ici pour nous envoyer un message</a> : un courriel pré-rempli s'ouvrira, il vous suffira de l'envoyer.</p><p>Sans réponse de votre part, vos coordonnées seront conservées et pourront être utilisées.</p><p>Cordialement,</p><hr/><p>Hello ${tuteurPro.prenom} ${tuteurPro.nom},</p><p>You are the company supervisor of one or more students doing an internship with our institution. As such, your professional contact details are stored in our internship agreement management application and may be used to send you information about internships.</p><p>In accordance with data protection regulations, you may object to being contacted by our institution. If you do not wish to be contacted, <a href=\"${lienOpposition}\">click here to send us a message</a>: a pre-filled email will open, you only need to send it.</p><p>If we do not hear from you, your contact details will be kept and may be used.</p><p>Kind regards,</p>"
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: DROIT_OPPOSITION_SIGNATAIRE
+              - column:
+                  name: libelle
+                  value: Droit d'opposition - signataire
+              - column:
+                  name: objet
+                  value: "Vos coordonnées dans le cadre de la signature de conventions de stage / Your contact details as an internship agreement signatory"
+              - column:
+                  name: texte
+                  value: "<p>Bonjour ${signataire.prenom} ${signataire.nom},</p><p>Vous êtes signataire d'une ou plusieurs conventions de stage établies avec notre établissement. À ce titre, vos coordonnées professionnelles sont enregistrées dans notre application de gestion des conventions de stage et peuvent être utilisées pour vous adresser des informations relatives aux stages.</p><p>Conformément à la réglementation sur la protection des données, vous pouvez vous opposer à être contacté par notre établissement. Si vous ne souhaitez pas être contacté, <a href=\"${lienOpposition}\">cliquez ici pour nous envoyer un message</a> : un courriel pré-rempli s'ouvrira, il vous suffira de l'envoyer.</p><p>Sans réponse de votre part, vos coordonnées seront conservées et pourront être utilisées.</p><p>Cordialement,</p><hr/><p>Hello ${signataire.prenom} ${signataire.nom},</p><p>You have signed one or more internship agreements with our institution. As such, your professional contact details are stored in our internship agreement management application and may be used to send you information about internships.</p><p>In accordance with data protection regulations, you may object to being contacted by our institution. If you do not wish to be contacted, <a href=\"${lienOpposition}\">click here to send us a message</a>: a pre-filled email will open, you only need to send it.</p><p>If we do not hear from you, your contact details will be kept and may be used.</p><p>Kind regards,</p>"
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+
+  - changeSet:
+      id: 3.3.0-droit-opposition-contact-param-mail
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamMail
+            columns:
+              - column:
+                  name: code
+                  value: lienOpposition
+              - column:
+                  name: libelle
+                  value: Lien permettant au contact de signaler son refus d'être contacté
+              - column:
+                  name: exemple
+                  value: mailto:stages@univ.fr
+
+  - changeSet:
+      id: 3.3.0-droit-opposition-contact-cron
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'EnvoiMailDroitOppositionContact'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: EnvoiMailDroitOppositionContact
+              - column:
+                  name: expressionCron
+                  value: 0 0 3 1 * ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: false
+
+  - changeSet:
+      id: 3.3.0-droit-opposition-contact-contenu
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: Contenu
+            columns:
+              - column:
+                  name: codeContenu
+                  value: LIBELLE_REFUS_ETRE_CONTACTE
+              - column:
+                  name: libelle
+                  valueBoolean: true
+              - column:
+                  name: texte
+                  value: "Ne souhaite pas être contacté (mailings, enquêtes...)"
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()

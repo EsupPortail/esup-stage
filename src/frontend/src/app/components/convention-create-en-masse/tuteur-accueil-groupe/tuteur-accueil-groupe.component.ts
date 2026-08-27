@@ -6,20 +6,21 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { TuteurAccueilGroupeModalComponent } from './tuteur-accueil-groupe-modal/tuteur-accueil-groupe-modal.component';
 
 @Component({
-  selector: 'app-tuteur-accueil-groupe',
-  templateUrl: './tuteur-accueil-groupe.component.html',
-  styleUrls: ['./tuteur-accueil-groupe.component.scss']
+    selector: 'app-tuteur-accueil-groupe',
+    templateUrl: './tuteur-accueil-groupe.component.html',
+    styleUrls: ['./tuteur-accueil-groupe.component.scss'],
+    standalone: false
 })
 export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 
@@ -82,6 +83,13 @@ export class TuteurAccueilGroupeComponent implements OnInit, OnChanges {
 
   isAlerte(etudiant: EtudiantGroupeEtudiant): boolean {
     return !this.groupeEtudiant.convention.contact && !etudiant.convention.contact;
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   isSelected(data: any): boolean {

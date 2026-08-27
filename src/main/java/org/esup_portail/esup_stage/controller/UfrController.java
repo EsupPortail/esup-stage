@@ -1,6 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
+import org.esup_portail.esup_stage.enums.AppFonctionEnum;
+import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.model.Ufr;
 import org.esup_portail.esup_stage.repository.UfrRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.Collator;
+import java.util.Comparator;
 import java.util.List;
 
 @ApiController
@@ -24,7 +28,7 @@ public class UfrController {
     ApogeeService apogeeService;
 
     @GetMapping
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<Ufr> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters) {
         PaginatedResponse<Ufr> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(ufrRepository.count(filters));
@@ -33,8 +37,10 @@ public class UfrController {
     }
 
     @GetMapping("/apogee")
-    @Secure()
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<Composante> getApogeeComposantes() {
-        return apogeeService.getListComposante();
+        List<Composante> listComposante = apogeeService.getListComposante();
+        listComposante.sort(Comparator.comparing(Composante::getLibelle, Collator.getInstance()));
+        return listComposante;
     }
 }

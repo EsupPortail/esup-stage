@@ -6,21 +6,22 @@ import { TypeConventionService } from "../../../services/type-convention.service
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { CadreStageModalComponent } from './cadre-stage-modal/cadre-stage-modal.component';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
-  selector: 'app-cadre-stage',
-  templateUrl: './cadre-stage.component.html',
-  styleUrls: ['./cadre-stage.component.scss']
+    selector: 'app-cadre-stage',
+    templateUrl: './cadre-stage.component.html',
+    styleUrls: ['./cadre-stage.component.scss'],
+    standalone: false
 })
 export class CadreStageComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   typeConventions: any[] = [];
 
@@ -65,6 +66,13 @@ export class CadreStageComponent implements OnInit, OnChanges {
     }
   }
 
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
+  }
+
   edit(row: any): void{
     const dialogConfig = new MatDialogConfig();
     dialogConfig.width = '95vw';
@@ -87,6 +95,7 @@ export class CadreStageComponent implements OnInit, OnChanges {
     if (this.form.get('typeConventionGroupe')?.value) {
       this.groupeEtudiantService.setTypeConventionGroupe(this.groupeEtudiant.id, this.form.get('typeConventionGroupe')?.value).subscribe((response: any) => {
         this.messageService.setSuccess('Groupe modifié avec succès');
+        this.validated.emit(response);
       });
     }
   }

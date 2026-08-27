@@ -33,6 +33,10 @@ export class ConventionService implements PaginatedService {
     return this.http.put(`${environment.apiUrl}/conventions/${id}`, data);
   }
 
+  updateAccordAnnuaire(id: number, accordAnnuaireEtudiant: boolean): Observable<any> {
+    return this.http.patch(`${environment.apiUrl}/conventions/${id}/accord-annuaire`, {accordAnnuaireEtudiant});
+  }
+
   patch(id: number, data: any): Observable<any> {
     return this.http.patch(`${environment.apiUrl}/conventions/${id}`, data);
   }

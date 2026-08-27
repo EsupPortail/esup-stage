@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-param-convention-protection-sociale
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: ParamConvention
+            columns:
+              - column:
+                  name: code
+                  value: convention.protectionSocialeOrganismeAccueil
+              - column:
+                  name: libelle
+                  value: Protection sociale issue de l'organisme d'accueil (article 6.3)

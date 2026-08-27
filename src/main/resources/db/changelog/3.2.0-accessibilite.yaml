@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-accessibilite-ajout-contenu-accessibilite
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: CONTENU_PAGE_ACCESSIBILITE
+              - column:
+                  name: libelle
+                  valueBoolean: false
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu
+  - changeSet:
+      id: 3.2.0-accessibilite-ajout-contenu-mentions-legales
+      author: thouveno9
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: codeContenu
+                  value: CONTENU_PAGE_MENTIONS_LEGALES
+              - column:
+                  name: libelle
+                  valueBoolean: false
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: dateCreation
+                  value: now()
+            tableName: Contenu

@@ -2,9 +2,11 @@ package org.esup_portail.esup_stage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "ReponseSupplementaire")
+@Data
 public class ReponseSupplementaire {
 
     @EmbeddedId
@@ -27,51 +29,4 @@ public class ReponseSupplementaire {
     private Integer reponseInt;
     private Boolean reponseBool;
 
-    public ReponseSupplementaireId getId() {
-        return id;
-    }
-
-    public void setId(ReponseSupplementaireId id) {
-        this.id = id;
-    }
-
-    public QuestionSupplementaire getQuestionSupplementaire() {
-        return questionSupplementaire;
-    }
-
-    public void setQuestionSupplementaire(QuestionSupplementaire questionSupplementaire) {
-        this.questionSupplementaire = questionSupplementaire;
-    }
-
-    public Convention getConvention() {
-        return convention;
-    }
-
-    public void setConvention(Convention convention) {
-        this.convention = convention;
-    }
-
-    public String getReponseTxt() {
-        return reponseTxt;
-    }
-
-    public void setReponseTxt(String reponseTxt) {
-        this.reponseTxt = reponseTxt;
-    }
-
-    public Integer getReponseInt() {
-        return reponseInt;
-    }
-
-    public void setReponseInt(Integer reponseInt) {
-        this.reponseInt = reponseInt;
-    }
-
-    public Boolean getReponseBool() {
-        return reponseBool;
-    }
-
-    public void setReponseBool(Boolean reponseBool) {
-        this.reponseBool = reponseBool;
-    }
 }

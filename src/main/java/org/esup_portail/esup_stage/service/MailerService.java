@@ -8,25 +8,33 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.ApplicationProperties;
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.CentreGestionJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailGroupeJpaRepository;
 import org.esup_portail.esup_stage.repository.TemplateMailJpaRepository;
+import org.esup_portail.esup_stage.repository.UtilisateurJpaRepository;
+import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
 import org.esup_portail.esup_stage.service.impression.PreviewConventionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.util.StringUtils;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Service
 public class MailerService {
@@ -36,7 +44,7 @@ public class MailerService {
     AppliProperties appliProperties;
 
     @Autowired
-    JavaMailSender javaMailSender;
+    AppConfigService appConfigService;
 
     @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
@@ -48,7 +56,10 @@ public class MailerService {
     TemplateMailGroupeJpaRepository templateMailGroupeJpaRepository;
 
     @Autowired
-    ApplicationProperties applicationProperties;
+    EvaluationService evaluationService;
+
+    @Autowired
+    UtilisateurJpaRepository utilisateurJpaRepository;
 
     @Autowired
     CentreGestionJpaRepository centreGestionJpaRepository;
@@ -73,10 +84,43 @@ public class MailerService {
         if (to == null || to.isEmpty() || to.equals("null")) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, avenant, userModif);
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
                     mailContext, false, null, null);
         }
+    }
+
+    public void sendAlerteValidation(String to, Convention convention, Avenant avenant, String templateMailCode) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
+        if (templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
+        }
+        if (to == null || to.isEmpty() || to.equals("null")) {
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+        } else {
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
+            sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
+                    mailContext, false, null, null);
+        }
+    }
+
+    /**
+     * Mail de recueil du droit d'opposition d'un contact en entreprise (signataire ou tuteur pro).
+     * Le lien mailto: de refus est passé au template via ${lienOpposition}.
+     */
+    public void sendDroitOpposition(String to, Convention convention, String templateMailCode, String lienOpposition) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
+        if (templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
+        }
+        if (to == null || to.isEmpty() || to.equals("null")) {
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+            return;
+        }
+        MailContext mailContext = new MailContext(appliProperties, convention, null, evaluationService.buildEvaluationTuteurUrl(convention));
+        mailContext.setLienOpposition(lienOpposition);
+        sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
+                mailContext, false, null, null);
     }
 
     public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode, byte[] archive) {
@@ -87,7 +131,7 @@ public class MailerService {
         if (to == null || to.isEmpty()) {
             logger.info("Aucun destinataire défini pour l'envoie de l'email.");
         } else {
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties,convention, null, userModif);
+            MailContext mailContext = new MailContext(appliProperties, convention, null, userModif, evaluationService.buildEvaluationTuteurUrl(convention));
             sendMail(to, templateMailGroupe.getId(), templateMailGroupe.getObjet(), templateMailGroupe.getTexte(), templateMailGroupe.getCode(),
                     mailContext, false, "conventions.zip", archive);
         }
@@ -104,19 +148,44 @@ public class MailerService {
             CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
             Convention convention = previewConventionFactory.createFictionalConvention(centreEtablissement);
             Avenant avenant = previewConventionFactory.createFictionalAvenant(convention);
-            MailContext mailContext = new MailContext(appliProperties, applicationProperties, convention, avenant, utilisateur);
+            MailContext mailContext = new MailContext(appliProperties, convention, avenant, evaluationService.buildEvaluationTuteurUrl(convention));
             if (mailContext.getSignataire() != null && mailContext.getSignataire().getTel() == null) {
                 mailContext.getSignataire().setTel("+33 1 44 55 66 77");
             }
+            // Sans cela, ${lienOpposition} rendrait un lien vide dans l'aperçu des templates
+            // de droit d'opposition.
+            mailContext.setLienOpposition(construireLienOppositionApercu(convention));
             sendMail(sendMailTestDto.getTo(), templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(),
                     templateMail.getCode(), mailContext, true, null, null);
         }
+    }
+
+    /**
+     * Lien d'opposition d'aperçu, construit sur le contact fictif de la convention de test.
+     * Si la boîte générique n'est pas encore paramétrée, une adresse d'exemple est utilisée :
+     * l'aperçu doit rester consultable avant que le paramétrage soit fait.
+     */
+    private String construireLienOppositionApercu(Convention convention) {
+        String mailGenerique = appConfigService.getConfigGenerale().getMailOppositionContact();
+        if (mailGenerique == null || mailGenerique.trim().isEmpty()) {
+            mailGenerique = "boite-generique@exemple.fr";
+        }
+        Contact contact = convention.getContact() != null ? convention.getContact() : convention.getSignataire();
+        if (contact == null) {
+            return DroitOpposition.construireLienMailto(mailGenerique.trim(), "Prénom", "Nom", "contact@exemple.fr");
+        }
+        return DroitOpposition.construireLienMailto(mailGenerique.trim(), contact.getPrenom(), contact.getNom(), contact.getMail());
     }
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
                           MailContext mailContext, boolean forceTo, String attachmentLibelle, byte[] attachment) {
         logger.info("Mail " + templateMailCode + ", destinataires : " + to);
         boolean disableDelivery = appliProperties.getMailer().isDisableDelivery();
+        JavaMailSender javaMailSender = resolveJavaMailSender();
+        if (javaMailSender == null) {
+            logger.warn("Mailer not configured (missing host). Skip sending mail {}", templateMailCode);
+            return;
+        }
         if (!disableDelivery) {
             String deliveryAddress = appliProperties.getMailer().getDeliveryAddress();
             if (!forceTo && deliveryAddress != null && !deliveryAddress.isEmpty() && !deliveryAddress.equals("null")) {
@@ -157,6 +226,92 @@ public class MailerService {
         }
     }
 
+    private JavaMailSender resolveJavaMailSender() {
+        var mailer = appliProperties.getMailer();
+        if (!StringUtils.hasText(mailer.getHost())) {
+            return null;
+        }
+        String protocol = StringUtils.hasText(mailer.getProtocol()) ? mailer.getProtocol() : "smtp";
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setProtocol(protocol);
+        mailSender.setHost(mailer.getHost());
+        if (mailer.getPort() > 0) {
+            mailSender.setPort(mailer.getPort());
+        }
+        if (mailer.isAuth()) {
+            mailSender.setUsername(mailer.getUsername());
+            mailSender.setPassword(mailer.getPassword());
+        }
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail." + protocol + ".auth", String.valueOf(mailer.isAuth()));
+        if (StringUtils.hasText(mailer.getFrom())) {
+            props.put("mail." + protocol + ".from", mailer.getFrom());
+        }
+        if (mailer.isSslEnable()) {
+            props.put("mail." + protocol + ".ssl.enable", "true");
+        }
+        return mailSender;
+    }
+
+    public void sendValidationMail(Convention convention, Avenant avenant, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire, boolean sendMailRespGestionnaire) {
+        // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+        personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).toList();
+        // Récupération de la fiche utilisateur des personnels
+        if (sendMailGestionnaire || sendMailRespGestionnaire) {
+            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+            } else {
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
+                            sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
+                    } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
+                            sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
+                    }
+                }
+            }
+        }
+        if (sendMailEtudiant)
+            sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+        if (sendMailEnseignant)
+            sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
+    }
+
+    public void sendValidationMail(Convention convention, Avenant avenant, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire, boolean sendMailRespGestionnaire){
+        // Récupération du personnel du centre de gestion de la convention avec alertMail=1
+        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
+        personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).toList();
+        // Récupération de la fiche utilisateur des personnels
+        if (sendMailGestionnaire || sendMailRespGestionnaire) {
+            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
+            utilisateurPersonnels.stream().forEach(u -> {logger.debug("utilisateur : {}",u);});
+            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
+                sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, templateMailCode);
+            } else {
+                for (PersonnelCentreGestion personnel : personnels) {
+                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
+                    if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire) {
+                            sendAlerteValidation(personnel.getMail(), convention, avenant, templateMailCode);
+                        }
+                    } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
+                        if (isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire) {
+                            sendAlerteValidation(personnel.getMail(), convention, avenant, templateMailCode);
+                        }
+                    }
+                }
+            }
+        }
+        if (sendMailEtudiant)
+            sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, templateMailCode);
+        if (sendMailEnseignant)
+            sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, templateMailCode);
+    }
+
     public boolean isAlerteActif(PersonnelCentreGestion personnel, String templateCode) {
         switch (templateCode) {
             case TemplateMail.CODE_AVENANT_VALIDATION:
@@ -188,6 +343,17 @@ public class MailerService {
                 return personnel.getModificationConventionGestionnaire() != null && personnel.getModificationConventionGestionnaire();
             case TemplateMail.CODE_CONVENTION_SIGNEE:
                 return personnel.getConventionSignee() != null && personnel.getConventionSignee();
+            case TemplateMail.CODE_CHANGEMENT_ENSEIGNANT:
+                return personnel.getChangementEnseignant() != null && personnel.getChangementEnseignant();
+            case TemplateMail.CODE_EVAL_TUTEUR_REMPLIE:
+                return personnel.getEvalTuteurRemplie() != null && personnel.getEvalTuteurRemplie();
+            case TemplateMail.CODE_EVAL_ENSEIGNANT_REMPLIE:
+                return personnel.getEvalEnsRemplie() != null && personnel.getEvalEnsRemplie();
+            case TemplateMail.CODE_EVAL_ETU_REMPLIE:
+                return personnel.getEvalEtuRemplie() != null && personnel.getEvalEtuRemplie();
+            case TemplateMail.CODE_EVAL_REMPLIES:
+                return personnel.getEvalRemplies() != null && personnel.getEvalRemplies();
+
             default:
                 return false;
         }
@@ -212,18 +378,35 @@ public class MailerService {
         private ModifieParContext modifiePar = new ModifieParContext();
         private EtudiantContext etudiant = new EtudiantContext();
         private AvenantContext avenant = new AvenantContext();
+        private String lienEvaluationTuteur= "";
+        private String lienOpposition = "";
 
-        public MailContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention, Avenant avenant, Utilisateur userModif) {
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, Utilisateur userModif, String lienEvaluationTuteur) {
             if (convention != null) {
-                this.convention = new ConventionContext(appliProperties, applicationProperties, convention);
+                this.convention = new ConventionContext(appliProperties, convention);
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
                 this.avenant = new AvenantContext(avenant);
             }
             this.modifiePar = new ModifieParContext(userModif);
+        }
+
+        public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, String lienEvaluationTuteur) {
+            if (convention != null) {
+                this.convention = new ConventionContext(appliProperties, convention);
+                this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
+                this.signataire = new SignataireContext(convention.getSignataire());
+                this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.lienEvaluationTuteur =  lienEvaluationTuteur;
+            }
+            if (avenant != null) {
+                this.avenant = new AvenantContext(avenant);
+            }
+            this.modifiePar = null;
         }
 
         @Data
@@ -241,7 +424,7 @@ public class MailerService {
             private String tempsTravailComment;
             private String lien;
 
-            public ConventionContext(AppliProperties appliProperties,ApplicationProperties applicationProperties,Convention convention) {
+            public ConventionContext(AppliProperties appliProperties, Convention convention) {
                 DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
                 this.numero = String.valueOf(convention.getId());

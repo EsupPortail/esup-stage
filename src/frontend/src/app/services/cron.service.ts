@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AuthService} from "./auth.service";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
@@ -29,7 +29,13 @@ export class CronService implements PaginatedService {
   }
 
   executeNow(id: number): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/cron/${id}/execute`, {});
+    // Lancement asynchrone côté serveur : la réponse est immédiate, pas de loader plein écran
+    return this.http.post(`${environment.apiUrl}/cron/${id}/execute`, {}, {headers: new HttpHeaders({'X-No-Loader': 'true'})});
+  }
+
+  getRunning(): Observable<number[]> {
+    // Polling de fond : pas de loader plein écran
+    return this.http.get<number[]>(`${environment.apiUrl}/cron/running`, {headers: new HttpHeaders({'X-No-Loader': 'true'})});
   }
 
 }
