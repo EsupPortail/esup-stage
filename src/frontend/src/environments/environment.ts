@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl : '/api',
+  loginUrl: '/login/cas',
   logoutUrl: '/logout',
   themeUrl: '/theme.css',
 };

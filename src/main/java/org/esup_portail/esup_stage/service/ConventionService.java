@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.dto.ConventionFormDto;
+import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.dto.ResponseDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -20,6 +21,7 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.service.Structure.StructureService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantRef;
+import org.esup_portail.esup_stage.service.apogee.model.InfosAdmEtu;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
@@ -86,13 +88,10 @@ public class ConventionService {
     LdapService ldapService;
 
     @Autowired
-    UtilisateurJpaRepository utilisateurJpaRepository;
-
-    @Autowired
-    MailerService mailerService;
-
-    @Autowired
     private StructureService structureService;
+
+    @Autowired
+    HabilitationService habilitationService;
 
     public void validationAutoDonnees(Convention convention, Utilisateur utilisateur) {
         // Validation automatique de l'établissement d'accueil, le service d'accueil et du tuteur de stage à la validation de la convention
@@ -121,6 +120,9 @@ public class ConventionService {
                 tuteurPro.setInfosAJour(new Date());
                 tuteurPro.setLoginInfosAJour(utilisateur.getLogin());
                 contactJpaRepository.save(tuteurPro);
+            }
+            if (updateNomSignataireComposante(convention)) {
+                conventionJpaRepository.save(convention);
             }
         }
     }
@@ -155,19 +157,28 @@ public class ConventionService {
         CentreGestion centreGestionEtab = getCentreGestionEtab();
         CentreGestion centreGestion = getCentreGestion(centreGestionEtab, conventionFormDto.getCodeComposante(), conventionFormDto.getCodeEtape(), conventionFormDto.getCodeVersionEtape());
         convention.setCentreGestion(centreGestion);
+        validateFormationEligible(utilisateur, conventionFormDto);
 
         Etudiant etudiant = etudiantRepository.findByNumEtudiant(conventionFormDto.getNumEtudiant());
         if (etudiant == null) {
             etudiant = new Etudiant();
-            etudiant.setIdentEtudiant(ldapEtudiant.get(0).getUid());
+            etudiant.setIdentEtudiant(ldapEtudiant.getFirst().getUid());
             etudiant.setNumEtudiant(conventionFormDto.getNumEtudiant());
             etudiant.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
         }
-        etudiant.setNom(String.join(" ", ldapEtudiant.get(0).getSn()));
-        etudiant.setPrenom(String.join(" ", ldapEtudiant.get(0).getGivenName()));
-        etudiant.setMail(ldapEtudiant.get(0).getMail());
+        etudiant.setNom(String.join(" ", etudiantRef.getNompatro()));
+        etudiant.setPrenom(String.join(" ", etudiantRef.getPrenom()));
+        etudiant.setMail(etudiantRef.getMail());
         etudiant.setCodeSexe(etudiantRef.getCodeSexe());
         etudiant.setDateNais(etudiantRef.getDateNais());
+
+        InfosAdmEtu infosAdmEtu = apogeeService.getInfosAdmEtudiant(etudiant.getNumEtudiant());
+        if (infosAdmEtu != null) {
+            etudiant.setPrenomEtatCivil(infosAdmEtu.getPrenomEtatCivil());
+            etudiant.setSexEtatCivil(infosAdmEtu.getSexEtatCivil());
+            etudiant.setPrenom2(infosAdmEtu.getPrenom2());
+        }
+
         etudiant = etudiantJpaRepository.saveAndFlush(etudiant);
 
         // Ajout du pays de la convention à France si non renseigné
@@ -193,9 +204,26 @@ public class ConventionService {
         convention.setNomEtabRef(centreGestionEtab.getNomCentre());
         convention.setAdresseEtabRef(centreGestionEtab.getAdresseComplete());
         convention.setVolumeHoraireFormation(conventionFormDto.getVolumeHoraireFormation());
+        convention.setProtectionSocialeOrganismeAccueil(conventionFormDto.getProtectionSocialeOrganismeAccueil());
+        convention.setAccordAnnuaireEtudiant(conventionFormDto.getAccordAnnuaireEtudiant());
 
         if (!isConventionModifiable(convention, ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "La convention n'est plus modifiable");
+        }
+    }
+
+    private void validateFormationEligible(Utilisateur utilisateur, ConventionFormDto conventionFormDto) {
+        List<ConventionFormationDto> inscriptions = apogeeService.getInscriptions(utilisateur, conventionFormDto.getNumEtudiant(), conventionFormDto.getAnnee());
+        boolean eligible = inscriptions.stream().anyMatch(inscription -> {
+            if (inscription.getEtapeInscription() == null) {
+                return false;
+            }
+            return Objects.equals(inscription.getAnnee(), conventionFormDto.getAnnee())
+                    && Objects.equals(inscription.getEtapeInscription().getCodeEtp(), conventionFormDto.getCodeEtape())
+                    && Objects.equals(inscription.getEtapeInscription().getCodVrsVet(), conventionFormDto.getCodeVersionEtape());
+        });
+        if (!eligible) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à créer une convention sur cette formation.");
         }
     }
 
@@ -283,20 +311,82 @@ public class ConventionService {
     }
 
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
+        canViewEditConvention(convention, utilisateur, DroitEnum.LECTURE);
+    }
+
+    public void canViewEditConvention(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
+        // Une convention archivée n'est visible que par les admins, et uniquement en lecture seule
+        if (convention != null && convention.getDateArchivage() != null) {
+            if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
             }
+            if (droit != DroitEnum.LECTURE) {
+                throw new AppException(HttpStatus.FORBIDDEN, "La convention est archivée : elle n'est plus modifiable");
+            }
+            return;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
+        }
+        if (hasCentreConventionRight(convention, utilisateur, droit)) {
+            return;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        // Si l'utilisateur possède un ou plusieurs rôles sur le centre de gestion de la
+        // convention, ce sont ces droits qui font foi : ils priment sur le rôle global.
+        if (hasCentreRolesForConvention(convention, utilisateur)) {
+            if (!hasCentreConventionRight(convention, utilisateur, droit)) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        // Comportement global historique (aucun rôle spécifique sur ce centre de gestion)
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+            if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+    }
+
+    private boolean hasCentreRolesForConvention(Convention convention, Utilisateur utilisateur) {
+        if (convention == null || convention.getCentreGestion() == null) {
+            return false;
+        }
+        return habilitationService.hasCentreRoles(utilisateur, convention.getCentreGestion().getId());
+    }
+
+    private boolean hasCentreConventionRight(Convention convention, Utilisateur utilisateur, DroitEnum droit) {
+        if (convention == null || convention.getCentreGestion() == null) {
+            return false;
+        }
+        try {
+            return habilitationService.hasCentreRight(utilisateur, convention.getCentreGestion().getId(), new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{droit});
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
+        }
+    }
+
+    /**
+     * Un enseignant (rôle appliqué sur le centre de gestion de la convention, ou rôle global
+     * à défaut) n'a de droits que sur la validation pédagogique. La distinction repose sur le
+     * rôle effectif du centre de gestion et non sur le seul rôle global.
+     */
+    public void checkValidationType(Convention convention, Utilisateur utilisateur, String type) {
+        Integer idCentreGestion = convention != null && convention.getCentreGestion() != null ? convention.getCentreGestion().getId() : null;
+        List<Role> rolesEffectifs = habilitationService.getEffectiveRoles(utilisateur, idCentreGestion);
+        boolean enseignantSeulement = rolesEffectifs.stream().anyMatch(r -> Role.ENS.equals(r.getCode()))
+                && rolesEffectifs.stream().noneMatch(r -> Role.GES.equals(r.getCode()) || Role.RESP_GES.equals(r.getCode()) || Role.ADM.equals(r.getCode()));
+        if (enseignantSeulement && !"validationPedagogique".equals(type)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
     }
 
@@ -317,10 +407,14 @@ public class ConventionService {
                 return modifiable;
             } else {
                 boolean modifiable = convention.getValidationConvention() == null || !convention.getValidationConvention();
-                if (!UtilisateurHelper.isRole(utilisateur, Role.GES) && !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)) {
+                // Les droits appliqués sont ceux du rôle du centre de gestion de la convention
+                // s'il existe, sinon ceux du rôle global.
+                List<Role> rolesEffectifs = habilitationService.getEffectiveRoles(utilisateur, convention.getCentreGestion() != null ? convention.getCentreGestion().getId() : null);
+                boolean gestionnaire = rolesEffectifs.stream().anyMatch(r -> Role.GES.equals(r.getCode()) || Role.RESP_GES.equals(r.getCode()));
+                if (!gestionnaire) {
                     // en fonction du paramétrage
                     try {
-                        modifiable = modifiable && UtilisateurHelper.isRole(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION});
+                        modifiable = modifiable && UtilisateurHelper.isRole(rolesEffectifs, new AppFonctionEnum[]{AppFonctionEnum.CONVENTION}, new DroitEnum[]{DroitEnum.MODIFICATION});
                     } catch (Exception e) {
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur technique");
                     }
@@ -356,7 +450,7 @@ public class ConventionService {
             put(keyTel, convention.getSignataire().getTel());
         }});
         data.put("directeur du département", new HashMap<>() {{
-            put(keyMail, convention.getCentreGestion().getMailViseur());
+            put(keyMail, !Strings.isEmpty(convention.getCentreGestion().getMailDelegataireViseur()) ? convention.getCentreGestion().getMailDelegataireViseur() : convention.getCentreGestion().getMailViseur());
             put(keyTel, convention.getCentreGestion().getTelephone());
         }});
 
@@ -376,6 +470,44 @@ public class ConventionService {
             }
         }
         return response;
+    }
+
+    private boolean updateNomSignataireComposante(Convention convention) {
+        CentreGestion centreGestion = convention.getCentreGestion();
+        if (centreGestion == null) {
+            return false;
+        }
+
+        boolean hasDelegataire = !Strings.isEmpty(centreGestion.getNomDelegataireViseur()) || !Strings.isEmpty(centreGestion.getPrenomDelegataireViseur());
+        String prenom = hasDelegataire ? centreGestion.getPrenomDelegataireViseur() : centreGestion.getPrenomViseur();
+        String nom = hasDelegataire ? centreGestion.getNomDelegataireViseur() : centreGestion.getNomViseur();
+        String qualite = hasDelegataire ? centreGestion.getQualiteDelegataireViseur() : centreGestion.getQualiteViseur();
+        String fullName = buildFullName(prenom, nom);
+
+        boolean updated = false;
+        if (!Strings.isEmpty(fullName) && !fullName.equals(convention.getNomSignataireComposante())) {
+            convention.setNomSignataireComposante(fullName);
+            updated = true;
+        }
+        if (!Strings.isEmpty(qualite) && !qualite.equals(convention.getQualiteSignataire())) {
+            convention.setQualiteSignataire(qualite);
+            updated = true;
+        }
+        return updated;
+    }
+
+    private String buildFullName(String prenom, String nom) {
+        StringBuilder sb = new StringBuilder();
+        if (!Strings.isEmpty(prenom)) {
+            sb.append(prenom.trim());
+        }
+        if (!Strings.isEmpty(prenom) && !Strings.isEmpty(nom)) {
+            sb.append(" ");
+        }
+        if (!Strings.isEmpty(nom)) {
+            sb.append(nom.trim());
+        }
+        return sb.toString().trim();
     }
 
     public void updateSignatureElectroniqueHistorique() {
@@ -413,34 +545,4 @@ public class ConventionService {
         }
         return signataires;
     }
-
-    public void sendValidationMail(Convention convention, Avenant avenant, Utilisateur utilisateurContext, String templateMailCode, boolean sendMailEtudiant, boolean sendMailEnseignant, boolean sendMailGestionnaire, boolean sendMailRespGestionnaire) {
-        // Récupération du personnel du centre de gestion de la convention avec alertMail=1
-        List<PersonnelCentreGestion> personnels = convention.getCentreGestion().getPersonnels();
-        personnels = personnels.stream().filter(p -> p.getAlertesMail() != null && p.getAlertesMail()).collect(Collectors.toList());
-
-        // Récupération de la fiche utilisateur des personnels
-        if (sendMailGestionnaire || sendMailRespGestionnaire) {
-            List<Utilisateur> utilisateurPersonnels = utilisateurJpaRepository.findByUids(personnels.stream().map(PersonnelCentreGestion::getUidPersonnel).collect(Collectors.toList()));
-            if (convention.getCentreGestion().isOnlyMailCentreGestion()) {
-                mailerService.sendAlerteValidation(convention.getCentreGestion().getMail(), convention, avenant, utilisateurContext, templateMailCode);
-            } else {
-                for (PersonnelCentreGestion personnel : personnels) {
-                    Utilisateur utilisateur = utilisateurPersonnels.stream().filter(u -> u.getUid().equals(personnel.getUidPersonnel())).findAny().orElse(null);
-                    if ((utilisateur == null || !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailGestionnaire)
-                            mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
-                    } else if ((utilisateur != null && UtilisateurHelper.isRole(utilisateur, Role.RESP_GES))) {
-                        if (mailerService.isAlerteActif(personnel, templateMailCode) && sendMailRespGestionnaire)
-                            mailerService.sendAlerteValidation(personnel.getMail(), convention, avenant, utilisateurContext, templateMailCode);
-                    }
-                }
-            }
-        }
-        if (sendMailEtudiant)
-            mailerService.sendAlerteValidation(convention.getEtudiant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
-        if (sendMailEnseignant)
-            mailerService.sendAlerteValidation(convention.getEnseignant().getMail(), convention, avenant, utilisateurContext, templateMailCode);
-    }
-
 }

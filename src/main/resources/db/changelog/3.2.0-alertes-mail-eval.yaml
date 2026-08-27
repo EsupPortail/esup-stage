@@ -1,0 +1,126 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-template-mail-eval-remplie
+      author: thouveno9
+      changes:
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: EVAL_TUTEUR_REMPLIE
+              - column:
+                  name: libelle
+                  value: Le tuteur a rempli la fiche d’évaluation de stage
+              - column:
+                  name: objet
+                  value: Le tuteur a rempli la fiche d’évaluation de stage
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: EVAL_ETU_REMPLIE
+              - column:
+                  name: libelle
+                  value: L’étudiant a rempli la fiche d’évaluation de stage
+              - column:
+                  name: objet
+                  value: L’étudiant a rempli la fiche d’évaluation de stage
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: EVAL_ENS_REMPLIE
+              - column:
+                  name: libelle
+                  value: L’enseignant a rempli la fiche d’évaluation de stage
+              - column:
+                  name: objet
+                  value: L’enseignant a rempli la fiche d’évaluation de stage
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+
+        - insert:
+            tableName: TemplateMail
+            columns:
+              - column:
+                  name: code
+                  value: EVAL_REMPLIES
+              - column:
+                  name: libelle
+                  value: Toutes les évaluations de stage ont été remplies
+              - column:
+                  name: objet
+                  value: Toutes les évaluations de stage ont été remplies
+              - column:
+                  name: texte
+                  value: Texte à modifier
+              - column:
+                  name: dateCreation
+                  value: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+  - changeSet:
+      id: 3.2.0-ajout-alertes-mail-eval-personnel-cg
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: PersonnelCentreGestion
+            columns:
+              - column:
+                  name: evalTuteurRemplie
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: evalEtuRemplie
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: evalEnsRemplie
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: evalRemplies
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+  - changeSet:
+      id: 3.2.0-ajout-alerte-changement-ens-personnel-cg
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: PersonnelCentreGestion
+            columns:
+              - column:
+                  name: ChangementEnseignant
+                  type: BOOLEAN
+                  defaultValueBoolean: false

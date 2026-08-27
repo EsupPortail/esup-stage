@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-add-cron-supprimer-contacts-inutilises
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'SupprimerContactsInutilises'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: SupprimerContactsInutilises
+              - column:
+                  name: expressionCron
+                  value: 0 0 4 1 * ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: false
+
+  - changeSet:
+      id: 3.3.0-add-cron-supprimer-services-inutilises
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM CronTask WHERE nom = 'SupprimerServicesInutilises'
+      changes:
+        - insert:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: nom
+                  value: SupprimerServicesInutilises
+              - column:
+                  name: expressionCron
+                  value: 0 30 4 1 * ?
+              - column:
+                  name: dateCreation
+                  valueDate: now()
+              - column:
+                  name: loginCreation
+                  value: liquibase
+              - column:
+                  name: active
+                  valueBoolean: false

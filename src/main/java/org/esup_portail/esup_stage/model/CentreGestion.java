@@ -74,9 +74,6 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private String mailViseur;
 
-    @Column
-    private String urlPageInstruction;
-
     @ManyToOne
     @JoinColumn(name = "idCentreGestionSuperViseur")
     private CentreGestionSuperviseur centreGestionSuperViseur;
@@ -85,11 +82,21 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @JoinColumn(name = "codeConfidentialite")
     private Confidentialite codeConfidentialite;
 
+    @ManyToOne
+    @JoinColumn(name = "codeConfidentialiteConventionOrpheline")
+    private Confidentialite codeConfidentialiteConventionOrpheline;
+
     @Column()
     private boolean autoriserImpressionConvention;
 
     @Column()
     private Integer conditionValidationImpression = 0;
+
+    @Column()
+    private boolean autoriserImpressionAvenant;
+
+    @Column()
+    private Integer conditionValidationImpressionAvenant = 0;
 
     @ManyToOne
     @JoinColumn(name = "idFichier")
@@ -179,6 +186,32 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private boolean envoiDocumentSigne = false;
 
+    @JsonView(Views.List.class)
+    @Column()
+    private boolean autoriserChevauchement = false;
+
+    @JsonView(Views.List.class)
+    @Column()
+    private boolean autoriserImpressionConventionApresCreationAvenant = false;
+
+    @Column
+    private String nomDelegataireViseur;
+
+    @Column
+    private String prenomDelegataireViseur;
+
+    @Column
+    private String qualiteDelegataireViseur;
+
+    @Column
+    private String mailDelegataireViseur;
+
+    @Column
+    private boolean activerSelectionAutomatiqueTemplateConvention;
+
+    @Column
+    private boolean desactiverSelectionAutomatiqueTypeConvention = false;
+
     @Transient
     public String getAdresseComplete() {
         return getVoie() + " " + getCodePostal() + " " + getCommune();
@@ -186,10 +219,6 @@ public class CentreGestion extends ObjetMetier implements Exportable {
 
     public boolean isOnlyMailCentreGestion() {
         return onlyMailCentreGestion;
-    }
-
-    public void setOnlyMailCentreGestion(boolean onlyMailCentreGestion) {
-        this.onlyMailCentreGestion = onlyMailCentreGestion;
     }
 
     @Override

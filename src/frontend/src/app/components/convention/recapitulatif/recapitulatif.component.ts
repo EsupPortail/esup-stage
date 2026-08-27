@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { PeriodeStageService } from "../../../services/periode-stage.service"
 import { ConventionService } from "../../../services/convention.service";
@@ -7,11 +7,13 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import * as FileSaver from 'file-saver';
 import { UserService } from '../../../services/user.service';
+import {AvenantService} from "../../../services/avenant.service";
 
 @Component({
-  selector: 'app-recapitulatif',
-  templateUrl: './recapitulatif.component.html',
-  styleUrls: ['./recapitulatif.component.scss']
+    selector: 'app-recapitulatif',
+    templateUrl: './recapitulatif.component.html',
+    styleUrls: ['./recapitulatif.component.scss'],
+    standalone: false
 })
 export class RecapitulatifComponent implements OnInit {
 
@@ -23,6 +25,9 @@ export class RecapitulatifComponent implements OnInit {
   printDisabledReason: string = '';
   nomPrenomCreation: string = '';
   nomPrenomModification: string = '';
+  avenants: any[] = [];
+  loadingAvenants = true;
+  canEditAccordAnnuaire: boolean = false;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeStageService: PeriodeStageService,
@@ -30,7 +35,9 @@ export class RecapitulatifComponent implements OnInit {
               private messageService: MessageService,
               private authService: AuthService,
               private router: Router,
-              private userService: UserService) {
+              private userService: UserService,
+              private avenantService: AvenantService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -49,6 +56,10 @@ export class RecapitulatifComponent implements OnInit {
       modeValidationStageLibelle: this.getNomenclatureValue('modeValidationStage'),
     };
 
+    // Le consentement annuaire reste modifiable après validation de la convention :
+    // l'étudiant doit pouvoir retirer son accord à tout moment.
+    this.canEditAccordAnnuaire = this.authService.isEtudiant() || this.authService.isGestionnaire() || this.authService.isAdmin();
+
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();
     }
@@ -66,6 +77,7 @@ export class RecapitulatifComponent implements OnInit {
     if (this.convention.loginModif) {
       this.getNomPrenomEnvoiSignature(this.convention.loginModif, 'modif');
     }
+    this.loadAvenants();
   }
 
   updateCanPrintStatus(): void {
@@ -84,6 +96,20 @@ export class RecapitulatifComponent implements OnInit {
       if (!centreGestion.autoriserImpressionConvention) {
         this.canPrint = false;
         this.printDisabledReason = 'L\'impression n\'est pas autorisée pour ce centre de gestion';
+        return;
+      }
+
+      if (this.hasValidatedAvenant()) {
+        this.canPrint = false;
+        this.printDisabledReason =
+          'L’impression n\'est pas disponible car un avenant a été validé. '
+        return;
+      }
+
+      if (this.avenants.length > 0 && !centreGestion.autoriserImpressionConventionApresCreationAvenant) {
+        this.canPrint = false;
+        this.printDisabledReason =
+          'L’impression n’est pas autorisée par votre centre après la création d’un avenant.';
         return;
       }
 
@@ -150,6 +176,24 @@ export class RecapitulatifComponent implements OnInit {
     })
   }
 
+  setAccordAnnuaire(value: boolean, checked: boolean): void {
+    if (!checked) {
+      // Une des deux cases doit rester cochée. Le binding [checked] ne changeant pas de
+      // valeur, on force un cycle à null pour que la case décochée soit bien re-cochée.
+      const courant = this.tmpConvention.accordAnnuaireEtudiant;
+      this.tmpConvention.accordAnnuaireEtudiant = null;
+      this.changeDetectorRef.detectChanges();
+      this.tmpConvention.accordAnnuaireEtudiant = courant;
+      return;
+    }
+    const accord = value;
+    this.conventionService.updateAccordAnnuaire(this.tmpConvention.id, accord).subscribe((response: any) => {
+      this.tmpConvention.accordAnnuaireEtudiant = response.accordAnnuaireEtudiant;
+      this.convention.accordAnnuaireEtudiant = response.accordAnnuaireEtudiant;
+      this.messageService.setSuccess('Votre choix a bien été enregistré');
+    });
+  }
+
   validate(): void {
     this.conventionService.validationCreation(this.tmpConvention.id).subscribe((response: any) => {
       this.messageService.setSuccess('Convention créée avec succès');
@@ -192,4 +236,27 @@ export class RecapitulatifComponent implements OnInit {
       }
     });
   }
+
+  private hasValidatedAvenant(): boolean {
+    return Array.isArray(this.avenants) && this.avenants.some(a => a.validationAvenant);
+  }
+
+  private loadAvenants(): void {
+    this.loadingAvenants = true;
+    this.avenantService.getByConvention(this.tmpConvention.id).subscribe({
+      next: (res: any) => {
+        this.avenants = Array.isArray(res) ? res : (res?.content ?? []);
+        this.loadingAvenants = false;
+        this.updateCanPrintStatus();
+      },
+      error : (err: any) => {
+        this.loadingAvenants = false;
+        this.messageService.setError('Une erreur est survenue lors du chargement des avenants : ' + err.message);
+        if (this.authService.isEtudiant()) {
+          this.canPrint = false;
+        }
+      }
+    });
+  }
+
 }

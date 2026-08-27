@@ -3,7 +3,7 @@
   <h2 mat-dialog-title>Confirmation</h2>
   <mat-dialog-content [innerHTML]="confirmMessage"></mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-flat-button color="warn" mat-dialog-close>{{'BOUTON_ANNULER'|contenu}}</button>
-    <button mat-flat-button color="primary" (click)="confirmed()">{{'BOUTON_VALIDER'|contenu}}</button>
+    <button class="cancel-button" mat-flat-button mat-dialog-close>{{'BOUTON_ANNULER'|contenu}}</button>
+    <button class="valid-button" mat-flat-button (click)="confirmed()">{{'BOUTON_VALIDER'|contenu}}</button>
   </mat-dialog-actions>
 </ng-template>

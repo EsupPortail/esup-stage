@@ -2,7 +2,6 @@ package org.esup_portail.esup_stage.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.apache.logging.log4j.util.Strings;
 
 @Data
 public class MetadataSignataireDto {
@@ -21,6 +20,6 @@ public class MetadataSignataireDto {
     private int order;
 
     public String getPhone() {
-        return Strings.isEmpty(phone) ? null : phone;
+        return phone != null && !phone.equals("null") ? phone : "";
     }
 }

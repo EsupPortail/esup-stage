@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-protection-social-organisme-accueil-convention
+      author: thouveno9
+      changes:
+        - addColumn:
+            tableName: Convention
+            columns:
+              - column:
+                  name: protectionSocialeOrganismeAccueil
+                  type : boolean

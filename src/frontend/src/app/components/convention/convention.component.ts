@@ -7,11 +7,13 @@ import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
 import { AppFonction } from '../../constants/app-fonction';
 import { Droit } from '../../constants/droit';
+import { getProgressText } from '../../utils/text-progress-bar.utils';
 
 @Component({
-  selector: 'app-convention',
-  templateUrl: './convention.component.html',
-  styleUrls: ['./convention.component.scss']
+    selector: 'app-convention',
+    templateUrl: './convention.component.html',
+    styleUrls: ['./convention.component.scss'],
+    standalone: false
 })
 export class ConventionComponent implements OnInit {
 
@@ -30,12 +32,14 @@ export class ConventionComponent implements OnInit {
     6: { statut: 0, init: false },
     7: { statut: 0, init: false },
     8: { statut: 0, init: false },
+    9: { statut: 0, init: false },
   }
 
   goToOnglet = 0;
   allValid = false;
   modifiable = true;
   signatureEnabled = false;
+  protected readonly getProgressText = getProgressText;
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
@@ -76,8 +80,12 @@ export class ConventionComponent implements OnInit {
           this.titleService.title = 'Gestion de la convention n°' + pathId
           + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
+          // Une convention archivée est en lecture seule pour tout le monde, admin compris
+          if (this.convention.dateArchivage) {
+            this.modifiable = false;
+          }
           // un admin a tout le temps les droits de modifications
-          if (this.authService.isAdmin()) {
+          else if (this.authService.isAdmin()) {
             this.modifiable = true;
           } else {
             const canModifConvention = !this.convention.validationConvention && this.authService.checkRights({ fonction: AppFonction.CONVENTION, droits: [Droit.MODIFICATION] });
@@ -130,14 +138,14 @@ export class ConventionComponent implements OnInit {
       this.setStatus(3,0);
     }
     if (this.convention.enseignant){
-      this.setStatus(5,2);
-    }else{
-      this.setStatus(5,0);
-    }
-    if (this.convention.signataire){
       this.setStatus(6,2);
     }else{
       this.setStatus(6,0);
+    }
+    if (this.convention.signataire){
+      this.setStatus(7,2);
+    }else{
+      this.setStatus(7,0);
     }
   }
 
@@ -149,7 +157,7 @@ export class ConventionComponent implements OnInit {
   majAllValid(): void {
     this.allValid = true;
     for (let key in this.tabs) {
-        if (key != '7' && key != '8' && this.tabs[key].statut !== 2) {
+        if (key != '5' && key != '8' && key != '9' && this.tabs[key].statut !== 2) {
           this.allValid = false;
         }
     }
@@ -187,7 +195,7 @@ export class ConventionComponent implements OnInit {
   }
 
   updateStage(data: any): void {
-    this.updateSingleField(data.field,data.value);
+    this.updateSingleField(data.field, data.value, data.dureeExceptionnellePeriode);
   }
 
   updateEnseignant(data: any): void {
@@ -202,11 +210,14 @@ export class ConventionComponent implements OnInit {
   }
 
 
-  updateSingleField(key: string, value: any): void {
-    const data = {
+  updateSingleField(key: string, value: any, dureeExceptionnellePeriode?: string): void {
+    const data: any = {
       "field":key,
       "value":value,
     };
+    if (dureeExceptionnellePeriode != null) {
+      data.dureeExceptionnellePeriode = dureeExceptionnellePeriode;
+    }
     this.conventionService.patch(this.convention.id, data).subscribe((response: any) => {
       this.convention = response;
       this.majStatus();
@@ -214,25 +225,26 @@ export class ConventionComponent implements OnInit {
   }
 
   isConventionValide(): boolean {
-    let conventionValide = null;
-    if (this.convention.centreGestion != null) {
-      if (this.convention.centreGestion.validationPedagogique) {
-        conventionValide = this.convention.validationPedagogique;
-      }
-      if (this.convention.centreGestion.validationConvention) {
-        if (conventionValide != null) {
-          conventionValide = conventionValide && this.convention.validationConvention
-        } else {
-          conventionValide = this.convention.validationConvention
-        }
-      }
-      return conventionValide;
-    }
-    return false;
+    const c = this.convention;
+
+    const cg = c?.centreGestion;
+    if (!cg) return false;
+    if (!cg.validationPedagogique && !cg.validationConvention && !cg.verificationAdministrative) return false;
+
+    return (!cg.validationPedagogique || c.validationPedagogique)
+      && (!cg.validationConvention || c.validationConvention)
+      && (!cg.verificationAdministrative || c.verificationAdministrative);
   }
 
   isEtudiant(): boolean {
     return this.authService.isEtudiant();
+  }
+
+  canAccessDepotDocuments(): boolean {
+    return this.authService.isEtudiant()
+      || this.authService.isGestionnaire()
+      || this.authService.isAdmin()
+      || this.authService.isEnseignant();
   }
 
   conventionValidated(convention: any): any {
@@ -241,7 +253,7 @@ export class ConventionComponent implements OnInit {
       if (this.isConventionValide()) {
         this.tabGroup.selectedIndex = 1;
       } else {
-        this.tabGroup.selectedIndex = 8;
+        this.tabGroup.selectedIndex = this.canAccessDepotDocuments() ? 9 : 8;
       }
     }
   }

@@ -7,7 +7,7 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
-  ViewChild, ElementRef, ViewEncapsulation, AfterViewInit
+  ViewChild, ElementRef, ViewEncapsulation, AfterViewInit, OnDestroy
 } from '@angular/core';
 import * as FileSaver from "file-saver";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -85,12 +85,13 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-  selector: 'app-consigne',
-  templateUrl: './consigne.component.html',
-  styleUrls: ['./consigne.component.scss'],
-  encapsulation: ViewEncapsulation.None
+    selector: 'app-consigne',
+    templateUrl: './consigne.component.html',
+    styleUrls: ['./consigne.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
-export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
+export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   public Editor = ClassicEditor;
   public config: EditorConfig = {};
@@ -103,6 +104,7 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
 
   form!: FormGroup;
   @ViewChild('editor', { static: false }) editorElement!: ElementRef;
+  private editorRenderFrame?: number;
 
   constructor(
     private fb: FormBuilder,
@@ -182,8 +184,9 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  public ngAfterViewInit(): void {
+  public ngAfterViewInit() : void {
     this.config = {
+      licenseKey: 'GPL',
       toolbar: {
         items: [
           'undo',
@@ -293,13 +296,6 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
         Underline,
         Undo
       ],
-      fontFamily: {
-        supportAllValues: true
-      },
-      fontSize: {
-        options: [10, 12, 14, 'default', 18, 20, 22],
-        supportAllValues: true
-      },
       heading: {
         options: [
           {
@@ -345,16 +341,6 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
           }
         ]
       },
-      htmlSupport: {
-        allow: [
-          {
-            name: /^.*$/,
-            styles: true,
-            attributes: true,
-            classes: true
-          }
-        ]
-      },
       image: {
         toolbar: [
           'toggleImageCaption',
@@ -389,63 +375,26 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit {
           reversed: true
         }
       },
-      placeholder: 'Tapez ou collez votre contenu ici…',
-      style: {
-        definitions: [
-          {
-            name: 'Article category',
-            element: 'h3',
-            classes: ['category']
-          },
-          {
-            name: 'Title',
-            element: 'h2',
-            classes: ['document-title']
-          },
-          {
-            name: 'Subtitle',
-            element: 'h3',
-            classes: ['document-subtitle']
-          },
-          {
-            name: 'Info box',
-            element: 'p',
-            classes: ['info-box']
-          },
-          {
-            name: 'Side quote',
-            element: 'blockquote',
-            classes: ['side-quote']
-          },
-          {
-            name: 'Marker',
-            element: 'span',
-            classes: ['marker']
-          },
-          {
-            name: 'Spoiler',
-            element: 'span',
-            classes: ['spoiler']
-          },
-          {
-            name: 'Code (dark)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-dark']
-          },
-          {
-            name: 'Code (bright)',
-            element: 'pre',
-            classes: ['fancy-code', 'fancy-code-bright']
-          }
-        ]
-      },
+      placeholder: 'Type or paste your content here!',
       table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
       },
       translations: [translations]
+    };
+
+    this.editorRenderFrame = requestAnimationFrame(() => {
+      this.editorRenderFrame = requestAnimationFrame(() => {
+        this.isLayoutReady = true;
+        this.changeDetector.detectChanges();
+        this.editorRenderFrame = undefined;
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
     }
-    this.isLayoutReady = true;
-    this.changeDetector.detectChanges();
   }
 
   deleteConsigne() {

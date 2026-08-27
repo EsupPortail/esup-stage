@@ -6,20 +6,21 @@ import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 import { EtudiantGroupeEtudiantService } from "../../../services/etudiant-groupe-etudiant.service";
 import { MessageService } from "../../../services/message.service";
-import { SortDirection } from "@angular/material/sort";
+import {Sort, SortDirection} from "@angular/material/sort";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { InfosStageModalComponent } from './infos-stage-modal/infos-stage-modal.component';
 
 @Component({
-  selector: 'app-infos-stage',
-  templateUrl: './infos-stage.component.html',
-  styleUrls: ['./infos-stage.component.scss']
+    selector: 'app-infos-stage',
+    templateUrl: './infos-stage.component.html',
+    styleUrls: ['./infos-stage.component.scss'],
+    standalone: false
 })
 export class InfosStageComponent implements OnInit, OnChanges {
 
   columns: string[] = [];
-  sortColumn = 'prenom';
-  sortDirection: SortDirection = 'desc';
+  sortColumn = 'etudiant.nom_etudiant.prenom';
+  sortDirection: SortDirection = 'asc';
   filters: any[] = [];
   selected: any[] = [];
 
@@ -48,6 +49,13 @@ export class InfosStageComponent implements OnInit, OnChanges {
   ngOnChanges(): void{
     this.appTable?.update();
     this.selected = [];
+  }
+
+  sorting(appTable: TableComponent|undefined, event: Sort): void {
+    appTable?.sorting({
+      active: this.sharedData.sortColumns[event.active]??event.active,
+      direction: event.direction
+    });
   }
 
   isSelected(data: any): boolean {

@@ -3,11 +3,14 @@ package org.esup_portail.esup_stage.security.userdetails;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Etudiant;
+import org.esup_portail.esup_stage.model.PersonnelCentreGestion;
 import org.esup_portail.esup_stage.model.Role;
 import org.esup_portail.esup_stage.model.Utilisateur;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.service.AppConfigService;
+import org.esup_portail.esup_stage.service.HabilitationService;
+import org.esup_portail.esup_stage.service.proprety.ConfigMissingService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.esup_portail.esup_stage.config.properties.AppliProperties;
 
 @Service
 public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
@@ -49,9 +53,33 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
     @Autowired
     private AppConfigService appConfigService;
 
+    @Autowired
+    private ConfigMissingService configMissingService;
+
+    @Autowired
+    private AppliProperties appliProperties;
+
+    @Autowired
+    private HabilitationService habilitationService;
+
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken authentication) throws UsernameNotFoundException {
         String username = authentication.getName();
+
+        if (configMissingService.hasMissingKeys() && appliProperties.isAdminTechnique(username)) {
+            Role roleAdmTech = roleJpaRepository.findOneByCode(Role.ADM);
+            Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
+            if (utilisateur == null) {
+                utilisateur = new Utilisateur();
+                utilisateur.setLogin(username);
+                utilisateur.setActif(true);
+            }
+            if (roleAdmTech != null && !utilisateur.getRoles().contains(roleAdmTech)) {
+                utilisateur.getRoles().add(roleAdmTech);
+            }
+            utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
+            return new CasUserDetailsImpl(utilisateur, getGrantedAuthorities(utilisateur));
+        }
 
         // Recherche de l'utilisateur
         Utilisateur utilisateur = utilisateurJpaRepository.findOneByLogin(username);
@@ -76,13 +104,6 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                 List<Role> roles = new ArrayList<>();
                 if (StringUtils.hasText(role)) {
                     roles.add(roleJpaRepository.findOneByCode(role));
-                    // si l'enseignant est rattaché à un centre de gestion, on lui ajoute le rôle gestionnaire
-                    if (role.equals(Role.ENS)) {
-                        long count = personnelCentreGestionJpaRepository.countPersonnelByLogin(users.getFirst().getUid());
-                        if (count > 0) {
-                            roles.add(roleJpaRepository.findOneByCode(Role.GES));
-                        }
-                    }
                 }
                 utilisateur = new Utilisateur();
                 utilisateur.setLogin(username);
@@ -92,6 +113,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
                 utilisateur.setRoles(roles);
                 utilisateur.setUid(users.getFirst().getUid());
                 utilisateur = utilisateurJpaRepository.saveAndFlush(utilisateur);
+                initDefaultCentreRoles(utilisateur);
             }
         }
 
@@ -155,6 +177,17 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
         return new CasUserDetailsImpl(utilisateur, getGrantedAuthorities(utilisateur));
     }
 
+    private void initDefaultCentreRoles(Utilisateur utilisateur) {
+        if (utilisateur == null || utilisateur.getUid() == null) {
+            return;
+        }
+        Role roleGestionnaire = roleJpaRepository.findOneByCode(Role.GES);
+        for (PersonnelCentreGestion personnel : personnelCentreGestionJpaRepository.findByUidPersonnel(utilisateur.getUid())) {
+            if (habilitationService.getRolesByUtilisateurAndCentre(utilisateur.getId(), personnel.getCentreGestion().getId()).isEmpty()) {
+                habilitationService.replaceCentreRoles(utilisateur, personnel.getCentreGestion().getId(), List.of(roleGestionnaire));
+            }
+        }
+    }
     private Set<GrantedAuthority> getGrantedAuthorities(Utilisateur utilisateur) {
         Set<GrantedAuthority> authorities = new HashSet<>();
         if (utilisateur.getRoles() != null) {

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
@@ -14,6 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "Convention")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -423,6 +426,24 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private boolean temConventionSignee;
 
+    @Column
+    private Boolean protectionSocialeOrganismeAccueil;
+
+    @Column
+    private Boolean accordAnnuaireEtudiant;
+
+    @JsonView(Views.List.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivage;
+
+    // Date à laquelle les fichiers de la convention (documents déposés, PDF signés) ont été
+    // déplacés dans le dossier d'archives du serveur ; null = déplacement pas encore effectué
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivageFichiers;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
@@ -456,6 +477,11 @@ public class Convention extends ObjetMetier implements Exportable {
     public boolean isDepasseDelaiValidation() {
         CentreGestion centreGestion = getCentreGestion();
         if (centreGestion != null) {
+            Integer delaiAlerte = centreGestion.getDelaiAlerteConvention();
+            if (delaiAlerte == null) {
+                delaiAlerte = 0;
+            }
+
             Date now = new Date();
             Calendar calendarNow = Calendar.getInstance();
             calendarNow.setTime(now);
@@ -469,7 +495,7 @@ public class Convention extends ObjetMetier implements Exportable {
             if (dateDebutStage != null) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(dateDebutStage);
-                calendar.add(Calendar.DAY_OF_MONTH, centreGestion.getDelaiAlerteConvention() * -1);
+                calendar.add(Calendar.DAY_OF_MONTH, delaiAlerte * -1);
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
                 calendar.set(Calendar.SECOND, 0);
@@ -588,13 +614,13 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "sujetStage":
-                value = getSujetStage();
+                value = getConfidentialExportValue("sujetStage", getSujetStage());
                 break;
             case "fonctionsEtTaches":
-                value = getFonctionsEtTaches();
+                value = getConfidentialExportValue("fonctionsEtTaches", getFonctionsEtTaches());
                 break;
             case "details":
-                value = getDetails();
+                value = getConfidentialExportValue("details", getDetails());
                 break;
             case "dureeExceptionnelle":
                 value = getDureeExceptionnelle();
@@ -643,7 +669,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "mailSignataire":
                 if (getSignataire() != null) {
-                    value = getSignataire().getMail();
+                    value = getContactExportValue(getSignataire(), getSignataire().getMail());
                 }
                 break;
             case "fonctionSignataire":
@@ -660,7 +686,10 @@ public class Convention extends ObjetMetier implements Exportable {
                 }
                 break;
             case "commentaireStage":
-                value = getCommentaireStage();
+                value = getConfidentialExportValue("commentaireStage", getCommentaireStage());
+                break;
+            case "competences":
+                value = getConfidentialExportValue("competences", getCompetences());
                 break;
             case "commentaireDureeTravail":
                 value = getCommentaireDureeTravail();
@@ -815,12 +844,12 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "tuteurMail":
                 if (getContact() != null) {
-                    value = getContact().getMail();
+                    value = getContactExportValue(getContact(), getContact().getMail());
                 }
                 break;
             case "tuteurPhone":
                 if (getContact() != null) {
-                    value = getContact().getTel();
+                    value = getContactExportValue(getContact(), getContact().getTel());
                 }
                 break;
             case "tuteurFonction":
@@ -831,13 +860,51 @@ public class Convention extends ObjetMetier implements Exportable {
             case "lieuStage":
                 value = getLieuStage();
                 break;
+            case "gratificationStage":
+                // Même critère que l'archivage : témoin levé ou montant renseigné
+                value = Boolean.TRUE.equals(getGratificationStage())
+                        || (getMontantGratification() != null && !getMontantGratification().isEmpty()) ? "Oui" : "Non";
+                break;
+            case "dateArchivage":
+                if (getDateArchivage() != null) {
+                    value = df.format(getDateArchivage());
+                }
+                break;
+            case "accordAnnuaireEtudiant":
+                value = getAccordAnnuaireEtudiant() == null ? "Non renseigné" : (getAccordAnnuaireEtudiant() ? "Oui" : "Non");
+                break;
             default:
                 break;
         }
         return value;
     }
 
-    @Transient
+        private String getConfidentialExportValue(String key, String value) {
+        if (Boolean.TRUE.equals(getConfidentiel()) && isConfidentialExportField(key)) {
+            return "";
+        }
+        return value;
+    }
+
+    private boolean isConfidentialExportField(String key) {
+        return "sujetStage".equals(key)
+                || "fonctionsEtTaches".equals(key)
+                || "competences".equals(key)
+                || "details".equals(key)
+                || "commentaireStage".equals(key);
+    }
+
+    /**
+     * Droit d'opposition des contacts en entreprise : lorsqu'un contact a signalé qu'il ne
+     * souhaitait pas être contacté, ses coordonnées ne doivent plus figurer dans les extractions.
+     */
+    private String getContactExportValue(Contact contact, String value) {
+        if (contact != null && Boolean.TRUE.equals(contact.getRefusEtreContacte())) {
+            return DroitOpposition.MENTION_REFUS_ETRE_CONTACTE;
+        }
+        return value;
+    }
+@Transient
     public boolean isAllSignedDateSetted() {
         return getDateDepotEtudiant() != null && getDateSignatureEtudiant() != null &&
                 getDateDepotEnseignant() != null && getDateSignatureEnseignant() != null &&

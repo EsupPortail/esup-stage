@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, OnDestroy} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from "@angular/forms";
 import { debounceTime } from 'rxjs/operators';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { CentreGestionService } from "../../../services/centre-gestion.service";
 import { MessageService } from "../../../services/message.service";
@@ -20,7 +20,6 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
   @ViewChild('logoInput') logoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cropper') cropper?: ImageCropperComponent;
 
-  // --- Logo & formulaire
   logoFile: File | undefined;
   previewUrl: string | ArrayBuffer | null = null;
   currentFile: any;
@@ -42,7 +41,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
 
   // --- Preview PDF
   showPdfPreview: boolean = false;
-  pdfUrl: SafeUrl | null = null;
+  pdfUrl: SafeResourceUrl | null = null;
   pdfLoading: boolean = false;
   pdfError: string | null = null;
   private currentPdfObjectUrl: string | null = null;

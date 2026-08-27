@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { PersonnelCentreService } from "../../../services/personnel-centre.service";
 import { CiviliteService } from "../../../services/civilite.service";
@@ -7,17 +7,21 @@ import { LdapService } from "../../../services/ldap.service";
 import { EnseignantService } from "../../../services/enseignant.service";
 import { ConfigService } from "../../../services/config.service";
 import { UserService } from "../../../services/user.service";
+import { RoleService } from "../../../services/role.service";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { TableComponent } from "../../table/table.component";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, takeUntil } from "rxjs/operators";
 import { Role } from 'src/app/constants/role';
+import { Subject } from "rxjs";
+import { AccessibilityService } from "../../../services/accessibility.service";
 
 @Component({
-  selector: 'app-gestionnaires',
-  templateUrl: './gestionnaires.component.html',
-  styleUrls: ['./gestionnaires.component.scss']
+    selector: 'app-gestionnaires',
+    templateUrl: './gestionnaires.component.html',
+    styleUrls: ['./gestionnaires.component.scss'],
+    standalone: false
 })
-export class GestionnairesComponent implements OnInit {
+export class GestionnairesComponent implements OnInit, OnDestroy {
 
   @Input() centreGestion: any;
   @Output() refreshPersonnelsCentre = new EventEmitter<any>();
@@ -44,6 +48,12 @@ export class GestionnairesComponent implements OnInit {
   searchColumns = ['nomprenom', 'mail', 'departement', 'action'];
   gestionnaires: any[] = [];
   gestionnaire: any;
+  roles: any[] = [];
+
+  disableAutoSearch: boolean = false;
+  hasPendingSearchGestionnaire: boolean = false;
+
+  private _destroy$ = new Subject<void>();
 
   alertesMail = [
     {id: 'creationConventionEtudiant', libelle: 'Création d\'une convention par l’étudiant'},
@@ -60,6 +70,10 @@ export class GestionnairesComponent implements OnInit {
     {id: 'validationAvenant', libelle: 'Validation d\'un avenant '},
     {id: 'conventionSignee', libelle: 'Convention signée par toutes les parties'},
     {id: 'changementEnseignant', libelle: 'Changement d\'enseignant référent'},
+    {id: 'evalTuteurRemplie', libelle: 'Évaluation du tuteur remplie'},
+    {id: 'evalEnsRemplie', libelle: 'Évaluation de l’enseignant remplie'},
+    {id: 'evalEtuRemplie', libelle: 'Évaluation de l’étudiant remplie'},
+    {id: 'evalRemplies', libelle: 'Toutes les évaluations remplies'},
   ];
 
   configAlertes: any;
@@ -77,7 +91,9 @@ export class GestionnairesComponent implements OnInit {
     private enseignantService: EnseignantService,
     private civiliteService: CiviliteService,
     private configService: ConfigService,
-    private userService: UserService
+    private userService: UserService,
+    private roleService: RoleService,
+    private accessibilityService: AccessibilityService
   ) {
     this.form = this.fb.group({
       nom: [null, []],
@@ -111,6 +127,12 @@ export class GestionnairesComponent implements OnInit {
       verificationAdministrativeConvention: [null, []],
       validationAvenant: [null, []],
       conventionSignee: [null, []],
+      changementEnseignant: [null, []],
+      evalTuteurRemplie: [null, []],
+      evalEnsRemplie: [null, []],
+      evalEtuRemplie: [null, []],
+      evalRemplies: [null, []],
+      roles: [null, [Validators.required]],
     });
     this.searchForm = this.fb.group({
       nom: [null, []],
@@ -119,25 +141,58 @@ export class GestionnairesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadDisableAutoSearchPref();
+
     this.civiliteService.getPaginated(1, 0, 'libelle', 'asc','').subscribe((response: any) => {
       this.civilites = response;
     });
     this.configService.getConfigAlerteMail().subscribe((response: any) => {
       this.configAlertes = response;
     });
+    this.roleService.findCentreAssignable().subscribe((response: any) => {
+      this.roles = response;
+    });
     if (this.centreGestion.id) {
       this.filters.push({id: 'centreGestion.id', value: this.centreGestion.id, type: 'int', hidden: true});
     }
     this.searchForm.valueChanges.pipe(debounceTime(1000)).subscribe(() => {
+      if (this.disableAutoSearch) {
+        this.hasPendingSearchGestionnaire = this.hasGestionnaireCriteria();
+        if (!this.hasPendingSearchGestionnaire) {
+          this.gestionnaires = [];
+        }
+        return;
+      }
       this.search();
     });
+
+    this.accessibilityService.disableAutoSearch$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((value) => {
+        const previous = this.disableAutoSearch;
+        this.disableAutoSearch = value;
+
+        if (this.disableAutoSearch && !previous) {
+          this.hasPendingSearchGestionnaire = this.hasGestionnaireCriteria();
+        } else if (!this.disableAutoSearch && previous) {
+          if (this.hasPendingSearchGestionnaire) {
+            this.runSearchGestionnaire();
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   search(): void {
     if (!this.searchForm.get('nom')?.value && !this.searchForm.get('prenom')?.value) {
       this.messageService.setError(`Veuillez renseigner au moins l'un des critères`);
       return;
-    }
+    this.hasPendingSearchGestionnaire = false;
+  }
     this.gestionnaire = undefined;
     this.ldapService.searchUsersByName(this.searchForm.get('nom')?.value, this.searchForm.get('prenom')?.value).subscribe((response: any) => {
       this.gestionnaires = response;
@@ -154,6 +209,7 @@ export class GestionnairesComponent implements OnInit {
     this.setData(this.gestionnaire);
     this.userService.findOneByLogin(this.gestionnaire.supannAliasLogin).subscribe((response: any) => {
       selectedUser = response;
+      this.form.get('roles')?.setValue(this.getDefaultRoles());
       if (selectedUser != null) {
         if (selectedUser.roles.some((r: any) => r.code === "RESP_GES")) {
           this.selectedConfig = this.configAlertes.alerteRespGestionnaire;
@@ -202,6 +258,7 @@ export class GestionnairesComponent implements OnInit {
     this.gestionnaire = gestionnaire;
     this.form.reset();
     this.form.patchValue(this.gestionnaire);
+    this.form.get('roles')?.setValue(this.gestionnaire.roles && this.gestionnaire.roles.length ? this.gestionnaire.roles : this.getDefaultRoles());
     this.userService.findOneByLogin(this.gestionnaire.uidPersonnel).subscribe((gest:any) => {
       if (gest != null && gest.roles.find((rol:any) => rol.code === Role.RESP_GES) !== undefined){
         for(let alerte of this.alertesMail) {
@@ -232,12 +289,23 @@ export class GestionnairesComponent implements OnInit {
 
   save(): void {
     const data = {...this.form.value}
+
+    // Récupérer aussi les valeurs des champs disabled
+    for (let alerte of this.alertesMail) {
+      const control = this.form.get(alerte.id);
+      if (control) {
+        data[alerte.id] = control.value;
+      }
+    }
+
     if (this.form.invalid) {
       this.messageService.setError("Veuillez remplir les champs obligatoires");
       return;
     }
+
     // On met alerteMail à true si au moins une alerte est activée
     data.alertesMail = this.hasAlertesMail(data);
+
     if (this.gestionnaire.id) {
       this.personnelCentreService.update(data, this.gestionnaire.id).subscribe((response: any) => {
         this.messageService.setSuccess("Personnel mis à jour");
@@ -273,6 +341,13 @@ export class GestionnairesComponent implements OnInit {
     });
   }
 
+  compareRole(option: any, value: any): boolean {
+    if (option && value) {
+      return option.id === value.id;
+    }
+    return false;
+  }
+
   compare(option: any, value: any): boolean {
     if (option && value) {
       return option.id === value.id;
@@ -290,21 +365,53 @@ export class GestionnairesComponent implements OnInit {
     this.toggleAlertes = !this.toggleAlertes;
   }
 
-  hasAlertesMail(gestionnaire: any) {
-    if (gestionnaire.creationConventionEtudiant == true
-    || gestionnaire.modificationConventionEtudiant == true
-    || gestionnaire.creationConventionGestionnaire == true
-    || gestionnaire.modificationConventionGestionnaire == true
-    || gestionnaire.creationAvenantEtudiant == true
-    || gestionnaire.modificationAvenantEtudiant == true
-    || gestionnaire.creationAvenantGestionnaire == true
-    || gestionnaire.modificationAvenantGestionnaire == true
-    || gestionnaire.validationPedagogiqueConvention == true
-    || gestionnaire.validationAdministrativeConvention == true
-    || gestionnaire.verificationAdministrativeConvention == true
-    || gestionnaire.validationAvenant == true) {
-      return true;
+  
+  runSearchGestionnaire(): void {
+    if (!this.hasGestionnaireCriteria()) {
+      this.hasPendingSearchGestionnaire = false;
+      return;
     }
-    return false;
+    this.search();
+  }
+
+  private hasGestionnaireCriteria(): boolean {
+    const nom = (this.searchForm.get('nom')?.value || '').toString().trim();
+    const prenom = (this.searchForm.get('prenom')?.value || '').toString().trim();
+    return nom.length > 0 || prenom.length > 0;
+  }
+
+  private loadDisableAutoSearchPref(): void {
+    const saved = localStorage.getItem('accessibilityPreferences');
+    if (!saved) return;
+    try {
+      const prefs = JSON.parse(saved);
+      this.disableAutoSearch = !!prefs?.disableAutoSearch;
+    } catch {}
+  }
+
+  getDefaultRoles(): any[] {
+    const role = this.roles.find((r: any) => r.code === Role.GES);
+    return role ? [role] : [];
+  }
+
+  hasAlertesMail(gestionnaire: any) {
+    return !!(gestionnaire.creationConventionEtudiant
+      || gestionnaire.modificationConventionEtudiant
+      || gestionnaire.creationConventionGestionnaire
+      || gestionnaire.modificationConventionGestionnaire
+      || gestionnaire.creationAvenantEtudiant
+      || gestionnaire.modificationAvenantEtudiant
+      || gestionnaire.creationAvenantGestionnaire
+      || gestionnaire.modificationAvenantGestionnaire
+      || gestionnaire.validationPedagogiqueConvention
+      || gestionnaire.validationAdministrativeConvention
+      || gestionnaire.verificationAdministrativeConvention
+      || gestionnaire.validationAvenant
+      || gestionnaire.conventionSignee
+      || gestionnaire.changementEnseignant
+      || gestionnaire.evalTuteurRemplie
+      || gestionnaire.evalEnsRemplie
+      || gestionnaire.evalEtuRemplie
+      || gestionnaire.evalRemplies);
   }
 }

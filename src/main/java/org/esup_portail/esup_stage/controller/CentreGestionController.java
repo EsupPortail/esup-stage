@@ -4,24 +4,29 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
+import org.esup_portail.esup_stage.dto.CentreGestionListDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
+import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.*;
 import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.ConventionService;
+import org.esup_portail.esup_stage.service.FileValidationService;
+import org.esup_portail.esup_stage.service.ConfidentialiteService;
+import org.esup_portail.esup_stage.service.HabilitationService;
 import org.esup_portail.esup_stage.service.apogee.ApogeeService;
 import org.esup_portail.esup_stage.service.apogee.model.Composante;
 import org.esup_portail.esup_stage.service.apogee.model.EtapeApogee;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,50 +96,63 @@ public class CentreGestionController {
     @Autowired
     AppliProperties appliProperties;
 
+    @Autowired
+    FileValidationService fileValidationService;
+
+    @Autowired
+    ConfidentialiteService confidentialiteService;
+
+    @Autowired
+    HabilitationService habilitationService;
+
+    @Autowired
+    UtilisateurCentreGestionRoleJpaRepository utilisateurCentreGestionRoleJpaRepository;
+
 
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
-    public PaginatedResponse<CentreGestion> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+    public PaginatedResponse<CentreGestionListDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
         JSONObject jsonFilters = new JSONObject(filters);
         Map<String, Object> map = new HashMap<>();
         map.put("type", "boolean");
         map.put("value", true);
         jsonFilters.put("validationCreation", map);
-        filters = jsonFilters.toString();
-        PaginatedResponse<CentreGestion> paginatedResponse = new PaginatedResponse<>();
+        filters = applyCentreScope(jsonFilters.toString(), DroitEnum.LECTURE);
+        PaginatedResponse<CentreGestionListDto> paginatedResponse = new PaginatedResponse<>();
         paginatedResponse.setTotal(centreGestionRepository.count(filters));
-        paginatedResponse.setData(centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters));
+        List<CentreGestion> centresGestion = centreGestionRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
 
         if (predicate.equals("personnels")) {
             Utilisateur currentUser = ServiceContext.getUtilisateur();
-            List<CentreGestion> list = paginatedResponse.getData();
             Predicate<PersonnelCentreGestion> condition = value -> value.getUidPersonnel().equals(currentUser.getUid());
-            list.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
+            centresGestion.sort((a, b) -> Boolean.compare(a.getPersonnels().stream().anyMatch(condition), b.getPersonnels().stream().anyMatch(condition)));
 
             if (sortOrder.equals("asc"))
-                Collections.reverse(list);
+                Collections.reverse(centresGestion);
         }
 
+        paginatedResponse.setData(centresGestion.stream().map(CentreGestionListDto::from).toList());
         return paginatedResponse;
     }
 
     @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        byte[] bytes = centreGestionRepository.exportExcel(headers, predicate, sortOrder, filters);
+        byte[] bytes = centreGestionRepository.exportExcel(headers, predicate, sortOrder, applyCentreScope(filters, DroitEnum.LECTURE));
         return ResponseEntity.ok().body(bytes);
     }
 
     @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        StringBuilder csv = centreGestionRepository.exportCsv(headers, predicate, sortOrder, filters);
+        StringBuilder csv = centreGestionRepository.exportCsv(headers, predicate, sortOrder, applyCentreScope(filters, DroitEnum.LECTURE));
         return ResponseEntity.ok().body(csv.toString());
     }
 
     @GetMapping("/creation-brouillon")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion getBrouillonByLogin() {
+        assertGlobalRight(DroitEnum.CREATION);
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         CentreGestion centreGestion = centreGestionJpaRepository.findBrouillon(utilisateur.getLogin());
         if (centreGestion == null) {
@@ -145,7 +163,7 @@ public class CentreGestionController {
     }
 
     @GetMapping("/etablissement")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public CentreGestion getCentreEtablissement() {
         CentreGestion centreGestion = centreGestionJpaRepository.getCentreEtablissement();
         if (centreGestion == null) {
@@ -155,8 +173,9 @@ public class CentreGestionController {
     }
 
     @GetMapping("/{id}")
-    @Secure
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public CentreGestion getById(@PathVariable("id") int id) {
+        assertCanViewCentre(id);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion == null) {
             centreGestion = new CentreGestion();
@@ -167,15 +186,11 @@ public class CentreGestionController {
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public CentreGestion create(@Valid @RequestBody CentreGestion centreGestion) {
-        CentreGestion etablissement = centreGestionJpaRepository.getCentreEtablissement();
-
+        assertGlobalRight(DroitEnum.CREATION);
         centreGestion.setCodeUniversite(appConfigService.getConfigGenerale().getCodeUniversite());
-        if (etablissement != null) {
-            centreGestion.setCodeConfidentialite(etablissement.getCodeConfidentialite());
-        }
+        normalizeConfidentialiteForSave(centreGestion);
 
         List<CentreGestionSignataire> signataires = conventionService.initSignataires(centreGestion);
-
         centreGestion.setSignataires(signataires);
 
         centreGestion = centreGestionJpaRepository.saveAndFlush(centreGestion);
@@ -189,7 +204,7 @@ public class CentreGestionController {
     @PutMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion update(@Valid @RequestBody CentreGestion centreGestion) {
-        // On passe verificationAdministrative=1 pour toutes les conventions liées au centre dont validationAdministrative et validationPedagogique sont à 1
+        assertCanAccessCentre(centreGestion.getId(), DroitEnum.MODIFICATION);
         if (centreGestion.getVerificationAdministrative() != null && centreGestion.getVerificationAdministrative()) {
             conventionJpaRepository.updateVerificationAdministrative(centreGestion.getId());
         }
@@ -199,11 +214,10 @@ public class CentreGestionController {
         }
         //conserve les criteregestion sélectionnés lors de la mise à jour
         CentreGestion centreGestionActuel = centreGestionJpaRepository.findById(centreGestion.getId());
-        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null) {
-            if(centreGestion.getCriteres().isEmpty()) {
-                centreGestion.setCriteres(centreGestionActuel.getCriteres());
-            }
+        if(centreGestionActuel != null && centreGestionActuel.getCriteres() != null && centreGestion.getCriteres().isEmpty()) {
+            centreGestion.setCriteres(centreGestionActuel.getCriteres());
         }
+        normalizeConfidentialiteForSave(centreGestion);
         return centreGestionJpaRepository.saveAndFlush(centreGestion);
     }
 
@@ -211,6 +225,7 @@ public class CentreGestionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion validationCreation(@PathVariable("id") int id) {
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
+        assertCanAccessCentre(id, DroitEnum.MODIFICATION);
         centreGestion.setValidationCreation(true);
         if (centreGestion.getConsigne() != null) {
             centreGestion.getConsigne().setCentreGestion(centreGestion);
@@ -221,18 +236,21 @@ public class CentreGestionController {
     @GetMapping("/countConventionWithCentre/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Long countConventionWithCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         return conventionJpaRepository.countConventionWithCentreGestion(id);
     }
 
     @GetMapping("/countContactWithCentre/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public Long countContactWithCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         return contactJpaRepository.countContactWithCentreGestion(id);
     }
 
     @GetMapping("/countCritereWithCentre/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public int countCritereWithCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         return centreGestion.getCriteres().size();
     }
@@ -241,6 +259,8 @@ public class CentreGestionController {
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void delete(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.SUPPRESSION);
+        utilisateurCentreGestionRoleJpaRepository.deleteByCentreGestionId(id);
         // Suppression des critères et personnels rattachés à ce centre
         critereGestionJpaRepository.deleteCriteresByCentreId(id);
         personnelCentreGestionJpaRepository.deletePersonnelsByCentreId(id);
@@ -251,6 +271,7 @@ public class CentreGestionController {
     @GetMapping("/{id}/composantes")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Composante> getComposantes(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         List<Composante> composantes = apogeeService.getListComposante();
         List<CritereGestion> critereGestionsComposantes = critereGestionJpaRepository.findComposantes();
 
@@ -262,6 +283,7 @@ public class CentreGestionController {
     @GetMapping("/{id}/composante")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Composante> getCentreComposante(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         List<CritereGestion> critereGestions = critereGestionJpaRepository.findByCentreId(id);
         List<Composante> composantes = new ArrayList<>();
         for (CritereGestion critereGestion : critereGestions) {
@@ -276,6 +298,7 @@ public class CentreGestionController {
     @PutMapping("/{id}/set-composante")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public List<Composante> setComposante(@PathVariable("id") int id, @RequestBody List<Composante> _composantes) {
+        assertCanAccessCentre(id, DroitEnum.MODIFICATION);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         List<CritereGestion> critereGestions = critereGestionJpaRepository.findByCentreId(id);
 
@@ -309,6 +332,7 @@ public class CentreGestionController {
     @GetMapping("/{id}/etapes")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<EtapeApogee> getEtapes(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         List<EtapeApogee> etapeApogees = apogeeService.getListEtape();
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapes();
         etapeApogees = etapeApogees.stream().filter(e -> critereGestionsEtapes.stream().noneMatch(cg -> cg.getId().getCode().equalsIgnoreCase(e.getCode()) && cg.getId().getCodeVersionEtape().equalsIgnoreCase(e.getCodeVrsEtp()) && cg.getCentreGestion().getId() != id)).collect(Collectors.toList());
@@ -319,6 +343,7 @@ public class CentreGestionController {
     @GetMapping("/{id}/centre-etapes")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<EtapeApogee> getCentreEtapes(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         List<CritereGestion> critereGestionsEtapes = critereGestionJpaRepository.findEtapesByCentreId(id);
         List<EtapeApogee> etapeApogees = new ArrayList<>();
 
@@ -338,6 +363,7 @@ public class CentreGestionController {
     @PostMapping("/{id}/add-etape")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.CREATION})
     public EtapeApogee addEtape(@PathVariable("id") int id, @RequestBody EtapeApogee _etapeApogee) {
+        assertCanAccessCentre(id, DroitEnum.CREATION);
         Etape etape = etapeJpaRepository.findById(_etapeApogee.getCode(), _etapeApogee.getCodeVrsEtp(), appConfigService.getConfigGenerale().getCodeUniversite());
 
         // alimentation de la table Etape avec celles remontées depuis Apogée
@@ -372,6 +398,7 @@ public class CentreGestionController {
     public void deleteEtape(@PathVariable("codeEtape") String codeEtape, @PathVariable("codeVersion") String codeVersion) {
         CritereGestion critereGestion = critereGestionJpaRepository.findEtapeById(codeEtape, codeVersion);
         int idCentreGestion = critereGestion.getCentreGestion().getId();
+        assertCanAccessCentre(idCentreGestion, DroitEnum.SUPPRESSION);
 
         if (conventionJpaRepository.countConventionRattacheEtape(idCentreGestion, codeEtape, codeVersion) > 0) {
             throw new AppException(HttpStatus.FORBIDDEN, "Une convention est déjà rattachée à cette étape");
@@ -384,6 +411,7 @@ public class CentreGestionController {
     @DeleteMapping("/delete-etapes-centre/{id}")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void deleteEtapesCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.SUPPRESSION);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Centre de gestion non trouvé");
@@ -398,6 +426,168 @@ public class CentreGestionController {
         }
     }
 
+    private String applyCentreScope(String filters, DroitEnum droit) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        // Seul l'administrateur a un accès global à tous les centres. Le responsable gestionnaire
+        // (et tout autre profil) est restreint aux centres auxquels il est rattaché.
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return filters;
+        }
+        List<Integer> centreIds = habilitationService.getAuthorizedCentreIds(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.PARAM_CENTRE}, new DroitEnum[]{droit});
+        JSONObject jsonFilters = filters == null || filters.isBlank() ? new JSONObject() : new JSONObject(filters);
+        JSONObject filter = new JSONObject();
+        filter.put("specific", true);
+        filter.put("type", "list");
+        filter.put("value", new JSONArray(centreIds));
+        jsonFilters.put("centreIds", filter);
+        return jsonFilters.toString();
+    }
+
+    private void assertGlobalRight(DroitEnum droit) {
+        if (!hasGlobalRight(ServiceContext.getUtilisateur(), droit)) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Votre role ne donne pas acces a cette ressource");
+        }
+    }
+
+    private void assertCanAccessCentre(int idCentreGestion, DroitEnum droit) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        // Seul l'administrateur conserve un accès global. Le responsable gestionnaire est
+        // restreint aux centres auxquels il est rattaché (via son rôle sur ce centre).
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
+        }
+        try {
+            if (habilitationService.hasCentreRight(utilisateur, idCentreGestion, new AppFonctionEnum[]{AppFonctionEnum.PARAM_CENTRE}, new DroitEnum[]{droit})) {
+                return;
+            }
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a ce centre de gestion");
+        }
+        throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a ce centre de gestion");
+    }
+
+    /**
+     * Contrôle d'accès en lecture à un centre de gestion, utilisable aussi depuis le flux
+     * convention : l'administrateur et les profils rattachés au centre (rôle sur ce centre)
+     * y ont accès ; l'enseignant et l'étudiant accèdent au centre via leurs conventions
+     * (le périmètre est alors contrôlé au niveau de la convention).
+     */
+    private void assertCanViewCentre(int idCentreGestion) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
+        }
+        if (habilitationService.hasCentreRoles(utilisateur, idCentreGestion)) {
+            return;
+        }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS) || UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            return;
+        }
+        throw new AppException(HttpStatus.FORBIDDEN, "Vous n'avez pas acces a ce centre de gestion");
+    }
+
+    private boolean hasGlobalRight(Utilisateur utilisateur, DroitEnum droit) {
+        try {
+            return habilitationService.hasGlobalRight(utilisateur, new AppFonctionEnum[]{AppFonctionEnum.PARAM_CENTRE}, new DroitEnum[]{droit});
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    private void normalizeConfidentialiteForSave(CentreGestion centreGestion) {
+        if (centreGestion == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Centre de gestion invalide");
+        }
+
+        CentreGestion centreEtablissement = centreGestionJpaRepository.getCentreEtablissement();
+        boolean isCentreEtablissement = isCentreEtablissement(centreGestion, centreEtablissement);
+        Confidentialite requestedConfidentialite = resolveRequestedConfidentialite(centreGestion.getCodeConfidentialite());
+
+        if (isCentreEtablissement) {
+            Confidentialite normalizedConfidentialite = resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+            centreGestion.setCodeConfidentialite(normalizedConfidentialite);
+            centreGestion.setCodeConfidentialiteConventionOrpheline(resolveEtablissementOrphanConfidentialite(normalizedConfidentialite, centreGestion.getCodeConfidentialiteConventionOrpheline()));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialiteConventionOrpheline(null);
+        if (centreEtablissement == null || centreEtablissement.getCodeConfidentialite() == null) {
+            centreGestion.setCodeConfidentialite(resolveConfidentialiteOrDefault(requestedConfidentialite, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+            return;
+        }
+
+        Confidentialite etablissementConfidentialite = resolveConfidentialiteOrDefault(resolveRequestedConfidentialite(centreEtablissement.getCodeConfidentialite()), ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        String etablissementCode = etablissementConfidentialite.getCode();
+
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(etablissementCode)) {
+            centreGestion.setCodeConfidentialite(validateCentreConfidentialiteWhenEtablissementIsFree(requestedConfidentialite));
+            return;
+        }
+
+        centreGestion.setCodeConfidentialite(validateInheritedConfidentialite(requestedConfidentialite, etablissementCode));
+    }
+
+    private Confidentialite resolveEtablissementOrphanConfidentialite(Confidentialite centreConfidentialite, Confidentialite requestedOrphanConfidentialite) {
+        if (centreConfidentialite == null || centreConfidentialite.getCode() == null) {
+            return resolveConfidentialiteByCode(ConfidentialiteService.PAS_DE_CONFIDENTIALITE);
+        }
+
+        if (!ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(centreConfidentialite.getCode())) {
+            return centreConfidentialite;
+        }
+
+        Confidentialite orphanConfidentialite = resolveRequestedConfidentialite(requestedOrphanConfidentialite);
+        if (orphanConfidentialite == null
+                || orphanConfidentialite.getCode() == null
+                || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(orphanConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité effective des conventions orphelines doit être renseignée");
+        }
+        return orphanConfidentialite;
+    }
+
+    private Confidentialite validateInheritedConfidentialite(Confidentialite requestedConfidentialite, String expectedCode) {
+        if (requestedConfidentialite == null) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        if (!expectedCode.equals(requestedConfidentialite.getCode())) {
+            return resolveConfidentialiteByCode(expectedCode);
+        }
+        return requestedConfidentialite;
+    }
+
+    private Confidentialite validateCentreConfidentialiteWhenEtablissementIsFree(Confidentialite requestedConfidentialite) {
+        if (requestedConfidentialite == null || requestedConfidentialite.getCode() == null || requestedConfidentialite.getCode().isBlank()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre doit choisir entre pas de confidentialité et confidentialité totale");
+        }
+        if (ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(requestedConfidentialite.getCode())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Le centre ne peut pas persister le mode confidentialité libre");
+        }
+        return requestedConfidentialite;
+    }
+    private Confidentialite resolveRequestedConfidentialite(Confidentialite confidentialite) {
+        if (confidentialite == null || confidentialite.getCode() == null || confidentialite.getCode().isBlank()) {
+            return null;
+        }
+        return resolveConfidentialiteByCode(confidentialite.getCode());
+    }
+
+    private Confidentialite resolveConfidentialiteOrDefault(Confidentialite confidentialite, String defaultCode) {
+        if (confidentialite != null) {
+            return confidentialite;
+        }
+        return resolveConfidentialiteByCode(defaultCode);
+    }
+
+    private Confidentialite resolveConfidentialiteByCode(String code) {
+        return confidentialiteJpaRepository.findById(code)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Confidentialite non trouvee"));
+    }
+
+    private boolean isCentreEtablissement(CentreGestion centreGestion, CentreGestion centreEtablissement) {
+        if (centreGestion.getId() != 0 && centreEtablissement != null && centreGestion.getId() == centreEtablissement.getId()) {
+            return true;
+        }
+        return confidentialiteService.isCentreEtablissement(centreGestion);
+    }
     @GetMapping("/confidentialite")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public List<Confidentialite> getConfidentialites() {
@@ -414,14 +604,12 @@ public class CentreGestionController {
     @PostMapping("/{id}/logo-centre")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public CentreGestion insertLogoCentre(@PathVariable("id") int id, @RequestParam(value="logo",required = true) MultipartFile logo) {
+        assertCanAccessCentre(id, DroitEnum.MODIFICATION);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
-        String extension = FilenameUtils.getExtension(logo.getOriginalFilename());
+        FileValidationService.ValidatedImage validatedLogo = fileValidationService.validateImage(logo);
+        String extension = validatedLogo.extension();
         String nomFichier = DigestUtils.md5Hex(logo.getOriginalFilename()) + "." + extension;
         String nomReel = logo.getOriginalFilename();
-        // Autorisation de l'upload d'images uniquement
-        if (logo.getContentType() == null || !logo.getContentType().startsWith("image/")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Le fichier doit être au format image");
-        }
 
         Fichier fichier = centreGestion.getFichier();
         if (fichier == null) {
@@ -435,7 +623,7 @@ public class CentreGestionController {
         try {
             String filename = this.getNomFichier(fichier.getId(), fichier.getNom());
             Path uploadLocation = Paths.get(this.getFilePath(filename));
-            Files.copy(logo.getInputStream(), uploadLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(uploadLocation, validatedLogo.bytes());
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'insertion du fichier : " + e.getMessage());
@@ -448,6 +636,7 @@ public class CentreGestionController {
     @DeleteMapping("/{id}/logo-centre")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.SUPPRESSION})
     public void deleteLogoCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.SUPPRESSION);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion.getFichier() != null) {
             try {
@@ -468,6 +657,7 @@ public class CentreGestionController {
     @GetMapping(value = "/{id}/logo-centre", produces = MediaType.IMAGE_PNG_VALUE)
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> getLogoCentre(@PathVariable("id") int id) {
+        assertCanAccessCentre(id, DroitEnum.LECTURE);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion.getFichier() != null) {
             byte[] image;
@@ -486,6 +676,7 @@ public class CentreGestionController {
     @PostMapping("/{id}/resize-logo")
     @Secure(fonctions = {AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.MODIFICATION})
     public void resizeLogoCentre(@PathVariable("id") int id, @RequestBody List<Integer> dimensions) {
+        assertCanAccessCentre(id, DroitEnum.MODIFICATION);
         CentreGestion centreGestion = centreGestionJpaRepository.findById(id);
         if (centreGestion.getFichier() != null) {
             byte[] image;

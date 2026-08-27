@@ -176,6 +176,15 @@ tbody td {
   cursor: not-allowed;
 }
 
+/* Indicateur « en cours » sous le bouton d'exécution */
+.running-indicator {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primaryColor, #3f51b5);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
 /* ========== CARTES MOBILES ========== */
 .task-card {
   margin-bottom: 1rem;
@@ -399,42 +408,6 @@ mat-slide-toggle:focus-visible {
 
   .btn {
     border: 2px solid currentColor;
-  }
-}
-
-/* Mode sombre (si supporté par l'application) */
-@media (prefers-color-scheme: dark) {
-  mat-card {
-    background: #2a2a2a;
-    color: #fff;
-  }
-
-  table {
-    background: #2a2a2a;
-    color: #fff;
-  }
-
-  tbody tr {
-    border-bottom-color: #444;
-  }
-
-  tbody tr:hover {
-    background-color: #333;
-  }
-
-  .form-control {
-    background: #333;
-    color: #fff;
-    border-color: #555;
-  }
-
-  .task-card {
-    background: #333;
-    color: #fff;
-  }
-
-  .field-label {
-    color: #bbb;
   }
 }
 

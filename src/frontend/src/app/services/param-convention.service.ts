@@ -20,6 +20,11 @@ export class ParamConventionService implements PaginatedService {
   }
 
   getMobileTitle(row: any): string {
-    return `${row.id} - ${row.libelle}`;
+    const code = row?.code ?? row?.id ?? '';
+    const libelle = row?.libelle ?? '';
+    if (code && libelle) {
+      return `${code} - ${libelle}`;
+    }
+    return libelle || `${code}` || '';
   }
 }

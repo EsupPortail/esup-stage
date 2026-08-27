@@ -4,9 +4,10 @@ import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms"
 import { PeriodeStageService } from "../../../../services/periode-stage.service"
 
 @Component({
-  selector: 'app-calendrier',
-  templateUrl: './calendrier.component.html',
-  styleUrls: ['./calendrier.component.scss'],
+    selector: 'app-calendrier',
+    templateUrl: './calendrier.component.html',
+    styleUrls: ['./calendrier.component.scss'],
+    standalone: false
 })
 export class CalendrierComponent implements OnInit  {
 

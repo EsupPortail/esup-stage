@@ -35,6 +35,18 @@ public class ConventionPublicController {
     @Autowired
     SignatureService signatureService;
 
+    /**
+     * Récupère une convention non archivée. Les conventions archivées ne sont plus exposées
+     * sur l'API publique (signature électronique).
+     */
+    private Convention getConventionActive(int id) {
+        Convention convention = conventionJpaRepository.findById(id);
+        if (convention == null || convention.getDateArchivage() != null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
+        }
+        return convention;
+    }
+
     @GetMapping(value = "/{id}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Récupération des metadata de la convention")
     @ApiResponses({
@@ -48,10 +60,7 @@ public class ConventionPublicController {
     public MetadataDto getConventionMetadata(
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
-        }
+        Convention convention = getConventionActive(id);
         return signatureService.getPublicMetadata(convention);
     }
 
@@ -68,10 +77,7 @@ public class ConventionPublicController {
     public ResponseEntity<byte[]> getConventionPdf(
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
-        }
+        Convention convention = getConventionActive(id);
         return ResponseEntity
                 .ok()
                 .header(
@@ -96,10 +102,7 @@ public class ConventionPublicController {
     public PdfMetadataDto getConvention(
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
-        }
+        Convention convention = getConventionActive(id);
 
         PdfMetadataDto pdfMetadataDto = new PdfMetadataDto();
         pdfMetadataDto.setPdf64(Base64.getEncoder().encodeToString(signatureService.getPublicPdf(convention, null)));
@@ -121,10 +124,7 @@ public class ConventionPublicController {
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id,
             @RequestBody List<UpdateDatesRequest> request
     ) {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
-        }
+        Convention convention = getConventionActive(id);
         List<CentreGestionSignataire> signataires = convention.getCentreGestion().getSignataires();
         List<Historique> historiques = new ArrayList<>();
         for (UpdateDatesRequest req : request) {
@@ -156,10 +156,7 @@ public class ConventionPublicController {
             @PathVariable("id") @Parameter(description = "Identifiant de la convention") int id,
             @RequestParam("doc") MultipartFile doc
     ) throws IOException {
-        Convention convention = conventionJpaRepository.findById(id);
-        if (convention == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Convention inexistante");
-        }
+        Convention convention = getConventionActive(id);
 
         MetadataDto metadataDto = signatureService.getPublicMetadata(convention);
         signatureService.saveSignedFile(metadataDto, doc.getInputStream());
