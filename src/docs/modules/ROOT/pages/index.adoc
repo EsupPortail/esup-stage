@@ -74,6 +74,8 @@ ainsi que les corrections et évolutions associées.
 
 === Liens vers le code source des applications
 
+'''
+
 [horizontal]
 .L'application ESUP-Stage se compose de deux applications que sont :
 ESUP-Stage:: https://github.com/EsupPortail/esup-stage
