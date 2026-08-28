@@ -118,7 +118,7 @@ public class Avenant extends ObjetMetier implements Exportable {
     private UniteDuree uniteDuree;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "avenant")
+    @OneToMany(mappedBy = "avenant", cascade = {CascadeType.REMOVE})
     private List<PeriodeInterruptionAvenant> periodeInterruptionAvenants = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
