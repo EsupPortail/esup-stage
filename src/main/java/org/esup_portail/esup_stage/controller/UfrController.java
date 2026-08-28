@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.Collator;
+import java.util.Comparator;
 import java.util.List;
 
 @ApiController
@@ -37,6 +39,8 @@ public class UfrController {
     @GetMapping("/apogee")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public List<Composante> getApogeeComposantes() {
-        return apogeeService.getListComposante();
+        List<Composante> listComposante = apogeeService.getListComposante();
+        listComposante.sort(Comparator.comparing(Composante::getLibelle, Collator.getInstance()));
+        return listComposante;
     }
 }

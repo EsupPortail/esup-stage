@@ -5,6 +5,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.docaposte.DocaposteClient;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.MetadataDto;
 import org.esup_portail.esup_stage.enums.AppSignatureEnum;
 import org.esup_portail.esup_stage.enums.FolderEnum;
@@ -13,6 +14,7 @@ import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.repository.AvenantJpaRepository;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.service.AppConfigService;
 import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.ldap.LdapService;
 import org.esup_portail.esup_stage.service.signature.model.Historique;
@@ -56,6 +58,7 @@ class SignatureServiceHistoriqueTest {
     private AppliProperties appliProperties;
     private LdapService ldapService;
     private ImpressionService impressionService;
+    private AppConfigService appConfigService;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +72,8 @@ class SignatureServiceHistoriqueTest {
         appliProperties = mock(AppliProperties.class);
         ldapService = mock(LdapService.class);
         impressionService = mock(ImpressionService.class);
+        appConfigService = mock(AppConfigService.class);
+        when(appConfigService.getConfigGenerale()).thenReturn(new ConfigGeneraleDto());
         ReflectionTestUtils.setField(service, "conventionJpaRepository", conventionJpaRepository);
         ReflectionTestUtils.setField(service, "avenantJpaRepository", avenantJpaRepository);
         ReflectionTestUtils.setField(service, "signatureProperties", signatureProperties);
@@ -78,6 +83,7 @@ class SignatureServiceHistoriqueTest {
         ReflectionTestUtils.setField(service, "appliProperties", appliProperties);
         ReflectionTestUtils.setField(service, "ldapService", ldapService);
         ReflectionTestUtils.setField(service, "impressionService", impressionService);
+        ReflectionTestUtils.setField(service, "appConfigService", appConfigService);
     }
 
     private Convention conventionSignature() {
@@ -345,6 +351,68 @@ class SignatureServiceHistoriqueTest {
 
         // aucune convention à traiter
         when(conventionJpaRepository.findConventionNonSignees()).thenReturn(null);
+        assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
+    }
+
+    @Test
+    void updateAvenantInterrogeLeClientSelonLApplication() {
+        // Docaposte via le client de signature générique
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        Avenant avenant = avenantSignature();
+        when(signatureClient.getHistorique(eq("DOC9"), anyList()))
+                .thenReturn(List.of(historique(SignataireEnum.tuteur, new Date(), new Date())));
+        service.update(avenant);
+        assertThat(avenant.getDateSignatureTuteur()).isNotNull();
+        assertThat(avenant.isTemAvenantSigne()).as("signatures incomplètes").isFalse();
+
+        // esup-signature via le statut
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.ESUPSIGNATURE);
+        Avenant esup = avenantSignature();
+        when(webhookService.getHistoriqueStatus(eq("DOC9"), any(Convention.class))).thenReturn(List.of());
+        service.update(esup);
+        verify(avenantJpaRepository).save(esup);
+
+        // externe : délégué au webhook
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.EXTERNE);
+        Avenant externe = avenantSignature();
+        service.update(externe);
+        verify(webhookService).getHistoriqueExterne(externe);
+    }
+
+    @Test
+    void updateAvenantMarqueLAvenantSigneQuandToutEstSigne() {
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        Avenant avenant = avenantSignature();
+        Date date = new Date();
+        when(signatureClient.getHistorique(eq("DOC9"), anyList())).thenReturn(List.of(
+                historique(SignataireEnum.etudiant, date, date),
+                historique(SignataireEnum.enseignant, date, date),
+                historique(SignataireEnum.tuteur, date, date),
+                historique(SignataireEnum.signataire, date, date),
+                historique(SignataireEnum.viseur, date, date)
+        ));
+
+        service.update(avenant);
+
+        assertThat(avenant.isTemAvenantSigne()).isTrue();
+    }
+
+    @Test
+    void updateAutoTraiteAussiLesAvenants() {
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        when(conventionJpaRepository.findConventionNonSignees()).thenReturn(null);
+        Avenant enErreur = avenantSignature();
+        Avenant correct = avenantSignature();
+        correct.setDocumentId("DOC10");
+        when(avenantJpaRepository.findAvenantNonSignes()).thenReturn(List.of(enErreur, correct));
+        when(signatureClient.getHistorique(eq("DOC9"), anyList())).thenThrow(new RuntimeException("api down"));
+        when(signatureClient.getHistorique(eq("DOC10"), anyList())).thenReturn(List.of());
+
+        assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
+        verify(avenantJpaRepository).save(correct);
+
+        // aucun avenant à traiter
+        when(avenantJpaRepository.findAvenantNonSignes()).thenReturn(null);
         assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
     }
 }

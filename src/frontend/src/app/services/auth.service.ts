@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable, firstValueFrom, of, EMPTY } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { SILENT_REQUEST } from "../interceptors/http-context.tokens";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class AuthService {
   private refreshPromise?: Promise<void>;
   private redirecting = false;
   private sessionDialogPending = false;
-  private sessionEstablished = false;
+  private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
 
   private adminTechList: string[] = [];
   private adminTechLoaded = false;
@@ -39,14 +40,33 @@ export class AuthService {
     return this.http.get(environment.apiUrl + "/users/connected").pipe(
       tap(() => this.markSessionEstablished()),
       catchError((error) => {
-        // Une panne réseau ou une erreur serveur ne sont pas une perte de session : y répondre par
-        // un aller simple vers le CAS ferait perdre à l'utilisateur ce qu'il avait à l'écran.
         if (error?.status === 401 || error?.status === 403) {
           this.redirectToLogin();
         }
         return EMPTY;
       })
     );
+  }
+
+  /**
+   * Ping léger et silencieux d'un endpoint authentifié.
+   *
+   * Sert au keep-alive : l'appel rafraîchit le lastAccessedTime de la session
+   * HTTP côté serveur sans afficher de loader ni de popup d'erreur (voir
+   * {@link SILENT_REQUEST}). Ne met volontairement pas à jour userConnected.
+   */
+  pingSession(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/users/connected", {
+      context: new HttpContext().set(SILENT_REQUEST, true),
+    });
+  }
+
+  /**
+   * Indique qu'une redirection CAS est déjà en cours (garde anti-boucle).
+   * S'appuie sur le marqueur posé par {@link handleUnauthorized} (valeur '1').
+   */
+  isCasRedirectInProgress(): boolean {
+    return sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1';
   }
 
   getAppVersion(): Observable<any> {
@@ -147,28 +167,27 @@ export class AuthService {
    */
   reconnect(): void {
     this.sessionDialogPending = false;
+    // Reconnexion demandée explicitement : la garde anti-boucle ne doit pas la bloquer.
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
     this.navigateToLogin(true);
   }
 
   private navigateToLogin(renew: boolean) {
-    // Page publique ouverte par quelqu'un qui n'a pas de compte : l'envoyer au CAS le sortirait de
-    // son formulaire. En revanche un utilisateur dont la session meurt sur une telle page doit
-    // toujours pouvoir se reconnecter, d'où le second test.
     if (this.isAnonymousPublicRoute() && !this.hasEstablishedSession()) {
       return;
     }
-    if (!this.redirecting) {
-      this.redirecting = true;
-      const currentPath = window.location.pathname;
-      const loginPath = this.resolvePath(environment.loginUrl);
-      if (currentPath !== loginPath) {
-        // On quitte l'application non authentifié : si la reconnexion échoue, le retour ne doit pas
-        // rouvrir une fenêtre « session expirée ». Le drapeau sera reposé au prochain /users/connected.
-        this.clearSessionEstablished();
-        sessionStorage.setItem('redirectUrl', currentPath);
-        const loginUrl = renew ? environment.loginUrl + '?renew=1' : environment.loginUrl;
-        this.replaceLocation(this.resolveUrl(loginUrl));
-      }
+    if (this.redirecting || this.isCasRedirectInProgress()) {
+      return;
+    }
+    this.redirecting = true;
+    const currentPath = window.location.pathname;
+    const loginPath = this.resolvePath(environment.loginUrl);
+    if (currentPath !== loginPath) {
+      this.clearSessionEstablished();
+      sessionStorage.setItem(AuthService.CAS_REDIRECT_FLAG, '1');
+      sessionStorage.setItem('redirectUrl', currentPath);
+      const loginUrl = renew ? environment.loginUrl + '?renew=1' : environment.loginUrl;
+      this.replaceLocation(this.resolveUrl(loginUrl));
     }
   }
 
@@ -211,6 +230,7 @@ export class AuthService {
     this.adminTechLoaded = false;
     this.adminTechLoadingPromise = undefined;
     void this.ensureAdminTechListLoaded();
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
   }
 
   checkRights(right: any) {

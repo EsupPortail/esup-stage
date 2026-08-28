@@ -550,8 +550,11 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
     if (code.startsWith('ENT')) return 'questionEnt' + code.substring(3);
     return 'question' + code;
   }
-  private isQuestionActive(code: string): boolean {
-    return !!this.ficheEvaluation?.[this.toLegacyQuestionKey(code)];
+
+  isQuestionActive(code: string): boolean {
+    const key = this.toLegacyQuestionKey(code);
+    if (!this.ficheEvaluation || !(key in this.ficheEvaluation)) return true;
+    return !!this.ficheEvaluation[key];
   }
 
   private applyVisibilityForQuestion(form: FormGroup, q: any): void {
@@ -563,7 +566,7 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
         ? (q.options || []).map((_: string, i: number) => base + this.controlsIndexToLetter[i])
         : [base];
 
-    this.setRequired(form, mainKeys, active, q.type);
+    this.setRequired(form, mainKeys, active && q.type !== TypeQuestionEvaluation.AUTO, q.type);
 
     if (!active) {
       const conditionalKeys: string[] = [];

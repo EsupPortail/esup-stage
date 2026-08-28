@@ -21,6 +21,9 @@ public class RegimeInscriptionApogee {
     @Column(nullable = false)
     private String libelle;
 
+    @Column(length = 100)
+    private String libelleCourt;
+
     @Column(nullable = false, length = 1)
     private String temEnServ;
 

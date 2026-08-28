@@ -13,5 +13,10 @@ public class RegimeInscriptionDto {
 
     String code;
     String libelle;
+    String libelleCourt;
+
+    public RegimeInscriptionDto(String code, String libelle) {
+        this(code, libelle, null);
+    }
 
 }

@@ -14,9 +14,10 @@
 .Systèmes (1 seul au choix, configuration)
 * Esup-signature ou _autre_
 ** API serveur et client dans une séquence
-CAUTION: Lien vers doc(s) à trouver _svp_
+(voir xref:ROOT:ESUP-Signature.adoc[] et xref:ROOT:Autres-Applications-de-signature.adoc[])
 * Docaposte
 ** [JAX-RS client, WSDL]
+(voir xref:ROOT:Docaposte_Signature-electronique.adoc[])
 
 ==== Esup-Signature (ou _autre_)
 
@@ -59,6 +60,7 @@ esup_siscol <-0)- esup_stage
 .Systèmes (1 seul au choix, configuration)
 * Esup-signature ou _autre_
 ** API serveur et client dans une séquence
-CAUTION: Lien vers doc(s) à trouver _svp_
+(voir xref:ROOT:ESUP-Signature.adoc[] et xref:ROOT:Autres-Applications-de-signature.adoc[])
 * Docaposte
 ** [JAX-RS client, WSDL]
+(voir xref:ROOT:Docaposte_Signature-electronique.adoc[])

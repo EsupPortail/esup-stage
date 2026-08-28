@@ -65,6 +65,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
   communes: any[] = [];
 
   hasDefaultVolumeHoraire: boolean = false;
+  // Passe à true dès qu'un choix a été fait (par l'utilisateur ou par le pré-remplissage Apogée) : la valeur Apogée ne doit plus écraser ce choix ensuite
+  volumeHoraireFormationChoisi: boolean = false;
 
   @Input() convention: any;
   @Input() modifiable: boolean = false;
@@ -126,7 +128,11 @@ export class EtudiantComponent implements OnInit, OnChanges {
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
         volumeHoraireFormation: [this.convention.volumeHoraireFormation ? this.convention.volumeHoraireFormation : null, []],
-        volumeHoraireFormationBool: [this.convention.volumeHoraireFormation !== null && this.convention.volumeHoraireFormation !== '200+', []],
+        volumeHoraireFormationBool: [!!this.convention.volumeHoraireFormation && this.convention.volumeHoraireFormation !== '200+', []],
+      });
+      this.volumeHoraireFormationChoisi = !!this.convention.volumeHoraireFormation;
+      this.formConvention.get('volumeHoraireFormationBool')?.valueChanges.subscribe(() => {
+        this.volumeHoraireFormationChoisi = true;
       });
       this.sansElp = response.autoriserElementPedagogiqueFacultatif;
 
@@ -182,8 +188,8 @@ export class EtudiantComponent implements OnInit, OnChanges {
           if (!this.convention.volumeHoraireFormation) {
             this.formConvention.get('volumeHoraireFormation')?.setValue(inscription.etapeInscription.volumeHoraire);
           }
-          this.hasDefaultVolumeHoraire = inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0";
-          if (this.hasDefaultVolumeHoraire) {
+          this.hasDefaultVolumeHoraire = !!inscription.etapeInscription.volumeHoraire && inscription.etapeInscription.volumeHoraire != "0";
+          if (this.hasDefaultVolumeHoraire && !this.volumeHoraireFormationChoisi) {
             this.formConvention.get('volumeHoraireFormationBool')?.setValue(true);
           }
         }

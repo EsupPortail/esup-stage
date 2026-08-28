@@ -85,11 +85,11 @@ import {
 import translations from 'ckeditor5/translations/fr.js';
 
 @Component({
-    selector: 'app-consigne',
-    templateUrl: './consigne.component.html',
-    styleUrls: ['./consigne.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'app-consigne',
+  templateUrl: './consigne.component.html',
+  styleUrls: ['./consigne.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
@@ -103,8 +103,8 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   @Output() sumitted = new EventEmitter<any>();
 
   form!: FormGroup;
-  @ViewChild('editor', { static: false }) editorElement!: ElementRef;
-  private editorRenderFrame?: number;
+  @ViewChild('editorElement', { static: false }) editorElement!: ElementRef;
+  private editorAttachTimeout?: any;
 
   constructor(
     private fb: FormBuilder,
@@ -382,18 +382,25 @@ export class ConsigneComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       translations: [translations]
     };
 
-    this.editorRenderFrame = requestAnimationFrame(() => {
-      this.editorRenderFrame = requestAnimationFrame(() => {
-        this.isLayoutReady = true;
-        this.changeDetector.detectChanges();
-        this.editorRenderFrame = undefined;
-      });
-    });
+    this.initEditorWhenAttached();
+  }
+  
+  private initEditorWhenAttached(): void {
+    if (this.isLayoutReady) {
+      return;
+    }
+    if (this.editorElement?.nativeElement?.isConnected) {
+      this.isLayoutReady = true;
+      this.changeDetector.detectChanges();
+      this.editorAttachTimeout = undefined;
+    } else {
+      this.editorAttachTimeout = setTimeout(() => this.initEditorWhenAttached(), 50);
+    }
   }
 
   ngOnDestroy(): void {
-    if (this.editorRenderFrame) {
-      cancelAnimationFrame(this.editorRenderFrame);
+    if (this.editorAttachTimeout) {
+      clearTimeout(this.editorAttachTimeout);
     }
   }
 

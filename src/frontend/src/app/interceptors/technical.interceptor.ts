@@ -7,6 +7,7 @@ import { catchError, finalize } from "rxjs/operators";
 import { MessageService } from "../services/message.service";
 import { LoaderService } from "../services/loader.service";
 import { AuthService } from "../services/auth.service";
+import { SILENT_REQUEST } from "./http-context.tokens";
 
 @Injectable()
 export class TechnicalInterceptor implements HttpInterceptor {
@@ -32,6 +33,11 @@ export class TechnicalInterceptor implements HttpInterceptor {
     let requestToHandle = handleApogeeForbiddenLocally
       ? request.clone({headers: request.headers.delete('X-Handle-Apogee-Forbidden-Locally')})
       : request;
+    // Requête silencieuse (ex. ping keep-alive) : pas de loader, pas de blur,
+    // pas de popup d'erreur générique. L'appelant gère lui-même le résultat.
+    if (request.context.get(SILENT_REQUEST)) {
+      return next.handle(request);
+    }
     if (skipLoader) {
       requestToHandle = requestToHandle.clone({headers: requestToHandle.headers.delete('X-No-Loader')});
     }
