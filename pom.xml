@@ -249,7 +249,6 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.9.22.1</version>
 			<scope>compile</scope>
-			<optional>true</optional>
 		</dependency>
 
 		<!-- generating PDF from template -->
