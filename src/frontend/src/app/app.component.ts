@@ -269,22 +269,26 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
     try {
-      if (!this.authService.userConnected) {
-        const user = await firstValueFrom(this.authService.getCurrentUser());
-        if (user) {
-          this.authService.createUser(user);
+      // Page publique ouverte par un tuteur externe : il n'a pas de compte, chercher à l'identifier
+      // ne produirait qu'un 401 suivi d'un départ vers le CAS, hors de son formulaire.
+      if (!this.authService.isAnonymousPublicRoute()) {
+        if (!this.authService.userConnected) {
+          const user = await firstValueFrom(this.authService.getCurrentUser());
+          if (user) {
+            this.authService.createUser(user);
+          }
         }
-      }
 
-      await this.authService.ensureAdminTechListLoaded();
+        await this.authService.ensureAdminTechListLoaded();
 
-      if (this.authService.isAdmin()) {
-        const response = await firstValueFrom(this.configMissingService.getMissing());
-        const missing = response?.missing || [];
-        if (missing.length > 0) {
-          const currentPath = this.router.url || '';
-          if (!currentPath.includes('admin/config-missing')) {
-            await this.router.navigateByUrl('/admin/config-missing');
+        if (this.authService.isAdmin()) {
+          const response = await firstValueFrom(this.configMissingService.getMissing());
+          const missing = response?.missing || [];
+          if (missing.length > 0) {
+            const currentPath = this.router.url || '';
+            if (!currentPath.includes('admin/config-missing')) {
+              await this.router.navigateByUrl('/admin/config-missing');
+            }
           }
         }
       }

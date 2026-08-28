@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
@@ -180,9 +181,7 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint((request, response, authException) -> {
                             if (request.getServletPath().startsWith("/api/")) {
-                                if (request.getSession(false) == null  || !request.isRequestedSessionIdValid()) {
-                                    response.setHeader("X-Auth-Reason", "idle");
-                                }
+                                response.setHeader("X-Auth-Reason", resolveAuthReason(request));
                                 response.setStatus(401);
                             } else {
                                 response.sendRedirect(request.getContextPath() + "/login/cas");
@@ -216,6 +215,22 @@ public class SecurityConfiguration {
                 );
 
         return http.build();
+    }
+
+    /**
+     * Motif du 401 renvoyé au frontend.
+     * "idle"       : le navigateur a présenté un identifiant de session que le serveur ne connaît
+     *                plus, la session a expiré (inactivité) ou a été invalidée.
+     * "no-session" : aucun identifiant de session n'a été présenté, ou celui-ci est encore valide
+     *                mais sans authentification. C'est le cas normal du premier accès, le front
+     *                redirige alors vers le CAS sans afficher de fenêtre.
+     */
+    private String resolveAuthReason(HttpServletRequest request) {
+        String requestedSessionId = request.getRequestedSessionId();
+        if (requestedSessionId != null && !request.isRequestedSessionIdValid()) {
+            return "idle";
+        }
+        return "no-session";
     }
 
     @Bean
