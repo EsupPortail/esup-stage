@@ -26,7 +26,7 @@ La signature électronique s'active par la présence d'une configuration (Docapo
 
 == Archiver avant de purger
 
-La conformité RGPD est traitée en deux temps : *archivage* (les données restent en base, en lecture seule pour les super-administrateurs) puis *purge* définitive après un second délai. Les traitements irréversibles (purge, nettoyage des contacts/services) sont livrés *inactifs par défaut* : chaque établissement les active explicitement (voir xref:exploitation:archivage-purge.adoc[]).
+La conformité RGPD est traitée en deux temps : *archivage* (les données restent en base, en lecture seule pour les super-administrateurs) puis *purge* définitive après un second délai. L'ensemble du dispositif est *optionnel* : les tâches planifiées d'archivage, de purge et de nettoyage sont livrées *inactives par défaut*, leur activation devant être un choix conscient et volontaire de chaque établissement (voir xref:exploitation:archivage-purge.adoc[]).
 
 == Les traitements récurrents sont pilotés en base
 
