@@ -7,6 +7,7 @@ import { AppFonction } from "../../../constants/app-fonction";
 import { Droit } from "../../../constants/droit";
 import {RoleService} from "../../../services/role.service";
 import {StructureService} from "../../../services/structure.service";
+import {REGEX} from "../../../utils/regex.utils";
 
 @Component({
     selector: 'app-config-generale',
@@ -51,6 +52,9 @@ export class ConfigGeneraleComponent implements OnInit {
   logoFile: File|undefined;
   faviconFile: File|undefined;
 
+  libellesImpression: any[] = [];
+  libelleImpressionColumns = ['langue', 'surcharge', 'cles', 'actions'];
+
   centreGestion: any;
   primaryColor: string | WritableSignal<string> | undefined;
   secondaryColor: string | WritableSignal<string> | undefined;
@@ -88,6 +92,11 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
+      mailDpo: [null, [Validators.email]],
+      dureeArchivageConventionAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureeArchivageConventionGratifieeAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
+      dureePurgeConventionAnnees: [2, [Validators.required, Validators.min(1), Validators.max(99)]],
+      mailOppositionContact: [null, [Validators.pattern(REGEX.EMAIL)]],
     });
 
     this.formTheme = this.fb.group({
@@ -151,6 +160,9 @@ export class ConfigGeneraleComponent implements OnInit {
       this.formSignature.patchValue(this.configSignature);
     });
 
+    // Récupération de l'état des libellés d'impression traduisibles
+    this.loadLibellesImpression();
+
     // Récupération des infos sirene
     this.structureService.getSireneInfo().subscribe((response: any) => {
       this.isSireneActive = response.isApiSireneActive;
@@ -183,6 +195,48 @@ export class ConfigGeneraleComponent implements OnInit {
     });
   }
 
+  loadLibellesImpression(): void {
+    this.configService.getLibellesImpression().subscribe((response: any) => {
+      this.libellesImpression = response;
+    });
+  }
+
+  downloadFichierLibelles(langue: any): void {
+    this.configService.getFichierLibellesImpression(langue.code).subscribe((blob: Blob) => {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `impression_${langue.code}.properties`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  onLibelleFileChange(langue: any, event: any): void {
+    const file = event.target.files.item(0);
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith('.properties')) {
+      this.messageService.setError('Le fichier doit avoir l\'extension .properties');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('fichier', file, file.name);
+    this.configService.updateLibellesImpression(langue.code, formData).subscribe((response: any) => {
+      this.libellesImpression = response;
+      this.messageService.setSuccess(`Libellés de la langue « ${langue.libelle} » mis à jour`);
+    });
+  }
+
+  deleteSurchargeLibelles(langue: any): void {
+    this.configService.deleteLibellesImpression(langue.code).subscribe((response: any) => {
+      this.libellesImpression = response;
+      this.messageService.setSuccess(`Libellés de la langue « ${langue.libelle} » réinitialisés`);
+    });
+  }
+
   canEdit(): boolean {
     return this.authService.checkRights({ fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION] });
   }
@@ -193,7 +247,9 @@ export class ConfigGeneraleComponent implements OnInit {
 
   saveGenerale(): void {
     if (this.formGenerale.valid) {
-      const payload = this.formGenerale.getRawValue();
+      // La config générale est remplacée intégralement côté serveur : on fusionne avec la config
+      // chargée pour préserver les paramètres gérés sur d'autres écrans (ex. délais d'archivage)
+      const payload = { ...this.configGenerale, ...this.formGenerale.getRawValue() };
       this.configService.updateGenerale(payload).subscribe((response: any) => {
         this.configGenerale = response;
         this.messageService.setSuccess('Paramètre d\'éléments généraux modifiés');

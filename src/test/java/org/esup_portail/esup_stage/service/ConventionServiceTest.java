@@ -269,6 +269,23 @@ class ConventionServiceTest {
     }
 
     @Test
+    void parseNumTelKeepsValidFixedLineNumbersForGeneralUse() {
+        assertThat(service.parseNumTel("0182280026")).isEqualTo("+33182280026");
+    }
+
+    @Test
+    void parseNumTelMobileRejectsFixedLineNumbersRejectedByDocaposteOtp() {
+        assertThat(service.parseNumTelMobile("0182280026")).isNull();
+        assertThat(service.parseNumTelMobile("0596782950")).isNull();
+        assertThat(service.parseNumTelMobile("0188321350")).isNull();
+    }
+
+    @Test
+    void parseNumTelMobileFormatsValidMobileNumbers() {
+        assertThat(service.parseNumTelMobile("0612345678")).isEqualTo("+33612345678");
+    }
+
+    @Test
     void initSignatairesCreeUnSignataireParTypeDansLOrdre() {
         CentreGestion centreGestion = new CentreGestion();
         centreGestion.setId(3);

@@ -35,7 +35,7 @@ export class GestionEtabAccueilComponent implements OnInit {
   columns = ['raisonSociale', 'numeroSiret', 'nafN5.nafN1.libelle', 'pays.lib', 'commune', 'typeStructure.libelle', 'statutJuridique.libelle', 'action'];
   sortColumn = 'raisonSociale';
   serviceTableColumns = ['nom', 'voie', 'codePostal','batimentResidence', 'commune', 'pays', 'telephone',  'actions'];
-  contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax',  'actions'];
+  contactTableColumns = ['centreGestionnaire', 'civilite', 'nom','prenom', 'telephone', 'mail', 'fax', 'refusEtreContacte', 'actions'];
   historiqueTableColumns = ['date', 'utilisateur', 'type', 'action'];
   filters: any[] = [];
   countries: any[] = [];
@@ -94,6 +94,10 @@ export class GestionEtabAccueilComponent implements OnInit {
       { id: 'typeStructure.id', libelle: 'Type d\'organisme', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
       { id: 'statutJuridique.id', libelle: 'Forme juridique', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id' },
     ];
+    // Les structures archivées ne sont consultables que par les admins
+    if (this.authService.isAdmin()) {
+      this.filters.push({ id: 'archive', libelle: 'Structures archivées', type: 'boolean', specific: true });
+    }
     this.paysService.getPaginated(1, 0, 'lib', 'asc', JSON.stringify({temEnServPays: {value: 'O', type: 'text'}})).subscribe((response: any) => {
       this.countries = response.data;
       const filter = this.filters.find((f: any) => f.id === 'pays.id');
@@ -242,6 +246,30 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.messageService.setSuccess('Contact supprimé');
       this.refreshContacts();
     });
+  }
+
+  solliciterDroitOpposition(row: any): void {
+    this.contactService.solliciterDroitOpposition(row.id).subscribe((response: any) => {
+      this.messageService.setSuccess('Mail envoyé à ' + row.mail);
+      this.refreshContacts();
+    });
+  }
+
+  /**
+   * Message de confirmation avant l'envoi : on avertit explicitement s'il s'agit d'une relance,
+   * en rappelant la date du premier envoi.
+   */
+  confirmMessageDroitOpposition(row: any): string {
+    if (row.dateEnvoiMailOpposition) {
+      const date = new Date(row.dateEnvoiMailOpposition).toLocaleDateString('fr-FR');
+      return 'Ce mail a déjà été envoyé au destinataire le ' + date + ', voulez-vous continuer ?';
+    }
+    return 'Un mail va être envoyé à ' + row.mail + ' pour lui permettre de signaler qu\'il ne souhaite pas être contacté. Confirmer ?';
+  }
+
+  peutSolliciterDroitOpposition(row: any): boolean {
+    // inutile de solliciter un contact sans adresse, ou ayant déjà exprimé son refus
+    return !!row.mail && !row.refusEtreContacte;
   }
 
   openServiceFormModal(service: any) {

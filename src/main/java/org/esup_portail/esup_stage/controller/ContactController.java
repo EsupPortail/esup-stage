@@ -1,11 +1,14 @@
 package org.esup_portail.esup_stage.controller;
 
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.ContactDetailDto;
 import org.esup_portail.esup_stage.dto.ContactDto;
 import org.esup_portail.esup_stage.dto.ContactFormDto;
+import org.esup_portail.esup_stage.dto.DroitOppositionFormDto;
+import org.esup_portail.esup_stage.dto.DroitOppositionResultDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
@@ -27,10 +30,12 @@ import org.esup_portail.esup_stage.security.ServiceContext;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.security.permission.ContactPermissionEvaluator;
 import org.esup_portail.esup_stage.service.ConfidentialiteAccessService;
+import org.esup_portail.esup_stage.service.DroitOppositionContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @ApiController
@@ -54,6 +59,9 @@ public class ContactController {
 
     @Autowired
     ConfidentialiteAccessService confidentialiteAccessService;
+
+    @Autowired
+    DroitOppositionContactService droitOppositionContactService;
 
     @JsonView(Views.List.class)
     @GetMapping
@@ -151,6 +159,26 @@ public class ContactController {
         return contactJpaRepository.saveAndFlush(contact);
     }
 
+    /**
+     * Envoi manuel du mail de droit d'opposition à un contact précis.
+     * La relance d'un contact déjà sollicité est autorisée : l'écran confirme au préalable.
+     */
+    @PostMapping("/{id}/solliciter-droit-opposition")
+    @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true, evaluator = ContactPermissionEvaluator.class)
+    public ContactDetailDto solliciterDroitOpposition(@PathVariable("id") int id) {
+        droitOppositionContactService.solliciterContact(id);
+        return buildContactDetailDto(contactJpaRepository.findById(id), shouldHideSensitiveContactFields(ServiceContext.getUtilisateur()));
+    }
+
+    /**
+     * Enregistrement en masse des refus d'être contacté remontés sur la boîte mail générique.
+     */
+    @PostMapping("/refus-etre-contacte")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION})
+    public DroitOppositionResultDto enregistrerRefusEtreContacte(@RequestBody DroitOppositionFormDto droitOppositionFormDto) {
+        return droitOppositionContactService.enregistrerRefus(droitOppositionFormDto.getMails());
+    }
+
     @DeleteMapping("/{id}")
     @Secure(fonctions = {AppFonctionEnum.SERVICE_CONTACT_ACC}, droits = {DroitEnum.SUPPRESSION}, evaluator = ContactPermissionEvaluator.class)
     public boolean delete(@PathVariable("id") int id) {
@@ -176,6 +204,35 @@ public class ContactController {
         contact.setTel(contactFormDto.getTel());
         contact.setFax(contactFormDto.getFax());
         contact.setMail(contactFormDto.getMail());
+        setRefusEtreContacte(contact, contactFormDto.getRefusEtreContacte());
+    }
+
+    /**
+     * Applique le droit d'opposition saisi manuellement.
+     * Le refus n'est horodaté qu'à la transition vers "true" pour ne pas écraser la trace d'origine,
+     * et sa levée est réservée aux profils gestionnaires : un étudiant peut déclarer un refus,
+     * pas l'annuler.
+     */
+    private void setRefusEtreContacte(Contact contact, Boolean refusEtreContacte) {
+        boolean refusActuel = Boolean.TRUE.equals(contact.getRefusEtreContacte());
+        boolean refusDemande = Boolean.TRUE.equals(refusEtreContacte);
+
+        if (refusActuel == refusDemande) {
+            return;
+        }
+
+        if (refusActuel && shouldHideSensitiveContactFields(ServiceContext.getUtilisateur())) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Le refus d'être contacté ne peut être levé que par un gestionnaire");
+        }
+
+        contact.setRefusEtreContacte(refusDemande);
+        if (refusDemande) {
+            contact.setDateRefusEtreContacte(new Date());
+            contact.setOrigineRefusEtreContacte(DroitOpposition.ORIGINE_REFUS_MANUEL);
+        } else {
+            contact.setDateRefusEtreContacte(null);
+            contact.setOrigineRefusEtreContacte(null);
+        }
     }
 
     private List<Contact> getVisibleContactsByService(int idService, Integer idCentreGestion, Utilisateur utilisateur) {
@@ -299,6 +356,10 @@ public class ContactController {
         contactDetailDto.setFonction(contact.getFonction());
         contactDetailDto.setCivilite(contact.getCivilite());
         contactDetailDto.setIdCentreGestion(contact.getCentreGestion().getId());
+        // Le droit d'opposition reste visible de tous les profils
+        contactDetailDto.setRefusEtreContacte(contact.getRefusEtreContacte());
+        contactDetailDto.setDateRefusEtreContacte(contact.getDateRefusEtreContacte());
+        contactDetailDto.setDateEnvoiMailOpposition(contact.getDateEnvoiMailOpposition());
         if (!hideSensitiveFields) {
             // Centre gestionnaire (RGPD) et coordonnées réservés aux profils autorisés
             contactDetailDto.setCentreGestionnaire(ContactDetailDto.CentreGestionDto.from(contact.getCentreGestion()));

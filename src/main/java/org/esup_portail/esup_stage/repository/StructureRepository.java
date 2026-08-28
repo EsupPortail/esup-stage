@@ -20,11 +20,24 @@ public class StructureRepository extends PaginationRepository<Structure> {
     public StructureRepository(EntityManager em) {
         super(em, Structure.class, "s");
         this.predicateWhitelist = Arrays.asList("raisonSociale", "numeroSiret", "numeroUAI", "nafN5.nafN1.libelle", "pays.lib", "commune", "typeStructure.libelle", "statutJuridique.libelle");
-        this.specificFilterWhitelist = Arrays.asList("nafN1.code");
+        this.specificFilterWhitelist = Arrays.asList("nafN1.code", "archive");
     }
 
     @Override
     public List<Structure> findPaginated(int page, int perPage, String predicate, String sortOrder, String filters) {
+        return super.findPaginated(page, perPage, predicate, sortOrder, applyDefaultFilters(filters));
+    }
+
+    @Override
+    public Long count(String filters) {
+        return super.count(applyDefaultFilters(filters));
+    }
+
+    /**
+     * Par défaut, seules les structures en service et non archivées sont retournées. Le
+     * filtre "archive" ne peut être positionné à true que par un admin (contrôleur).
+     */
+    private String applyDefaultFilters(String filters) {
         ObjectNode jsonFilters;
         try {
             JsonNode parsedFilters = JSON_MAPPER.readTree(filters == null || filters.isBlank() ? "{}" : filters);
@@ -41,19 +54,27 @@ public class StructureRepository extends PaginationRepository<Structure> {
             temEnServParam.put("value", true);
             temEnServParam.put("type", "boolean");
             jsonFilters.set("temEnServStructure", temEnServParam);
-
-            filters = jsonFilters.toString();
         }
-
-        return super.findPaginated(page, perPage, predicate, sortOrder, filters);
+        if (!jsonFilters.has("archive")) {
+            ObjectNode archiveParam = newJsonObjectNode();
+            archiveParam.put("value", false);
+            archiveParam.put("specific", true);
+            jsonFilters.set("archive", archiveParam);
+        }
+        return jsonFilters.toString();
     }
-
-
 
     @Override
     protected void addSpecificParameter(String key, JsonNode parameter, List<String> clauses) {
         if (key.equals("nafN1.code")) {
             clauses.add("s.nafN5.nafN1.code IN :" + key.replace(".", ""));
+        }
+        if (key.equals("archive")) {
+            if (getJsonBooleanValue(parameter)) {
+                clauses.add("s.dateArchivage IS NOT NULL");
+            } else {
+                clauses.add("s.dateArchivage IS NULL");
+            }
         }
     }
 

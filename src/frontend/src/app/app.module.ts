@@ -56,6 +56,7 @@ import { AdminNomenclaturesEditionComponent } from './components/admin/admin-nom
 import { AdminRoleComponent } from './components/admin/admin-role/admin-role.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ConfigGeneraleComponent } from './components/admin/config-generale/config-generale.component';
+import { ArchivageComponent } from './components/admin/archivage/archivage.component';
 import { MatRadioModule } from "@angular/material/radio";
 import { ContenuComponent } from './components/admin/contenu/contenu.component';
 import { ContenuPipe } from './pipes/contenu.pipe';
@@ -141,6 +142,7 @@ import {ConfirmDeleteDialogComponent} from "./components/gestion-etab-accueil/co
 import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accueil/centre-proprietaire-dialog/centre-proprietaire-dialog.component";
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
+import {DroitOppositionComponent} from "./components/admin/droit-opposition/droit-opposition.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';
@@ -207,6 +209,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     AdminRoleComponent,
     ConfirmComponent,
     ConfigGeneraleComponent,
+    ArchivageComponent,
     ContenuComponent,
     ContenuPipe,
     CentreGestionSearchComponent,
@@ -277,6 +280,7 @@ export class FrenchDateProvider extends NativeDateAdapter {
     CentreProprietaireDialogComponent,
     ColumnSelectorComponent,
     TachePlanifieComponent,
+    DroitOppositionComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
     ExportEvaluationComponent,

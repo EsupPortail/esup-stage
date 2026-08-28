@@ -1,5 +1,6 @@
 package org.esup_portail.esup_stage.model;
 
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.junit.jupiter.api.Test;
 
@@ -219,6 +220,27 @@ class ExportValueTest {
     }
 
     @Test
+    void accordAnnuaireExporteSesTroisEtats() {
+        Convention convention = new Convention();
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non renseigné");
+
+        convention.setAccordAnnuaireEtudiant(true);
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Oui");
+
+        convention.setAccordAnnuaireEtudiant(false);
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non");
+    }
+
+    @Test
+    void accordAnnuaireResteLisibleSurUneConventionConfidentielle() {
+        Convention convention = new Convention();
+        convention.setConfidentiel(true);
+        convention.setAccordAnnuaireEtudiant(false);
+
+        assertThat(convention.getExportValue("accordAnnuaireEtudiant")).isEqualTo("Non");
+    }
+
+    @Test
     void lesChampsSensiblesSontVidesQuandLaConventionEstConfidentielle() {
         Convention convention = conventionComplete();
         assertThat(convention.getExportValue("sujetStage")).isEqualTo("Développement");
@@ -231,6 +253,53 @@ class ExportValueTest {
         assertThat(convention.getExportValue("commentaireStage")).isEmpty();
         // les champs non sensibles restent exportés
         assertThat(convention.getExportValue("etudiant")).isEqualTo("Marie Dupont");
+    }
+
+    @Test
+    void lesCoordonneesDuTuteurSontMasqueesQuandIlRefuseDEtreContacte() {
+        Convention convention = conventionComplete();
+        assertThat(convention.getExportValue("tuteurMail")).isEqualTo("tuteur@acme.fr");
+        assertThat(convention.getExportValue("tuteurPhone")).isEqualTo("0201020304");
+
+        convention.getContact().setRefusEtreContacte(true);
+
+        assertThat(convention.getExportValue("tuteurMail")).isEqualTo(DroitOpposition.MENTION_REFUS_ETRE_CONTACTE);
+        assertThat(convention.getExportValue("tuteurPhone")).isEqualTo(DroitOpposition.MENTION_REFUS_ETRE_CONTACTE);
+        // seuls le téléphone et le mail sont masqués : le contact reste identifiable
+        assertThat(convention.getExportValue("tuteur")).isEqualTo("Tuteur Jean");
+        assertThat(convention.getExportValue("tuteurFonction")).isEqualTo("Chef de projet");
+    }
+
+    @Test
+    void leMailDuSignataireEstMasqueQuandIlRefuseDEtreContacte() {
+        Convention convention = conventionComplete();
+        assertThat(convention.getExportValue("mailSignataire")).isEqualTo("dir@acme.fr");
+
+        convention.getSignataire().setRefusEtreContacte(true);
+
+        assertThat(convention.getExportValue("mailSignataire")).isEqualTo(DroitOpposition.MENTION_REFUS_ETRE_CONTACTE);
+        assertThat(convention.getExportValue("signataire")).isEqualTo("Anne Directeur");
+        assertThat(convention.getExportValue("fonctionSignataire")).isEqualTo("Directrice");
+    }
+
+    @Test
+    void leRefusDUnContactNaffectePasLautre() {
+        Convention convention = conventionComplete();
+        convention.getContact().setRefusEtreContacte(true);
+
+        assertThat(convention.getExportValue("tuteurMail")).isEqualTo(DroitOpposition.MENTION_REFUS_ETRE_CONTACTE);
+        assertThat(convention.getExportValue("mailSignataire")).isEqualTo("dir@acme.fr");
+    }
+
+    @Test
+    void unRefusNonRenseigneOuRefuseLaisseLesCoordonneesVisibles() {
+        Convention convention = conventionComplete();
+        // null : aucune réponse enregistrée
+        assertThat(convention.getExportValue("tuteurMail")).isEqualTo("tuteur@acme.fr");
+
+        convention.getContact().setRefusEtreContacte(false);
+        assertThat(convention.getExportValue("tuteurMail")).isEqualTo("tuteur@acme.fr");
+        assertThat(convention.getExportValue("tuteurPhone")).isEqualTo("0201020304");
     }
 
     @Test

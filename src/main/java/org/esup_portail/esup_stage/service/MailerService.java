@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.ApplicationProperties;
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.SendMailTestDto;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
@@ -41,6 +42,9 @@ public class MailerService {
 
     @Autowired
     AppliProperties appliProperties;
+
+    @Autowired
+    AppConfigService appConfigService;
 
     @Autowired
     FreeMarkerConfigurer freeMarkerConfigurer;
@@ -100,6 +104,25 @@ public class MailerService {
         }
     }
 
+    /**
+     * Mail de recueil du droit d'opposition d'un contact en entreprise (signataire ou tuteur pro).
+     * Le lien mailto: de refus est passé au template via ${lienOpposition}.
+     */
+    public void sendDroitOpposition(String to, Convention convention, String templateMailCode, String lienOpposition) {
+        TemplateMail templateMail = templateMailJpaRepository.findByCode(templateMailCode);
+        if (templateMail == null) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Template mail " + templateMailCode + " non trouvé");
+        }
+        if (to == null || to.isEmpty() || to.equals("null")) {
+            logger.info("Aucun destinataire défini pour l'envoie de l'email.");
+            return;
+        }
+        MailContext mailContext = new MailContext(appliProperties, convention, null, evaluationService.buildEvaluationTuteurUrl(convention));
+        mailContext.setLienOpposition(lienOpposition);
+        sendMail(to, templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(), templateMail.getCode(),
+                mailContext, false, null, null);
+    }
+
     public void sendMailGroupe(String to, Convention convention, Utilisateur userModif, String templateMailCode, byte[] archive) {
         TemplateMailGroupe templateMailGroupe = templateMailGroupeJpaRepository.findByCode(templateMailCode);
         if (templateMailGroupe == null) {
@@ -129,9 +152,29 @@ public class MailerService {
             if (mailContext.getSignataire() != null && mailContext.getSignataire().getTel() == null) {
                 mailContext.getSignataire().setTel("+33 1 44 55 66 77");
             }
+            // Sans cela, ${lienOpposition} rendrait un lien vide dans l'aperçu des templates
+            // de droit d'opposition.
+            mailContext.setLienOpposition(construireLienOppositionApercu(convention));
             sendMail(sendMailTestDto.getTo(), templateMail.getId(), templateMail.getObjet(), templateMail.getTexte(),
                     templateMail.getCode(), mailContext, true, null, null);
         }
+    }
+
+    /**
+     * Lien d'opposition d'aperçu, construit sur le contact fictif de la convention de test.
+     * Si la boîte générique n'est pas encore paramétrée, une adresse d'exemple est utilisée :
+     * l'aperçu doit rester consultable avant que le paramétrage soit fait.
+     */
+    private String construireLienOppositionApercu(Convention convention) {
+        String mailGenerique = appConfigService.getConfigGenerale().getMailOppositionContact();
+        if (mailGenerique == null || mailGenerique.trim().isEmpty()) {
+            mailGenerique = "boite-generique@exemple.fr";
+        }
+        Contact contact = convention.getContact() != null ? convention.getContact() : convention.getSignataire();
+        if (contact == null) {
+            return DroitOpposition.construireLienMailto(mailGenerique.trim(), "Prénom", "Nom", "contact@exemple.fr");
+        }
+        return DroitOpposition.construireLienMailto(mailGenerique.trim(), contact.getPrenom(), contact.getNom(), contact.getMail());
     }
 
     private void sendMail(String to, int templateMailId, String templateMailObject, String templateMailTexte, String templateMailCode,
@@ -336,6 +379,7 @@ public class MailerService {
         private EtudiantContext etudiant = new EtudiantContext();
         private AvenantContext avenant = new AvenantContext();
         private String lienEvaluationTuteur= "";
+        private String lienOpposition = "";
 
         public MailContext(AppliProperties appliProperties, Convention convention, Avenant avenant, Utilisateur userModif, String lienEvaluationTuteur) {
             if (convention != null) {

@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.repository;
 
 import org.esup_portail.esup_stage.model.PeriodeInterruptionAvenant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,8 @@ public interface PeriodeInterruptionAvenantJpaRepository extends JpaRepository<P
 
     @Query("SELECT pia FROM PeriodeInterruptionAvenant pia WHERE pia.avenant.id = :idAvenant ORDER BY pia.dateDebutInterruption ASC")
     List<PeriodeInterruptionAvenant> findByAvenant(@Param("idAvenant") int idAvenant);
+
+    @Modifying
+    @Query("DELETE FROM PeriodeInterruptionAvenant pia WHERE pia.avenant.id IN (SELECT a.id FROM Avenant a WHERE a.convention.id = :idConvention)")
+    int deleteByConventionId(@Param("idConvention") int idConvention);
 }

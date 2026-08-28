@@ -1,14 +1,29 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-/* Conteneur principal */
+/* Colonne pleine hauteur pour coller le footer en bas quand le contenu est court */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/*
+ * Un seul scroll vertical (la page) : le sidenav Material ne doit pas créer
+ * un overflow interne (sinon footer décalé + doubles/triples barres).
+ */
 mat-sidenav-container {
-  min-height: calc(100vh - 64px);
+  flex: 1 0 auto;
+  overflow: visible !important;
 }
 
 mat-sidenav-content {
-  padding: 30px 10px 0px 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding: 30px 10px 0;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+app-footer {
+  flex: 0 0 auto;
 }
 
 .app-menu {
@@ -130,9 +145,4 @@ mat-sidenav-content {
 .maintenance-announcement__close:focus-visible {
   text-decoration: underline;
   outline: none;
-}
-
-.mat-sidenav-content{
-  overflow-y: hidden;
-  margin-bottom : 20px;
 }

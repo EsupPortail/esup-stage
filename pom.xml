@@ -296,7 +296,6 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<!-- doit rester alignée avec poi-ooxml (PoiLogManager absent en 5.3) -->
 			<version>5.4.0</version>
 		</dependency>
 		<dependency>

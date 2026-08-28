@@ -138,6 +138,15 @@ class ConventionRepositorySpecificFiltersTest {
     }
 
     @Test
+    void filtreAccordAnnuaireEnglobeLeNonRenseigneDansLeNon() throws Exception {
+        assertThat(clausesPour("accordAnnuaireEtudiant", "{\"value\":true}"))
+                .containsExactly("c.accordAnnuaireEtudiant = TRUE");
+        // "Non" doit aussi remonter les conventions antérieures, sans réponse enregistrée
+        assertThat(clausesPour("accordAnnuaireEtudiant", "{\"value\":false}"))
+                .containsExactly("(c.accordAnnuaireEtudiant IS NULL OR c.accordAnnuaireEtudiant = FALSE)");
+    }
+
+    @Test
     void etatsDeValidationEtSignature() throws Exception {
         String parametre = "{\"value\":[\"validationPedagogique\",\"validationConvention\",\"verificationAdministrative\","
                 + "\"nonValidationPedagogique\",\"nonValidationConvention\",\"nonVerificationAdministrative\","

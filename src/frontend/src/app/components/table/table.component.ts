@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild,} from '@angular/core';
+import { AfterContentInit,Component,ContentChildren,EventEmitter,Input,OnChanges,OnDestroy,OnInit,Output,Predicate,QueryList,SimpleChanges,TemplateRef,ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Sort, SortDirection } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -36,12 +36,16 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
   @Input() noResultText: string = 'Aucun élément trouvé';
   @Input() customTemplateRef: TemplateRef<any> | undefined;
   @Input() setAlerte: boolean = false;
+  @Input() isAlerte: Predicate<any> = row => this.setAlerte && (row.depasseDelaiValidation ?? false);
   @Input() exportColumns: any = null;
+  @Input() exportGuideCode: string = '';
+  @Input() exportPresets: any[] = [];
   @Input() templateMobile?: TemplateRef<any>;
   @Input() loadWithoutFilters: boolean = true;
   @Input() confirmMessage: string = "";
 
   @Output() updated = new EventEmitter<any>();
+  @Output() rowClick = new EventEmitter<any>();
 
   @ViewChild(MatTable, {static: true}) table: MatTable<any> | undefined;
   @ViewChild("paginatorTop") paginatorTop!: MatPaginator;
@@ -502,7 +506,7 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
 
     const dialogRef = this.dialog.open(ColumnSelectorComponent, {
       width: '900px',
-      data: { sheets: normalized.sheets }
+      data: { sheets: normalized.sheets, guideCode: this.exportGuideCode, presets: this.exportPresets }
     });
 
     dialogRef.afterClosed().subscribe((result) => {

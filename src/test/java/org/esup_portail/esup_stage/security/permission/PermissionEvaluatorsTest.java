@@ -133,6 +133,22 @@ class PermissionEvaluatorsTest {
     }
 
     @Test
+    void contactAutoriseLAdministrateurSurTousLesContacts() {
+        ContactJpaRepository contactRepo = mock(ContactJpaRepository.class);
+        HabilitationService habilitationService = mock(HabilitationService.class);
+        ContactPermissionEvaluator evaluator = contactEvaluator(contactRepo, habilitationService);
+        // administrateur portant par ailleurs un rôle gestionnaire sur un centre qui ne détient
+        // pas ce contact : son statut d'administrateur doit primer
+        when(habilitationService.isGestionnaire(any())).thenReturn(true);
+        when(habilitationService.getGestionnaireCentreIds(any())).thenReturn(List.of(1));
+        when(contactRepo.existsByIdAndCentreGestionIdIn(anyInt(), any())).thenReturn(false);
+
+        assertThat(evaluator.hasPermission(utilisateur(1, "adm1", Role.ADM), null, new Object[]{3})).isTrue();
+        assertThat(evaluator.hasPermission(utilisateur(1, "adm1", Role.ADM, Role.GES), null, new Object[]{3})).isTrue();
+        verify(contactRepo, never()).existsByIdAndCentreGestionIdIn(anyInt(), any());
+    }
+
+    @Test
     void contactAutoriseLesAutresRoles() {
         ContactPermissionEvaluator evaluator = contactEvaluator(mock(ContactJpaRepository.class), mock(HabilitationService.class));
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.esup_portail.esup_stage.constants.DroitOpposition;
 import org.esup_portail.esup_stage.dto.view.Views;
 import org.esup_portail.esup_stage.enums.NbJoursHebdoEnum;
 import org.esup_portail.esup_stage.service.PeriodeService;
@@ -428,6 +429,25 @@ public class Convention extends ObjetMetier implements Exportable {
     @Column
     private Boolean protectionSocialeOrganismeAccueil;
 
+    @Column
+    private Boolean accordAnnuaireEtudiant;
+
+    @JsonView(Views.List.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivage;
+
+    // Date à laquelle les fichiers de la convention (documents déposés, PDF signés) ont été
+    // déplacés dans le dossier d'archives du serveur ; null = déplacement pas encore effectué
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date dateArchivageFichiers;
+
+    // Non persisté : indique si le PDF signé est effectivement présent sur le serveur (calculé côté contrôleur)
+    @Transient
+    private boolean documentSigneDisponible;
+
     public void setNomenclature(ConventionNomenclature nomenclature) {
         this.nomenclature = nomenclature;
         this.nomenclature.setConvention(this);
@@ -653,7 +673,7 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "mailSignataire":
                 if (getSignataire() != null) {
-                    value = getSignataire().getMail();
+                    value = getContactExportValue(getSignataire(), getSignataire().getMail());
                 }
                 break;
             case "fonctionSignataire":
@@ -828,12 +848,12 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "tuteurMail":
                 if (getContact() != null) {
-                    value = getContact().getMail();
+                    value = getContactExportValue(getContact(), getContact().getMail());
                 }
                 break;
             case "tuteurPhone":
                 if (getContact() != null) {
-                    value = getContact().getTel();
+                    value = getContactExportValue(getContact(), getContact().getTel());
                 }
                 break;
             case "tuteurFonction":
@@ -843,6 +863,19 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "lieuStage":
                 value = getLieuStage();
+                break;
+            case "gratificationStage":
+                // Même critère que l'archivage : témoin levé ou montant renseigné
+                value = Boolean.TRUE.equals(getGratificationStage())
+                        || (getMontantGratification() != null && !getMontantGratification().isEmpty()) ? "Oui" : "Non";
+                break;
+            case "dateArchivage":
+                if (getDateArchivage() != null) {
+                    value = df.format(getDateArchivage());
+                }
+                break;
+            case "accordAnnuaireEtudiant":
+                value = getAccordAnnuaireEtudiant() == null ? "Non renseigné" : (getAccordAnnuaireEtudiant() ? "Oui" : "Non");
                 break;
             default:
                 break;
@@ -863,6 +896,17 @@ public class Convention extends ObjetMetier implements Exportable {
                 || "competences".equals(key)
                 || "details".equals(key)
                 || "commentaireStage".equals(key);
+    }
+
+    /**
+     * Droit d'opposition des contacts en entreprise : lorsqu'un contact a signalé qu'il ne
+     * souhaitait pas être contacté, ses coordonnées ne doivent plus figurer dans les extractions.
+     */
+    private String getContactExportValue(Contact contact, String value) {
+        if (contact != null && Boolean.TRUE.equals(contact.getRefusEtreContacte())) {
+            return DroitOpposition.MENTION_REFUS_ETRE_CONTACTE;
+        }
+        return value;
     }
 @Transient
     public boolean isAllSignedDateSetted() {

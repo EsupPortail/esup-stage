@@ -11,6 +11,7 @@ import { AppFonction } from "./constants/app-fonction";
 import { Droit } from "./constants/droit";
 import { AdminRoleComponent } from "./components/admin/admin-role/admin-role.component";
 import { ConfigGeneraleComponent } from "./components/admin/config-generale/config-generale.component";
+import { ArchivageComponent } from "./components/admin/archivage/archivage.component";
 import { ContenuComponent } from "./components/admin/contenu/contenu.component";
 import { CentreGestionSearchComponent } from "./components/centre-gestion-search/centre-gestion-search.component";
 import { CentreGestionComponent } from "./components/centre-gestion/centre-gestion.component";
@@ -22,6 +23,7 @@ import { ConventionCreateEnMasseComponent } from './components/convention-create
 import { GestionGroupeComponent } from './components/convention-create-en-masse/gestion-groupe/gestion-groupe.component';
 import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
+import {DroitOppositionComponent} from "./components/admin/droit-opposition/droit-opposition.component";
 import {SitemapComponent} from "./components/sitemap/sitemap.component";
 import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
@@ -174,6 +176,28 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
       title: 'Tâches planifiées',
       sitemap: {label: 'Tâches planifiées', group: 'Paramétrage global', order: 7}
+    }
+  },
+  {
+    path: 'param-global/archivage',
+    component: ArchivageComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.LECTURE]},
+      title: 'Archivage',
+      sitemap: {label: 'Archivage', group: 'Paramétrage global', order: 8}
+    }
+  },
+  {
+    path: 'param-global/droit-opposition',
+    component: DroitOppositionComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      // L'écran n'a rien à consulter : il enregistre des refus. Aligné sur l'endpoint,
+      // qui exige PARAM_GLOBAL / MODIFICATION.
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]},
+      title: "Droit d'opposition des contacts",
+      sitemap: {label: "Droit d'opposition des contacts", group: 'Paramétrage global', order: 8}
     }
   },
   {

@@ -233,8 +233,7 @@ public class ApogeeService {
             ApogeeMap apogeeMap = getEtudiantEtapesInscription(numEtudiant, annee);
             RegimeInscription regimeInscription = findRegimeInscription(apogeeMap, annee);
             List<TypeConvention> typeConventionsCompatibles = resolveTypeConventionsCompatibles(regimeInscription);
-            List<TypeConvention> typeConventionsAuto = resolveTypeConventionsAuto(regimeInscription);
-            List<ConventionFormationDto> inscriptionsAnnee = buildInscriptionsForAnnee(apogeeMap, annee, typeConventionsCompatibles, typeConventionsAuto);
+            List<ConventionFormationDto> inscriptionsAnnee = buildInscriptionsForAnnee(apogeeMap, annee, typeConventionsCompatibles);
             enrichWithElementsPedagogiques(inscriptionsAnnee, apogeeMap.getListeELPs());
             inscriptions.addAll(inscriptionsAnnee);
         }
@@ -268,15 +267,12 @@ public class ApogeeService {
                 .orElse(null);
     }
 
+    /**
+     * Types de convention proposables pour le régime d'inscription : actifs, associés au régime
+     * et disposant d'au moins un modèle. Aucun repli sur l'ensemble des types actifs : sans régime
+     * ou sans type associé, la liste reste vide.
+     */
     private List<TypeConvention> resolveTypeConventionsCompatibles(RegimeInscription regimeInscription) {
-        if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
-            return List.of();
-        }
-
-        return typeConventionJpaRepository.findAllActiveCompatibleByCodeRegimeInscription(regimeInscription.getCodRegIns());
-    }
-
-    private List<TypeConvention> resolveTypeConventionsAuto(RegimeInscription regimeInscription) {
         if (regimeInscription == null || regimeInscription.getCodRegIns() == null || regimeInscription.getCodRegIns().isEmpty()) {
             return List.of();
         }
@@ -284,7 +280,7 @@ public class ApogeeService {
         return typeConventionJpaRepository.findAllActiveByCodeRegimeInscription(regimeInscription.getCodRegIns());
     }
 
-    private List<ConventionFormationDto> buildInscriptionsForAnnee(ApogeeMap apogeeMap, String annee, List<TypeConvention> typeConventionsCompatibles, List<TypeConvention> typeConventionsAuto) {
+    private List<ConventionFormationDto> buildInscriptionsForAnnee(ApogeeMap apogeeMap, String annee, List<TypeConvention> typeConventionsCompatibles) {
         List<ConventionFormationDto> inscriptions = new ArrayList<>();
 
         for (EtapeInscription etapeInscription : apogeeMap.getListeEtapeInscriptions()) {
@@ -294,7 +290,7 @@ public class ApogeeService {
             if (centreGestion == null) continue;
 
             List<TypeConvention> typeConventionsDisponibles = resolveTypeConventionsDisponibles(etapeInscription, typeConventionsCompatibles);
-            TypeConvention typeEffectif = resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventionsAuto);
+            TypeConvention typeEffectif = resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventionsCompatibles);
 
             ConventionFormationDto dto = new ConventionFormationDto();
             dto.setEtapeInscription(etapeInscription);
@@ -314,11 +310,7 @@ public class ApogeeService {
             return List.of(typeConventionCesure);
         }
 
-        if (!typeConventionsCompatibles.isEmpty()) {
-            return typeConventionsCompatibles;
-        }
-
-        return typeConventionJpaRepository.findAllActiveWithTemplate();
+        return typeConventionsCompatibles;
     }
 
     private TypeConvention resolveTypeConventionForInscription(EtapeInscription etapeInscription, CentreGestion centreGestion, List<TypeConvention> typeConventions) {
@@ -339,7 +331,7 @@ public class ApogeeService {
     }
 
     public TypeConvention resolveTypeConvention(RegimeInscription regimeInscription, EtapeInscription etapeInscription, CentreGestion centreGestion) {
-        List<TypeConvention> typeConventions = resolveTypeConventionsAuto(regimeInscription);
+        List<TypeConvention> typeConventions = resolveTypeConventionsCompatibles(regimeInscription);
         return resolveTypeConventionForInscription(etapeInscription, centreGestion, typeConventions);
     }
 

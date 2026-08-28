@@ -101,9 +101,11 @@ public class StructureController {
     @GetMapping
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC, AppFonctionEnum.NOMENCLATURE}, droits = {DroitEnum.LECTURE})
     public PaginatedResponse<StructureDto> search(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "perPage", defaultValue = "50") int perPage, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
+        // Le filtre "archive" n'est appliqué qu'aux requêtes en base : la recherche Sirene reçoit les filtres d'origine
+        String repositoryFilters = sanitizeArchiveFilter(filters);
         PaginatedResponse<StructureDto> paginatedResponse = new PaginatedResponse<>();
-        List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, filters);
-        paginatedResponse.setTotal(structureRepository.count(filters));
+        List<Structure> structures = structureRepository.findPaginated(page, perPage, predicate, sortOrder, repositoryFilters);
+        paginatedResponse.setTotal(structureRepository.count(repositoryFilters));
         Map filterMap;
         try {
             filterMap = objectMapper.readValue(filters, Map.class);
@@ -176,14 +178,14 @@ public class StructureController {
     @GetMapping(value = "/export/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        byte[] bytes = structureRepository.exportExcel(headers, predicate, sortOrder, filters);
+        byte[] bytes = structureRepository.exportExcel(headers, predicate, sortOrder, sanitizeArchiveFilter(filters));
         return ResponseEntity.ok().body(bytes);
     }
 
     @GetMapping(value = "/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     @Secure(fonctions = {AppFonctionEnum.ORGA_ACC}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<String> exportCsv(@RequestParam(name = "headers", defaultValue = "{}") String headers, @RequestParam("predicate") String predicate, @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder, @RequestParam(name = "filters", defaultValue = "{}") String filters, HttpServletResponse response) {
-        StringBuilder csv = structureRepository.exportCsv(headers, predicate, sortOrder, filters);
+        StringBuilder csv = structureRepository.exportCsv(headers, predicate, sortOrder, sanitizeArchiveFilter(filters));
         return ResponseEntity.ok().body(csv.toString());
     }
 
@@ -262,7 +264,32 @@ public class StructureController {
         if (structure == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
         }
+        // Une structure archivée n'est visible que par les admins
+        if (structure.getDateArchivage() != null && !UtilisateurHelper.isAdmin(Objects.requireNonNull(ServiceContext.getUtilisateur()))) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Structure non trouvée");
+        }
         return toDto(structure);
+    }
+
+    /**
+     * Le filtre "archive" (structures archivées) est réservé aux admins : pour les autres
+     * utilisateurs il est forcé à false.
+     */
+    private String sanitizeArchiveFilter(String filters) {
+        Utilisateur utilisateur = ServiceContext.getUtilisateur();
+        if (utilisateur != null && UtilisateurHelper.isAdmin(utilisateur)) {
+            return filters;
+        }
+        try {
+            Map<String, Object> filterMap = objectMapper.readValue(filters == null || filters.isBlank() ? "{}" : filters, Map.class);
+            Map<String, Object> archive = new HashMap<>();
+            archive.put("specific", true);
+            archive.put("value", false);
+            filterMap.put("archive", archive);
+            return objectMapper.writeValueAsString(filterMap);
+        } catch (JsonProcessingException e) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
+        }
     }
 
     @PostMapping

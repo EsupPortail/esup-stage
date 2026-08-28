@@ -15,11 +15,20 @@ import java.util.List;
 @Repository
 public class ServiceRepository extends PaginationRepository<Service> {
     private static final String VISIBLE_FOR_CENTRES = "visibleForCentres";
+    private static final String INUTILISE = "inutilise";
+
+    // Service « inutilisé » : plus aucun contact et non référencé par une convention ou un avenant
+    // (identique au critère du nettoyage automatique, voir ServiceJpaRepository.findInutilisesPourNettoyage)
+    private static final String CRITERE_INUTILISE =
+            "NOT EXISTS (SELECT 1 FROM Contact c WHERE c.service = s)" +
+            " AND NOT EXISTS (SELECT 1 FROM Convention cv WHERE cv.service = s)" +
+            " AND NOT EXISTS (SELECT 1 FROM Avenant a WHERE a.service = s)";
 
     public ServiceRepository(EntityManager em) {
         super(em, Service.class, "s");
-        this.predicateWhitelist = Arrays.asList("nom", "pays.lib", "commune", "voie");
+        this.predicateWhitelist = Arrays.asList("nom", "pays.lib", "commune", "voie", "structure.raisonSociale");
         this.specificFilterWhitelist.add(VISIBLE_FOR_CENTRES);
+        this.specificFilterWhitelist.add(INUTILISE);
     }
 
     public Long countVisibleForCentres(List<Integer> centreIds, String filters) {
@@ -39,6 +48,9 @@ public class ServiceRepository extends PaginationRepository<Service> {
                 return;
             }
             clauses.add("(s.centreGestion.id IN :visibleForCentres OR s.centreGestion.codeConfidentialite IS NULL OR s.centreGestion.codeConfidentialite.code = '0' OR (s.centreGestion.codeConfidentialite.code = '2' AND s.centreGestion.codeConfidentialiteConventionOrpheline.code = '0'))");
+        }
+        if (INUTILISE.equals(key)) {
+            clauses.add("(" + CRITERE_INUTILISE + ")");
         }
     }
 

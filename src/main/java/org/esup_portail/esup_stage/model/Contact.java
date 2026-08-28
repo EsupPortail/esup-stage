@@ -69,6 +69,19 @@ public class Contact extends ObjetMetier implements Exportable {
     @Column
     private String loginInfosAJour;
 
+    @JsonView(Views.List.class)
+    @Column
+    private Boolean refusEtreContacte;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateRefusEtreContacte;
+
+    @Column
+    private String origineRefusEtreContacte;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateEnvoiMailOpposition;
+
     public int getId() {
         return id;
     }
@@ -211,8 +224,63 @@ public class Contact extends ObjetMetier implements Exportable {
         this.loginInfosAJour = loginInfosAJour;
     }
 
+    public Boolean getRefusEtreContacte() {
+        return refusEtreContacte;
+    }
+
+    public void setRefusEtreContacte(Boolean refusEtreContacte) {
+        this.refusEtreContacte = refusEtreContacte;
+    }
+
+    public Date getDateRefusEtreContacte() {
+        return dateRefusEtreContacte;
+    }
+
+    public void setDateRefusEtreContacte(Date dateRefusEtreContacte) {
+        this.dateRefusEtreContacte = dateRefusEtreContacte;
+    }
+
+    public String getOrigineRefusEtreContacte() {
+        return origineRefusEtreContacte;
+    }
+
+    public void setOrigineRefusEtreContacte(String origineRefusEtreContacte) {
+        this.origineRefusEtreContacte = origineRefusEtreContacte;
+    }
+
+    public Date getDateEnvoiMailOpposition() {
+        return dateEnvoiMailOpposition;
+    }
+
+    public void setDateEnvoiMailOpposition(Date dateEnvoiMailOpposition) {
+        this.dateEnvoiMailOpposition = dateEnvoiMailOpposition;
+    }
+
     @Override
     public String getExportValue(String key) {
-        return null;
+        switch (key) {
+            case "id":
+                return String.valueOf(id);
+            case "nom":
+                return nom;
+            case "prenom":
+                return prenom;
+            case "mail":
+                return mail;
+            case "tel":
+                return tel;
+            case "fonction":
+                return fonction;
+            case "service":
+                return service != null ? service.getNom() : "";
+            case "structure":
+                return service != null && service.getStructure() != null ? service.getStructure().getRaisonSociale() : "";
+            case "loginCreation":
+                return getLoginCreation();
+            case "dateCreation":
+                return getDateCreation() != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format(getDateCreation()) : "";
+            default:
+                return "";
+        }
     }
 }

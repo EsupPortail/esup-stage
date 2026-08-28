@@ -68,6 +68,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       tel: [null, [Validators.required, Validators.pattern(/^(?:(?:\+|00)\d{1,4}[-.\s]?|0)\d{1,4}([-.\s]?\d{1,4})*$/), Validators.maxLength(50)]],
       mail: [null, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
       fax: [null, [Validators.maxLength(50)]],
+      refusEtreContacte: [false, []],
     });
 
     this.searchForm = this.fb.group({
@@ -133,6 +134,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       tel: row.telephoneNumber,
       fax: '',
       mail: row.mail,
+      refusEtreContacte: false,
     });
     this.modif = true;
   }
@@ -153,6 +155,7 @@ export class TuteurProComponent implements OnInit, OnChanges, OnDestroy {
       tel: this.contact.tel,
       fax: this.contact.fax,
       mail: this.contact.mail,
+      refusEtreContacte: this.contact.refusEtreContacte === true,
     });
     this.modif = true;
     this.isNewContact = false;

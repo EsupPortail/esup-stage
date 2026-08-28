@@ -1,33 +1,72 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Observable, firstValueFrom, of, EMPTY } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { SILENT_REQUEST } from "../interceptors/http-context.tokens";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
   private redirecting = false;
+  private sessionDialogPending = false;
+  // Marqueur persistant (survit au rechargement provoqué par la redirection) empêchant
+  // toute boucle de redirection vers CAS.
+  private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
 
   private adminTechList: string[] = [];
   private adminTechLoaded = false;
   private adminTechLoadingPromise?: Promise<void>;
 
-  constructor(private http: HttpClient, private tokenService: TokenService) { }
+  constructor(private http: HttpClient, private tokenService: TokenService) {
+    // Restauration depuis le bfcache : le navigateur rend le tas JS tel qu'il était, drapeaux
+    // compris. Sans cette remise à zéro, la page reviendrait en paraissant connectée alors que
+    // la session est morte, sans plus jamais pouvoir rediriger.
+    window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.redirecting = false;
+        this.sessionDialogPending = false;
+      }
+    });
+  }
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected").pipe(
-      catchError(() => {
-        this.handleUnauthorized();
+      catchError((error) => {
+        if (error?.status === 401) {
+          this.redirectToLogin();
+        }
         return EMPTY;
       })
     );
+  }
+
+  /**
+   * Ping léger et silencieux d'un endpoint authentifié.
+   *
+   * Sert au keep-alive : l'appel rafraîchit le lastAccessedTime de la session
+   * HTTP côté serveur sans afficher de loader ni de popup d'erreur (voir
+   * {@link SILENT_REQUEST}). Ne met volontairement pas à jour userConnected.
+   */
+  pingSession(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/users/connected", {
+      context: new HttpContext().set(SILENT_REQUEST, true),
+    });
+  }
+
+  /**
+   * Indique qu'une redirection CAS est déjà en cours (garde anti-boucle).
+   * S'appuie sur le marqueur posé par {@link handleUnauthorized} (valeur '1').
+   */
+  isCasRedirectInProgress(): boolean {
+    return sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1';
   }
 
   getAppVersion(): Observable<any> {
@@ -40,7 +79,7 @@ export class AuthService {
     return this.http.get<string[]>(environment.apiUrl + "/users/admintech").pipe(
       catchError((error) => {
         if (error?.status === 401 || error?.status === 403) {
-          this.handleUnauthorized();
+          this.redirectToLogin();
         }
         return of([]);
       })
@@ -55,15 +94,52 @@ export class AuthService {
     return new URL(url, window.location.href).toString();
   }
 
-  private handleUnauthorized() {
-    if (!this.redirecting) {
-      this.redirecting = true;
-      const currentPath = window.location.pathname;
-      const loginPath = this.resolvePath(environment.loginUrl);
-      if (currentPath !== loginPath) {
-        sessionStorage.setItem('redirectUrl', currentPath);
-        window.location.href = this.resolveUrl(environment.loginUrl);
-      }
+  /**
+   * Signale qu'une fenêtre « session expirée » est ouverte. Tant qu'elle l'est, les redirections
+   * silencieuses déclenchées par les appels en échec sont suspendues : sans ça l'utilisateur est
+   * renvoyé vers le CAS avant même d'avoir pu lire le message.
+   */
+  markSessionDialogPending(): void {
+    this.sessionDialogPending = true;
+  }
+
+  redirectToLogin() {
+    if (this.sessionDialogPending) {
+      return;
+    }
+    this.navigateToLogin(false);
+  }
+
+  /**
+   * Reconnexion demandée par l'utilisateur depuis la fenêtre de session expirée.
+   * Le paramètre renew=1 est relu par le back (SecurityConfiguration#casEntryPoint), qui envoie
+   * alors renew=true au CAS. Sans lui, le CAS réutilise sa propre session SSO, réauthentifie
+   * l'utilisateur sans rien lui demander et le dépose sur l'accueil.
+   */
+  reconnect(): void {
+    this.sessionDialogPending = false;
+    // Reconnexion demandée explicitement : la garde anti-boucle ne doit pas la bloquer.
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
+    this.navigateToLogin(true);
+  }
+
+  private navigateToLogin(renew: boolean) {
+    // Deux gardes complémentaires : `redirecting` couvre les appels concurrents dans la page
+    // courante, le marqueur en sessionStorage survit au rechargement et empêche la boucle de
+    // redirection quand le CAS nous renvoie toujours non authentifié.
+    if (this.redirecting || this.isCasRedirectInProgress()) {
+      return;
+    }
+    this.redirecting = true;
+    const currentPath = window.location.pathname;
+    const loginPath = this.resolvePath(environment.loginUrl);
+    if (currentPath !== loginPath) {
+      sessionStorage.setItem(AuthService.CAS_REDIRECT_FLAG, '1');
+      sessionStorage.setItem('redirectUrl', currentPath);
+      const loginUrl = renew ? environment.loginUrl + '?renew=1' : environment.loginUrl;
+      // replace() plutôt que href= : la page expirée n'est pas empilée dans l'historique, un
+      // retour arrière depuis le CAS ne peut donc plus y ramener.
+      window.location.replace(this.resolveUrl(loginUrl));
     }
   }
 
@@ -97,6 +173,7 @@ export class AuthService {
     this.adminTechLoaded = false;
     this.adminTechLoadingPromise = undefined;
     void this.ensureAdminTechListLoaded();
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
   }
 
   checkRights(right: any) {

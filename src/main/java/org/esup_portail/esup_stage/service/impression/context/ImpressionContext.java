@@ -4,13 +4,16 @@ import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.enums.TypeQuestionEvaluation;
 import org.esup_portail.esup_stage.model.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +27,7 @@ public class ImpressionContext {
     private SignataireContext signataire = new SignataireContext();
     private StructureContext structure = new StructureContext();
     private AvenantContext avenant = new AvenantContext();
+    private ConfigContext config = new ConfigContext();
     private ReponseEvaluationContext reponseEvaluationContext = new ReponseEvaluationContext();
     private FicheEvaluationContext ficheEvaluationContext = new FicheEvaluationContext();
     private List<QuestionEvaluationContext> questionEvaluations = new ArrayList<>();
@@ -31,6 +35,11 @@ public class ImpressionContext {
     private List<ReponseSupplementaireContext> reponsesSupplementaires = new ArrayList<>();
     private ReponseEvaluationContext reponse = reponseEvaluationContext;
     private FicheEvaluationContext ficheEvaluation = ficheEvaluationContext;
+    /**
+     * Libellés insérés par l'application dans les fragments d'impression, dans la langue du document.
+     * Alimenté par {@code ImpressionService} depuis {@code LibelleImpressionService}.
+     */
+    private Map<String, String> libelles = new HashMap<>();
 
     public ImpressionContext(Convention convention, Avenant avenant, CentreGestion centreEtablissement, List<QuestionSupplementaire> questionSupplementaires, List<QuestionEvaluation> questionEvaluations) {
         if (convention != null) {
@@ -968,6 +977,17 @@ public class ImpressionContext {
             this.reponseTxt = reponseSupplementaire.getReponseTxt();
             this.reponseInt = reponseSupplementaire.getReponseInt();
             this.reponseBool = reponseSupplementaire.getReponseBool();
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class ConfigContext {
+        private String mailDpo;
+
+        public ConfigContext(ConfigGeneraleDto configGenerale) {
+            if (configGenerale == null) { this.mailDpo = ""; return; }
+            this.mailDpo = configGenerale.getMailDpo() != null ? configGenerale.getMailDpo() : "";
         }
     }
 
