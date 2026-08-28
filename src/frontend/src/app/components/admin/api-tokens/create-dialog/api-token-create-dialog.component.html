@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>{{ edition ? 'Modification du token' : 'Nouveau token d\'API' }}</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form" (submit)="save(); $event.preventDefault()">
+    <div class="row">
+      <mat-form-field class="col-sm-12" appearance="fill">
+        <mat-label>Nom du token</mat-label>
+        <input matInput formControlName="nom" required maxlength="255" />
+        <mat-hint>Libellé permettant de reconnaître ce token</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field class="col-sm-12" appearance="fill">
+        <mat-label>Application</mat-label>
+        <input matInput formControlName="nomApplication" required maxlength="255" />
+        <mat-hint>Application appelante : un seul token par application</mat-hint>
+      </mat-form-field>
+    </div>
+
+    @if (!edition) {
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="dialog-warning">
+            La valeur du token sera générée automatiquement ; copiez-la ensuite depuis le tableau.
+          </p>
+        </div>
+      </div>
+    }
+
+    <div class="row">
+      <div class="col-12 text-right">
+        <button type="button" class="mr-2 cancel-button" mat-flat-button (click)="close()">{{'BOUTON_ANNULER'|contenu}}</button>
+        <button class="valid-button" mat-flat-button>{{'BOUTON_VALIDER'|contenu}}</button>
+      </div>
+    </div>
+  </form>
+</div>

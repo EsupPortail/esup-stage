@@ -1,11 +1,13 @@
 package org.esup_portail.esup_stage.config.filters;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.config.properties.SignatureProperties;
 import org.esup_portail.esup_stage.config.properties.signature.WebhookProperties;
 import org.esup_portail.esup_stage.dto.MaintenanceStateDto;
+import org.esup_portail.esup_stage.model.ApiToken;
 import org.esup_portail.esup_stage.model.Role;
+import org.esup_portail.esup_stage.service.apitoken.ApiTokenService;
 import org.esup_portail.esup_stage.service.maintenance.MaintenanceService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,46 +60,78 @@ class FiltersTest {
     // PublicTokenFilter
     // ------------------------------------------------------------------
 
-    private PublicTokenFilter publicTokenFilter() {
-        AppliProperties appliProperties = new AppliProperties();
-        appliProperties.setTokens(List.of("token-1", "token-2"));
-        return new PublicTokenFilter(appliProperties);
+    private ApiToken apiToken(String nom, String nomApplication) {
+        ApiToken apiToken = new ApiToken();
+        apiToken.setId(1);
+        apiToken.setNom(nom);
+        apiToken.setNomApplication(nomApplication);
+        apiToken.setActif(true);
+        return apiToken;
+    }
+
+    private PublicTokenFilter publicTokenFilter(ApiTokenService apiTokenService) {
+        return new PublicTokenFilter(apiTokenService);
     }
 
     @Test
-    void leJetonPublicValideAuthentifie() throws Exception {
+    void leJetonPublicValideAuthentifieAvecLeNomDeLApplication() throws Exception {
+        ApiTokenService apiTokenService = mock(ApiTokenService.class);
+        when(apiTokenService.authenticate("token-1"))
+                .thenReturn(Optional.of(apiToken("Token esup-signature", "Esup-Signature")));
+
         MockHttpServletRequest request = requete("/public/api/conventions");
         request.addHeader("Authorization", "Bearer token-1");
 
-        publicTokenFilter().doFilter(request, response, chain);
+        publicTokenFilter(apiTokenService).doFilter(request, response, chain);
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).isEqualTo("Esup-Signature");
         assertThat(chain.getRequest()).isNotNull();
     }
 
     @Test
-    void leJetonPublicInvalideEstRejete() {
+    void leJetonPublicInvalideEstRejeteAvecUnMessageUnique() throws Exception {
+        ApiTokenService apiTokenService = mock(ApiTokenService.class);
+        when(apiTokenService.authenticate("pirate")).thenReturn(Optional.empty());
+
         MockHttpServletRequest request = requete("/public/api/conventions");
         request.addHeader("Authorization", "Bearer pirate");
 
-        assertThatThrownBy(() -> publicTokenFilter().doFilter(request, response, chain))
-                .isInstanceOf(AccessDeniedException.class);
+        publicTokenFilter(apiTokenService).doFilter(request, response, chain);
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentAsString()).contains(ApiTokenService.MESSAGE_TOKEN_INVALIDE);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        // La requête n'atteint pas la ressource protégée
+        assertThat(chain.getRequest()).isNull();
     }
 
+    /**
+     * Un jeton absent, désactivé ou supprimé doit produire exactement la même réponse
+     * qu'un jeton inconnu : aucune information exploitable ne doit filtrer.
+     */
     @Test
-    void sansJetonLaRequetePubliquePasseSansAuthentification() throws Exception {
-        publicTokenFilter().doFilter(requete("/public/api/conventions"), response, chain);
+    void sansJetonLaReponseEstIdentiqueAUnJetonInvalide() throws Exception {
+        ApiTokenService apiTokenService = mock(ApiTokenService.class);
+        when(apiTokenService.authenticate(null)).thenReturn(Optional.empty());
 
+        publicTokenFilter(apiTokenService).doFilter(requete("/public/api/conventions"), response, chain);
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentAsString()).contains(ApiTokenService.MESSAGE_TOKEN_INVALIDE);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        assertThat(chain.getRequest()).isNotNull();
+        assertThat(chain.getRequest()).isNull();
     }
 
     @Test
     void lesautresCheminsNeSontPasFiltres() {
-        PublicTokenFilter filter = publicTokenFilter();
+        PublicTokenFilter filter = publicTokenFilter(mock(ApiTokenService.class));
 
         assertThat(filter.shouldNotFilter(requete("/api/conventions"))).isTrue();
         assertThat(filter.shouldNotFilter(requete("/public/api"))).isFalse();
+        // La documentation reste accessible sans jeton
+        assertThat(filter.shouldNotFilter(requete("/public/swagger-ui.html"))).isTrue();
+        assertThat(filter.shouldNotFilter(requete("/public/api-docs/swagger-config"))).isTrue();
     }
 
     // ------------------------------------------------------------------

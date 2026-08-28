@@ -1,0 +1,32 @@
+.token-application {
+  margin-bottom: 1rem;
+}
+
+.token-value {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  code {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.24);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+    user-select: all;
+  }
+}
+
+.token-copied {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.token-hint {
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  font-style: italic;
+}

@@ -16,24 +16,30 @@
         </mat-form-field>
       </div>
     </form>
-    <div class="row mb-3" *ngIf="disableAutoSearch">
-      <div class="col-sm-12 col-md-6 text-left">
-        <button
-          type="button"
-          class="valid-button"
-          mat-button
-          mat-flat-button
-          (click)="runSearchGestionnaire()"
-          [disabled]="!hasPendingSearchGestionnaire">
-          Lancer la recherche
-        </button>
-        <span *ngIf="hasPendingSearchGestionnaire" class="pending-search-hint">
-          Modifications en attente
-        </span>
+    @if (disableAutoSearch) {
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6 text-left">
+          <button
+            type="button"
+            class="valid-button"
+            mat-button
+            mat-flat-button
+            (click)="runSearchGestionnaire()"
+            [disabled]="!hasPendingSearchGestionnaire">
+            Lancer la recherche
+          </button>
+          @if (hasPendingSearchGestionnaire) {
+            <span class="pending-search-hint">
+              Modifications en attente
+            </span>
+          }
+        </div>
       </div>
-    </div>
+    }
 
-    <div class="alert alert-info" *ngIf="gestionnaires.length >= 10">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
+    @if (gestionnaires.length >= 10) {
+      <div class="alert alert-info">La recherche est limitée à 10 gestionnaires. Veuillez affiner la recherche si le gestionnaire n'apparaît pas.</div>
+    }
     <table mat-table [dataSource]="gestionnaires | slice:0:10">
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="9999">Aucun gestionnaire trouvé</td>
@@ -49,16 +55,20 @@
       <ng-container matColumnDef="departement">
         <th mat-header-cell *matHeaderCellDef>Département</th>
         <td mat-cell *matCellDef="let row">
-          <div *ngFor="let code of row.supannEntiteAffectation">
-            {{ code.replace('{LOC}', '') }}
-          </div>
+          @for (code of row.supannEntiteAffectation; track code) {
+            <div>
+              {{ code.replace('{LOC}', '') }}
+            </div>
+          }
         </td>
       </ng-container>
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
           <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
-            <span *ngIf="true"><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
+            @if (true) {
+              <span><span class="fa fa-check" aria-hidden="true"></span> Sélectionner</span>
+            }
             <ng-template #notSelected>
               <span class="fa fa-check-circle" aria-hidden="true"></span> Sélectionner
             </ng-template>
@@ -115,7 +125,9 @@
           <mat-form-field class="col-sm-12 col-md-6" appearance="fill">
             <mat-label>Rôles sur ce centre</mat-label>
             <mat-select formControlName="roles" multiple [compareWith]="compareRole">
-              <mat-option *ngFor="let role of roles" [value]="role">{{role|roleLibelle}}</mat-option>
+              @for (role of roles; track role) {
+                <mat-option [value]="role">{{role|roleLibelle}}</mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
@@ -124,10 +136,12 @@
             <button class="valid-button" type="button" #matMenuTrigger mat-raised-button [matMenuTriggerFor]="menu">Paramétrer les alertes mail</button>
             <mat-menu #menu="matMenu">
               <button #menuItems class="toggle-all valid-button" type="button" mat-raised-button style="margin: 8px" (click)="$event.stopPropagation(); toggleAll()">Activer/Désactiver toutes les alertes</button>
-              <mat-checkbox #menuItems *ngFor="let alerte of alertesMail" formControlName="{{alerte.id}}" class="checkbox-alertes"
-                            (click)="$event.stopPropagation()" style="padding: 8px">
-                {{ alerte.libelle }}
-              </mat-checkbox>
+              @for (alerte of alertesMail; track alerte) {
+                <mat-checkbox #menuItems formControlName="{{alerte.id}}" class="checkbox-alertes"
+                  (click)="$event.stopPropagation()" style="padding: 8px">
+                  {{ alerte.libelle }}
+                </mat-checkbox>
+              }
             </mat-menu>
           </div>
         </div>
@@ -150,7 +164,7 @@
     </mat-expansion-panel-header>
 
     <app-table [service]="personnelCentreService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [exportColumns]="exportColumns"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
+      matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTable ? appTable.sorting($event) : null" [hideDeleteFilters]="true">
 
       <ng-container matColumnDef="civilite.libelle">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Civilité</th>
@@ -171,9 +185,15 @@
       <ng-container matColumnDef="droitsEvaluation">
         <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Droits Evaluation</th>
         <td mat-cell *matCellDef="let row">
-          <span style="display: block" *ngIf="row.droitEvaluationEtudiant">Étudiants</span>
-          <span style="display: block" *ngIf="row.droitEvaluationEnseignant">Enseignant</span>
-          <span style="display: block" *ngIf="row.droitEvaluationEntreprise">Entreprise</span>
+          @if (row.droitEvaluationEtudiant) {
+            <span style="display: block">Étudiants</span>
+          }
+          @if (row.droitEvaluationEnseignant) {
+            <span style="display: block">Enseignant</span>
+          }
+          @if (row.droitEvaluationEntreprise) {
+            <span style="display: block">Entreprise</span>
+          }
         </td>
       </ng-container>
       <ng-container matColumnDef="action">

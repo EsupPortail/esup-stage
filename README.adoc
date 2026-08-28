@@ -18,6 +18,7 @@ ESUP STAGE est la refonte de l'application PStage. L'application a été complè
 * Git
 * Java OpenJdk 21
 * Apache Maven
+* Apache Tomcat 11 (requis depuis Spring Boot 4 : Servlet 6.1)
 * Installation Mariadb
 * Installation du projet Esup-SIscol (sur le même serveur ou sur un serveur dédié)
 
@@ -273,17 +274,17 @@ TIP: Pour utiliser un tag particulier, consultez le dernier tag à utiliser http
 == Exécution de l'application avec __Tomcat__
 
 NOTE: Cette documentation ne va pas décrire l'installation d'un Tomcat.
-ESUP STAGE a été déployé et testé sur une version TOMCAT 10
+ESUP STAGE a été déployé et testé sur une version TOMCAT 11 (requis depuis Spring Boot 4 : Servlet 6.1)
 
-TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-10.cgi
+TIP: Vous pouvez télécharger tomcat ici : https://tomcat.apache.org/download-11.cgi
 
 Nous considérons par exemple le chemin du répertoire tomcat ainsi : `/opt/tomcat-esup-stage`
 
-//wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.41/bin/apache-tomcat-10.1.41.tar.gz
+//wget https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.25/bin/apache-tomcat-11.0.25.tar.gz
 
-//tar xzf apache-tomcat-10.1.41.tar.gz
+//tar xzf apache-tomcat-11.0.25.tar.gz
 
-//ln -sfn apache-tomcat-10.1.41.tar.gz tomcat-esup-stage
+//ln -sfn apache-tomcat-11.0.25 tomcat-esup-stage
 
 
 

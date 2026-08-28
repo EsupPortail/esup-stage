@@ -1,245 +1,277 @@
-<mat-card *ngIf="filters.length > 0" class="table-filters">
-  <mat-card-content>
-
-    <mat-expansion-panel *ngIf="isMobile" [expanded]="false">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Filtres</mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <ng-template [ngTemplateOutlet]="tplFilter"></ng-template>
-    </mat-expansion-panel>
-
-    <ng-template *ngIf="!isMobile" [ngTemplateOutlet]="tplFilter"></ng-template>
-
-    <ng-template #tplFilter>
-      <form>
-        <div class="row">
-          <ng-container *ngFor="let filter of filters">
-            <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill" *ngIf="!filter.hidden && filter.id !== 'dateDebutStage' && filter.id !== 'dateFinStage'">
-              <mat-label>{{filter.libelle}}</mat-label>
-              <ng-container [ngSwitch]="filter.type">
-                <ng-container *ngSwitchCase="'boolean'">
-                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                    <mat-option></mat-option>
-                    <mat-option [value]="true">Oui</mat-option>
-                    <mat-option [value]="false">Non</mat-option>
-                  </mat-select>
-                </ng-container>
-                <ng-container *ngSwitchCase="'list'">
-                  @if (filter.searchable){
-                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
-                      <mat-option>
-                        <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="'Rechercher…'" [noEntriesFoundLabel]="'Aucun élément trouvé'" ></ngx-mat-select-search>
-                      </mat-option>
-                      <mat-option
-                        *ngFor="let option of (filteredListOptions[filter.id] || filter.options)"
-                        [value]="option[filter.keyId]"
-                        [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">
-                        {{ option[filter.keyLibelle] || 'Valeur indisponible' }}
-                      </mat-option>
-                    </mat-select>
-                  } @else {
-                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
-                      <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
-                    </mat-select>
-                  }
-                </ng-container>
-                <ng-container *ngSwitchCase="'temEnServ'">
-                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                    <mat-option></mat-option>
-                    <mat-option [value]="'O'">Oui</mat-option>
-                    <mat-option [value]="'N'">Non</mat-option>
-                  </mat-select>
-                </ng-container>
-                <ng-container *ngSwitchCase="'annee'">
-                  <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
-                    <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
-                  </mat-select>
-                </ng-container>
-                <ng-container *ngSwitchCase="'date'">
-                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-                </ng-container>
-                <ng-container *ngSwitchCase="'date-min'">
-                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-                </ng-container>
-                <ng-container *ngSwitchCase="'date-max'">
-                  <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-                </ng-container>
-                <ng-container *ngSwitchCase="'autocomplete'">
-                  <mat-chip-grid #chipList aria-label="Etape">
-                    <mat-chip
-                      *ngFor="let value of filterValues[filter.id].value"
-                      [removable]="true"
-                      (removed)="removeAutocomplete(filter, value)">
-                      {{value[filter.keyLibelle]}}
-                      <span matChipRemove [attr.aria-label]="'Supprimer l\'élément'">
-                        <mat-icon aria-hidden="true">cancel</mat-icon>
-                      </span>
-                    </mat-chip>
-                  </mat-chip-grid>
-
-                  <input
-                    [name]="filter.id + '-autocomplete'"
-                    [(ngModel)]="filterValues[filter.id].autocomplete"
-                    (ngModelChange)="searchAutocomplete(filter, $event)"
-                    [matAutocomplete]="auto"
-                    [matChipInputFor]="chipList"
-                    matInput />
-
-                  <mat-autocomplete
-                    #auto="matAutocomplete"
-                    (optionSelected)="autocompleteSelected(filter, $event)">
-                    <mat-option
-                      *ngFor="let option of autocompleteData[filter.id]"
-                      [value]="option">
-                      {{option[filter.keyLibelle]}}
-                    </mat-option>
-                  </mat-autocomplete>
-                </ng-container>
-                <ng-container *ngSwitchCase="'int'">
-                  <input matInput type="text" [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"  (keyup)="updateNumber()"/>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                  <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
-                </ng-container>
-              </ng-container>
-              <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
-              <mat-datepicker #datepicker></mat-datepicker>
-            </mat-form-field>
-          </ng-container>
-          <ng-container *ngIf="hasVisibleFilter('dateDebutStage') || hasVisibleFilter('dateFinStage')">
-            <div class="col-md-6">
-              <fieldset>
-                <legend class="sr-only">Période du stage</legend>
-                <div class="row">
-                  <ng-container *ngFor="let f of filters">
-                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateDebutStage' && !f.hidden">
-                      <mat-label>{{f.libelle}}</mat-label>
-                      <input matInput [name]="f.id" [matDatepicker]="datepickerDebut" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
-                      <mat-datepicker-toggle matSuffix [for]="datepickerDebut"></mat-datepicker-toggle>
-                      <mat-datepicker #datepickerDebut></mat-datepicker>
-                    </mat-form-field>
-
-                    <mat-form-field class="col-md-6" appearance="fill" *ngIf="f.id === 'dateFinStage' && !f.hidden">
-                      <mat-label>{{f.libelle}}</mat-label>
-                      <input matInput [name]="f.id" [matDatepicker]="datepickerFin" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
-                      <mat-datepicker-toggle matSuffix [for]="datepickerFin"></mat-datepicker-toggle>
-                      <mat-datepicker #datepickerFin></mat-datepicker>
-                    </mat-form-field>
-                  </ng-container>
+@if (filters.length > 0) {
+  <mat-card class="table-filters">
+    <mat-card-content>
+      @if (isMobile) {
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Filtres</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template [ngTemplateOutlet]="tplFilter"></ng-template>
+        </mat-expansion-panel>
+      }
+      @if (!isMobile) {
+        <ng-template [ngTemplateOutlet]="tplFilter"></ng-template>
+      }
+      <ng-template #tplFilter>
+        <form>
+          <div class="row">
+            @for (filter of filters; track filter) {
+              @if (!filter.hidden && filter.id !== 'dateDebutStage' && filter.id !== 'dateFinStage') {
+                <mat-form-field class="col-md-{{filter.colSpan ?? 3}}" appearance="fill">
+                  <mat-label>{{filter.libelle}}</mat-label>
+                  @switch (filter.type) {
+                    @case ('boolean') {
+                      <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                        <mat-option></mat-option>
+                        <mat-option [value]="true">Oui</mat-option>
+                        <mat-option [value]="false">Non</mat-option>
+                      </mat-select>
+                    }
+                    @case ('list') {
+                      @if (filter.searchable){
+                        <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
+                          <mat-option>
+                            <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="'Rechercher…'" [noEntriesFoundLabel]="'Aucun élément trouvé'" ></ngx-mat-select-search>
+                          </mat-option>
+                          @for (option of (filteredListOptions[filter.id] || filter.options); track option) {
+                            <mat-option
+                              [value]="option[filter.keyId]"
+                              [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">
+                              {{ option[filter.keyLibelle] || 'Valeur indisponible' }}
+                            </mat-option>
+                          }
+                        </mat-select>
+                      } @else {
+                        <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
+                          @for (option of filter.options; track option) {
+                            <mat-option [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
+                          }
+                        </mat-select>
+                      }
+                    }
+                    @case ('temEnServ') {
+                      <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                        <mat-option></mat-option>
+                        <mat-option [value]="'O'">Oui</mat-option>
+                        <mat-option [value]="'N'">Non</mat-option>
+                      </mat-select>
+                    }
+                    @case ('annee') {
+                      <mat-select [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()">
+                        @for (option of filter.options; track option) {
+                          <mat-option [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
+                        }
+                      </mat-select>
+                    }
+                    @case ('date') {
+                      <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                    }
+                    @case ('date-min') {
+                      <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                    }
+                    @case ('date-max') {
+                      <input matInput [name]="filter.id" [matDatepicker]="datepicker" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                    }
+                    @case ('autocomplete') {
+                      <mat-chip-grid #chipList aria-label="Etape">
+                        @for (value of filterValues[filter.id].value; track value) {
+                          <mat-chip
+                            [removable]="true"
+                            (removed)="removeAutocomplete(filter, value)">
+                            {{value[filter.keyLibelle]}}
+                            <span matChipRemove [attr.aria-label]="'Supprimer l\'élément'">
+                              <mat-icon aria-hidden="true">cancel</mat-icon>
+                            </span>
+                          </mat-chip>
+                        }
+                      </mat-chip-grid>
+                      <input
+                        [name]="filter.id + '-autocomplete'"
+                        [(ngModel)]="filterValues[filter.id].autocomplete"
+                        (ngModelChange)="searchAutocomplete(filter, $event)"
+                        [matAutocomplete]="auto"
+                        [matChipInputFor]="chipList"
+                        matInput />
+                        <mat-autocomplete
+                          #auto="matAutocomplete"
+                          (optionSelected)="autocompleteSelected(filter, $event)">
+                          @for (option of autocompleteData[filter.id]; track option) {
+                            <mat-option
+                              [value]="option">
+                              {{option[filter.keyLibelle]}}
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                      }
+                      @case ('int') {
+                        <input matInput type="text" [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"  (keyup)="updateNumber()"/>
+                      }
+                      @default {
+                        <input matInput [name]="filter.id" [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" />
+                      }
+                    }
+                    <mat-datepicker-toggle matSuffix [for]="datepicker" [style.display]="['date', 'date-min', 'date-max'].indexOf(filter.type) === -1 ? 'none' : ''"></mat-datepicker-toggle>
+                    <mat-datepicker #datepicker></mat-datepicker>
+                  </mat-form-field>
+                }
+              }
+              @if (hasVisibleFilter('dateDebutStage') || hasVisibleFilter('dateFinStage')) {
+                <div class="col-md-6">
+                  <fieldset>
+                    <legend class="sr-only">Période du stage</legend>
+                    <div class="row">
+                      @for (f of filters; track f) {
+                        @if (f.id === 'dateDebutStage' && !f.hidden) {
+                          <mat-form-field class="col-md-6" appearance="fill">
+                            <mat-label>{{f.libelle}}</mat-label>
+                            <input matInput [name]="f.id" [matDatepicker]="datepickerDebut" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                            <mat-datepicker-toggle matSuffix [for]="datepickerDebut"></mat-datepicker-toggle>
+                            <mat-datepicker #datepickerDebut></mat-datepicker>
+                          </mat-form-field>
+                        }
+                        @if (f.id === 'dateFinStage' && !f.hidden) {
+                          <mat-form-field class="col-md-6" appearance="fill">
+                            <mat-label>{{f.libelle}}</mat-label>
+                            <input matInput [name]="f.id" [matDatepicker]="datepickerFin" [(ngModel)]="filterValues[f.id].value" (ngModelChange)="update()" />
+                            <mat-datepicker-toggle matSuffix [for]="datepickerFin"></mat-datepicker-toggle>
+                            <mat-datepicker #datepickerFin></mat-datepicker>
+                          </mat-form-field>
+                        }
+                      }
+                    </div>
+                  </fieldset>
                 </div>
-              </fieldset>
+              }
             </div>
-          </ng-container>
-        </div>
-        <div class="row mb-3">
-          <div class="col-sm-12 col-md-6 text-left">
-            <button
-              type="button"
-              class="valid-button"
-              mat-button
-              mat-flat-button
-              *ngIf="disableAutoSearch"
-              (click)="runSearch()"
-              [disabled]="!hasPendingSearch">
-              Lancer la recherche
-            </button>
+            <div class="row mb-3">
+              <div class="col-sm-12 col-md-6 text-left">
+                @if (disableAutoSearch) {
+                  <button
+                    type="button"
+                    class="valid-button"
+                    mat-button
+                    mat-flat-button
+                    (click)="runSearch()"
+                    [disabled]="!hasPendingSearch">
+                    Lancer la recherche
+                  </button>
+                }
+                @if (disableAutoSearch && hasPendingSearch) {
+                  <span class="pending-search-hint">
+                    Modifications en attente
+                  </span>
+                }
+              </div>
+              <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
+                <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                @if (actionTemplateRef) {
+                  <ng-container [ngTemplateOutlet]="actionTemplateRef"></ng-container>
+                }
+                @if (!actionTemplateRef) {
+                  <!-- gestion des message de confirmation : si il y a un message on ouvre boite de dialogue (cas 1) sinon c'est le bouton qui déclenche le traitement directement (cas 2) -->
+                  @if (confirmMessage != '') {
+                    <span [confirmMessage]="confirmMessage" (confirm)="actionButton.action()">
+                      @if (actionButton) {
+                        <button class="valid-button" type="button" mat-button mat-flat-button>{{actionButton.libelle}}</button>
+                      }
+                    </span>
+                  }
+                  @if (confirmMessage==='') {
+                    <span>
+                      @if (actionButton) {
+                        <button class="valid-button" type="button" mat-button mat-flat-button (click)="actionButton.action()">{{actionButton.libelle}}</button>
+                      }
+                    </span>
+                  }
+                }
+              </div>
+            </div>
+          </form>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+  }
 
-            <span *ngIf="disableAutoSearch && hasPendingSearch" class="pending-search-hint">
-              Modifications en attente
-            </span>
-          </div>
-          <div class="col-sm-12 col-md-6 text-right" [hidden]="hideDeleteFilters">
-            <button type="button" mat-button mat-stroked-button (click)="reset()">Supprimer les filtres</button>
-          </div>
-        </div>
+  <mat-card class="table-paging-top">
+    <mat-card-content>
+      <div class="custom-table-button-paginator no-margin">
         <div class="row">
-          <div class="col-sm-12 col-md-6">
-            <ng-container *ngIf="actionTemplateRef">
-              <ng-container [ngTemplateOutlet]="actionTemplateRef"></ng-container>
-            </ng-container>
-            <ng-container *ngIf="!actionTemplateRef">
-            <!-- gestion des message de confirmation : si il y a un message on ouvre boite de dialogue (cas 1) sinon c'est le bouton qui déclenche le traitement directement (cas 2) -->
-            <span *ngIf="confirmMessage != ''" [confirmMessage]="confirmMessage" (confirm)="actionButton.action()">
-              <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton">{{actionButton.libelle}}</button>
-            </span>
-            <span *ngIf="confirmMessage===''">
-              <button class="valid-button" type="button" mat-button mat-flat-button *ngIf="actionButton" (click)="actionButton.action()">{{actionButton.libelle}}</button>
-            </span>
-            </ng-container>
+          <div class="col-md-3 col-sm-12">
+            @if (customTemplateRef) {
+              <mat-card>
+                <mat-card-content>
+                  <ng-container [ngTemplateOutlet]="customTemplateRef"></ng-container>
+                </mat-card-content>
+              </mat-card>
+            }
           </div>
-        </div>
-      </form>
-    </ng-template>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="table-paging-top">
-  <mat-card-content>
-    <div class="custom-table-button-paginator no-margin">
-      <div class="row">
-        <div class="col-md-3 col-sm-12">
-          <mat-card *ngIf="customTemplateRef">
-            <mat-card-content>
-              <ng-container [ngTemplateOutlet]="customTemplateRef"></ng-container>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        <div class="col-md-9 col-sm-12">
-          <mat-paginator #paginatorTop *ngIf="pagination"
-                         [pageSizeOptions]="[10, 25, 50, 100]"
-                         [pageSize]="pageSize"
-                         [length]="total"
-                         [showFirstLastButtons]="true"
-                         (page)="changePaginator($event); paginatorBottom.pageIndex = page - 1"></mat-paginator>
+          <div class="col-md-9 col-sm-12">
+            @if (pagination) {
+              <mat-paginator #paginatorTop
+                [pageSizeOptions]="[10, 25, 50, 100]"
+                [pageSize]="pageSize"
+                [length]="total"
+                [showFirstLastButtons]="true"
+              (page)="changePaginator($event); paginatorBottom.pageIndex = page - 1"></mat-paginator>
+            }
+          </div>
         </div>
       </div>
-    </div>
-  </mat-card-content>
-</mat-card>
-
-<div class="app-table" [hidden]="isMobile && templateMobile">
-  <table mat-table [dataSource]="data">
-    <ng-content></ng-content>
-
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell no-result-text" colspan="9999">{{noResultText}}</td>
-    </tr>
-
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns;"
-        [class.selected]="isSelected(row)"
-        [class.alerte]="(isAlerte ? isAlerte(row) : false) || (setAlerte && (row.depasseDelaiValidation ?? false))"
-        (click)="rowClick.emit(row)"></tr>
-  </table>
-</div>
-
-<div [hidden]="!templateMobile || !isMobile">
-  <mat-accordion>
-    <mat-expansion-panel *ngFor="let row of data" [class.selected]="isSelected(row)" [class.alerte]="setAlerte && (row.depasseDelaiValidation ?? false)">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          {{getMobileTitle(row)}}
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <ng-container *ngTemplateOutlet="templateMobile, context: {row}"></ng-container>
-    </mat-expansion-panel>
-  </mat-accordion>
-</div>
-
-<div class="custom-table-button-paginator">
-  <mat-card *ngIf="!isEtudiant() && hasExportableColumns()">
-    <mat-card-content>
-      <ng-container>
-        <button class="valid-button" mat-button mat-flat-button (click)="openExportDialog()"><mat-icon aria-hidden="true">download</mat-icon> Export excel</button>
-      </ng-container>
     </mat-card-content>
   </mat-card>
 
-  <mat-paginator #paginatorBottom *ngIf="pagination"
-                 [pageSizeOptions]="[10, 25, 50, 100]"
-                 [pageSize]="pageSize"
-                 [length]="total"
-                 [showFirstLastButtons]="true"
-                 (page)="changePaginator($event); paginatorTop.pageIndex = page - 1"></mat-paginator>
-</div>
+  <div class="app-table" [hidden]="isMobile && templateMobile">
+    <table mat-table [dataSource]="data">
+      <ng-content></ng-content>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-result-text" colspan="9999">{{noResultText}}</td>
+      </tr>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"
+        [class.selected]="isSelected(row)"
+        [class.alerte]="(isAlerte ? isAlerte(row) : false) || (setAlerte && (row.depasseDelaiValidation ?? false))"
+      (click)="rowClick.emit(row)"></tr>
+    </table>
+  </div>
+
+  <div [hidden]="!templateMobile || !isMobile">
+    <mat-accordion>
+      @for (row of data; track row) {
+        <mat-expansion-panel [class.selected]="isSelected(row)" [class.alerte]="setAlerte && (row.depasseDelaiValidation ?? false)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{getMobileTitle(row)}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-container *ngTemplateOutlet="templateMobile, context: {row}"></ng-container>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </div>
+
+  <div class="custom-table-button-paginator">
+    @if (!isEtudiant() && hasExportableColumns()) {
+      <mat-card>
+        <mat-card-content>
+          <ng-container>
+            <button class="valid-button" mat-button mat-flat-button (click)="openExportDialog()"><mat-icon aria-hidden="true">download</mat-icon> Export excel</button>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (pagination) {
+      <mat-paginator #paginatorBottom
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="pageSize"
+        [length]="total"
+        [showFirstLastButtons]="true"
+      (page)="changePaginator($event); paginatorTop.pageIndex = page - 1"></mat-paginator>
+    }
+  </div>

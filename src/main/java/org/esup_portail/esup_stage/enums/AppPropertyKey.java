@@ -4,7 +4,6 @@ public enum AppPropertyKey {
 
     // === APPLI ===
     APPLI_URL("appli.url"),
-    APPLI_TOKENS("appli.tokens"),
     APPLI_JWT_SECRET("appli.jwt_secret"),
     APPLI_NB_JOURS_VALIDE_TOKEN("appli.nb_jours_valide_token"),
 

@@ -1,0 +1,228 @@
+<mat-card>
+  <mat-card-content>
+    <p class="intro">
+      Chaque application appelant l'API publique d'Esup-Stage dispose de son propre token.
+      Les valeurs sont stockées chiffrées en base ; désactiver ou supprimer un token coupe
+      immédiatement l'accès de l'application concernée.
+    </p>
+
+    <form class="form-filters" (ngSubmit)="$event.preventDefault()">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="filtersObj.nom" name="nom" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Application</mat-label>
+        <input matInput [(ngModel)]="filtersObj.nomApplication" name="nomApplication" (ngModelChange)="onFilterChange()" autocomplete="off"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Actif</mat-label>
+        <mat-select [(ngModel)]="filtersObj.actif" name="actif" (selectionChange)="onFilterChange()">
+          <mat-option [value]="''">Tous</mat-option>
+          <mat-option [value]="true">Oui</mat-option>
+          <mat-option [value]="false">Non</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button type="button" class="valid-button add-button" mat-flat-button (click)="creer()">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        Nouveau token
+      </button>
+    </form>
+
+    <!-- Version Desktop -->
+    <div class="table-container desktop-table">
+      <table class="table table-bordered table-hover" role="table">
+        <thead class="thead-light">
+          <tr role="row">
+            <th role="columnheader" (click)="sort('id')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('id')">
+              ID
+              @if (sortPredicate==='id') {
+                <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+              }
+            </th>
+            <th role="columnheader" (click)="sort('nom')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('nom')">
+              Nom
+              @if (sortPredicate==='nom') {
+                <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+              }
+            </th>
+            <th role="columnheader" (click)="sort('nomApplication')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('nomApplication')">
+              Application
+              @if (sortPredicate==='nomApplication') {
+                <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+              }
+            </th>
+            <th role="columnheader">Statut</th>
+            <th role="columnheader" (click)="sort('dateCreation')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('dateCreation')">
+              Date création
+              @if (sortPredicate==='dateCreation') {
+                <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+              }
+            </th>
+            <th role="columnheader">Login création</th>
+            <th role="columnheader" (click)="sort('dateModification')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('dateModification')">
+              Date modification
+              @if (sortPredicate==='dateModification') {
+                <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
+              }
+            </th>
+            <th role="columnheader">Login modification</th>
+            <th role="columnheader">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (token of apiTokens; track token) {
+            <tr role="row">
+              <td role="cell">{{ token.id }}</td>
+              <td role="cell">{{ token.nom }}</td>
+              <td role="cell">{{ token.nomApplication }}</td>
+              <td role="cell" class="text-center">
+                <span class="statut-badge" [class.statut-badge--inactif]="!token.actif">
+                  {{ token.actif ? 'Actif' : 'Désactivé' }}
+                </span>
+              </td>
+              <td role="cell">{{ token.dateCreation | date: 'short' }}</td>
+              <td role="cell">{{ token.loginCreation }}</td>
+              <td role="cell">{{ token.dateModification | date: 'short' }}</td>
+              <td role="cell">{{ token.loginModification }}</td>
+              <td role="cell" class="text-center actions-cell">
+                <button mat-icon-button (click)="copier(token)"
+                  matTooltip="Copier le token" [attr.aria-label]="'Copier le token ' + token.nom">
+                  <mat-icon aria-hidden="true">content_copy</mat-icon>
+                </button>
+                @if (tokenCopieId === token.id) {
+                  <span class="token-copied" aria-live="polite">Copié</span>
+                }
+                <button mat-icon-button (click)="modifier(token)"
+                  matTooltip="Modifier" [attr.aria-label]="'Modifier le token ' + token.nom">
+                  <mat-icon aria-hidden="true">edit</mat-icon>
+                </button>
+                <span (confirm)="renouveler(token)"
+                  [confirmMessage]="'Renouveler le token &laquo; ' + token.nom + ' &raquo; ? L\'ancienne valeur cessera immédiatement de fonctionner pour l\'application &laquo; ' + token.nomApplication + ' &raquo;.'">
+                  <button mat-icon-button matTooltip="Renouveler" [attr.aria-label]="'Renouveler le token ' + token.nom">
+                    <mat-icon aria-hidden="true">autorenew</mat-icon>
+                  </button>
+                </span>
+                @if (token.actif) {
+                  <span (confirm)="changerActivation(token, false)"
+                    [confirmMessage]="'Désactiver le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra immédiatement l\'accès à l\'API, sans que le token soit supprimé.'">
+                    <button class="disable-button" mat-icon-button matTooltip="Désactiver" [attr.aria-label]="'Désactiver le token ' + token.nom">
+                      <mat-icon aria-hidden="true">block</mat-icon>
+                    </button>
+                  </span>
+                } @else {
+                  <button class="enable-button" mat-icon-button (click)="changerActivation(token, true)"
+                    matTooltip="Réactiver" [attr.aria-label]="'Réactiver le token ' + token.nom">
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                  </button>
+                }
+                <span (confirm)="supprimer(token)"
+                  [confirmMessage]="'Supprimer définitivement le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra l\'accès à l\'API.'">
+                  <button class="delete-button" mat-icon-button matTooltip="Supprimer" [attr.aria-label]="'Supprimer le token ' + token.nom">
+                    <mat-icon aria-hidden="true">delete</mat-icon>
+                  </button>
+                </span>
+              </td>
+            </tr>
+          }
+          @if (apiTokens.length === 0) {
+            <tr>
+              <td role="cell" colspan="9" class="text-center">Aucun token</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Version Mobile -->
+    <div class="mobile-cards">
+      @for (token of apiTokens; track token) {
+        <mat-card class="token-card" role="article" [attr.aria-label]="'Token ' + token.nom">
+          <mat-card-header>
+            <mat-card-title>
+              <div class="token-header">
+                <span class="token-id">#{{ token.id }}</span>
+                <span class="token-name">{{ token.nom }}</span>
+              </div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="token-field">
+              <label class="field-label">Application</label>
+              <span>{{ token.nomApplication }}</span>
+            </div>
+            <div class="token-field">
+              <label class="field-label">Statut</label>
+              <span>
+                <span class="statut-badge" [class.statut-badge--inactif]="!token.actif">
+                  {{ token.actif ? 'Actif' : 'Désactivé' }}
+                </span>
+              </span>
+            </div>
+            <div class="token-field">
+              <label class="field-label">Date création</label>
+              <span>{{ token.dateCreation | date: 'short' }}</span>
+            </div>
+            <div class="token-field">
+              <label class="field-label">Login création</label>
+              <span>{{ token.loginCreation }}</span>
+            </div>
+            <div class="token-field">
+              <label class="field-label">Date modification</label>
+              <span>{{ token.dateModification | date: 'short' }}</span>
+            </div>
+            <div class="token-field">
+              <label class="field-label">Login modification</label>
+              <span>{{ token.loginModification }}</span>
+            </div>
+            <div class="token-actions">
+              <button mat-icon-button (click)="copier(token)" matTooltip="Copier le token" [attr.aria-label]="'Copier le token ' + token.nom">
+                <mat-icon aria-hidden="true">content_copy</mat-icon>
+              </button>
+              @if (tokenCopieId === token.id) {
+                <span class="token-copied" aria-live="polite">Copié</span>
+              }
+              <button mat-icon-button (click)="modifier(token)" matTooltip="Modifier" [attr.aria-label]="'Modifier le token ' + token.nom">
+                <mat-icon aria-hidden="true">edit</mat-icon>
+              </button>
+              <span (confirm)="renouveler(token)"
+                [confirmMessage]="'Renouveler le token &laquo; ' + token.nom + ' &raquo; ? L\'ancienne valeur cessera immédiatement de fonctionner.'">
+                <button mat-icon-button matTooltip="Renouveler" [attr.aria-label]="'Renouveler le token ' + token.nom">
+                  <mat-icon aria-hidden="true">autorenew</mat-icon>
+                </button>
+              </span>
+              @if (token.actif) {
+                <span (confirm)="changerActivation(token, false)"
+                  [confirmMessage]="'Désactiver le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra immédiatement l\'accès à l\'API, sans que le token soit supprimé.'">
+                  <button class="disable-button" mat-icon-button matTooltip="Désactiver" [attr.aria-label]="'Désactiver le token ' + token.nom">
+                    <mat-icon aria-hidden="true">block</mat-icon>
+                  </button>
+                </span>
+              } @else {
+                <button class="enable-button" mat-icon-button (click)="changerActivation(token, true)"
+                  matTooltip="Réactiver" [attr.aria-label]="'Réactiver le token ' + token.nom">
+                  <mat-icon aria-hidden="true">check_circle</mat-icon>
+                </button>
+              }
+              <span (confirm)="supprimer(token)"
+                [confirmMessage]="'Supprimer définitivement le token &laquo; ' + token.nom + ' &raquo; ?'">
+                <button class="delete-button" mat-icon-button matTooltip="Supprimer" [attr.aria-label]="'Supprimer le token ' + token.nom">
+                  <mat-icon aria-hidden="true">delete</mat-icon>
+                </button>
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [pageSize]="itemsPerPage"
+      [length]="totalTokens"
+      [showFirstLastButtons]="true"
+      (page)="onPageChange($event)"
+      aria-label="Pagination des tokens d'API">
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>

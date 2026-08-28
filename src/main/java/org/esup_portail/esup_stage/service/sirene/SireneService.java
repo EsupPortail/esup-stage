@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.service.sirene;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Structure;
@@ -81,7 +81,7 @@ public class SireneService {
         String baseUrl = sireneProperties.getUrl() + "/siret";
         String lucene = SireneQueryBuilder.buildLuceneQuery(filtersJson);
 
-        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+        URI uri = UriComponentsBuilder.fromUriString(baseUrl)
                 .queryParam("q", lucene)
                 .queryParam("nombre", perpage)
                 .queryParam("page", page)

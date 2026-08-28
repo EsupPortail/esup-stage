@@ -1,8 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.constants.ValidationPatterns;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,7 +85,7 @@ public class AppConfigController {
 
     @PostMapping("/generale")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
-    public ConfigGeneraleDto updateGenerale(@RequestBody ConfigGeneraleDto configGeneraleDto) throws JsonProcessingException {
+    public ConfigGeneraleDto updateGenerale(@RequestBody ConfigGeneraleDto configGeneraleDto) throws JacksonException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.GENERAL);
         if (appConfig == null) {
             appConfig = new AppConfig();
@@ -139,7 +139,7 @@ public class AppConfigController {
 
     @PostMapping("/alerte-mail")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
-    public ConfigAlerteMailDto updateAlerteMail(@RequestBody ConfigAlerteMailDto configAlerteMailDto) throws JsonProcessingException {
+    public ConfigAlerteMailDto updateAlerteMail(@RequestBody ConfigAlerteMailDto configAlerteMailDto) throws JacksonException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.ALERTE);
         if (appConfig == null) {
             appConfig = new AppConfig();
@@ -283,7 +283,7 @@ public class AppConfigController {
 
     @PostMapping("/signature")
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.MODIFICATION}, forbiddenEtu = true)
-    public ConfigSignatureDto updateSignature(@RequestBody ConfigSignatureDto configSignatureDto) throws JsonProcessingException {
+    public ConfigSignatureDto updateSignature(@RequestBody ConfigSignatureDto configSignatureDto) throws JacksonException {
         AppConfig appConfig = appConfigJpaRepository.findByCode(AppConfigCodeEnum.SIGNATURE);
         if (appConfig == null) {
             appConfig = new AppConfig();

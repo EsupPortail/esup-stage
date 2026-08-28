@@ -2,8 +2,12 @@
   <mat-card-content>
     <div class="mb-3">
       <form [formGroup]="form" (submit)="validate()" novalidate>
-        <h4 class="text-title" *ngIf="!groupeEtudiant">Créer un groupe</h4>
-        <h4 class="text-title" *ngIf="groupeEtudiant">Modifier le groupe existant</h4>
+        @if (!groupeEtudiant) {
+          <h4 class="text-title">Créer un groupe</h4>
+        }
+        @if (groupeEtudiant) {
+          <h4 class="text-title">Modifier le groupe existant</h4>
+        }
         <mat-divider class="mb-2"></mat-divider>
         <div class="row mb-2">
           <mat-form-field class="col-6" appearance="fill">
@@ -25,186 +29,188 @@
               Modifier
             } @else {
               @if (selectedAdd.length > 0 && selectedRemove.length > 0) { Ajouter et retirer }
-              @else if (selectedAdd.length > 0) { Ajouter }
-              @else { Retirer }
-              {{ selectedAdd.length + selectedRemove.length | i18nPlural:{
+                @else if (selectedAdd.length > 0) { Ajouter }
+                @else { Retirer }
+                {{ selectedAdd.length + selectedRemove.length | i18nPlural:{
                 '=1': "l'étudiant sélectionné",
                 'other': 'les # étudiants sélectionnés'
-              } }}
-            }
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <div class="mb-3" *ngIf="groupeEtudiant && groupeEtudiant.etudiantGroupeEtudiants.length > 0">
-      <h4 class="text-title">Retirer des étudiants du groupe</h4>
-      <mat-divider class="mb-2"></mat-divider>
-      <app-table [service]="etudiantGroupeEtudiantService" [columns]="groupeEtudiantColumns" [sortColumn]="sortColumn" [filters]="groupeEtudiantFilters" [sortOrder]="sortDirection"
-                 matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(appTable,$event)"
-                 [noResultText]="'Aucun étudiant trouvé'">
-
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggleRemove() : null"
-                          [checked]="selectedRemove.length > 0 && isAllSelectedRemove()"
-                          [indeterminate]="selectedRemove.length > 0 && !isAllSelectedRemove()">
-            </mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [checked]="isSelectedRemove(row)"
-                          (change)="$event ? toggleSelectedRemove(row) : null"
-                          (click)="$event.stopPropagation()">
-            </mat-checkbox>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="numEtudiant">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="nom">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="prenom">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="mail">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
-          <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="ufr.libelle">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
-          <td mat-cell *matCellDef="let row" matTooltip="{{row.convention.ufr?.libelle??''}}">{{row.convention.ufr?.id?.code??''}}</td>
-        </ng-container>
-        <ng-container matColumnDef="etape.libelle">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
-          <td mat-cell *matCellDef="let row">{{row.convention.etape ? row.convention.etape.libelle : ''}}</td>
-        </ng-container>
-        <ng-container matColumnDef="annee">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
-          <td mat-cell *matCellDef="let row">{{row.convention.annee}}</td>
-        </ng-container>
-      </app-table>
-    </div>
-
-    <div class="mb-3">
-      <h4 class="text-title">Ajouter des étudiants au groupe</h4>
-      <mat-divider class="mb-2"></mat-divider>
-      <div class="table-filters">
-        <form [formGroup]="formAddEtudiants" class="mt-2 mb-3" (submit)="search()">
-          <div class="row">
-            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-              <mat-label>N° étudiant</mat-label>
-              <input matInput formControlName="codEtu" />
-            </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-              <mat-label>Nom</mat-label>
-              <input matInput formControlName="nom" />
-            </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-              <mat-label>Prénom</mat-label>
-              <input matInput formControlName="prenom" />
-            </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
-              <mat-label>Annee</mat-label>
-              <mat-select formControlName="annee" required>
-                <mat-option *ngFor="let annee of annees" [value]="annee.value">{{annee.label}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="row">
-            <mat-form-field class="col-sm-12 col-md-4 mb-2" appearance="fill">
-              <mat-label>Composante</mat-label>
-              <mat-select formControlName="composante" required>
-                <mat-option *ngFor="let composante of ufrList" [value]="composante.code">{{composante.code + ' - '+ composante.libelle}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-8 mb-2" appearance="fill">
-              <mat-label>Étape</mat-label>
-              <input type="test" matInput formControlName="etape" required [matAutocomplete]="autoEtapes">
-              <mat-autocomplete #autoEtapes="matAutocomplete" [displayWith]="displayEtape">
-                @for (diplome of filteredEtapes$ | async; track diplome.codeDiplome + '-' + diplome.versionDiplome) {
-                <mat-optgroup [label]="diplome.codeDiplome + '-' + diplome.versionDiplome + ' ' + diplome.libDiplome">
-                  <mat-option *ngFor="let etape of diplome.listeEtapes" [value]="{diplome,etape}">
-                    {{displayEtape({diplome,etape})}}
-                  </mat-option>
-                </mat-optgroup>
-                } @empty {
-                <mat-option disabled><em>aucune étape</em></mat-option>
-                }
-              </mat-autocomplete>
-            </mat-form-field>
-          </div>
-          <div class="row">
-            <div class="col-12 text-right">
-              <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
-              <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button class="ml-2 valid-button">Rechercher</button>
-            </div>
+                } }}
+              }
+            </button>
           </div>
         </form>
       </div>
 
-      <table mat-table [dataSource]="etudiants">
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
-        </tr>
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggleAdd() : null"
-                          [checked]="selectedAdd.length > 0 && isAllSelectedAdd()"
-                          [indeterminate]="selectedAdd.length > 0 && !isAllSelectedAdd()">
-            </mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [checked]="isSelectedAdd(row)"
-                          (change)="$event ? toggleSelectedAdd(row) : null"
-                          (click)="$event.stopPropagation()">
-            </mat-checkbox>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="numEtudiant">
-          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
-          <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
-        </ng-container>
-        <ng-container matColumnDef="nom">
-          <th mat-header-cell *matHeaderCellDef>Nom</th>
-          <td mat-cell *matCellDef="let row">{{row.nom}}</td>
-        </ng-container>
-        <ng-container matColumnDef="prenom">
-          <th mat-header-cell *matHeaderCellDef>Prénom</th>
-          <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
-        </ng-container>
-        <ng-container matColumnDef="mail">
-          <th mat-header-cell *matHeaderCellDef>Mail</th>
-          <td mat-cell *matCellDef="let row">{{row.mail}}</td>
-        </ng-container>
-        <ng-container matColumnDef="ufr.libelle">
-          <th mat-header-cell *matHeaderCellDef>UFR</th>
-          <td mat-cell *matCellDef="let row">
-            {{row.codeComposante}}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="etape.libelle">
-          <th mat-header-cell *matHeaderCellDef>Étape d'étude</th>
-          <td mat-cell *matCellDef="let row">
-            {{row.codeEtape}}-{{row.versionEtape}}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="annee">
-          <th mat-header-cell *matHeaderCellDef>Année univ.</th>
-          <td mat-cell *matCellDef="let row">{{row.annee}}</td>
-        </ng-container>
+      @if (groupeEtudiant && groupeEtudiant.etudiantGroupeEtudiants.length > 0) {
+        <div class="mb-3">
+          <h4 class="text-title">Retirer des étudiants du groupe</h4>
+          <mat-divider class="mb-2"></mat-divider>
+          <app-table [service]="etudiantGroupeEtudiantService" [columns]="groupeEtudiantColumns" [sortColumn]="sortColumn" [filters]="groupeEtudiantFilters" [sortOrder]="sortDirection"
+            matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(appTable,$event)"
+            [noResultText]="'Aucun étudiant trouvé'">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggleRemove() : null"
+                  [checked]="selectedRemove.length > 0 && isAllSelectedRemove()"
+                  [indeterminate]="selectedRemove.length > 0 && !isAllSelectedRemove()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox [checked]="isSelectedRemove(row)"
+                  (change)="$event ? toggleSelectedRemove(row) : null"
+                  (click)="$event.stopPropagation()">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
+            </ng-container>
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
+            </ng-container>
+            <ng-container matColumnDef="mail">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+            </ng-container>
+            <ng-container matColumnDef="ufr.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
+              <td mat-cell *matCellDef="let row" matTooltip="{{row.convention.ufr?.libelle??''}}">{{row.convention.ufr?.id?.code??''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="etape.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
+              <td mat-cell *matCellDef="let row">{{row.convention.etape ? row.convention.etape.libelle : ''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="annee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
+              <td mat-cell *matCellDef="let row">{{row.convention.annee}}</td>
+            </ng-container>
+          </app-table>
+        </div>
+      }
 
-        <tr mat-header-row *matHeaderRowDef="columns"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-      </table>
-    </div>
-  </mat-card-content>
-</mat-card>
+      <div class="mb-3">
+        <h4 class="text-title">Ajouter des étudiants au groupe</h4>
+        <mat-divider class="mb-2"></mat-divider>
+        <div class="table-filters">
+          <form [formGroup]="formAddEtudiants" class="mt-2 mb-3" (submit)="search()">
+            <div class="row">
+              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+                <mat-label>N° étudiant</mat-label>
+                <input matInput formControlName="codEtu" />
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+                <mat-label>Nom</mat-label>
+                <input matInput formControlName="nom" />
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+                <mat-label>Prénom</mat-label>
+                <input matInput formControlName="prenom" />
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-3 mb-2" appearance="fill">
+                <mat-label>Annee</mat-label>
+                <mat-select formControlName="annee" required>
+                  @for (annee of annees; track annee) {
+                    <mat-option [value]="annee.value">{{annee.label}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="row">
+              <mat-form-field class="col-sm-12 col-md-4 mb-2" appearance="fill">
+                <mat-label>Composante</mat-label>
+                <mat-select formControlName="composante" required>
+                  @for (composante of ufrList; track composante) {
+                    <mat-option [value]="composante.code">{{composante.code + ' - '+ composante.libelle}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="col-sm-12 col-md-8 mb-2" appearance="fill">
+                <mat-label>Étape</mat-label>
+                <input type="test" matInput formControlName="etape" required [matAutocomplete]="autoEtapes">
+                <mat-autocomplete #autoEtapes="matAutocomplete" [displayWith]="displayEtape">
+                  @for (diplome of filteredEtapes$ | async; track diplome.codeDiplome + '-' + diplome.versionDiplome) {
+                    <mat-optgroup [label]="diplome.codeDiplome + '-' + diplome.versionDiplome + ' ' + diplome.libDiplome">
+                      @for (etape of diplome.listeEtapes; track etape) {
+                        <mat-option [value]="{diplome,etape}">
+                          {{displayEtape({diplome,etape})}}
+                        </mat-option>
+                      }
+                    </mat-optgroup>
+                    } @empty {
+                    <mat-option disabled><em>aucune étape</em></mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div class="row">
+              <div class="col-12 text-right">
+                <button type="button" mat-button mat-stroked-button (click)="resetFilters()">Supprimer les filtres</button>
+                <button type="submit" [disabled]="formAddEtudiants.invalid" mat-button mat-flat-button class="ml-2 valid-button">Rechercher</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <table mat-table [dataSource]="etudiants">
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
+          </tr>
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggleAdd() : null"
+                [checked]="selectedAdd.length > 0 && isAllSelectedAdd()"
+                [indeterminate]="selectedAdd.length > 0 && !isAllSelectedAdd()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox [checked]="isSelectedAdd(row)"
+                (change)="$event ? toggleSelectedAdd(row) : null"
+                (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="numEtudiant">
+            <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+            <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
+          </ng-container>
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+          </ng-container>
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef>Prénom</th>
+            <td mat-cell *matCellDef="let row">{{row.prenom}}</td>
+          </ng-container>
+          <ng-container matColumnDef="mail">
+            <th mat-header-cell *matHeaderCellDef>Mail</th>
+            <td mat-cell *matCellDef="let row">{{row.mail}}</td>
+          </ng-container>
+          <ng-container matColumnDef="ufr.libelle">
+            <th mat-header-cell *matHeaderCellDef>UFR</th>
+            <td mat-cell *matCellDef="let row">
+              {{row.codeComposante}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="etape.libelle">
+            <th mat-header-cell *matHeaderCellDef>Étape d'étude</th>
+            <td mat-cell *matCellDef="let row">
+              {{row.codeEtape}}-{{row.versionEtape}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="annee">
+            <th mat-header-cell *matHeaderCellDef>Année univ.</th>
+            <td mat-cell *matCellDef="let row">{{row.annee}}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>

@@ -5,13 +5,17 @@
     <mat-form-field appearance="fill" class="w-100">
       <mat-label>Centre de gestion proprietaire</mat-label>
       <mat-select formControlName="idCentreGestionProprietaire" required>
-        <mat-option *ngFor="let centre of data.centres" [value]="centre.id">
-          {{centre.nomCentre}}
-        </mat-option>
+        @for (centre of data.centres; track centre) {
+          <mat-option [value]="centre.id">
+            {{centre.nomCentre}}
+          </mat-option>
+        }
       </mat-select>
-      <mat-error *ngIf="form.get('idCentreGestionProprietaire')?.hasError('required')">
-        Ce champ est obligatoire.
-      </mat-error>
+      @if (form.get('idCentreGestionProprietaire')?.hasError('required')) {
+        <mat-error>
+          Ce champ est obligatoire.
+        </mat-error>
+      }
     </mat-form-field>
   </div>
 

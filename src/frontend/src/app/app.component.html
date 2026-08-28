@@ -7,61 +7,75 @@
       <li>
         <a class="fr-link" href="#menu">Menu</a>
       </li>
-      <li *ngIf="showFooter()">
-        <a class="fr-link" href="#footer">Pied de page</a>
-      </li>
+      @if (showFooter()) {
+        <li>
+          <a class="fr-link" href="#footer">Pied de page</a>
+        </li>
+      }
     </ul>
   </nav>
 </div>
-<app-header *ngIf="!publicLayout"></app-header>
-<section
-  *ngIf="!publicLayout && maintenanceAnnouncementVisible"
-  class="maintenance-announcement"
-  role="status"
-  aria-live="polite">
-  <mat-icon>info</mat-icon>
-  <p class="maintenance-announcement__message">{{ maintenanceAnnouncementMessage }}</p>
-  <button
-    type="button"
-    mat-icon-button
-    class="maintenance-announcement__close"
-    (click)="dismissMaintenanceAnnouncement()"
-    aria-label="Fermer l'annonce de maintenance">
-    <mat-icon>close</mat-icon>
-  </button>
-</section>
-<div class="menu-button" *ngIf="isConnected() && !publicLayout">
-  <button
-    mat-icon-button
-    title="Ouvrir/fermer le menu"
-    type="button"
-    class="menu-button__btn"
-    [class.menu-button__btn--open]="menuService.navbarOpened"
-    (click)="slideNavbar()"
-    [attr.aria-label]="menuService.navbarOpened ? 'Fermer le menu' : 'Ouvrir le menu'">
-    <span class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></span>
-  </button>
-</div>
-<mat-sidenav-container *ngIf="!publicLayout; else publicLayoutContent" autosize>
-  <mat-sidenav mode="side" [opened]="isOpened()" *ngIf="isConnected()">
-    <nav id="menu" class="app-menu" role="navigation" aria-label="menu principal">
-      <ul class="menu-root">
-        <app-menu *ngFor="let item of items" [item]="item"></app-menu>
-      </ul>
-    </nav>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <main id="main">
-      <app-loader></app-loader>
-      <app-title></app-title>
-      <router-outlet></router-outlet>
-    </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
-<ng-template #publicLayoutContent>
+@if (!publicLayout) {
+  <app-header></app-header>
+}
+@if (!publicLayout && maintenanceAnnouncementVisible) {
+  <section
+    class="maintenance-announcement"
+    role="status"
+    aria-live="polite">
+    <mat-icon>info</mat-icon>
+    <p class="maintenance-announcement__message">{{ maintenanceAnnouncementMessage }}</p>
+    <button
+      type="button"
+      mat-icon-button
+      class="maintenance-announcement__close"
+      (click)="dismissMaintenanceAnnouncement()"
+      aria-label="Fermer l'annonce de maintenance">
+      <mat-icon>close</mat-icon>
+    </button>
+  </section>
+}
+@if (isConnected() && !publicLayout) {
+  <div class="menu-button">
+    <button
+      mat-icon-button
+      title="Ouvrir/fermer le menu"
+      type="button"
+      class="menu-button__btn"
+      [class.menu-button__btn--open]="menuService.navbarOpened"
+      (click)="slideNavbar()"
+      [attr.aria-label]="menuService.navbarOpened ? 'Fermer le menu' : 'Ouvrir le menu'">
+      <span class="fa" [ngClass]="menuService.navbarOpened ? 'fa-times' : 'fa-bars'"></span>
+    </button>
+  </div>
+}
+@if (!publicLayout) {
+  <mat-sidenav-container autosize>
+    @if (isConnected()) {
+      <mat-sidenav mode="side" [opened]="isOpened()">
+        <nav id="menu" class="app-menu" role="navigation" aria-label="menu principal">
+          <ul class="menu-root">
+            @for (item of items; track item) {
+              <app-menu [item]="item"></app-menu>
+            }
+          </ul>
+        </nav>
+      </mat-sidenav>
+    }
+    <mat-sidenav-content>
+      <main id="main">
+        <app-loader></app-loader>
+        <app-title></app-title>
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+} @else {
   <main id="main">
     <app-loader></app-loader>
     <router-outlet></router-outlet>
   </main>
-</ng-template>
-<app-footer *ngIf="!publicLayout && showFooter()"></app-footer>
+}
+@if (!publicLayout && showFooter()) {
+  <app-footer></app-footer>
+}

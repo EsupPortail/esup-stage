@@ -1,35 +1,50 @@
-<mat-card *ngIf="!isConventionValide()">
-  <mat-card-content>
-    <div class="alert alert-danger">
-      <span class="fa fa-exclamation-triangle" aria-label="Attention"></span> Vous ne pouvez pas créer d'avenant si la convention n'est pas validée.
-    </div>
-  </mat-card-content>
-</mat-card>
+@if (!isConventionValide()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="alert alert-danger">
+        <span class="fa fa-exclamation-triangle" aria-label="Attention"></span> Vous ne pouvez pas créer d'avenant si la convention n'est pas validée.
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
 
-<mat-accordion *ngIf="isConventionValide()">
-  <mat-expansion-panel #createAvenant [expanded]="avenants.length == 0">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-avenant-form [convention]="convention" [avenant]="{}" (updated)="updateAvenants()"></app-avenant-form>
-  </mat-expansion-panel>
-
-  <mat-expansion-panel #listAvenants [disabled]="avenants.length == 0" [expanded]="avenants.length > 0">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Avenants existants</mat-panel-title>
-    </mat-expansion-panel-header>
-    <mat-accordion>
-      <mat-expansion-panel *ngFor="let avenant of avenants" [expanded]="false">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Avenant n°{{avenant.id}} - {{avenant.titreAvenant + ' - '}}
-            <span *ngIf="avenant.validationAvenant" class="success">&nbsp;Validé<span *ngIf="avenant.dateValidation"> le {{avenant.dateValidation|date:'shortDate'}}</span></span>
-            <span *ngIf="!avenant.validationAvenant" class="danger">&nbsp;Non validé</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()" *ngIf="!avenant.validationAvenant"></app-avenant-form>
-        <app-avenant-view [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()" *ngIf="avenant.validationAvenant"></app-avenant-view>
-      </mat-expansion-panel>
-    </mat-accordion>
-  </mat-expansion-panel>
-</mat-accordion>
+@if (isConventionValide()) {
+  <mat-accordion>
+    <mat-expansion-panel #createAvenant [expanded]="avenants.length == 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Création d'un nouvel avenant</mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-avenant-form [convention]="convention" [avenant]="{}" (updated)="updateAvenants()"></app-avenant-form>
+    </mat-expansion-panel>
+    <mat-expansion-panel #listAvenants [disabled]="avenants.length == 0" [expanded]="avenants.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Avenants existants</mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-accordion>
+        @for (avenant of avenants; track avenant) {
+          <mat-expansion-panel [expanded]="false">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Avenant n°{{avenant.id}} - {{avenant.titreAvenant + ' - '}}
+                @if (avenant.validationAvenant) {
+                  <span class="success">&nbsp;Validé@if (avenant.dateValidation) {
+                    <span> le {{avenant.dateValidation|date:'shortDate'}}</span>
+                  }</span>
+                }
+                @if (!avenant.validationAvenant) {
+                  <span class="danger">&nbsp;Non validé</span>
+                }
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @if (!avenant.validationAvenant) {
+              <app-avenant-form [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"></app-avenant-form>
+            }
+            @if (avenant.validationAvenant) {
+              <app-avenant-view [convention]="convention" [avenant]="avenant" (updated)="updateAvenants()"></app-avenant-view>
+            }
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    </mat-expansion-panel>
+  </mat-accordion>
+}

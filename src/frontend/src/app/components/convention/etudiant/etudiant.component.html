@@ -1,308 +1,350 @@
 <mat-accordion>
-  <mat-expansion-panel class="etab-search-panel" *ngIf="!isEtudiant && modifiable" [expanded]="!convention.id">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
-    </mat-expansion-panel-header>
-
-    <form [formGroup]="form" novalidate class="mt-2 mb-3">
-      <fieldset class="fieldset-block">
-        <legend class="sr-only">Recherche d’un étudiant</legend>
-
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>N° étudiant</mat-label>
-            <input matInput formControlName="codEtu" />
-          </mat-form-field>
-        </div>
-
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Nom</mat-label>
-            <input matInput formControlName="nom" />
-          </mat-form-field>
-
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Prénom</mat-label>
-            <input matInput formControlName="prenom" />
-          </mat-form-field>
-        </div>
-      </fieldset>
-    </form>
-
-
-    <div class="alert alert-info" *ngIf="etudiants.length === 10">La recherche est limitée à 10 étudiants. Veuillez affiner la recherche si l'étudiant n'apparaît pas.</div>
-    <table mat-table [dataSource]="etudiants">
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
-      </tr>
-      <ng-container matColumnDef="numetudiant">
-        <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
-        <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
-      </ng-container>
-      <ng-container matColumnDef="nomprenom">
-        <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
-        <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}} {{row.givenName.join(' ')}}</td>
-      </ng-container>
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let row">
-          <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
-            <span class="fa fa-check" aria-hidden="true"></span> Sélectionner
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)"></tr>
-    </table>
-  </mat-expansion-panel>
+  @if (!isEtudiant && modifiable) {
+    <mat-expansion-panel class="etab-search-panel" [expanded]="!convention.id">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Recherchez un étudiant via son numéro ou son nom/prénom</mat-panel-title>
+      </mat-expansion-panel-header>
+      <form [formGroup]="form" novalidate class="mt-2 mb-3">
+        <fieldset class="fieldset-block">
+          <legend class="sr-only">Recherche d’un étudiant</legend>
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>N° étudiant</mat-label>
+              <input matInput formControlName="codEtu" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" />
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" />
+            </mat-form-field>
+          </div>
+        </fieldset>
+      </form>
+      @if (etudiants.length === 10) {
+        <div class="alert alert-info">La recherche est limitée à 10 étudiants. Veuillez affiner la recherche si l'étudiant n'apparaît pas.</div>
+      }
+      <table mat-table [dataSource]="etudiants">
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="9999">Aucun étudiant trouvé</td>
+        </tr>
+        <ng-container matColumnDef="numetudiant">
+          <th mat-header-cell *matHeaderCellDef>N° étudiant</th>
+          <td mat-cell *matCellDef="let row">{{row.codEtu}}</td>
+        </ng-container>
+        <ng-container matColumnDef="nomprenom">
+          <th mat-header-cell *matHeaderCellDef>Nom / Prénom</th>
+          <td mat-cell *matCellDef="let row">{{row.sn.join(' ')}} {{row.givenName.join(' ')}}</td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button class="valid-button" mat-button mat-stroked-button (click)="choose(row)">
+              <span class="fa fa-check" aria-hidden="true"></span> Sélectionner
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;" [class.selected]="isSelected(row)"></tr>
+      </table>
+    </mat-expansion-panel>
+  }
   <mat-expansion-panel class="etab-search-panel" [disabled]="!etudiant" [expanded]="etudiant">
     <mat-expansion-panel-header>
       <mat-panel-title>Cadre du stage</mat-panel-title>
     </mat-expansion-panel-header>
-    <form *ngIf="etudiant && formConvention" [formGroup]="formConvention" novalidate (submit)="validate()">
-      <div class="convention-etudiant-details">
-        <div class="row">
-          <div class="col-sm-12 col-md-6">
-            <h4 class="text-title"><span class="fa fa-user" aria-hidden="true"></span> Étudiant</h4>
-            <mat-divider></mat-divider>
-            <div class="mt-3 mb-3">
-              <div class="row">
-                <div class="col-sm-6 font-weight-bold">N° étudiant</div>
-                <div class="col-sm-6">{{selectedNumEtudiant}}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 font-weight-bold">Nom</div>
-                @if(etudiant.nompatro){
-                  <div class="col-sm-6">{{etudiant.nompatro}}</div>
-                }@else{
-                  <div class="col-sm-6">{{etudiant.nom}}</div>
-                }
-
-              </div>
-              <div class="row">
-                <div class="col-sm-6 font-weight-bold">Prénom</div>
-                <div class="col-sm-6">{{etudiant.prenom}}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 font-weight-bold">Mail institutionnel</div>
-                <div class="col-sm-6">{{etudiant.mail}}</div>
-              </div>
-            </div>
-            <h4 class="text-title"><span class="fa fa-star" aria-hidden="true"></span> Vérifiez les coordonnées</h4>
-            <mat-divider></mat-divider>
-            <fieldset class="fieldset-block mt-3 mb-3">
-              <legend class="sr-only">{{ isUserEtudiant() ? "Vérifiez vos coordonnées":"Vérifiez les coordonnées de l’étudiant"}}</legend>
-              <div class="row">
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Adresse</mat-label>
-                  <input matInput formControlName="adresseEtudiant" required />
-                  <mat-error><app-form-error [field]="formConvention.get('adresseEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <div class="col-sm-12 mb-2" *ngIf="isFr()">
-                  <app-form-autocomplete-field
-                    [service]="communeService"
-                    [field]="formConvention.get('codePostalEtudiant')"
-                    [fieldLabel]="'Code postal'"
-                    (updated)="updateCommune($event)"
-                    [startWith]="false"
-                  ></app-form-autocomplete-field>
-                </div>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="!isFr()">
-                  <mat-label>Code postal</mat-label>
-                  <input matInput formControlName="codePostalEtudiant" required />
-                  <mat-error><app-form-error [field]="formConvention.get('codePostalEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Commune</mat-label>
-                  <input matInput formControlName="villeEtudiant" required />
-                  <mat-error><app-form-error [field]="formConvention.get('villeEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Pays</mat-label>
-                  <input matInput formControlName="paysEtudiant" required />
-                  <mat-error><app-form-error [field]="formConvention.get('paysEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Téléphone</mat-label>
-                  <input matInput formControlName="telEtudiant" />
-                  <mat-error><app-form-error [field]="formConvention.get('telEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Téléphone portable</mat-label>
-                  <input matInput formControlName="telPortableEtudiant" />
-                  <mat-error><app-form-error [field]="formConvention.get('telPortableEtudiant')"></app-form-error></mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                  <mat-label>Mail personnel</mat-label>
-                  <input matInput formControlName="courrielPersoEtudiant" required />
-                  <mat-error *ngIf="formConvention.get('courrielPersoEtudiant')?.hasError('email')
-                  || formConvention.get('courrielPersoEtudiant')?.hasError('pattern')">
-                    Adresse email invalide. Format attendu : exemple&#64;domaine.com
-                  </mat-error>
-                  <mat-error *ngIf="!(formConvention.get('courrielPersoEtudiant')?.hasError('email')
-                  || formConvention.get('courrielPersoEtudiant')?.hasError('pattern'))">
-                    <app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error>
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </fieldset>
-          </div>
-
-          <div class="col-sm-12 col-md-6">
-            <h4 class="text-title"><span class="fa fa-house-medical" aria-hidden="true"></span> Caisse Primaire d'Assurance Maladie</h4>
-            <mat-divider></mat-divider>
-            <div class="mt-3 mb-3">
-              <div class="row">
-                <fieldset class="col-12 px-0">
-                  <legend class="sr-only"> Caisse primaire d'assurance maladie </legend>
-                  <mat-form-field class="col-12 mb-2" appearance="fill" *ngIf="regions.length > 0">
-                    <mat-label>Région CPAM</mat-label>
-                    <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
-                      <mat-option *ngFor="let region of regions" [value]="region">{{region}}</mat-option>
-                    </mat-select>
-                    <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
-                  </mat-form-field>
-                  <mat-form-field class="col-12 mb-2" appearance="fill">
-                    <mat-label>Libellé CPAM</mat-label>
-                    <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
-                      <mat-option *ngFor="let libelle of libelles" [value]="libelle">
-                        {{libelle}}
-                      </mat-option>
-                    </mat-autocomplete>
-                    <mat-error><app-form-error [field]="formConvention.get('libelleCPAM')"></app-form-error></mat-error>
-                  </mat-form-field>
-                  <mat-form-field class="col-12 mb-2" appearance="fill">
-                    <mat-label>Adresse CPAM</mat-label>
-                    <input matInput formControlName="adresseCPAM" required />
-                    <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
-                  </mat-form-field>
-                </fieldset>
-              </div>
-            </div>
-
-            <h4 class="text-title"><span class="fa fa-graduation-cap" aria-hidden="true"></span> Choisissez le cadre du stage</h4>
-            <mat-divider></mat-divider>
-
-            <div class="mt-3 mb-3">
-              <ng-container *ngIf="inscriptions.length === 0 && (hasLoadedApogeeInscriptions || !convention.id); else hasInscriptions">
-                <div class="alert alert-danger">
-                  Vous n'êtes inscrit à aucune formation éligible.
-                </div>
-              </ng-container>
-
-              <ng-template #hasInscriptions>
-                <fieldset class="fieldset-block">
-                  <legend class="sr-only">Choisissez le cadre du stage</legend>
-                <ng-container *ngIf="shouldDisplayFormationSelect()">
-                  <div class="row">
-                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                      <mat-label>Formation</mat-label>
-                      <mat-select formControlName="inscription" required>
-                        <mat-option *ngFor="let inscription of inscriptions" [value]="inscription">{{inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}<span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span></mat-option>
-                      </mat-select>
-                      <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
-                    </mat-form-field>
-                  </div>
-                </ng-container>
-                <div *ngIf="selectedInscription">
-                  <div class="row">
-                    <div class="col-sm-4 font-weight-bold">Année inscription</div>
-                    <div class="col-sm-8">{{selectedInscription.annee +'/'+ (+selectedInscription.annee + 1)}}</div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="col-sm-4 font-weight-bold">Formation</div>
-                    <div class="col-sm-8 formation-display">
-                      <span>{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</span>
-                      <button
-                        *ngIf="modifiable && convention.id && !isEditingFormation"
-                        type="button"
-                        class="edit-button edit-formation-button"
-                        mat-icon-button
-                        matTooltip="Modifier la formation"
-                        aria-label="Modifier la formation"
-                        (click)="enableFormationEdit()">
-                        <span class="fa fa-pen edit-formation-icon" aria-hidden="true"></span>
-                      </button>
-                      <mat-spinner *ngIf="isLoadingApogeeInscriptions && isEditingFormation" class="edit-formation-spinner" diameter="20" aria-label="Chargement des formations"></mat-spinner>
-                    </div>
-                  </div>
-                  <div class="row" *ngIf="selectedInscription.elementPedagogiques.length > 0">
-                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                      <mat-label>Élément pédagogique</mat-label>
-                      <mat-select formControlName="inscriptionElp" [required]="!sansElp">
-                        <mat-option *ngFor="let elp of selectedInscription.elementPedagogiques" [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' crédits ECTS'}}</mat-option>
-                      </mat-select>
-                      <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div class="row align-items-start">
-                    <label class="col-sm-12">Nombre d'heures de formation * :</label>
-                    <mat-radio-group class="col-sm-12" formControlName="volumeHoraireFormationBool">
-                      <mat-radio-button class="mb-2" [value]="false">Plus de 200 heures</mat-radio-button>
-                      <mat-radio-button [value]="true">
-                        {{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)" }} :
-                      </mat-radio-button>
-                    </mat-radio-group>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <mat-form-field *ngIf="formConvention.get('volumeHoraireFormationBool').value" class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Entrez le nombre d'heures de formation :</mat-label>
-                    <input matInput formControlName="volumeHoraireFormation"/>
-                  </mat-form-field>
-                </div>
-                <div class="row">
-                  <div class="col-sm-12 mb-2 alert alert-warning" *ngIf="aucunTypeConventionDisponible">{{ aucunTypeConventionMessage }}</div>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
-                    <mat-label>Type de convention</mat-label>
-                    <mat-select formControlName="idTypeConvention" required>
-                      <mat-option *ngFor="let typeConvention of typeConventions" [value]="typeConvention.id">{{ typeConvention.libelle }}</mat-option>
-                    </mat-select>
-                    <mat-error><app-form-error [field]="formConvention.get('idTypeConvention')"></app-form-error></mat-error>
-                  </mat-form-field>
-                  <mat-form-field class="col-sm-12 mb-2" appearance="fill" *ngIf="langueConventions.length > 0">
-                    <mat-label>Langue de la convention</mat-label>
-                    <mat-select formControlName="codeLangueConvention" required>
-                      <mat-option *ngFor="let langueConvention of langueConventions" [value]="langueConvention.code">{{ langueConvention.libelle }}</mat-option>
-                    </mat-select>
-                    <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
-                  </mat-form-field>
-                </div>
-                </fieldset>
-              </ng-template>
-            </div>
-
-            <div *ngIf="selectedInscription && (consigneEtablissement || centreGestion.consigne)">
-              <h4 class="text-title"><span class="fa fa-book-open" aria-hidden="true"></span> Consignes</h4>
+    @if (etudiant && formConvention) {
+      <form [formGroup]="formConvention" novalidate (submit)="validate()">
+        <div class="convention-etudiant-details">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <h4 class="text-title"><span class="fa fa-user" aria-hidden="true"></span> Étudiant</h4>
               <mat-divider></mat-divider>
-              <div *ngIf="consigneEtablissement">
-                <div *ngIf="consigneEtablissement.texte != null" class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
-                <div *ngFor="let doc of consigneEtablissement.documents">
-                  <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip"></span> {{doc.nomReel}}</a>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <div class="col-sm-6 font-weight-bold">N° étudiant</div>
+                  <div class="col-sm-6">{{selectedNumEtudiant}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 font-weight-bold">Nom</div>
+                  @if(etudiant.nompatro){
+                    <div class="col-sm-6">{{etudiant.nompatro}}</div>
+                    }@else{
+                    <div class="col-sm-6">{{etudiant.nom}}</div>
+                  }
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 font-weight-bold">Prénom</div>
+                  <div class="col-sm-6">{{etudiant.prenom}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 font-weight-bold">Mail institutionnel</div>
+                  <div class="col-sm-6">{{etudiant.mail}}</div>
                 </div>
               </div>
-              <div class="mt-3" *ngIf="centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne">
-                <div [innerHTML]="trustHtml(centreGestion.consigne?.texte)"></div>
-                <div *ngFor="let doc of centreGestion.consigne.documents">
-                  <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip"></span> {{doc.nomReel}}</a>
+              <h4 class="text-title"><span class="fa fa-star" aria-hidden="true"></span> Vérifiez les coordonnées</h4>
+              <mat-divider></mat-divider>
+              <fieldset class="fieldset-block mt-3 mb-3">
+                <legend class="sr-only">{{ isUserEtudiant() ? "Vérifiez vos coordonnées":"Vérifiez les coordonnées de l’étudiant"}}</legend>
+                <div class="row">
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Adresse</mat-label>
+                    <input matInput formControlName="adresseEtudiant" required />
+                    <mat-error><app-form-error [field]="formConvention.get('adresseEtudiant')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  @if (isFr()) {
+                    <div class="col-sm-12 mb-2">
+                      <app-form-autocomplete-field
+                        [service]="communeService"
+                        [field]="formConvention.get('codePostalEtudiant')"
+                        [fieldLabel]="'Code postal'"
+                        (updated)="updateCommune($event)"
+                        [startWith]="false"
+                      ></app-form-autocomplete-field>
+                    </div>
+                  }
+                  @if (!isFr()) {
+                    <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                      <mat-label>Code postal</mat-label>
+                      <input matInput formControlName="codePostalEtudiant" required />
+                      <mat-error><app-form-error [field]="formConvention.get('codePostalEtudiant')"></app-form-error></mat-error>
+                    </mat-form-field>
+                  }
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Commune</mat-label>
+                    <input matInput formControlName="villeEtudiant" required />
+                    <mat-error><app-form-error [field]="formConvention.get('villeEtudiant')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Pays</mat-label>
+                    <input matInput formControlName="paysEtudiant" required />
+                    <mat-error><app-form-error [field]="formConvention.get('paysEtudiant')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Téléphone</mat-label>
+                    <input matInput formControlName="telEtudiant" />
+                    <mat-error><app-form-error [field]="formConvention.get('telEtudiant')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Téléphone portable</mat-label>
+                    <input matInput formControlName="telPortableEtudiant" />
+                    <mat-error><app-form-error [field]="formConvention.get('telPortableEtudiant')"></app-form-error></mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                    <mat-label>Mail personnel</mat-label>
+                    <input matInput formControlName="courrielPersoEtudiant" required />
+                    @if (formConvention.get('courrielPersoEtudiant')?.hasError('email')
+                      || formConvention.get('courrielPersoEtudiant')?.hasError('pattern')) {
+                      <mat-error>
+                        Adresse email invalide. Format attendu : exemple&#64;domaine.com
+                      </mat-error>
+                    }
+                    @if (!(formConvention.get('courrielPersoEtudiant')?.hasError('email')
+                      || formConvention.get('courrielPersoEtudiant')?.hasError('pattern'))) {
+                      <mat-error>
+                        <app-form-error [field]="formConvention.get('courrielPersoEtudiant')"></app-form-error>
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </fieldset>
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <h4 class="text-title"><span class="fa fa-house-medical" aria-hidden="true"></span> Caisse Primaire d'Assurance Maladie</h4>
+              <mat-divider></mat-divider>
+              <div class="mt-3 mb-3">
+                <div class="row">
+                  <fieldset class="col-12 px-0">
+                    <legend class="sr-only"> Caisse primaire d'assurance maladie </legend>
+                    @if (regions.length > 0) {
+                      <mat-form-field class="col-12 mb-2" appearance="fill">
+                        <mat-label>Région CPAM</mat-label>
+                        <mat-select formControlName="regionCPAM" (selectionChange)="setCPAMLibelles($event)" required>
+                          @for (region of regions; track region) {
+                            <mat-option [value]="region">{{region}}</mat-option>
+                          }
+                        </mat-select>
+                        <mat-error><app-form-error [field]="formConvention.get('regionCPAM')"></app-form-error></mat-error>
+                      </mat-form-field>
+                    }
+                    <mat-form-field class="col-12 mb-2" appearance="fill">
+                      <mat-label>Libellé CPAM</mat-label>
+                      <input matInput formControlName="libelleCPAM" [matAutocomplete]="auto" required />
+                      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCPAMRegion($event)">
+                        @for (libelle of libelles; track libelle) {
+                          <mat-option [value]="libelle">
+                            {{libelle}}
+                          </mat-option>
+                        }
+                      </mat-autocomplete>
+                      <mat-error><app-form-error [field]="formConvention.get('libelleCPAM')"></app-form-error></mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-12 mb-2" appearance="fill">
+                      <mat-label>Adresse CPAM</mat-label>
+                      <input matInput formControlName="adresseCPAM" required />
+                      <mat-error><app-form-error [field]="formConvention.get('adresseCPAM')"></app-form-error></mat-error>
+                    </mat-form-field>
+                  </fieldset>
                 </div>
               </div>
+              <h4 class="text-title"><span class="fa fa-graduation-cap" aria-hidden="true"></span> Choisissez le cadre du stage</h4>
+              <mat-divider></mat-divider>
+              <div class="mt-3 mb-3">
+                @if (inscriptions.length === 0 && (hasLoadedApogeeInscriptions || !convention.id)) {
+                  <div class="alert alert-danger">
+                    Vous n'êtes inscrit à aucune formation éligible.
+                  </div>
+                } @else {
+                  <fieldset class="fieldset-block">
+                    <legend class="sr-only">Choisissez le cadre du stage</legend>
+                    @if (shouldDisplayFormationSelect()) {
+                      <div class="row">
+                        <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                          <mat-label>Formation</mat-label>
+                          <mat-select formControlName="inscription" required>
+                            @for (inscription of inscriptions; track inscription) {
+                              <mat-option [value]="inscription">{{inscription.annee + '/' + (+inscription.annee + 1) + ': ' + inscription.etapeInscription.codeEtp + ' - ' + inscription.etapeInscription.libWebVet}}<span class="option-composante">({{inscription.etapeInscription.codeComposante}})</span></mat-option>
+                            }
+                          </mat-select>
+                          <mat-error><app-form-error [field]="formConvention.get('inscription')"></app-form-error></mat-error>
+                        </mat-form-field>
+                      </div>
+                    }
+                    @if (selectedInscription) {
+                      <div>
+                        <div class="row">
+                          <div class="col-sm-4 font-weight-bold">Année inscription</div>
+                          <div class="col-sm-8">{{selectedInscription.annee +'/'+ (+selectedInscription.annee + 1)}}</div>
+                        </div>
+                        <div class="row mb-2">
+                          <div class="col-sm-4 font-weight-bold">Formation</div>
+                          <div class="col-sm-8 formation-display">
+                            <span>{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</span>
+                            @if (modifiable && convention.id && !isEditingFormation) {
+                              <button
+                                type="button"
+                                class="edit-button edit-formation-button"
+                                mat-icon-button
+                                matTooltip="Modifier la formation"
+                                aria-label="Modifier la formation"
+                                (click)="enableFormationEdit()">
+                                <span class="fa fa-pen edit-formation-icon" aria-hidden="true"></span>
+                              </button>
+                            }
+                            @if (isLoadingApogeeInscriptions && isEditingFormation) {
+                              <mat-spinner class="edit-formation-spinner" diameter="20" aria-label="Chargement des formations"></mat-spinner>
+                            }
+                          </div>
+                        </div>
+                        @if (selectedInscription.elementPedagogiques.length > 0) {
+                          <div class="row">
+                            <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                              <mat-label>Élément pédagogique</mat-label>
+                              <mat-select formControlName="inscriptionElp" [required]="!sansElp">
+                                @for (elp of selectedInscription.elementPedagogiques; track elp) {
+                                  <mat-option [value]="elp">{{elp.codElp + ' - ' + elp.libElp + ' : ' + elp.nbrCrdElp + ' crédits ECTS'}}</mat-option>
+                                }
+                              </mat-select>
+                              <mat-error><app-form-error [field]="formConvention.get('inscriptionElp')"></app-form-error></mat-error>
+                            </mat-form-field>
+                          </div>
+                        }
+                        <div class="row align-items-start">
+                          <label class="col-sm-12">Nombre d'heures de formation * :</label>
+                          <mat-radio-group class="col-sm-12" formControlName="volumeHoraireFormationBool">
+                            <mat-radio-button class="mb-2" [value]="false">Plus de 200 heures</mat-radio-button>
+                            <mat-radio-button [value]="true">
+                              {{ !hasDefaultVolumeHoraire ? "Saisie manuelle" : "Valeur récupérée via les données de l'établissement (Apogée)" }} :
+                            </mat-radio-button>
+                          </mat-radio-group>
+                        </div>
+                      </div>
+                    }
+                    <div class="row">
+                      @if (formConvention.get('volumeHoraireFormationBool').value) {
+                        <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                          <mat-label>Entrez le nombre d'heures de formation :</mat-label>
+                          <input matInput formControlName="volumeHoraireFormation"/>
+                        </mat-form-field>
+                      }
+                    </div>
+                    <div class="row">
+                      @if (aucunTypeConventionDisponible) {
+                        <div class="col-sm-12 mb-2 alert alert-warning">{{ aucunTypeConventionMessage }}</div>
+                      }
+                      <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                        <mat-label>Type de convention</mat-label>
+                        <mat-select formControlName="idTypeConvention" required>
+                          @for (typeConvention of typeConventions; track typeConvention) {
+                            <mat-option [value]="typeConvention.id">{{ typeConvention.libelle }}</mat-option>
+                          }
+                        </mat-select>
+                        <mat-error><app-form-error [field]="formConvention.get('idTypeConvention')"></app-form-error></mat-error>
+                      </mat-form-field>
+                      @if (langueConventions.length > 0) {
+                        <mat-form-field class="col-sm-12 mb-2" appearance="fill">
+                          <mat-label>Langue de la convention</mat-label>
+                          <mat-select formControlName="codeLangueConvention" required>
+                            @for (langueConvention of langueConventions; track langueConvention) {
+                              <mat-option [value]="langueConvention.code">{{ langueConvention.libelle }}</mat-option>
+                            }
+                          </mat-select>
+                          <mat-error><app-form-error [field]="formConvention.get('codeLangueConvention')"></app-form-error></mat-error>
+                        </mat-form-field>
+                      }
+                    </div>
+                  </fieldset>
+                }
+              </div>
+              @if (selectedInscription && (consigneEtablissement || centreGestion.consigne)) {
+                <div>
+                  <h4 class="text-title"><span class="fa fa-book-open" aria-hidden="true"></span> Consignes</h4>
+                  <mat-divider></mat-divider>
+                  @if (consigneEtablissement) {
+                    <div>
+                      @if (consigneEtablissement.texte != null) {
+                        <div class="mt-2" [innerHTML]="trustHtml(consigneEtablissement.texte)"></div>
+                      }
+                      @for (doc of consigneEtablissement.documents; track doc) {
+                        <div>
+                          <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip"></span> {{doc.nomReel}}</a>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @if (centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne) {
+                    <div class="mt-3">
+                      <div [innerHTML]="trustHtml(centreGestion.consigne?.texte)"></div>
+                      @for (doc of centreGestion.consigne.documents; track doc) {
+                        <div>
+                          <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip"></span> {{doc.nomReel}}</a>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </div>
         </div>
-      </div>
-      <div class="mt-3 text-right">
-        <span *ngIf="!convention.validationCreation" (confirm)="deleteConventionBrouillon()" [confirmMessage]="'Voulez-vous réinitialiser la création de la convention ?'" class="mr-2">
-          <button class="cancel-button" type="button" mat-flat-button>Supprimer</button>
-        </span>
-        <span *ngIf="canDelete()" (confirm)="deleteConvention()" [confirmMessage]="'Voulez-vous vraiment supprimer la convention ?'" class="mr-2">
-          <button class="cancel-button" type="button" mat-flat-button>Supprimer</button>
-        </span>
-        <button class="valid-button" mat-flat-button [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
-      </div>
-    </form>
+        <div class="mt-3 text-right">
+          @if (!convention.validationCreation) {
+            <span (confirm)="deleteConventionBrouillon()" [confirmMessage]="'Voulez-vous réinitialiser la création de la convention ?'" class="mr-2">
+              <button class="cancel-button" type="button" mat-flat-button>Supprimer</button>
+            </span>
+          }
+          @if (canDelete()) {
+            <span (confirm)="deleteConvention()" [confirmMessage]="'Voulez-vous vraiment supprimer la convention ?'" class="mr-2">
+              <button class="cancel-button" type="button" mat-flat-button>Supprimer</button>
+            </span>
+          }
+          <button class="valid-button" mat-flat-button [disabled]="!centreGestion || inscriptions.length === 0 || !selectedInscription">{{'BOUTON_VALIDER'|contenu}}</button>
+        </div>
+      </form>
+    }
   </mat-expansion-panel>
 </mat-accordion>

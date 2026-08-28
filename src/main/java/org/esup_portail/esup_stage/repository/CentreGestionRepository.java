@@ -3,7 +3,7 @@ package org.esup_portail.esup_stage.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import org.esup_portail.esup_stage.model.CentreGestion;
 import org.springframework.stereotype.Repository;
 

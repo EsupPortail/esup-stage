@@ -3,9 +3,11 @@
     <div class="logs-status">
       <span class="status-dot" [ngClass]="statusClass"></span>
       <span class="status-label">{{ statusLabel }}</span>
-      <button *ngIf="status !== 'connected'" type="button" mat-flat-button class="primary-button valid-button" (click)="reconnect()">
-        Reconnecter
-      </button>
+      @if (status !== 'connected') {
+        <button type="button" mat-flat-button class="primary-button valid-button" (click)="reconnect()">
+          Reconnecter
+        </button>
+      }
     </div>
   </div>
 
@@ -36,8 +38,8 @@
           </mat-form-field>
 
           <button mat-raised-button color="primary"
-                  [disabled]="selectionLoggers.isEmpty() || !selectedLogLevel"
-                  (click)="updateSelectedLoggers()">
+            [disabled]="selectionLoggers.isEmpty() || !selectedLogLevel"
+            (click)="updateSelectedLoggers()">
             <mat-icon>save</mat-icon> Sauvegarder
           </button>
 
@@ -72,9 +74,9 @@
 
             <!-- Nœud expandable (namespace) -->
             <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
-                           matTreeNodePadding
-                           matTreeNodePaddingIndent="20"
-                           class="tree-node namespace-node">
+              matTreeNodePadding
+              matTreeNodePaddingIndent="20"
+              class="tree-node namespace-node">
 
               <mat-checkbox
                 [checked]="isNodeSelected(node)"
@@ -85,7 +87,7 @@
               </mat-checkbox>
 
               <button mat-icon-button matTreeNodeToggle class="expand-btn"
-                      [attr.aria-label]="'Toggle ' + node.label">
+                [attr.aria-label]="'Toggle ' + node.label">
                 <mat-icon class="expand-icon">
                   {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
                 </mat-icon>
@@ -102,8 +104,8 @@
               @if (node.logger) {
                 <span class="col-configured">
                   <span class="level-badge"
-                        [style.background]="levelColor(node.logger.configuredLevel)"
-                        [class.empty]="!node.logger.configuredLevel">
+                    [style.background]="levelColor(node.logger.configuredLevel)"
+                    [class.empty]="!node.logger.configuredLevel">
                     {{ node.logger.configuredLevel || '—' }}
                   </span>
                 </span>
@@ -117,10 +119,10 @@
 
             <!-- Nœud feuille (logger) -->
             <mat-tree-node *matTreeNodeDef="let node"
-                           matTreeNodePadding
-                           matTreeNodePaddingIndent="20"
-                           class="tree-node leaf-node"
-                           [class.selected]="selectionLoggers.isSelected(node)">
+              matTreeNodePadding
+              matTreeNodePaddingIndent="20"
+              class="tree-node leaf-node"
+              [class.selected]="selectionLoggers.isSelected(node)">
 
               <mat-checkbox
                 [checked]="selectionLoggers.isSelected(node)"
@@ -138,8 +140,8 @@
 
               <span class="col-configured">
                 <span class="level-badge"
-                      [style.background]="levelColor(node.logger?.configuredLevel)"
-                      [class.empty]="!node.logger?.configuredLevel">
+                  [style.background]="levelColor(node.logger?.configuredLevel)"
+                  [class.empty]="!node.logger?.configuredLevel">
                   {{ node.logger?.configuredLevel || '—' }}
                 </span>
               </span>

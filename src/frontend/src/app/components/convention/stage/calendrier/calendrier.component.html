@@ -30,24 +30,26 @@
     <!-- Contenu scrollable -->
     <div class="scrollable-content">
       <form [formGroup]="heuresJournalieresForm" novalidate (submit)="save()">
-        <div *ngFor="let periode of periodes" class="periode-section">
-          <mat-divider class="mb-2"></mat-divider>
-          <div class="periode-header">
-            Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :
+        @for (periode of periodes; track periode) {
+          <div class="periode-section">
+            <mat-divider class="mb-2"></mat-divider>
+            <div class="periode-header">
+              Période du {{periode.dateDebut|date:'shortDate'}} au {{periode.dateFin|date:'shortDate'}} :
+            </div>
+            <div class="row input-group">
+              <mat-form-field class="col-9" appearance="fill">
+                <mat-label>Nombre d'heures journalières sur cette période</mat-label>
+                <input matInput [formControlName]="periode.formControlName" required />
+                <mat-error>
+                  <app-form-error [field]="heuresJournalieresForm.get(periode.formControlName)"></app-form-error>
+                </mat-error>
+              </mat-form-field>
+              <button type="button" mat-fab class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
+                <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
+              </button>
+            </div>
           </div>
-          <div class="row input-group">
-            <mat-form-field class="col-9" appearance="fill">
-              <mat-label>Nombre d'heures journalières sur cette période</mat-label>
-              <input matInput [formControlName]="periode.formControlName" required />
-              <mat-error>
-                <app-form-error [field]="heuresJournalieresForm.get(periode.formControlName)"></app-form-error>
-              </mat-error>
-            </mat-form-field>
-            <button type="button" mat-fab class="delete-button" matTooltip="Supprimer" (click)="removePeriode(periode)">
-              <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
-            </button>
-          </div>
-        </div>
+        }
       </form>
     </div>
 

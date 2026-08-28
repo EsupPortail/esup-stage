@@ -1,43 +1,59 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
-  <mat-tab #tab *ngFor="let nomenclature of nomenclatures">
-    <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
-    <app-table *ngIf="tab.isActive || nomenclature.init" [service]="nomenclature.service" [columns]="nomenclature.codeCtrl ? columnsCodeCtrl : nomenclature.key === 'code' ? columnsCode : nomenclature.label === 'Type de structure' ? columnsTypeStructure : columns" [sortColumn]="sortColumn" [filters]="nomenclature.codeCtrl ? filtersCodeCtrl : nomenclature.key === 'code' ? filtersCode : filters"
-               [exportColumns]="nomenclature.codeCtrl ? exportColumnsCodeCtrl : nomenclature.key === 'code' ? exportColumnsCode : exportColumns"
-               matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
-               [actionButton]="createButton" [hideDeleteFilters]="true">
-      <ng-container matColumnDef="codeCtrl" *ngIf="nomenclature.codeCtrl">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
-        <td mat-cell *matCellDef="let row">{{row.codeCtrl}}</td>
-      </ng-container>
-      <ng-container matColumnDef="code" *ngIf="nomenclature.key === 'code'">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
-        <td mat-cell *matCellDef="let row">{{row.code}}</td>
-      </ng-container>
-      <ng-container matColumnDef="libelle">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Libellé</th>
-        <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
-      </ng-container>
-      <ng-container matColumnDef="siretObligatoire" *ngIf="nomenclature.label === 'Type de structure'">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Siret obligatoire (oui/non)</th>
-        <td mat-cell *matCellDef="let row">{{row.siretObligatoire?'Oui':'Non'}}</td>
-      </ng-container>
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let row">
-          <button class="edit-button" mat-icon-button matTooltip="Éditer" *ngIf="canEdit()" (click)="openEditionModal(nomenclature.service, row, nomenclature.tableIndex, nomenclature.label)" [disabled]="row.modifiable != null && !row.modifiable"><span class="fa fa-pen" aria-label="Modifier"></span></button>
-          <ng-container *ngIf="canDelete()">
-            <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous désactiver le libellé ' + row.libelle + ' ?'">
-              <button class="disable-button" mat-icon-button matTooltip="Désactiver" *ngIf="row.temEnServ == 'O'"><span class="fa fa-ban" aria-label="Désactiver"></span></button>
-            </span>
-            <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous réactiver le libellé ' + row.libelle + ' ?'">
-              <button mat-icon-button matTooltip="Réactiver"  *ngIf="row.temEnServ == 'N'"><span class="fa fa-sync" aria-label="Réactiver"></span></button>
-            </span>
-            <span (confirm)="delete(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous supprimer le libellé ' + row.libelle + ' ?'">
-              <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
-            </span>
+  @for (nomenclature of nomenclatures; track nomenclature) {
+    <mat-tab #tab>
+      <ng-template mat-tab-label>{{nomenclature.label}}</ng-template>
+      @if (tab.isActive || nomenclature.init) {
+        <app-table [service]="nomenclature.service" [columns]="nomenclature.codeCtrl ? columnsCodeCtrl : nomenclature.key === 'code' ? columnsCode : nomenclature.label === 'Type de structure' ? columnsTypeStructure : columns" [sortColumn]="sortColumn" [filters]="nomenclature.codeCtrl ? filtersCodeCtrl : nomenclature.key === 'code' ? filtersCode : filters"
+          [exportColumns]="nomenclature.codeCtrl ? exportColumnsCodeCtrl : nomenclature.key === 'code' ? exportColumnsCode : exportColumns"
+          matSort [matSortActive]="sortColumn" [matSortDirection]="'asc'" (matSortChange)="appTables ? appTables.toArray()[nomenclature.tableIndex].sorting($event) : null"
+          [actionButton]="createButton" [hideDeleteFilters]="true">
+          @if (nomenclature.codeCtrl) {
+            <ng-container matColumnDef="codeCtrl">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
+              <td mat-cell *matCellDef="let row">{{row.codeCtrl}}</td>
+            </ng-container>
+          }
+          @if (nomenclature.key === 'code') {
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Code</th>
+              <td mat-cell *matCellDef="let row">{{row.code}}</td>
+            </ng-container>
+          }
+          <ng-container matColumnDef="libelle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Libellé</th>
+            <td mat-cell *matCellDef="let row">{{row.libelle}}</td>
           </ng-container>
-        </td>
-      </ng-container>
-    </app-table>
-  </mat-tab>
+          @if (nomenclature.label === 'Type de structure') {
+            <ng-container matColumnDef="siretObligatoire">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Siret obligatoire (oui/non)</th>
+              <td mat-cell *matCellDef="let row">{{row.siretObligatoire?'Oui':'Non'}}</td>
+            </ng-container>
+          }
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              @if (canEdit()) {
+                <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="openEditionModal(nomenclature.service, row, nomenclature.tableIndex, nomenclature.label)" [disabled]="row.modifiable != null && !row.modifiable"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+              }
+              @if (canDelete()) {
+                <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous désactiver le libellé ' + row.libelle + ' ?'">
+                  @if (row.temEnServ == 'O') {
+                    <button class="disable-button" mat-icon-button matTooltip="Désactiver"><span class="fa fa-ban" aria-label="Désactiver"></span></button>
+                  }
+                </span>
+                <span (confirm)="setState(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous réactiver le libellé ' + row.libelle + ' ?'">
+                  @if (row.temEnServ == 'N') {
+                    <button mat-icon-button matTooltip="Réactiver" ><span class="fa fa-sync" aria-label="Réactiver"></span></button>
+                  }
+                </span>
+                <span (confirm)="delete(nomenclature.service, row, nomenclature.tableIndex)" [confirmMessage]="'Voulez-vous supprimer le libellé ' + row.libelle + ' ?'">
+                  <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span></button>
+                </span>
+              }
+            </td>
+          </ng-container>
+        </app-table>
+      }
+    </mat-tab>
+  }
 </mat-tab-group>

@@ -400,3 +400,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-desactivation-crons-par-defaut.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-api-tokens.yaml
+      relativeToChangelogFile: true

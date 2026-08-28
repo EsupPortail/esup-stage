@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.config.properties.SireneProperties;
 import org.esup_portail.esup_stage.dto.ImportReportDto;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;

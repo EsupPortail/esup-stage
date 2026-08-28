@@ -19,9 +19,11 @@
             <mat-radio-button [value]="1">Enseignant référent</mat-radio-button>
             <mat-radio-button [value]="2">Tuteur professionnel</mat-radio-button>
           </mat-radio-group>
-          <mat-error *ngIf="form.get('typeFiche')?.hasError('required') && form.get('typeFiche')?.touched">
-            Choisissez un destinataire
-          </mat-error>
+          @if (form.get('typeFiche')?.hasError('required') && form.get('typeFiche')?.touched) {
+            <mat-error>
+              Choisissez un destinataire
+            </mat-error>
+          }
         </div>
 
         <div class="template-preview">

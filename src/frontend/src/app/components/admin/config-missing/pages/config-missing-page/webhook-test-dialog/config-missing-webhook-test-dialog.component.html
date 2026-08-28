@@ -6,7 +6,9 @@
       <mat-form-field class="col-12" appearance="fill">
         <mat-label>Chemin</mat-label>
         <input matInput formControlName="suffix" placeholder="/ping" required>
-        <mat-error *ngIf="form.get('suffix')?.hasError('required')">Champ obligatoire</mat-error>
+        @if (form.get('suffix')?.hasError('required')) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="row">

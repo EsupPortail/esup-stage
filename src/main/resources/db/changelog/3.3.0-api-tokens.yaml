@@ -1,0 +1,61 @@
+databaseChangeLog:
+  # Remplace la propriete de configuration appli.tokens par une table de tokens,
+  # a raison d'un token par application appelante de l'API publique.
+  # La ligne AppProperty "appli.tokens" n'est pas supprimee ici : elle est lue puis effacee
+  # au demarrage par ApiTokenService.migrateLegacyTokens(), le SQL ne sachant pas chiffrer.
+  - changeSet:
+      id: 3.3.0-create-api-token-table
+      author: thouveno9
+      changes:
+        - createTable:
+            tableName: ApiToken
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nomApplication
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tokenEncrypted
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actif
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dateCreation
+                  type: datetime
+              - column:
+                  name: loginCreation
+                  type: varchar(255)
+              - column:
+                  name: dateModification
+                  type: datetime
+              - column:
+                  name: loginModification
+                  type: varchar(255)
+
+  - changeSet:
+      id: 3.3.0-api-token-unique-application
+      author: thouveno9
+      changes:
+        - addUniqueConstraint:
+            tableName: ApiToken
+            columnNames: nomApplication
+            constraintName: uk_apitoken_nomapplication

@@ -138,9 +138,9 @@
   // Comme pour les barres des onglets convention (styles.scss) : sans piste gris clair,
   // le thème rend la piste de la même couleur que l'indicateur et la barre semble pleine
   mat-progress-bar {
-    --mdc-linear-progress-track-color: lightgrey;
-    --mdc-linear-progress-track-height: 10px;
-    --mdc-linear-progress-active-indicator-height: 10px;
+    --mat-progress-bar-track-color: lightgrey;
+    --mat-progress-bar-track-height: 10px;
+    --mat-progress-bar-active-indicator-height: 10px;
     height: 10px;
     border-radius: 5px;
     overflow: hidden;

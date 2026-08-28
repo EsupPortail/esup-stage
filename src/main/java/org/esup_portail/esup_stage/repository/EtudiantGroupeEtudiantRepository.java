@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.EtudiantGroupeEtudiant;
@@ -88,10 +88,18 @@ public class EtudiantGroupeEtudiantRepository extends PaginationRepository<Etudi
             }
         }
         if (key.equals("convention.structure.id")) {
-            query.setParameter("structureId", parameter.getJSONArray("value").toList());
+            query.setParameter("structureId", asIntList(parameter.get("value")));
         }
         if (key.equals("convention.service.id")) {
-            query.setParameter("serviceId", parameter.getJSONArray("value").toList());
+            query.setParameter("serviceId", asIntList(parameter.get("value")));
         }
+    }
+
+    private static List<Integer> asIntList(JsonNode jsonArray) {
+        List<Integer> values = new ArrayList<>();
+        for (JsonNode item : jsonArray) {
+            values.add(item.asInt());
+        }
+        return values;
     }
 }

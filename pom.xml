@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.14</version>
+		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.esup_portail.esup_stage</groupId>
@@ -25,7 +25,7 @@
 		<maven.test.skip>true</maven.test.skip>
 		<skip.npm.install>false</skip.npm.install>
 		<skip.frontend>false</skip.frontend>
-        <spring-cloud.version>2025.0.1</spring-cloud.version>
+        <spring-cloud.version>2025.1.3</spring-cloud.version>
 	</properties>
 
     <dependencyManagement>
@@ -60,7 +60,7 @@
 									<goal>install-node-and-npm</goal>
 								</goals>
 								<configuration>
-									<nodeVersion>v20.17.0</nodeVersion>
+									<nodeVersion>v24.20.0</nodeVersion>
 									<workingDirectory>${project.basedir}/src/frontend</workingDirectory>
 								</configuration>
 							</execution>
@@ -115,7 +115,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -142,6 +142,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
+		<!-- Boot 4 : l'auto-configuration de WebClient.Builder a quitte starter-webflux pour ce module -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webclient</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -160,7 +165,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web-services</artifactId>
+			<artifactId>spring-boot-starter-webservices</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ws</groupId>
@@ -169,7 +174,7 @@
 		<dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.17</version>
+            <version>3.1.0</version>
         </dependency>
 		<!-- Outils de développement -->
 		<dependency>
@@ -339,12 +344,6 @@
 			<version>4.0.2</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.6.33.Final</version>
-        </dependency>
-
 		<dependency>
 			<groupId>org.glassfish.metro</groupId>
 			<artifactId>webservices-rt</artifactId>
@@ -409,8 +408,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v20.17.0</nodeVersion>
-							<npmVersion>10.8.2</npmVersion>
+							<nodeVersion>v24.20.0</nodeVersion>
+							<npmVersion>provided</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -441,10 +440,10 @@
 			<plugin>
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven3-plugin</artifactId>
-				<version>1.10.15</version>
+				<version>1.10.28</version>
 				<configuration>
 					<container>
-						<containerId>tomcat10x</containerId>
+						<containerId>tomcat11x</containerId>
 						<type>embedded</type>
 					</container>
 					<deployables>
@@ -516,7 +515,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.30</version>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

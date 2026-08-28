@@ -1,9 +1,9 @@
 package org.esup_portail.esup_stage.service.apogee;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
@@ -78,7 +78,7 @@ public class ApogeeService {
                     .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((referentielProperties.getLogin() + ":" + referentielProperties.getPassword()).getBytes()))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == HttpStatus.NOT_FOUND.value() ? Mono.just("") : Mono.error(ex))
+                    .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().value() == HttpStatus.NOT_FOUND.value() ? Mono.just("") : Mono.error(ex))
                     .block();
             if (Strings.isEmpty(response)) {
                 throw new AppException(HttpStatus.NOT_FOUND, "Aucune donnée trouvée");
@@ -114,7 +114,7 @@ public class ApogeeService {
                 }
             }
             return etudiantRef;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etudiantRef: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -195,7 +195,7 @@ public class ApogeeService {
                 LOGGER.info("Aucune année trouvée");
             }
             return annees;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api anneesIa: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -213,7 +213,7 @@ public class ApogeeService {
                 LOGGER.info("Aucune donnée trouvée");
             }
             return apogeeMap;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -447,7 +447,7 @@ public class ApogeeService {
                 LOGGER.info("Aucune donnée trouvée");
             }
             return apogeeMap;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api etapesByEtudiantAndAnnee: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -474,7 +474,7 @@ public class ApogeeService {
                 LOGGER.info("Aucune donnée administrative trouvée pour l'étudiant {}", numEtud);
             }
             return infoAdmEtudiant;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api infoAdmEtudiant: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
@@ -509,7 +509,7 @@ public class ApogeeService {
             }
             LOGGER.warn("Format inattendu de la réponse de l'api regimesInscriptions : ni tableau ni objet JSON.");
             return List.of();
-        } catch (JsonProcessingException | IllegalArgumentException e) {
+        } catch (JacksonException | IllegalArgumentException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regimesInscriptions: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }

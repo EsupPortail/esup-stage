@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.service.Structure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.model.HistoriqueStructure;
 import org.esup_portail.esup_stage.repository.HistoriqueStructureJpaRepository;
 import org.esup_portail.esup_stage.repository.StructureJpaRepository;
@@ -26,7 +26,7 @@ public class HistoriqueStructureEventListener {
     private StructureJpaRepository structureRepository;
 
     @EventListener
-    public void handleStructureCreated(StructureCreatedEvent event) throws JsonProcessingException {
+    public void handleStructureCreated(StructureCreatedEvent event) throws JacksonException {
         HistoriqueStructure history = new HistoriqueStructure();
         history.setStructure(structureRepository.findById(event.getStructure().getId()).orElse(null));
         history.setOperationType(OperationType.CREATION);
@@ -38,7 +38,7 @@ public class HistoriqueStructureEventListener {
     }
 
     @EventListener
-    public void handleStructureUpdated(StructureUpdatedEvent event) throws JsonProcessingException {
+    public void handleStructureUpdated(StructureUpdatedEvent event) throws JacksonException {
         HistoriqueStructure history = new HistoriqueStructure();
         history.setStructure(structureRepository.findById(event.getStructure().getId()).orElse(null));
         if(event.isAuto()) {
@@ -55,7 +55,7 @@ public class HistoriqueStructureEventListener {
     }
 
     @EventListener
-    public void handleStructureDeleted(StructureDeletedEvent event) throws JsonProcessingException {
+    public void handleStructureDeleted(StructureDeletedEvent event) throws JacksonException {
         HistoriqueStructure history = new HistoriqueStructure();
         history.setStructure(structureRepository.findById(event.getStructure().getId()).orElse(null));
         history.setOperationType(OperationType.SUPPRESSION);

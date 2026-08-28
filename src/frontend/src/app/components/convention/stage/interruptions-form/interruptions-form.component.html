@@ -2,8 +2,12 @@
   <div class="modal-container">
     <!-- En-tête fixe -->
     <div class="header-banner">
-      <h1 *ngIf="!interruptionStage">Ajouter des périodes d'interruptions</h1>
-      <h1 *ngIf="interruptionStage">Modifier une période d'interruption</h1>
+      @if (!interruptionStage) {
+        <h1>Ajouter des périodes d'interruptions</h1>
+      }
+      @if (interruptionStage) {
+        <h1>Modifier une période d'interruption</h1>
+      }
     </div>
 
     <!-- Section d'ajout de période fixe -->
@@ -11,8 +15,12 @@
       <form [formGroup]="periodesForm" novalidate>
         <div class="input-group">
           <mat-form-field class="date-range-field" appearance="fill">
-            <mat-label *ngIf="!interruptionStage">Nouvelle période</mat-label>
-            <mat-label *ngIf="interruptionStage">Période à modifier</mat-label>
+            @if (!interruptionStage) {
+              <mat-label>Nouvelle période</mat-label>
+            }
+            @if (interruptionStage) {
+              <mat-label>Période à modifier</mat-label>
+            }
             <mat-date-range-input [dateFilter]="interruptionsDateFilter" [rangePicker]="interruptionsPicker">
               <input matStartDate formControlName="dateDebutInterruption" placeholder="Date de début">
               <input matEndDate formControlName="dateFinInterruption" placeholder="Date de fin">
@@ -22,31 +30,36 @@
             <mat-error><app-form-error [field]="periodesForm.get('dateFinInterruption')"></app-form-error></mat-error>
           </mat-form-field>
 
-          <button *ngIf="!interruptionStage" mat-fab type="button" class="add-button" matTooltip="Ajouter" (click)="addPeriode()">
-            <span class="fa fa-plus" aria-label="Ajouter"></span>
-          </button>
+          @if (!interruptionStage) {
+            <button mat-fab type="button" class="add-button" matTooltip="Ajouter" (click)="addPeriode()">
+              <span class="fa fa-plus" aria-label="Ajouter"></span>
+            </button>
+          }
         </div>
       </form>
     </div>
 
     <!-- Contenu scrollable -->
     <div class="scrollable-content">
-      <div *ngIf="periodes.length > 0">
-        <div class="periode-header">
-          Périodes d'interruptions ajoutées :
-        </div>
-
-        <div *ngFor="let periode of periodes" class="periode-section">
-          <div class="periode-item">
-            <div class="periode-info">
-              Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}
-            </div>
-            <button class="delete-button" mat-fab matTooltip="Supprimer" (click)="removePeriode(periode)">
-              <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
-            </button>
+      @if (periodes.length > 0) {
+        <div>
+          <div class="periode-header">
+            Périodes d'interruptions ajoutées :
           </div>
+          @for (periode of periodes; track periode) {
+            <div class="periode-section">
+              <div class="periode-item">
+                <div class="periode-info">
+                  Période du {{periode.dateDebutInterruption|date:'shortDate'}} au {{periode.dateFinInterruption|date:'shortDate'}}
+                </div>
+                <button class="delete-button" mat-fab matTooltip="Supprimer" (click)="removePeriode(periode)">
+                  <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
+                </button>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
 
     <!-- Boutons fixes en bas -->

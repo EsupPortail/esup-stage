@@ -2,7 +2,9 @@
   {{ loadingMessage }}
 </div>
 
-<div id="loader" *ngIf="showLoader">
-  <div id="loader-overlay"></div>
-  <mat-spinner class="spinner-accent"></mat-spinner>
-</div>
+@if (showLoader) {
+  <div id="loader">
+    <div id="loader-overlay"></div>
+    <mat-spinner class="spinner-accent"></mat-spinner>
+  </div>
+}

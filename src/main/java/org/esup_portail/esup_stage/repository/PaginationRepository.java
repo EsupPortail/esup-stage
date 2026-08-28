@@ -1,9 +1,9 @@
 package org.esup_portail.esup_stage.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -130,7 +130,7 @@ public class PaginationRepository<T extends Exportable> {
         }
         try {
             filters = JSON_MAPPER.readTree(jsonString);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
         }
         if (filters == null || !filters.isObject()) {
@@ -155,7 +155,7 @@ public class PaginationRepository<T extends Exportable> {
 
     private List<String> getClauses() {
         List<String> clauses = new ArrayList<>();
-        Iterator<String> keys = filters.fieldNames();
+        Iterator<String> keys = filters.propertyNames().iterator();
         while (keys.hasNext()) {
             String key = keys.next();
             JsonNode condition = filters.get(key);
@@ -189,7 +189,7 @@ public class PaginationRepository<T extends Exportable> {
     }
 
     private void setParameters(Query query) {
-        Iterator<String> keys = filters.fieldNames();
+        Iterator<String> keys = filters.propertyNames().iterator();
         while (keys.hasNext()) {
             String key = keys.next();
             JsonNode condition = filters.get(key);

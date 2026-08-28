@@ -169,7 +169,7 @@ public class EvaluationService {
             return "";
         }
         return UriComponentsBuilder
-                .fromHttpUrl(appliProperties.getUrl())
+                .fromUriString(appliProperties.getUrl())
                 .path("frontend/#/evaluation-tuteur")
                 .queryParam("token", tokenValue)
                 .build()

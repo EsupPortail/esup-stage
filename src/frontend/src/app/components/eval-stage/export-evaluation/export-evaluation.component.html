@@ -19,165 +19,165 @@
       </div>
 
       <!-- Info quand non choisi -->
-      <div *ngIf="isLocked" class="locked-info">
-        Sélectionnez d’abord un type d’évaluation pour gérer les colonnes.
-      </div>
+      @if (isLocked) {
+        <div class="locked-info">
+          Sélectionnez d’abord un type d’évaluation pour gérer les colonnes.
+        </div>
+      }
 
       <!-- Gestion des colonnes : visible seulement si au moins une feuille à afficher -->
-      <ng-container *ngIf="!isLocked && displayedSheets.length">
+      @if (!isLocked && displayedSheets.length) {
         <div class="column-selector-title">Choix des colonnes à exporter :</div>
-
         <!-- Tabs pour plusieurs feuilles -->
-        <mat-tab-group
-          *ngIf="displayedSheets.length > 1"
-          [(selectedIndex)]="selectedSheetIndex"
-          aria-label="Sélection de la feuille">
-          <mat-tab
-            *ngFor="let sheet of displayedSheets; let i = index"
-            [label]="sheet.title"
-            [attr.aria-label]="'Feuille ' + sheet.title">
-          </mat-tab>
-        </mat-tab-group>
-
-        <div class="column-selector-scrollable" *ngIf="currentSheet">
-          <div class="column-selector-container">
-
-            <!-- LISTE DISPONIBLES -->
-            <div class="column-list"
-                 role="region"
-                 aria-labelledby="available-columns-title"
-                 cdkDropList
-                 #availableList="cdkDropList"
-                 [cdkDropListDisabled]="isLocked"
-                 [cdkDropListData]="currentSheet.availableColumns"
-                 [cdkDropListConnectedTo]="[selectedList]"
-                 (cdkDropListDropped)="drop($event, currentSheet)">
-              <div class="list-header">
-                <h3 class="list-title" id="available-columns-title">
-                  <mat-checkbox
-                    [disabled]="isLocked"
-                    [checked]="isAllAvailableSelected(currentSheet)"
-                    (change)="toggleAllAvailable($event.checked, currentSheet)"
-                    [attr.aria-label]="'Sélectionner ou désélectionner toutes les colonnes disponibles'"
-                    matTooltip="Sélectionner/Désélectionner tout">
-                  </mat-checkbox>
-                  <span>Colonnes disponibles</span>
-                </h3>
-              </div>
-
-              <div class="list" role="list">
-                <div class="list-item"
-                     role="listitem"
-                     tabindex="0"
-                     *ngFor="let col of currentSheet.availableColumns; trackBy: trackByKey"
-                     cdkDrag
-                     [cdkDragDisabled]="isLocked"
-                     [cdkDragData]="col"
-                     [class.selected]="selectedAvailableKeys.has(col.key)"
-                     [attr.aria-selected]="selectedAvailableKeys.has(col.key)"
-                     [attr.aria-label]="col.title + (selectedAvailableKeys.has(col.key) ? ' (sélectionnée)' : '')"
-                     (click)="!isLocked && toggleAvailable(col)"
-                     (keydown.enter)="!isLocked && toggleAvailable(col)"
-                     (keydown.space)="$event.preventDefault(); !isLocked && toggleAvailable(col)">
-                  {{ col.title }}
+        @if (displayedSheets.length > 1) {
+          <mat-tab-group
+            [(selectedIndex)]="selectedSheetIndex"
+            aria-label="Sélection de la feuille">
+            @for (sheet of displayedSheets; track sheet; let i = $index) {
+              <mat-tab
+                [label]="sheet.title"
+                [attr.aria-label]="'Feuille ' + sheet.title">
+              </mat-tab>
+            }
+          </mat-tab-group>
+        }
+        @if (currentSheet) {
+          <div class="column-selector-scrollable">
+            <div class="column-selector-container">
+              <!-- LISTE DISPONIBLES -->
+              <div class="column-list"
+                role="region"
+                aria-labelledby="available-columns-title"
+                cdkDropList
+                #availableList="cdkDropList"
+                [cdkDropListDisabled]="isLocked"
+                [cdkDropListData]="currentSheet.availableColumns"
+                [cdkDropListConnectedTo]="[selectedList]"
+                (cdkDropListDropped)="drop($event, currentSheet)">
+                <div class="list-header">
+                  <h3 class="list-title" id="available-columns-title">
+                    <mat-checkbox
+                      [disabled]="isLocked"
+                      [checked]="isAllAvailableSelected(currentSheet)"
+                      (change)="toggleAllAvailable($event.checked, currentSheet)"
+                      [attr.aria-label]="'Sélectionner ou désélectionner toutes les colonnes disponibles'"
+                      matTooltip="Sélectionner/Désélectionner tout">
+                    </mat-checkbox>
+                    <span>Colonnes disponibles</span>
+                  </h3>
+                </div>
+                <div class="list" role="list">
+                  @for (col of currentSheet.availableColumns; track trackByKey($index, col)) {
+                    <div class="list-item"
+                      role="listitem"
+                      tabindex="0"
+                      cdkDrag
+                      [cdkDragDisabled]="isLocked"
+                      [cdkDragData]="col"
+                      [class.selected]="selectedAvailableKeys.has(col.key)"
+                      [attr.aria-selected]="selectedAvailableKeys.has(col.key)"
+                      [attr.aria-label]="col.title + (selectedAvailableKeys.has(col.key) ? ' (sélectionnée)' : '')"
+                      (click)="!isLocked && toggleAvailable(col)"
+                      (keydown.enter)="!isLocked && toggleAvailable(col)"
+                      (keydown.space)="$event.preventDefault(); !isLocked && toggleAvailable(col)">
+                      {{ col.title }}
+                    </div>
+                  }
                 </div>
               </div>
-            </div>
-
-            <!-- ACTIONS entre listes -->
-            <div class="column-actions" role="toolbar" aria-label="Actions sur les colonnes">
-              <button mat-icon-button
-                      type="button"
-                      class="arrow-forward"
-                      (click)="addSelected(currentSheet)"
-                      [disabled]="isLocked || !selectedAvailableKeys.size"
-                      [attr.aria-label]="'Ajouter ' + selectedAvailableKeys.size + ' colonne(s) sélectionnée(s)'"
-                      matTooltip="Ajouter les colonnes sélectionnées">
-                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-              </button>
-              <button mat-icon-button
-                      type="button"
-                      class="arrow-back"
-                      (click)="removeSelected(currentSheet)"
-                      [disabled]="isLocked || !selectedChosenKeys.size"
-                      [attr.aria-label]="'Retirer ' + selectedChosenKeys.size + ' colonne(s) sélectionnée(s)'"
-                      matTooltip="Retirer les colonnes sélectionnées">
-                <mat-icon aria-hidden="true">arrow_back</mat-icon>
-              </button>
-            </div>
-
-            <!-- LISTE SÉLECTIONNÉES -->
-            <div class="column-list"
-                 role="region"
-                 aria-labelledby="selected-columns-title"
-                 cdkDropList
-                 #selectedList="cdkDropList"
-                 [cdkDropListDisabled]="isLocked"
-                 [cdkDropListData]="currentSheet.selectedColumns"
-                 [cdkDropListConnectedTo]="[availableList]"
-                 (cdkDropListDropped)="drop($event, currentSheet)">
-              <div class="list-header">
-                <h3 class="list-title" id="selected-columns-title">
-                  <mat-checkbox
-                    [disabled]="isLocked"
-                    [checked]="isAllChosenSelected(currentSheet)"
-                    (change)="toggleAllChosen($event.checked, currentSheet)"
-                    [attr.aria-label]="'Sélectionner ou désélectionner toutes les colonnes choisies'"
-                    matTooltip="Sélectionner/Désélectionner tout">
-                  </mat-checkbox>
-                  <span>Colonnes sélectionnées</span>
-                </h3>
+              <!-- ACTIONS entre listes -->
+              <div class="column-actions" role="toolbar" aria-label="Actions sur les colonnes">
+                <button mat-icon-button
+                  type="button"
+                  class="arrow-forward"
+                  (click)="addSelected(currentSheet)"
+                  [disabled]="isLocked || !selectedAvailableKeys.size"
+                  [attr.aria-label]="'Ajouter ' + selectedAvailableKeys.size + ' colonne(s) sélectionnée(s)'"
+                  matTooltip="Ajouter les colonnes sélectionnées">
+                  <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                </button>
+                <button mat-icon-button
+                  type="button"
+                  class="arrow-back"
+                  (click)="removeSelected(currentSheet)"
+                  [disabled]="isLocked || !selectedChosenKeys.size"
+                  [attr.aria-label]="'Retirer ' + selectedChosenKeys.size + ' colonne(s) sélectionnée(s)'"
+                  matTooltip="Retirer les colonnes sélectionnées">
+                  <mat-icon aria-hidden="true">arrow_back</mat-icon>
+                </button>
               </div>
-
-              <div class="list" role="list">
-                <div class="list-item"
-                     role="listitem"
-                     tabindex="0"
-                     *ngFor="let col of currentSheet.selectedColumns; trackBy: trackByKey"
-                     cdkDrag
-                     [cdkDragDisabled]="isLocked"
-                     [cdkDragData]="col"
-                     [class.selected]="selectedChosenKeys.has(col.key)"
-                     [attr.aria-selected]="selectedChosenKeys.has(col.key)"
-                     [attr.aria-label]="col.title + (selectedChosenKeys.has(col.key) ? ' (sélectionnée)' : '')"
-                     (click)="!isLocked && toggleChosen(col)"
-                     (keydown.enter)="!isLocked && toggleChosen(col)"
-                     (keydown.space)="$event.preventDefault(); !isLocked && toggleChosen(col)">
-                  {{ col.title }}
+              <!-- LISTE SÉLECTIONNÉES -->
+              <div class="column-list"
+                role="region"
+                aria-labelledby="selected-columns-title"
+                cdkDropList
+                #selectedList="cdkDropList"
+                [cdkDropListDisabled]="isLocked"
+                [cdkDropListData]="currentSheet.selectedColumns"
+                [cdkDropListConnectedTo]="[availableList]"
+                (cdkDropListDropped)="drop($event, currentSheet)">
+                <div class="list-header">
+                  <h3 class="list-title" id="selected-columns-title">
+                    <mat-checkbox
+                      [disabled]="isLocked"
+                      [checked]="isAllChosenSelected(currentSheet)"
+                      (change)="toggleAllChosen($event.checked, currentSheet)"
+                      [attr.aria-label]="'Sélectionner ou désélectionner toutes les colonnes choisies'"
+                      matTooltip="Sélectionner/Désélectionner tout">
+                    </mat-checkbox>
+                    <span>Colonnes sélectionnées</span>
+                  </h3>
+                </div>
+                <div class="list" role="list">
+                  @for (col of currentSheet.selectedColumns; track trackByKey($index, col)) {
+                    <div class="list-item"
+                      role="listitem"
+                      tabindex="0"
+                      cdkDrag
+                      [cdkDragDisabled]="isLocked"
+                      [cdkDragData]="col"
+                      [class.selected]="selectedChosenKeys.has(col.key)"
+                      [attr.aria-selected]="selectedChosenKeys.has(col.key)"
+                      [attr.aria-label]="col.title + (selectedChosenKeys.has(col.key) ? ' (sélectionnée)' : '')"
+                      (click)="!isLocked && toggleChosen(col)"
+                      (keydown.enter)="!isLocked && toggleChosen(col)"
+                      (keydown.space)="$event.preventDefault(); !isLocked && toggleChosen(col)">
+                      {{ col.title }}
+                    </div>
+                  }
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
+        }
         <div class="reset-btn">
           <button class="cancel-button" mat-stroked-button
-                  type="button"
-                  (click)="reset(null)"
-                  [disabled]="isLocked"
-                  aria-label="Réinitialiser toutes les sélections">
+            type="button"
+            (click)="reset(null)"
+            [disabled]="isLocked"
+            aria-label="Réinitialiser toutes les sélections">
             Réinitialiser
           </button>
         </div>
-      </ng-container>
+      }
 
       <div class="actions" role="group" aria-label="Actions principales">
         <button class="cancel-button" mat-flat-button
-                type="button"
-                (click)="cancel()"
-                aria-label="Annuler et fermer">
+          type="button"
+          (click)="cancel()"
+          aria-label="Annuler et fermer">
           Annuler
         </button>
 
         <span [matTooltip]="'Veuillez d\'abord renseigner le type d\'évaluation'"
-              [matTooltipDisabled]="form.valid"
-              matTooltipPosition="above"
-              [tabindex]="form.valid ? -1 : 0">
+          [matTooltipDisabled]="form.valid"
+          matTooltipPosition="above"
+          [tabindex]="form.valid ? -1 : 0">
           <button class="valid-button" mat-flat-button
-                  type="button"
-                  [disabled]="!form.valid"
-                  (click)="confirm()"
-                  aria-label="Valider la sélection et exporter">
+            type="button"
+            [disabled]="!form.valid"
+            (click)="confirm()"
+            aria-label="Valider la sélection et exporter">
             Valider
           </button>
         </span>

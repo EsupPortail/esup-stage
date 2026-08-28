@@ -1,29 +1,33 @@
 <app-table [service]="conventionService" [columns]="columns" [sortColumn]="sortColumn" [filters]="filters" [actionTemplateRef]="evaluationActions" [sortOrder]="sortDirection"
-           matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
-           [noResultText]="'Aucune fiche d\'évaluation trouvée'" [hideDeleteFilters]="isEtudiant || isEnseignant" [loadWithoutFilters]="isEtudiant || isEnseignant"  [templateMobile]="tableMobileEvaluations">
+  matSort [matSortActive]="sortColumn" [matSortDirection]="'desc'" (matSortChange)="appTable ? appTable.sorting($event) : null"
+  [noResultText]="'Aucune fiche d\'évaluation trouvée'" [hideDeleteFilters]="isEtudiant || isEnseignant" [loadWithoutFilters]="isEtudiant || isEnseignant"  [templateMobile]="tableMobileEvaluations">
 
-  <ng-container *ngIf="isGestionnaireOrAdmin" matColumnDef="select">
-    <th mat-header-cell *matHeaderCellDef>
-      <mat-checkbox (change)="$event ? masterToggle() : null"
-                    [checked]="selected.length > 0 && isAllSelected()"
-                    [indeterminate]="selected.length > 0 && !isAllSelected()">
-      </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <mat-checkbox [checked]="isSelected(row)"
-                    (change)="$event ? toggleSelected(row) : null"
-                    (click)="$event.stopPropagation()">
-      </mat-checkbox>
-    </td>
-  </ng-container>
+  @if (isGestionnaireOrAdmin) {
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+          [checked]="selected.length > 0 && isAllSelected()"
+          [indeterminate]="selected.length > 0 && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox [checked]="isSelected(row)"
+          (change)="$event ? toggleSelected(row) : null"
+          (click)="$event.stopPropagation()">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+  }
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N°</th>
     <td mat-cell *matCellDef="let row">{{row.id}}</td>
   </ng-container>
-  <ng-container matColumnDef="etudiant.nom_etudiant.prenom" *ngIf="isGestionnaireOrAdmin || isEnseignant">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
-    <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
-  </ng-container>
+  @if (isGestionnaireOrAdmin || isEnseignant) {
+    <ng-container matColumnDef="etudiant.nom_etudiant.prenom">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étudiant</th>
+      <td mat-cell *matCellDef="let row">{{row.etudiant.nom + ' ' + row.etudiant.prenom}}</td>
+    </ng-container>
+  }
   <ng-container matColumnDef="structure.raisonSociale">
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Établissement</th>
     <td mat-cell *matCellDef="let row">{{row.structure ? row.structure.raisonSociale : ''}}</td>
@@ -48,269 +52,379 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
     <td mat-cell *matCellDef="let row">{{row.annee}}</td>
   </ng-container>
-  <ng-container matColumnDef="reponseEvaluationEtudiant" *ngIf="isGestionnaireOrAdmin || isEtudiant">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
-      Évaluation par l'étudiant
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <div class="text-center" *ngIf="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEtudiant">
-        Modèle non créé par le centre de gestion
-      </div>
-      <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation&& row.centreGestion.ficheEvaluation.validationEtudiant && !row.validationConvention">
-        Convention non validée
-      </div>
-      <ul class="evaluation-list text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEtudiant && row.validationConvention">
-        <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && !row.envoiMailEtudiant">- Mail non envoyé</li>
-        <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && row.envoiMailEtudiant">- Mail envoyé le {{ row.dateEnvoiMailEtudiant | date:'shortDate' }}</li>
-        <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant">- Non saisie</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation && row.reponseEvaluation.validationEtudiant">- Saisie</li>
-        <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEtudiant && !row.reponseEvaluation?.impressionEtudiant">- Non imprimée</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation?.validationEtudiant && row.reponseEvaluation?.impressionEtudiant">- Impression ok</li>
-      </ul>
-    </td>
-  </ng-container>
-  <ng-container matColumnDef="reponseEvaluationEnseignant" *ngIf="isGestionnaireOrAdmin || isEnseignant">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
-      Évaluation par l'enseignant
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <div class="text-center" *ngIf="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEnseignant">
-        Modèle non créé par le centre de gestion
-      </div>
-      <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && !row.validationConvention">
-        Convention non validée
-      </div>
-      <ul class="evaluation-list text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && row.validationConvention">
-        <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && !row.envoiMailTuteurPedago">- Mail non envoyé</li>
-        <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && row.envoiMailTuteurPedago">- Mail envoyé le {{ row.dateEnvoiMailTuteurPedago | date:'shortDate' }}</li>
-        <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant">- Non saisie</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation && row.reponseEvaluation.validationEnseignant">- Saisie</li>
-        <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEnseignant && !row.reponseEvaluation?.impressionEnseignant">- Non imprimée</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation?.validationEnseignant && row.reponseEvaluation?.impressionEnseignant">- Impression ok</li>
-      </ul>
-    </td>
-  </ng-container>
-  <ng-container matColumnDef="reponseEvaluationEntreprise" *ngIf="isGestionnaireOrAdmin">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
-      Évaluation par l'entreprise
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <div class="text-center" *ngIf="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise">
-        Modèle non créé par le centre de gestion
-      </div>
-      <div class="text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEntreprise && !row.validationConvention">
-        Convention non validée
-      </div>
-      <ul class="evaluation-list text-center" *ngIf="row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEntreprise && row.validationConvention">
-        <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && !row.envoiMailTuteurPro">- Mail non envoyé</li>
-        <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && row.envoiMailTuteurPro">- Mail envoyé le {{ row.dateEnvoiMailTuteurPro | date:'shortDate' }}</li>
-        <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise">- Non saisie</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation && row.reponseEvaluation.validationEntreprise">- Saisie</li>
-        <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEntreprise && !row.reponseEvaluation?.impressionEntreprise">- Non imprimée</li>
-        <li class="success-color" *ngIf="row.reponseEvaluation?.validationEntreprise && row.reponseEvaluation?.impressionEntreprise">- Impression ok</li>
-      </ul>
-    </td>
-  </ng-container>
+  @if (isGestionnaireOrAdmin || isEtudiant) {
+    <ng-container matColumnDef="reponseEvaluationEtudiant">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
+        Évaluation par l'étudiant
+      </th>
+      <td mat-cell *matCellDef="let row">
+        @if (!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEtudiant) {
+          <div class="text-center">
+            Modèle non créé par le centre de gestion
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation&& row.centreGestion.ficheEvaluation.validationEtudiant && !row.validationConvention) {
+          <div class="text-center">
+            Convention non validée
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEtudiant && row.validationConvention) {
+          <ul class="evaluation-list text-center">
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && !row.envoiMailEtudiant) {
+              <li class="danger-color">- Mail non envoyé</li>
+            }
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && row.envoiMailEtudiant) {
+              <li class="success-color">- Mail envoyé le {{ row.dateEnvoiMailEtudiant | date:'shortDate' }}</li>
+            }
+            @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) {
+              <li class="danger-color">- Non saisie</li>
+            }
+            @if (row.reponseEvaluation && row.reponseEvaluation.validationEtudiant) {
+              <li class="success-color">- Saisie</li>
+            }
+            @if (row.reponseEvaluation?.validationEtudiant && !row.reponseEvaluation?.impressionEtudiant) {
+              <li class="danger-color">- Non imprimée</li>
+            }
+            @if (row.reponseEvaluation?.validationEtudiant && row.reponseEvaluation?.impressionEtudiant) {
+              <li class="success-color">- Impression ok</li>
+            }
+          </ul>
+        }
+      </td>
+    </ng-container>
+  }
+  @if (isGestionnaireOrAdmin || isEnseignant) {
+    <ng-container matColumnDef="reponseEvaluationEnseignant">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
+        Évaluation par l'enseignant
+      </th>
+      <td mat-cell *matCellDef="let row">
+        @if (!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEnseignant) {
+          <div class="text-center">
+            Modèle non créé par le centre de gestion
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && !row.validationConvention) {
+          <div class="text-center">
+            Convention non validée
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEnseignant && row.validationConvention) {
+          <ul class="evaluation-list text-center">
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && !row.envoiMailTuteurPedago) {
+              <li class="danger-color">- Mail non envoyé</li>
+            }
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && row.envoiMailTuteurPedago) {
+              <li class="success-color">- Mail envoyé le {{ row.dateEnvoiMailTuteurPedago | date:'shortDate' }}</li>
+            }
+            @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) {
+              <li class="danger-color">- Non saisie</li>
+            }
+            @if (row.reponseEvaluation && row.reponseEvaluation.validationEnseignant) {
+              <li class="success-color">- Saisie</li>
+            }
+            @if (row.reponseEvaluation?.validationEnseignant && !row.reponseEvaluation?.impressionEnseignant) {
+              <li class="danger-color">- Non imprimée</li>
+            }
+            @if (row.reponseEvaluation?.validationEnseignant && row.reponseEvaluation?.impressionEnseignant) {
+              <li class="success-color">- Impression ok</li>
+            }
+          </ul>
+        }
+      </td>
+    </ng-container>
+  }
+  @if (isGestionnaireOrAdmin) {
+    <ng-container matColumnDef="reponseEvaluationEntreprise">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">
+        Évaluation par l'entreprise
+      </th>
+      <td mat-cell *matCellDef="let row">
+        @if (!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise) {
+          <div class="text-center">
+            Modèle non créé par le centre de gestion
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEntreprise && !row.validationConvention) {
+          <div class="text-center">
+            Convention non validée
+          </div>
+        }
+        @if (row.centreGestion.ficheEvaluation && row.centreGestion.ficheEvaluation.validationEntreprise && row.validationConvention) {
+          <ul class="evaluation-list text-center">
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && !row.envoiMailTuteurPro) {
+              <li class="danger-color">- Mail non envoyé</li>
+            }
+            @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && row.envoiMailTuteurPro) {
+              <li class="success-color">- Mail envoyé le {{ row.dateEnvoiMailTuteurPro | date:'shortDate' }}</li>
+            }
+            @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) {
+              <li class="danger-color">- Non saisie</li>
+            }
+            @if (row.reponseEvaluation && row.reponseEvaluation.validationEntreprise) {
+              <li class="success-color">- Saisie</li>
+            }
+            @if (row.reponseEvaluation?.validationEntreprise && !row.reponseEvaluation?.impressionEntreprise) {
+              <li class="danger-color">- Non imprimée</li>
+            }
+            @if (row.reponseEvaluation?.validationEntreprise && row.reponseEvaluation?.impressionEntreprise) {
+              <li class="success-color">- Impression ok</li>
+            }
+          </ul>
+        }
+      </td>
+    </ng-container>
+  }
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row">
       <button type="button" class="edit-button" mat-icon-button matTooltip="Visualiser" (click)="goToConvention(row.id); $event.stopPropagation()"
-      [disabled]="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise || !row.validationConvention"><span class="fa fa-eye"></span></button>
-    </td>
-  </ng-container>
-</app-table>
-
-<div class="eval-stage-buttons" *ngIf="isGestionnaireOrAdmin">
-  <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
-    <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
-  </button>
-  <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
-    <mat-icon aria-hidden="true">download</mat-icon> Export excel
-  </button>
-</div>
-
-<ng-template #evaluationActions>
-<div class="eval-stage-actions" *ngIf="isGestionnaireOrAdmin">
-  <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
-    <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
-  </button>
-  <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
-    <mat-icon aria-hidden="true">download</mat-icon> Export excel
-  </button>
-</div>
-</ng-template>
-
-<ng-template #tableMobileEvaluations let-row="row">
-  <table class="table table-sm">
-    <tbody>
-    <tr *ngIf="isGestionnaireOrAdmin">
-      <th></th>
-      <td>
-        <mat-checkbox
-          [checked]="isSelected(row)"
-          (change)="$event ? toggleSelected(row) : null"
-          (click)="$event.stopPropagation()">
-        </mat-checkbox>
+        [disabled]="!row.centreGestion.ficheEvaluation || !row.centreGestion.ficheEvaluation.validationEntreprise || !row.validationConvention"><span class="fa fa-eye"></span></button>
       </td>
-    </tr>
+    </ng-container>
+  </app-table>
 
-    <tr>
-      <th>N°</th>
-      <td>{{ row.id }}</td>
-    </tr>
+  @if (isGestionnaireOrAdmin) {
+    <div class="eval-stage-buttons">
+      <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
+        <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
+      </button>
+      <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
+        <mat-icon aria-hidden="true">download</mat-icon> Export excel
+      </button>
+    </div>
+  }
 
-    <tr *ngIf="isGestionnaireOrAdmin || isEnseignant">
-      <th>Étudiant</th>
-      <td>{{ row.etudiant?.nom + ' ' + row.etudiant?.prenom }}</td>
-    </tr>
-
-    <tr>
-      <th>Établissement</th>
-      <td>{{ row.structure?.raisonSociale || '' }}</td>
-    </tr>
-
-    <tr>
-      <th>Date début du stage</th>
-      <td>{{ row.dateDebutStage | date:'shortDate' }}</td>
-    </tr>
-
-    <tr>
-      <th>Date fin du stage</th>
-      <td>{{ row.dateFinStage | date:'shortDate' }}</td>
-    </tr>
-
-    <tr>
-      <th>UFR</th>
-      <td>{{ row.ufr?.libelle || '' }}</td>
-    </tr>
-
-    <tr>
-      <th>Étape d'étude</th>
-      <td>{{ row.etape?.libelle || '' }}</td>
-    </tr>
-
-    <tr>
-      <th>Année univ.</th>
-      <td>{{ row.annee }}</td>
-    </tr>
-
-    <tr *ngIf="isGestionnaireOrAdmin || isEtudiant">
-      <th>Évaluation étudiant</th>
-      <td>
-        <ng-container *ngIf="!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEtudiant">
-          Modèle non créé par le centre de gestion
-        </ng-container>
-
-        <ng-container *ngIf="row.centreGestion?.ficheEvaluation?.validationEtudiant && !row.validationConvention">
-          Convention non validée
-        </ng-container>
-
-        <ul class="evaluation-list" *ngIf="row.centreGestion?.ficheEvaluation?.validationEtudiant && row.validationConvention">
-          <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && !row.envoiMailEtudiant">
-            Mail non envoyé
-          </li>
-          <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && row.envoiMailEtudiant">
-            Mail envoyé le {{ row.dateEnvoiMailEtudiant | date:'shortDate' }}
-          </li>
-          <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant">
-            Non saisie
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEtudiant">
-            Saisie
-          </li>
-          <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEtudiant && !row.reponseEvaluation?.impressionEtudiant">
-            Non imprimée
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEtudiant && row.reponseEvaluation?.impressionEtudiant">
-            Impression ok
-          </li>
-        </ul>
-      </td>
-    </tr>
-
-    <tr *ngIf="isGestionnaireOrAdmin || isEnseignant">
-      <th>Évaluation enseignant</th>
-      <td>
-        <ng-container *ngIf="!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEnseignant">
-          Modèle non créé par le centre de gestion
-        </ng-container>
-
-        <ng-container *ngIf="row.centreGestion?.ficheEvaluation?.validationEnseignant && !row.validationConvention">
-          Convention non validée
-        </ng-container>
-
-        <ul class="evaluation-list" *ngIf="row.centreGestion?.ficheEvaluation?.validationEnseignant && row.validationConvention">
-          <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && !row.envoiMailTuteurPedago">
-            Mail non envoyé
-          </li>
-          <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && row.envoiMailTuteurPedago">
-            Mail envoyé le {{ row.dateEnvoiMailTuteurPedago | date:'shortDate' }}
-          </li>
-          <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant">
-            Non saisie
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEnseignant">
-            Saisie
-          </li>
-          <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEnseignant && !row.reponseEvaluation?.impressionEnseignant">
-            Non imprimée
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEnseignant && row.reponseEvaluation?.impressionEnseignant">
-            Impression ok
-          </li>
-        </ul>
-      </td>
-    </tr>
-
-    <tr *ngIf="isGestionnaireOrAdmin">
-      <th>Évaluation entreprise</th>
-      <td>
-        <ng-container *ngIf="!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEntreprise">
-          Modèle non créé par le centre de gestion
-        </ng-container>
-
-        <ng-container *ngIf="row.centreGestion?.ficheEvaluation?.validationEntreprise && !row.validationConvention">
-          Convention non validée
-        </ng-container>
-
-        <ul class="evaluation-list" *ngIf="row.centreGestion?.ficheEvaluation?.validationEntreprise && row.validationConvention">
-          <li class="danger-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && !row.envoiMailTuteurPro">
-            Mail non envoyé
-          </li>
-          <li class="success-color" *ngIf="(!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && row.envoiMailTuteurPro">
-            Mail envoyé le {{ row.dateEnvoiMailTuteurPro | date:'shortDate' }}
-          </li>
-          <li class="danger-color" *ngIf="!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise">
-            Non saisie
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEntreprise">
-            Saisie
-          </li>
-          <li class="danger-color" *ngIf="row.reponseEvaluation?.validationEntreprise && !row.reponseEvaluation?.impressionEntreprise">
-            Non imprimée
-          </li>
-          <li class="success-color" *ngIf="row.reponseEvaluation?.validationEntreprise && row.reponseEvaluation?.impressionEntreprise">
-            Impression ok
-          </li>
-        </ul>
-      </td>
-    </tr>
-
-    <tr>
-      <th>Actions</th>
-      <td>
-        <button
-          type="button"
-          mat-button class="btn-eye valid-button"
-          matTooltip="Visualiser"
-          matTooltipPosition="left"
-          (click)="goToConvention(row.id)">
-          <span class="fa fa-eye" aria-hidden="true"></span>
-          <span class="eye-label">Visualiser</span>
+  <ng-template #evaluationActions>
+    @if (isGestionnaireOrAdmin) {
+      <div class="eval-stage-actions">
+        <button class="valid-button" mat-raised-button (click)="openEnvoiMailModal()" [disabled]="selected.length === 0">
+          <span class="fa fa-envelope" aria-hidden="true"></span> Envoyer un mail en masse
         </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</ng-template>
+        <button class="valid-button" mat-raised-button (click)="openExportExcelModal()">
+          <mat-icon aria-hidden="true">download</mat-icon> Export excel
+        </button>
+      </div>
+    }
+  </ng-template>
+
+  <ng-template #tableMobileEvaluations let-row="row">
+    <table class="table table-sm">
+      <tbody>
+        @if (isGestionnaireOrAdmin) {
+          <tr>
+            <th></th>
+            <td>
+              <mat-checkbox
+                [checked]="isSelected(row)"
+                (change)="$event ? toggleSelected(row) : null"
+                (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </td>
+          </tr>
+        }
+
+        <tr>
+          <th>N°</th>
+          <td>{{ row.id }}</td>
+        </tr>
+
+        @if (isGestionnaireOrAdmin || isEnseignant) {
+          <tr>
+            <th>Étudiant</th>
+            <td>{{ row.etudiant?.nom + ' ' + row.etudiant?.prenom }}</td>
+          </tr>
+        }
+
+        <tr>
+          <th>Établissement</th>
+          <td>{{ row.structure?.raisonSociale || '' }}</td>
+        </tr>
+
+        <tr>
+          <th>Date début du stage</th>
+          <td>{{ row.dateDebutStage | date:'shortDate' }}</td>
+        </tr>
+
+        <tr>
+          <th>Date fin du stage</th>
+          <td>{{ row.dateFinStage | date:'shortDate' }}</td>
+        </tr>
+
+        <tr>
+          <th>UFR</th>
+          <td>{{ row.ufr?.libelle || '' }}</td>
+        </tr>
+
+        <tr>
+          <th>Étape d'étude</th>
+          <td>{{ row.etape?.libelle || '' }}</td>
+        </tr>
+
+        <tr>
+          <th>Année univ.</th>
+          <td>{{ row.annee }}</td>
+        </tr>
+
+        @if (isGestionnaireOrAdmin || isEtudiant) {
+          <tr>
+            <th>Évaluation étudiant</th>
+            <td>
+              @if (!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEtudiant) {
+                Modèle non créé par le centre de gestion
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEtudiant && !row.validationConvention) {
+                Convention non validée
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEtudiant && row.validationConvention) {
+                <ul class="evaluation-list">
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && !row.envoiMailEtudiant) {
+                    <li class="danger-color">
+                      Mail non envoyé
+                    </li>
+                  }
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) && row.envoiMailEtudiant) {
+                    <li class="success-color">
+                      Mail envoyé le {{ row.dateEnvoiMailEtudiant | date:'shortDate' }}
+                    </li>
+                  }
+                  @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEtudiant) {
+                    <li class="danger-color">
+                      Non saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEtudiant) {
+                    <li class="success-color">
+                      Saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEtudiant && !row.reponseEvaluation?.impressionEtudiant) {
+                    <li class="danger-color">
+                      Non imprimée
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEtudiant && row.reponseEvaluation?.impressionEtudiant) {
+                    <li class="success-color">
+                      Impression ok
+                    </li>
+                  }
+                </ul>
+              }
+            </td>
+          </tr>
+        }
+
+        @if (isGestionnaireOrAdmin || isEnseignant) {
+          <tr>
+            <th>Évaluation enseignant</th>
+            <td>
+              @if (!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEnseignant) {
+                Modèle non créé par le centre de gestion
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEnseignant && !row.validationConvention) {
+                Convention non validée
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEnseignant && row.validationConvention) {
+                <ul class="evaluation-list">
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && !row.envoiMailTuteurPedago) {
+                    <li class="danger-color">
+                      Mail non envoyé
+                    </li>
+                  }
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) && row.envoiMailTuteurPedago) {
+                    <li class="success-color">
+                      Mail envoyé le {{ row.dateEnvoiMailTuteurPedago | date:'shortDate' }}
+                    </li>
+                  }
+                  @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEnseignant) {
+                    <li class="danger-color">
+                      Non saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEnseignant) {
+                    <li class="success-color">
+                      Saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEnseignant && !row.reponseEvaluation?.impressionEnseignant) {
+                    <li class="danger-color">
+                      Non imprimée
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEnseignant && row.reponseEvaluation?.impressionEnseignant) {
+                    <li class="success-color">
+                      Impression ok
+                    </li>
+                  }
+                </ul>
+              }
+            </td>
+          </tr>
+        }
+
+        @if (isGestionnaireOrAdmin) {
+          <tr>
+            <th>Évaluation entreprise</th>
+            <td>
+              @if (!row.centreGestion?.ficheEvaluation || !row.centreGestion?.ficheEvaluation?.validationEntreprise) {
+                Modèle non créé par le centre de gestion
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEntreprise && !row.validationConvention) {
+                Convention non validée
+              }
+              @if (row.centreGestion?.ficheEvaluation?.validationEntreprise && row.validationConvention) {
+                <ul class="evaluation-list">
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && !row.envoiMailTuteurPro) {
+                    <li class="danger-color">
+                      Mail non envoyé
+                    </li>
+                  }
+                  @if ((!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) && row.envoiMailTuteurPro) {
+                    <li class="success-color">
+                      Mail envoyé le {{ row.dateEnvoiMailTuteurPro | date:'shortDate' }}
+                    </li>
+                  }
+                  @if (!row.reponseEvaluation || !row.reponseEvaluation.validationEntreprise) {
+                    <li class="danger-color">
+                      Non saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEntreprise) {
+                    <li class="success-color">
+                      Saisie
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEntreprise && !row.reponseEvaluation?.impressionEntreprise) {
+                    <li class="danger-color">
+                      Non imprimée
+                    </li>
+                  }
+                  @if (row.reponseEvaluation?.validationEntreprise && row.reponseEvaluation?.impressionEntreprise) {
+                    <li class="success-color">
+                      Impression ok
+                    </li>
+                  }
+                </ul>
+              }
+            </td>
+          </tr>
+        }
+
+        <tr>
+          <th>Actions</th>
+          <td>
+            <button
+              type="button"
+              mat-button class="btn-eye valid-button"
+              matTooltip="Visualiser"
+              matTooltipPosition="left"
+              (click)="goToConvention(row.id)">
+              <span class="fa fa-eye" aria-hidden="true"></span>
+              <span class="eye-label">Visualiser</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
 

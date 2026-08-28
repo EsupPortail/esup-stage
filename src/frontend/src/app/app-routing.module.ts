@@ -24,6 +24,7 @@ import { GestionGroupeComponent } from './components/convention-create-en-masse/
 import { TemplateMailGroupeComponent } from './components/convention-create-en-masse/template-mail-groupe/template-mail-groupe.component';
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {DroitOppositionComponent} from "./components/admin/droit-opposition/droit-opposition.component";
+import {ApiTokensComponent} from "./components/admin/api-tokens/api-tokens.component";
 import {SitemapComponent} from "./components/sitemap/sitemap.component";
 import {AccessibilityComponent} from "./components/accessibility/accessibility.component";
 import {LegalNoticeComponent} from "./components/legal-notice/legal-notice.component";
@@ -176,6 +177,16 @@ const routes: Routes = [
       role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.VALIDATION, Droit.LECTURE, Droit.MODIFICATION,Droit.SUPPRESSION],},
       title: 'Tâches planifiées',
       sitemap: {label: 'Tâches planifiées', group: 'Paramétrage global', order: 7}
+    }
+  },
+  {
+    path: 'param-global/api-tokens',
+    component: ApiTokensComponent,
+    canActivate: [AuthGuard, ConfigMissingGuard],
+    data: {
+      role: {fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.CREATION, Droit.LECTURE, Droit.MODIFICATION, Droit.SUPPRESSION]},
+      title: 'Tokens d\'API',
+      sitemap: {label: 'Tokens d\'API', group: 'Paramétrage global', order: 9}
     }
   },
   {

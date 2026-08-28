@@ -1,185 +1,237 @@
-<app-retour-liste *ngIf="convention && convention.validationCreation" [path]="back"></app-retour-liste>
-<div class="alert alert-warning" role="status" *ngIf="convention && convention.dateArchivage">
-  <mat-icon aria-hidden="true">archive</mat-icon>
-  Convention archivée le {{ convention.dateArchivage | date: 'dd/MM/yyyy' }} : consultation en lecture seule.
-</div>
-<mat-tab-group #tabGroup class="convention" *ngIf="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
-  <mat-tab #etudiantTab *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Étudiant
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(0)"
-          [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2,'empty':tabs[0]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(0)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(0, getProgressValue(0), tabs[0]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-convention-etudiant (validated)="updateConvention($event)" [convention]="convention" [modifiable]="modifiable"></app-convention-etudiant>
-  </mat-tab>
-  <mat-tab #etabAccueilTab [disabled]="!convention.id" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Étab. d'accueil
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(1)"
-          [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2,'empty':tabs[1]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(1)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(1, getProgressValue(1), tabs[1]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-etab-accueil *ngIf="etabAccueilTab.isActive || tabs[1].init" (validated)="updateEtab($event)" [etab]="convention.structure" [modifiable]="modifiable"></app-etab-accueil>
-  </mat-tab>
-  <mat-tab #serviceAccueilTab [disabled]="!convention.id || !convention.structure" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Service d'accueil
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(2)"
-          [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2,'empty':tabs[2]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(2)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(2, getProgressValue(2), tabs[2]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-service-accueil *ngIf="serviceAccueilTab.isActive || tabs[2].init" (validated)="updateService($event)" [etab]="convention.structure" [service]="convention.service" [centreGestion]="convention.centreGestion" [modifiable]="modifiable"></app-service-accueil>
-  </mat-tab>
-  <mat-tab #tuteurProTab [disabled]="!convention.id || !convention.service" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Tuteur professionnel
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(3)"
-          [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2,'empty':tabs[3]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(3)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(3, getProgressValue(3), tabs[3]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-tuteur-pro *ngIf="tuteurProTab.isActive || tabs[3].init" (validated)="updateTuteurPro($event)" [etab]="convention.structure" [contact]="convention.contact" [service]="convention.service" [centreGestion]="convention.centreGestion" [modifiable]="modifiable" [enMasse]="false"></app-tuteur-pro>
-  </mat-tab>
-  <mat-tab #stageTab [disabled]="!convention.id" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Stage
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(4)"
-          [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2,'empty':tabs[4]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(4)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(4, getProgressValue(4), tabs[4]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-stage *ngIf="stageTab.isActive || tabs[4].init" [convention]="convention" [groupeConvention]="groupeConvention" (updateField)="updateStage($event)" (validated)="setStatus(4, $event)" [modifiable]="modifiable" [enMasse]="false"></app-stage>
-  </mat-tab>
-  <mat-tab #depotDocumentsTab [disabled]="!convention.id" *ngIf="canAccessDepotDocuments()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Dépôt de documents
-        <mat-progress-bar
-          mode="determinate"
-          [value]="100"
-          class="done"
-          role="progressbar"
-          aria-valuenow="100"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuetext="Dépôt de documents disponible"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-depot-documents
-      *ngIf="depotDocumentsTab.isActive || tabs[5].init"
-      [idConvention]="convention.id">
-    </app-depot-documents>
-  </mat-tab>
-
-  <mat-tab #enseignantRefTab [disabled]="!convention.id" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        Enseignant référent
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(6)"
-          [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2,'empty':tabs[6]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(6)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(6, getProgressValue(6), tabs[6]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-enseignant-referent *ngIf="enseignantRefTab.isActive || tabs[6].init" (validated)="updateEnseignant($event)" [enseignant]="convention.enseignant" [modifiable]="modifiable"></app-enseignant-referent>
-  </mat-tab>
-  <mat-tab #signataireTab [disabled]="!convention.id || !convention.structure" *ngIf="!isConventionValide()">
-    <ng-template mat-tab-label>
-      <div class="tabTitle">
-        {{ 'TITRE_TAB_SIGNATAIRE_CONVENTION'|contenu }}
-        <mat-progress-bar
-          mode="determinate"
-          [value]="getProgressValue(7)"
-          [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2,'empty':tabs[7]?.statut===0}"
-          role="progressbar"
-          [attr.aria-valuenow]="getProgressValue(7)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuetext]="getProgressText(7, getProgressValue(7), tabs[7]?.statut)"
-        ></mat-progress-bar>
-      </div>
-    </ng-template>
-    <app-signataire *ngIf="signataireTab.isActive || tabs[7].init" (validated)="updateSignataire($event)" [convention]="convention" [modifiable]="modifiable"></app-signataire>
-  </mat-tab>
-  <mat-tab #recapTab [disabled]="(!convention.id || !allValid) && !isConventionValide()">
-    <ng-template mat-tab-label>
-      Récapitulatif
-    </ng-template>
-    <app-recapitulatif *ngIf="recapTab.isActive && convention.id" [convention]="convention"></app-recapitulatif>
-  </mat-tab>
-  <mat-tab #validationTab [disabled]="(!convention.id || !allValid) && !isConventionValide()" *ngIf="convention.validationCreation && !isEtudiant()">
-    <ng-template mat-tab-label>
-      Validation
-    </ng-template>
-    <app-validation *ngIf="validationTab.isActive && convention.id" [convention]="convention" (conventionChanged)="conventionValidated($event)"></app-validation>
-  </mat-tab>
-  <mat-tab #signatureElectroniqueTab *ngIf="isConventionValide() && signatureEnabled">
-    <ng-template mat-tab-label>
-      Signature électronique
-    </ng-template>
-    <app-signature-electronique *ngIf="signatureElectroniqueTab.isActive && convention.id" [convention]="convention" (conventionChanged)="conventionUpdated($event)"></app-signature-electronique>
-  </mat-tab>
-  <mat-tab #avenantTab *ngIf="isConventionValide()">
-    <ng-template mat-tab-label>
-      Avenants
-    </ng-template>
-    <app-avenant *ngIf="(avenantTab.isActive) && convention.id" [convention]="convention" (avenantChanged)="convention.avenants = $event"></app-avenant>
-  </mat-tab>
-  <mat-tab #evaluationTab *ngIf="isConventionValide()">
-    <ng-template mat-tab-label>
-      Evaluation du stage
-    </ng-template>
-    <app-evaluation-stage *ngIf="(evaluationTab.isActive) && convention.id" [convention]="convention"></app-evaluation-stage>
-  </mat-tab>
-</mat-tab-group>
+@if (convention && convention.validationCreation) {
+  <app-retour-liste [path]="back"></app-retour-liste>
+}
+@if (convention && convention.dateArchivage) {
+  <div class="alert alert-warning" role="status">
+    <mat-icon aria-hidden="true">archive</mat-icon>
+    Convention archivée le {{ convention.dateArchivage | date: 'dd/MM/yyyy' }} : consultation en lecture seule.
+  </div>
+}
+@if (convention) {
+  <mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
+    @if (!isConventionValide()) {
+      <mat-tab #etudiantTab>
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Étudiant
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(0)"
+              [ngClass]="{editing: tabs[0].statut === 1, done: tabs[0].statut === 2,'empty':tabs[0]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(0)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(0, getProgressValue(0), tabs[0]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        <app-convention-etudiant (validated)="updateConvention($event)" [convention]="convention" [modifiable]="modifiable"></app-convention-etudiant>
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #etabAccueilTab [disabled]="!convention.id">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Étab. d'accueil
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(1)"
+              [ngClass]="{editing: tabs[1].statut === 1, done: tabs[1].statut === 2,'empty':tabs[1]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(1)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(1, getProgressValue(1), tabs[1]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (etabAccueilTab.isActive || tabs[1].init) {
+          <app-etab-accueil (validated)="updateEtab($event)" [etab]="convention.structure" [modifiable]="modifiable"></app-etab-accueil>
+        }
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #serviceAccueilTab [disabled]="!convention.id || !convention.structure">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Service d'accueil
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(2)"
+              [ngClass]="{editing: tabs[2].statut === 1, done: tabs[2].statut === 2,'empty':tabs[2]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(2)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(2, getProgressValue(2), tabs[2]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (serviceAccueilTab.isActive || tabs[2].init) {
+          <app-service-accueil (validated)="updateService($event)" [etab]="convention.structure" [service]="convention.service" [centreGestion]="convention.centreGestion" [modifiable]="modifiable"></app-service-accueil>
+        }
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #tuteurProTab [disabled]="!convention.id || !convention.service">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Tuteur professionnel
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(3)"
+              [ngClass]="{editing: tabs[3].statut === 1, done: tabs[3].statut === 2,'empty':tabs[3]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(3)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(3, getProgressValue(3), tabs[3]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (tuteurProTab.isActive || tabs[3].init) {
+          <app-tuteur-pro (validated)="updateTuteurPro($event)" [etab]="convention.structure" [contact]="convention.contact" [service]="convention.service" [centreGestion]="convention.centreGestion" [modifiable]="modifiable" [enMasse]="false"></app-tuteur-pro>
+        }
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #stageTab [disabled]="!convention.id">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Stage
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(4)"
+              [ngClass]="{editing: tabs[4].statut === 1, done: tabs[4].statut === 2,'empty':tabs[4]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(4)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(4, getProgressValue(4), tabs[4]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (stageTab.isActive || tabs[4].init) {
+          <app-stage [convention]="convention" [groupeConvention]="groupeConvention" (updateField)="updateStage($event)" (validated)="setStatus(4, $event)" [modifiable]="modifiable" [enMasse]="false"></app-stage>
+        }
+      </mat-tab>
+    }
+    @if (canAccessDepotDocuments()) {
+      <mat-tab #depotDocumentsTab [disabled]="!convention.id">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Dépôt de documents
+            <mat-progress-bar
+              mode="determinate"
+              [value]="100"
+              class="done"
+              role="progressbar"
+              aria-valuenow="100"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuetext="Dépôt de documents disponible"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (depotDocumentsTab.isActive || tabs[5].init) {
+          <app-depot-documents
+            [idConvention]="convention.id">
+          </app-depot-documents>
+        }
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #enseignantRefTab [disabled]="!convention.id">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            Enseignant référent
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(6)"
+              [ngClass]="{editing: tabs[6].statut === 1, done: tabs[6].statut === 2,'empty':tabs[6]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(6)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(6, getProgressValue(6), tabs[6]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (enseignantRefTab.isActive || tabs[6].init) {
+          <app-enseignant-referent (validated)="updateEnseignant($event)" [enseignant]="convention.enseignant" [modifiable]="modifiable"></app-enseignant-referent>
+        }
+      </mat-tab>
+    }
+    @if (!isConventionValide()) {
+      <mat-tab #signataireTab [disabled]="!convention.id || !convention.structure">
+        <ng-template mat-tab-label>
+          <div class="tabTitle">
+            {{ 'TITRE_TAB_SIGNATAIRE_CONVENTION'|contenu }}
+            <mat-progress-bar
+              mode="determinate"
+              [value]="getProgressValue(7)"
+              [ngClass]="{editing: tabs[7].statut === 1, done: tabs[7].statut === 2,'empty':tabs[7]?.statut===0}"
+              role="progressbar"
+              [attr.aria-valuenow]="getProgressValue(7)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuetext]="getProgressText(7, getProgressValue(7), tabs[7]?.statut)"
+            ></mat-progress-bar>
+          </div>
+        </ng-template>
+        @if (signataireTab.isActive || tabs[7].init) {
+          <app-signataire (validated)="updateSignataire($event)" [convention]="convention" [modifiable]="modifiable"></app-signataire>
+        }
+      </mat-tab>
+    }
+    <mat-tab #recapTab [disabled]="(!convention.id || !allValid) && !isConventionValide()">
+      <ng-template mat-tab-label>
+        Récapitulatif
+      </ng-template>
+      @if (recapTab.isActive && convention.id) {
+        <app-recapitulatif [convention]="convention"></app-recapitulatif>
+      }
+    </mat-tab>
+    @if (convention.validationCreation && !isEtudiant()) {
+      <mat-tab #validationTab [disabled]="(!convention.id || !allValid) && !isConventionValide()">
+        <ng-template mat-tab-label>
+          Validation
+        </ng-template>
+        @if (validationTab.isActive && convention.id) {
+          <app-validation [convention]="convention" (conventionChanged)="conventionValidated($event)"></app-validation>
+        }
+      </mat-tab>
+    }
+    @if (isConventionValide() && signatureEnabled) {
+      <mat-tab #signatureElectroniqueTab>
+        <ng-template mat-tab-label>
+          Signature électronique
+        </ng-template>
+        @if (signatureElectroniqueTab.isActive && convention.id) {
+          <app-signature-electronique [convention]="convention" (conventionChanged)="conventionUpdated($event)"></app-signature-electronique>
+        }
+      </mat-tab>
+    }
+    @if (isConventionValide()) {
+      <mat-tab #avenantTab>
+        <ng-template mat-tab-label>
+          Avenants
+        </ng-template>
+        @if ((avenantTab.isActive) && convention.id) {
+          <app-avenant [convention]="convention" (avenantChanged)="convention.avenants = $event"></app-avenant>
+        }
+      </mat-tab>
+    }
+    @if (isConventionValide()) {
+      <mat-tab #evaluationTab>
+        <ng-template mat-tab-label>
+          Evaluation du stage
+        </ng-template>
+        @if ((evaluationTab.isActive) && convention.id) {
+          <app-evaluation-stage [convention]="convention"></app-evaluation-stage>
+        }
+      </mat-tab>
+    }
+  </mat-tab-group>
+}
