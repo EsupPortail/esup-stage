@@ -50,7 +50,7 @@ export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
     this.columns.push('etab');
     this.columns.push('service')
     this.filters = [...this.sharedData.filters];
-    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id'});
+    this.filters.push({ id: 'convention.structure.id', libelle: 'Structure d\'accueil', type: 'list', options: [], keyLibelle: 'raisonSociale', keyId: 'id', specific: true});
     this.initStructureFilter();
   }
 
@@ -61,9 +61,12 @@ export class ServiceAccueilGroupeComponent implements OnInit, OnChanges {
   }
 
   initStructureFilter(): void {
-    if (this.groupeEtudiant && this.groupeEtudiant.convention.structure) {
-      this.structures = this.groupeEtudiant.etudiantGroupeEtudiants.map((e: any) => e.convention.structure ?? this.groupeEtudiant.convention.structure);
-      this.structures = [...new Map(this.structures.map(e => [e.id, {id: e.id, raisonSociale: e.raisonSociale}])).values()];
+    if (this.groupeEtudiant) {
+      this.structures = [...new Map(this.groupeEtudiant.etudiantGroupeEtudiants
+        .map((e: any) => e.convention.structure ?? this.groupeEtudiant.convention.structure)
+        .filter((e: any) => !!e)
+        .map((e: any) => [e.id, {id: e.id, raisonSociale: e.raisonSociale}])
+      ).values()];
       let filter = this.filters.find((f: any) => f.id === 'convention.structure.id');
       if (filter) filter.options = this.structures;
     }
