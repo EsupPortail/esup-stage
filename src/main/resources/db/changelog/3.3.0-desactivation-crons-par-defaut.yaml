@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-desactivation-crons-par-defaut
+      author: thouveno9
+      changes:
+        - update:
+            tableName: CronTask
+            columns:
+              - column:
+                  name: active
+                  valueBoolean: false
+            where: nom IN ('ArchiverConventions', 'SynchroniserRegimesInscriptionApogee')
