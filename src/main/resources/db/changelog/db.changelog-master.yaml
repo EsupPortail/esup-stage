@@ -397,3 +397,6 @@ databaseChangeLog:
   - include:
       file: 3.3.0-droit-opposition-contact.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 3.3.0-desactivation-crons-par-defaut.yaml
+      relativeToChangelogFile: true
