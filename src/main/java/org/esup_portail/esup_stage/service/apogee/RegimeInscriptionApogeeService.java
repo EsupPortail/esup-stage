@@ -39,12 +39,12 @@ public class RegimeInscriptionApogeeService {
     public List<RegimeInscriptionDto> synchroniserDepuisApogee(List<RegimeInscriptionDto> regimesInscriptions) {
         LocalDateTime dateDerniereMaj = LocalDateTime.now();
         List<RegimeInscriptionDto> regimes = regimesInscriptions != null ? regimesInscriptions : List.of();
-        Map<String, String> regimesApogeeParCode = regimes.stream()
+        Map<String, RegimeInscriptionDto> regimesApogeeParCode = regimes.stream()
                 .filter(regime -> regime != null && hasText(regime.getCode()))
                 .collect(Collectors.toMap(
                         regime -> regime.getCode().trim(),
-                        regime -> hasText(regime.getLibelle()) ? regime.getLibelle().trim() : regime.getCode().trim(),
-                        (ancienLibelle, nouveauLibelle) -> nouveauLibelle,
+                        regime -> regime,
+                        (ancienRegime, nouveauRegime) -> nouveauRegime,
                         LinkedHashMap::new
                 ));
 
@@ -60,14 +60,20 @@ public class RegimeInscriptionApogeeService {
 
         List<RegimeInscriptionApogee> regimesASauvegarder = new ArrayList<>();
 
-        for (Map.Entry<String, String> regimeApogee : regimesApogeeParCode.entrySet()) {
+        for (Map.Entry<String, RegimeInscriptionDto> regimeApogee : regimesApogeeParCode.entrySet()) {
             String code = regimeApogee.getKey();
+            RegimeInscriptionDto regimeApogeeDto = regimeApogee.getValue();
             RegimeInscriptionApogee regime = regimesExistantsParCode.remove(code);
             if (regime == null) {
                 regime = new RegimeInscriptionApogee();
                 regime.setCode(code);
             }
-            regime.setLibelle(regimeApogee.getValue());
+            regime.setLibelle(hasText(regimeApogeeDto.getLibelle()) ? regimeApogeeDto.getLibelle().trim() : code);
+            // Le libellé court n'est renseigné que par les versions d'ESUP-SISCOL qui exposent
+            // /regimesInscriptions sous forme de liste : on conserve la valeur existante à défaut.
+            if (hasText(regimeApogeeDto.getLibelleCourt())) {
+                regime.setLibelleCourt(regimeApogeeDto.getLibelleCourt().trim());
+            }
             regime.setTemEnServ(TEM_EN_SERV_OUI);
             regime.setDateDerniereMaj(dateDerniereMaj);
             regimesASauvegarder.add(regime);
@@ -87,7 +93,7 @@ public class RegimeInscriptionApogeeService {
 
     public List<RegimeInscriptionDto> getRegimesInscriptions() {
         return regimeInscriptionApogeeJpaRepository.findByTemEnServOrderByLibelle(TEM_EN_SERV_OUI).stream()
-                .map(ri -> new RegimeInscriptionDto(ri.getCode(), ri.getLibelle()))
+                .map(ri -> new RegimeInscriptionDto(ri.getCode(), ri.getLibelle(), ri.getLibelleCourt()))
                 .toList();
     }
 

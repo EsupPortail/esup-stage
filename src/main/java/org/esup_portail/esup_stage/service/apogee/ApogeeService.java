@@ -2,6 +2,7 @@ package org.esup_portail.esup_stage.service.apogee;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.util.Strings;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
@@ -493,13 +494,42 @@ public class ApogeeService {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> rawMap = mapper.readValue(response, new TypeReference<>() {});
-            return rawMap.entrySet().stream()
-                    .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
-                    .toList();
-        } catch (JsonProcessingException e) {
+            JsonNode racine = mapper.readTree(response);
+            // ESUP-SISCOL a fait évoluer /regimesInscriptions d'une Map code/libellé vers une liste
+            // d'objets. Les deux formats sont en production selon la version déployée par l'établissement.
+            if (racine != null && racine.isArray()) {
+                List<RegimeInscriptionReduit> regimes = mapper.convertValue(racine, new TypeReference<>() {});
+                return toRegimesInscriptionsDto(regimes);
+            }
+            if (racine != null && racine.isObject()) {
+                Map<String, String> rawMap = mapper.convertValue(racine, new TypeReference<>() {});
+                return rawMap.entrySet().stream()
+                        .map(entry -> new RegimeInscriptionDto(entry.getKey(), entry.getValue()))
+                        .toList();
+            }
+            LOGGER.warn("Format inattendu de la réponse de l'api regimesInscriptions : ni tableau ni objet JSON.");
+            return List.of();
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             LOGGER.error("Erreur lors de la lecture de la réponse sur l'api regimesInscriptions: " + e.getMessage(), e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }
+    }
+
+    private List<RegimeInscriptionDto> toRegimesInscriptionsDto(List<RegimeInscriptionReduit> regimes) {
+        List<RegimeInscriptionDto> dtos = new ArrayList<>();
+        for (RegimeInscriptionReduit regime : regimes) {
+            if (regime == null || Strings.isBlank(regime.getCodeRegimeInscription())) {
+                continue;
+            }
+            String libelle = regime.getLibelleRegimeInscription();
+            if (Strings.isBlank(libelle)) {
+                libelle = regime.getLibelleRegimeInscriptionCourt();
+            }
+            if (Strings.isBlank(libelle)) {
+                libelle = regime.getCodeRegimeInscription();
+            }
+            dtos.add(new RegimeInscriptionDto(regime.getCodeRegimeInscription(), libelle, regime.getLibelleRegimeInscriptionCourt()));
+        }
+        return dtos;
     }
 }
