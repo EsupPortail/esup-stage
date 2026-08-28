@@ -18,6 +18,7 @@ export class AuthService {
   private refreshPromise?: Promise<void>;
   private redirecting = false;
   private sessionDialogPending = false;
+  private sessionEstablished = false;
   private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
 
   private adminTechList: string[] = [];
