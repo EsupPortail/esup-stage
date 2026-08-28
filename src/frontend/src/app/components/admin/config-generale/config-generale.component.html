@@ -123,6 +123,15 @@
               <mat-error *ngIf="formGenerale.get('dureePurgeConventionAnnees')?.hasError('min') || formGenerale.get('dureePurgeConventionAnnees')?.hasError('max')">Le délai de purge doit être compris entre 1 et 99 ans.</mat-error>
             </mat-form-field>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="mb-2">Demander à l’étudiant son accord pour figurer dans un annuaire des anciens stagiaires ?</div>
+              <mat-radio-group formControlName="activerAnnuaireEtudiants">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
           <div class="mt-3" *ngIf="canEdit()">
             <button class="valid-button" mat-flat-button>Valider</button>
           </div>

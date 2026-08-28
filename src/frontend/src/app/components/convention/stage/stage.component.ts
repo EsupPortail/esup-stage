@@ -17,6 +17,7 @@ import { PeriodeInterruptionStageService } from "../../../services/periode-inter
 import { AuthService } from "../../../services/auth.service";
 import { ContenuService } from "../../../services/contenu.service";
 import { ConventionService } from "../../../services/convention.service";
+import { ConfigService } from "../../../services/config.service";
 import { debounceTime } from 'rxjs/operators'
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { InterruptionsFormComponent } from './interruptions-form/interruptions-form.component';
@@ -106,6 +107,7 @@ export class StageComponent implements OnInit {
 
   @Input() modifiable!: boolean;
   @Input() enMasse!: boolean;
+  annuaireActif = false;
 
   constructor(public conventionService: ConventionService,
               private fb: FormBuilder,
@@ -125,6 +127,7 @@ export class StageComponent implements OnInit {
               private typeConventionService: TypeConventionService,
               private periodeInterruptionStageService: PeriodeInterruptionStageService,
               private periodeStageService : PeriodeStageService,
+              private configService: ConfigService,
               public matDialog: MatDialog,
   ) {
   }
@@ -258,7 +261,7 @@ export class StageComponent implements OnInit {
     //Update validators that depends on booleans
     this.toggleValidators(['nbHeuresHebdo',],this.convention.horairesReguliers);
     this.toggleValidators(['montantGratification','idUniteGratification','idUniteDuree','idDevise','idModeVersGratification'],this.convention.gratificationStage);
-    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage','accordAnnuaireEtudiant'],!this.enMasse);
+    this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadJoursFeries();
     this.refreshPeriodeStageFields();
@@ -306,6 +309,14 @@ export class StageComponent implements OnInit {
     this.contenuService.get('TEXTE_LIMITE_RENUMERATION').subscribe((response: any) => {
       this.texteLimiteRenumeration = response.texte;
     })
+
+    // L'accord annuaire n'est demandé — et n'est obligatoire — que si la
+    // fonctionnalité est activée dans les paramètres généraux.
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.annuaireActif = response?.activerAnnuaireEtudiants === true;
+      this.toggleValidators(['accordAnnuaireEtudiant'], this.annuaireActif && !this.enMasse);
+      this.validateForm();
+    });
 
     //controles uniquement pour les non gestionnaires
     if (!this.isGestionnaire()) {

@@ -92,6 +92,7 @@ export class ConfigGeneraleComponent implements OnInit {
       autoriserEtudiantACreerEntrepriseHorsFrance: [null],
       desactiverMajAutoEtabSelection: [null],
       modifRaisonSocialeGestionnaire : [null],
+      activerAnnuaireEtudiants: [false],
       mailDpo: [null, [Validators.email]],
       dureeArchivageConventionAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
       dureeArchivageConventionGratifieeAnnees: [5, [Validators.required, Validators.min(1), Validators.max(99)]],
