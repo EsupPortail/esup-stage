@@ -5,17 +5,18 @@
   </div>
 
   <div class="preview-actions">
-    <span
-      *ngIf="data.canDelete"
-      (confirm)="delete()"
-      [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + data.document.nomReel + ' ?'">
-      <button
-        mat-icon-button
-        matTooltip="Supprimer"
-        aria-label="Supprimer le document">
-        <mat-icon class="preview-action-icon preview-action-icon--warn">delete</mat-icon>
-      </button>
-    </span>
+    @if (data.canDelete) {
+      <span
+        (confirm)="delete()"
+        [confirmMessage]="'Êtes-vous sûr de vouloir supprimer le document ' + data.document.nomReel + ' ?'">
+        <button
+          mat-icon-button
+          matTooltip="Supprimer"
+          aria-label="Supprimer le document">
+          <mat-icon class="preview-action-icon preview-action-icon--warn">delete</mat-icon>
+        </button>
+      </span>
+    }
     <button
       mat-icon-button
       matTooltip="Télécharger"
@@ -35,25 +36,30 @@
 
 <mat-dialog-content class="preview-content">
 
-  <div class="preview-state" *ngIf="loading">
-    <mat-spinner diameter="36"></mat-spinner>
-    <p>Chargement de l'aperçu...</p>
-  </div>
+  @if (loading) {
+    <div class="preview-state">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Chargement de l'aperçu...</p>
+    </div>
+  }
 
-  <div class="preview-state preview-state--error" *ngIf="!loading && previewFailed">
-    <mat-icon>error_outline</mat-icon>
-    <p>L'aperçu de ce document n'a pas pu être affiché.</p>
-    <button mat-stroked-button color="primary" (click)="download()">
-      <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
-      Télécharger le document
-    </button>
-  </div>
+  @if (!loading && previewFailed) {
+    <div class="preview-state preview-state--error">
+      <mat-icon>error_outline</mat-icon>
+      <p>L'aperçu de ce document n'a pas pu être affiché.</p>
+      <button mat-stroked-button color="primary" (click)="download()">
+        <mat-icon class="preview-action-icon preview-action-icon--primary">download</mat-icon>
+        Télécharger le document
+      </button>
+    </div>
+  }
 
-  <iframe
-    *ngIf="!loading && !previewFailed && safePdfUrl"
-    [src]="safePdfUrl"
-    class="preview-frame"
-    title="Aperçu du document">
-  </iframe>
+  @if (!loading && !previewFailed && safePdfUrl) {
+    <iframe
+      [src]="safePdfUrl"
+      class="preview-frame"
+      title="Aperçu du document">
+    </iframe>
+  }
 
 </mat-dialog-content>

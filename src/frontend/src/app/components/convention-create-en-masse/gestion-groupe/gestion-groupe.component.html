@@ -1,262 +1,262 @@
 <mat-tab-group #tabs (selectedTabChange)="tabChanged($event)">
   <mat-tab label="Liste">
     <app-table #tableList [service]="groupeEtudiantService" [columns]="groupeColumns" [sortColumn]="groupeSortColumn" [filters]="groupeFilters" [sortOrder]="groupeSortDirection"
-           matSort [matSortActive]="groupeSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableList ? tableList.sorting($event) : null"
-           [noResultText]="'Aucun groupe trouvé'">
+      matSort [matSortActive]="groupeSortColumn" [matSortDirection]="'desc'" (matSortChange)="tableList ? tableList.sorting($event) : null"
+      [noResultText]="'Aucun groupe trouvé'">
 
-  <ng-container matColumnDef="code">
-    <th mat-header-cell *matHeaderCellDef>Code</th>
-    <td mat-cell *matCellDef="let row">{{row.code}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="nom">
-    <th mat-header-cell *matHeaderCellDef>Nom</th>
-    <td mat-cell *matCellDef="let row">{{row.nom}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="annee">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
-    <td mat-cell *matCellDef="let row">{{row.convention.annee}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="loginCreation">
-    <th mat-header-cell *matHeaderCellDef>loginCreation</th>
-    <td mat-cell *matCellDef="let row">{{row.loginCreation}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="dateCreation">
-    <th mat-header-cell *matHeaderCellDef>dateCreation</th>
-    <td mat-cell *matCellDef="let row">{{row.dateCreation|date:'shortDate'}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="periodStage">
-    <th mat-header-cell *matHeaderCellDef>periode du Stage</th>
-    <td mat-cell *matCellDef="let row">{{row.convention.dateDebutStage && row.convention.dateFinStage ?
-      'Du ' + (row.convention.dateDebutStage|date:'shortDate') + ' au ' + (row.convention.dateFinStage|date:'shortDate') : ''}}</td>
-  </ng-container>
-  <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>Actions</th>
-    <td mat-cell *matCellDef="let row">
-      <ng-container>
-        <button class="edit-button" mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span> </button>
-        <button class="edit-button" mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)"><span class="fa fa-copy" aria-label="Dupliquer"></span> </button>
-        <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce groupe ?'">
-              <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span> </button>
-        </span>
-        <button class="edit-button" mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)" *ngIf="isConventionGenerated(row)"><span class="fa fa-envelope" aria-label="Envoie de mail"></span> </button>
-        <button class="edit-button" mat-icon-button matTooltip="Export pdf" (click)="printTab(row)" *ngIf="isConventionGenerated(row)"><span class="fa fa-file-contract" aria-label="Export PDF"></span> </button>
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef>Code</th>
+        <td mat-cell *matCellDef="let row">{{row.code}}</td>
       </ng-container>
-    </td>
-  </ng-container>
 
-</app-table>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let row">{{row.nom}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="annee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
+        <td mat-cell *matCellDef="let row">{{row.convention.annee}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="loginCreation">
+        <th mat-header-cell *matHeaderCellDef>loginCreation</th>
+        <td mat-cell *matCellDef="let row">{{row.loginCreation}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dateCreation">
+        <th mat-header-cell *matHeaderCellDef>dateCreation</th>
+        <td mat-cell *matCellDef="let row">{{row.dateCreation|date:'shortDate'}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="periodStage">
+        <th mat-header-cell *matHeaderCellDef>periode du Stage</th>
+        <td mat-cell *matCellDef="let row">{{row.convention.dateDebutStage && row.convention.dateFinStage ?
+        'Du ' + (row.convention.dateDebutStage|date:'shortDate') + ' au ' + (row.convention.dateFinStage|date:'shortDate') : ''}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container>
+            <button class="edit-button" mat-icon-button matTooltip="Modifier le groupe" (click)="edit(row)"><span class="fa fa-pen" aria-label="Modifier"></span> </button>
+            <button class="edit-button" mat-icon-button matTooltip="Dupliquer le groupe" (click)="duplicate(row)"><span class="fa fa-copy" aria-label="Dupliquer"></span> </button>
+            <span (confirm)="delete(row.id)" [confirmMessage]="'Voulez-vous supprimer ce groupe ?'">
+              <button class="delete-button" mat-icon-button matTooltip="Supprimer"><span class="fa fa-trash" aria-label="Supprimer"></span> </button>
+            </span>
+            @if (isConventionGenerated(row)) {
+              <button class="edit-button" mat-icon-button matTooltip="Envoie de mail" (click)="sendMailTab(row)"><span class="fa fa-envelope" aria-label="Envoie de mail"></span> </button>
+            }
+            @if (isConventionGenerated(row)) {
+              <button class="edit-button" mat-icon-button matTooltip="Export pdf" (click)="printTab(row)"><span class="fa fa-file-contract" aria-label="Export PDF"></span> </button>
+            }
+          </ng-container>
+        </td>
+      </ng-container>
+
+    </app-table>
   </mat-tab>
 
-  <mat-tab *ngIf="groupeEtudiant.id" label="Envoie des mails">
-    <mat-card>
-      <div class="mb-3">
-        <h4 class="text-title">Envoie des mails</h4>
-        <mat-divider class="mb-3"></mat-divider>
-
-        <form [formGroup]="form" novalidate (submit)="save()">
-          <div class="row mb-2">
-            <mat-form-field class="col-md-5" appearance="fill">
-              <mat-label>Sélectionnez un template de mail</mat-label>
-              <mat-select formControlName="template">
-                <mat-option *ngFor="let template of templates" [value]="template.code">{{template.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('template')"></app-form-error></mat-error>
-            </mat-form-field>
-          </div>
-          <div class="mb-2">
-            <span (confirm)="sendMailForGroup()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="this.form.get('template')?.value===null">En masse</button>
-            </span>
-            <span (confirm)="sendMailForSelected()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
-              <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="selected.length === 0 || this.form.get('template')?.value===null">Pour les étudiants sélectionnés</button>
-            </span>
-          </div>
-        </form>
-      </div>
-      <div class="mb-3">
-        <h4 class="text-title">Sélection des étudiants du groupe</h4>
-        <mat-divider class="mb-2"></mat-divider>
-        <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
-                   matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableMail,$event)"
-                   [noResultText]="'Aucun étudiant trouvé'">
-
-          <ng-container matColumnDef="select">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-checkbox (change)="$event ? masterToggle() : null"
-                            [checked]="selected.length > 0 && isAllSelected()"
-                            [indeterminate]="selected.length > 0 && !isAllSelected()">
-              </mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox [checked]="isSelected(row)"
-                            (change)="$event ? toggleSelected(row) : null"
-                            (click)="$event.stopPropagation()">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="numEtudiant">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
-          </ng-container>
-          <ng-container matColumnDef="nom">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
-          </ng-container>
-          <ng-container matColumnDef="prenom">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
-          </ng-container>
-          <ng-container matColumnDef="mail">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-          </ng-container>
-          <ng-container matColumnDef="ufr.libelle">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
-            <td mat-cell *matCellDef="let row" matTooltip="{{row.mergedConvention.ufr?.libelle??''}}">{{row.mergedConvention.ufr?.id?.code??''}}</td>
-          </ng-container>
-          <ng-container matColumnDef="etape.libelle">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
-            <td mat-cell *matCellDef="let row">{{row.mergedConvention.etape ? row.mergedConvention.etape.libelle : ''}}</td>
-          </ng-container>
-          <ng-container matColumnDef="annee">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
-            <td mat-cell *matCellDef="let row">{{row.mergedConvention.annee}}</td>
-          </ng-container>
-          <ng-container matColumnDef="etab">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Etab. d'accueil</th>
-            <td mat-cell *matCellDef="let row">{{row.mergedConvention.structure.raisonSociale}}</td>
-          </ng-container>
-          <ng-container matColumnDef="service">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Service d'accueil</th>
-            <td mat-cell *matCellDef="let row">
-              {{row.mergedConvention.service.nom}}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="contact">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Tuteur professionnel</th>
-            <td mat-cell *matCellDef="let row">
-              {{row.mergedConvention.contact.nom + ' ' + row.mergedConvention.contact.prenom}}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="mailTuteur">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail Structure</th>
-            <td mat-cell *matCellDef="let row">
-              {{row.mergedConvention.structure.mail}}
-            </td>
-          </ng-container>
-        </app-table>
-      </div>
-      <div class="mt-3">
-        <mat-accordion>
-          <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Historique des envois de mail</mat-panel-title>
-              <mat-panel-description>
-                <div class="w-100 text-right">
-                  <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-history"></mat-icon>
-                </div>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <table mat-table [dataSource]="historiques">
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="9999">Aucun historique</td>
-              </tr>
-              <ng-container matColumnDef="modifiePar">
-                <th mat-header-cell *matHeaderCellDef>Modifié par</th>
-                <td mat-cell *matCellDef="let row">{{row.login}}</td>
-              </ng-container>
-              <ng-container matColumnDef="date">
-                <th mat-header-cell *matHeaderCellDef>Date d'envoi</th>
-                <td mat-cell *matCellDef="let row">{{row.date|date:'dd/MM/YYYY HH:mm:ss'}}</td>
-              </ng-container>
-              <ng-container matColumnDef="destinataire">
-                <th mat-header-cell *matHeaderCellDef>Destinataire</th>
-                <td mat-cell *matCellDef="let row">{{row.mailto}}</td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="columnsHisto"></tr>
-              <tr mat-row *matRowDef="let row; columns: columnsHisto;"></tr>
-            </table>
-          </mat-expansion-panel>
-        </mat-accordion>
-      </div>
-    </mat-card>
-  </mat-tab>
-
-  <mat-tab *ngIf="groupeEtudiant.id" label="Impression PDF">
-    <mat-card>
-      <div class="mb-3">
-        <h4 class="text-title">Impression des mergedConventions</h4>
-        <mat-divider class="mb-3"></mat-divider>
-        <div class="mb-2">
-          <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForGroup()">En masse</button>
-          <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+  @if (groupeEtudiant.id) {
+    <mat-tab label="Envoie des mails">
+      <mat-card>
+        <div class="mb-3">
+          <h4 class="text-title">Envoie des mails</h4>
+          <mat-divider class="mb-3"></mat-divider>
+          <form [formGroup]="form" novalidate (submit)="save()">
+            <div class="row mb-2">
+              <mat-form-field class="col-md-5" appearance="fill">
+                <mat-label>Sélectionnez un template de mail</mat-label>
+                <mat-select formControlName="template">
+                  @for (template of templates; track template) {
+                    <mat-option [value]="template.code">{{template.libelle}}</mat-option>
+                  }
+                </mat-select>
+                <mat-error><app-form-error [field]="form.get('template')"></app-form-error></mat-error>
+              </mat-form-field>
+            </div>
+            <div class="mb-2">
+              <span (confirm)="sendMailForGroup()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
+                <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="this.form.get('template')?.value===null">En masse</button>
+              </span>
+              <span (confirm)="sendMailForSelected()" [confirmMessage]="'Envoyer les mails ? Cette action est irreversible.'">
+                <button class="valid-button" mat-flat-button style="margin-right:5px" [disabled]="selected.length === 0 || this.form.get('template')?.value===null">Pour les étudiants sélectionnés</button>
+              </span>
+            </div>
+          </form>
         </div>
-      </div>
-      <div class="mb-3">
-        <h4 class="text-title">Sélection des étudiants du groupe</h4>
-        <mat-divider class="mb-2"></mat-divider>
-        <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
-                   matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableExport,$event)"
-                   [noResultText]="'Aucun étudiant trouvé'">
+        <div class="mb-3">
+          <h4 class="text-title">Sélection des étudiants du groupe</h4>
+          <mat-divider class="mb-2"></mat-divider>
+          <app-table #tableMail [service]="etudiantGroupeEtudiantService" [columns]="mailColumns" [sortColumn]="mailSortColumn" [filters]="mailFilters" [sortOrder]="mailSortDirection"
+            matSort [matSortActive]="mailSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableMail,$event)"
+            [noResultText]="'Aucun étudiant trouvé'">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                  [checked]="selected.length > 0 && isAllSelected()"
+                  [indeterminate]="selected.length > 0 && !isAllSelected()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox [checked]="isSelected(row)"
+                  (change)="$event ? toggleSelected(row) : null"
+                  (click)="$event.stopPropagation()">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
+            </ng-container>
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
+            </ng-container>
+            <ng-container matColumnDef="mail">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+            </ng-container>
+            <ng-container matColumnDef="ufr.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
+              <td mat-cell *matCellDef="let row" matTooltip="{{row.mergedConvention.ufr?.libelle??''}}">{{row.mergedConvention.ufr?.id?.code??''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="etape.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
+              <td mat-cell *matCellDef="let row">{{row.mergedConvention.etape ? row.mergedConvention.etape.libelle : ''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="annee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
+              <td mat-cell *matCellDef="let row">{{row.mergedConvention.annee}}</td>
+            </ng-container>
+            <ng-container matColumnDef="etab">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Etab. d'accueil</th>
+              <td mat-cell *matCellDef="let row">{{row.mergedConvention.structure.raisonSociale}}</td>
+            </ng-container>
+            <ng-container matColumnDef="service">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Service d'accueil</th>
+              <td mat-cell *matCellDef="let row">
+                {{row.mergedConvention.service.nom}}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="contact">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Tuteur professionnel</th>
+              <td mat-cell *matCellDef="let row">
+                {{row.mergedConvention.contact.nom + ' ' + row.mergedConvention.contact.prenom}}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="mailTuteur">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail Structure</th>
+              <td mat-cell *matCellDef="let row">
+                {{row.mergedConvention.structure.mail}}
+              </td>
+            </ng-container>
+          </app-table>
+        </div>
+        <div class="mt-3">
+          <mat-accordion>
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Historique des envois de mail</mat-panel-title>
+                <mat-panel-description>
+                  <div class="w-100 text-right">
+                    <mat-icon aria-hidden="true" fontSet="fa" fontIcon="fa-history"></mat-icon>
+                  </div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <table mat-table [dataSource]="historiques">
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="9999">Aucun historique</td>
+                </tr>
+                <ng-container matColumnDef="modifiePar">
+                  <th mat-header-cell *matHeaderCellDef>Modifié par</th>
+                  <td mat-cell *matCellDef="let row">{{row.login}}</td>
+                </ng-container>
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef>Date d'envoi</th>
+                  <td mat-cell *matCellDef="let row">{{row.date|date:'dd/MM/YYYY HH:mm:ss'}}</td>
+                </ng-container>
+                <ng-container matColumnDef="destinataire">
+                  <th mat-header-cell *matHeaderCellDef>Destinataire</th>
+                  <td mat-cell *matCellDef="let row">{{row.mailto}}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="columnsHisto"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnsHisto;"></tr>
+              </table>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </mat-card>
+    </mat-tab>
+  }
 
-          <ng-container matColumnDef="select">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-checkbox (change)="$event ? masterToggle() : null"
-                            [checked]="selected.length > 0 && isAllSelected()"
-                            [indeterminate]="selected.length > 0 && !isAllSelected()">
-              </mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox [checked]="isSelected(row)"
-                            (change)="$event ? toggleSelected(row) : null"
-                            (click)="$event.stopPropagation()">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="numEtudiant">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="nom">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
-          </ng-container>e
-
-          <ng-container matColumnDef="prenom">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="mail">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
-            <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
-          </ng-container>
-          <ng-container matColumnDef="ufr.libelle">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
-            <td mat-cell *matCellDef="let row" matTooltip="{{row.mergedConvention.ufr?.libelle??''}}">{{row.mergedConvention.ufr?.id?.code??''}}</td>
-          </ng-container>
-          <ng-container matColumnDef="etape.libelle">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
-            <td mat-cell *matCellDef="let row">{{row.mergedConvention.etape ? row.mergedConvention.etape.libelle : ''}}</td>
-          </ng-container>
-          <ng-container matColumnDef="annee">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
-            <td mat-cell *matCellDef="let row">{{row.mergedConvention.annee}}</td>
-          </ng-container>
-        </app-table>
-      </div>
-    </mat-card>
-  </mat-tab>
+  @if (groupeEtudiant.id) {
+    <mat-tab label="Impression PDF">
+      <mat-card>
+        <div class="mb-3">
+          <h4 class="text-title">Impression des mergedConventions</h4>
+          <mat-divider class="mb-3"></mat-divider>
+          <div class="mb-2">
+            <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForGroup()">En masse</button>
+            <button class="valid-button" mat-flat-button style="margin-right:5px" (click)="printForSelected()" [disabled]="selected.length === 0">pour les étudiants sélectionnés</button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <h4 class="text-title">Sélection des étudiants du groupe</h4>
+          <mat-divider class="mb-2"></mat-divider>
+          <app-table #tableExport [service]="etudiantGroupeEtudiantService" [columns]="exportColumns" [sortColumn]="exportSortColumn" [filters]="mailFilters" [sortOrder]="exportSortDirection"
+            matSort [matSortActive]="exportSortColumn" [matSortDirection]="'desc'" (matSortChange)="sorting(tableExport,$event)"
+            [noResultText]="'Aucun étudiant trouvé'">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                  [checked]="selected.length > 0 && isAllSelected()"
+                  [indeterminate]="selected.length > 0 && !isAllSelected()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <mat-checkbox [checked]="isSelected(row)"
+                  (change)="$event ? toggleSelected(row) : null"
+                  (click)="$event.stopPropagation()">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">N° étudiant</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.numEtudiant}}</td>
+            </ng-container>
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Nom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.nom}}</td>
+            </ng-container>e
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Prénom</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.prenom}}</td>
+            </ng-container>
+            <ng-container matColumnDef="mail">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Mail</th>
+              <td mat-cell *matCellDef="let row">{{row.etudiant.mail}}</td>
+            </ng-container>
+            <ng-container matColumnDef="ufr.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">UFR</th>
+              <td mat-cell *matCellDef="let row" matTooltip="{{row.mergedConvention.ufr?.libelle??''}}">{{row.mergedConvention.ufr?.id?.code??''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="etape.libelle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Étape d'étude</th>
+              <td mat-cell *matCellDef="let row">{{row.mergedConvention.etape ? row.mergedConvention.etape.libelle : ''}}</td>
+            </ng-container>
+            <ng-container matColumnDef="annee">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true">Année univ.</th>
+              <td mat-cell *matCellDef="let row">{{row.mergedConvention.annee}}</td>
+            </ng-container>
+          </app-table>
+        </div>
+      </mat-card>
+    </mat-tab>
+  }
 
 </mat-tab-group>
 

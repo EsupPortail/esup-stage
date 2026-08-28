@@ -167,6 +167,15 @@ export class AppComponent implements OnInit, OnDestroy {
           icon: "fa-rocket"
         },
         {
+          libelle: 'Tokens d\'API',
+          path: 'param-global/api-tokens',
+          icon: "fa-key",
+          canView: () => {
+            // L'API de gestion des tokens exige un administrateur technique
+            return this.authService.isAdmin();
+          }
+        },
+        {
           libelle: 'Logs',
           path: 'param-global/logs',
           icon: "fa-file-lines",

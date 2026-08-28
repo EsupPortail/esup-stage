@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.service.Structure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.esup_portail.esup_stage.events.StructureCreatedEvent;
 import org.esup_portail.esup_stage.events.StructureDeletedEvent;
 import org.esup_portail.esup_stage.events.StructureUpdatedEvent;
@@ -80,12 +80,12 @@ class StructureServiceTest {
         Structure structure = structure();
         when(structureJpaRepository.save(structure)).thenReturn(structure);
         when(objectMapper.writeValueAsString(structure))
-                .thenThrow(new JsonProcessingException("boom") {});
+                .thenThrow(new JacksonException("boom") {});
 
         assertThatThrownBy(() -> service.save("{\"raisonSociale\":\"OLD\"}", structure))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("sérialisation")
-                .hasCauseInstanceOf(JsonProcessingException.class);
+                .hasCauseInstanceOf(JacksonException.class);
 
         verify(eventPublisher, never()).publishEvent(any());
     }

@@ -1,8 +1,8 @@
 package org.esup_portail.esup_stage.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -45,7 +45,7 @@ public class StructureRepository extends PaginationRepository<Structure> {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
             }
             jsonFilters = (ObjectNode) parsedFilters;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
         }
 

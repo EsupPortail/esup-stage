@@ -1,8 +1,20 @@
-<ng-container *ngIf="field && field.invalid">
-  <div *ngIf="field.hasError('required')">Ce champ est obligatoire</div>
-  <div *ngIf="field.hasError('maxlength')">Ce champ est trop long</div>
-  <div *ngIf="field.hasError('minlength')">Ce champ est trop court</div>
-  <div *ngIf="field.hasError('email') || field.hasError('pattern')">Ce champ est invalide</div>
-  <div *ngIf="field.hasError('empty')">Ce champ est vide</div>
-  <div *ngIf="field.hasError('dateStageChevauchement')">Les dates de stage se chevauchent avec d'autres conventions</div>
-</ng-container>
+@if (field && field.invalid) {
+  @if (field.hasError('required')) {
+    <div>Ce champ est obligatoire</div>
+  }
+  @if (field.hasError('maxlength')) {
+    <div>Ce champ est trop long</div>
+  }
+  @if (field.hasError('minlength')) {
+    <div>Ce champ est trop court</div>
+  }
+  @if (field.hasError('email') || field.hasError('pattern')) {
+    <div>Ce champ est invalide</div>
+  }
+  @if (field.hasError('empty')) {
+    <div>Ce champ est vide</div>
+  }
+  @if (field.hasError('dateStageChevauchement')) {
+    <div>Les dates de stage se chevauchent avec d'autres conventions</div>
+  }
+}

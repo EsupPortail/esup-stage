@@ -20,6 +20,7 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 - Augmentation du nombre de caractères maximum des champs mails.
 - Rendre facultatif le numéro de téléphone des organismes d'accueil (#415).
 - Finalisation de la gestion de la confidentialité.
+- Montée de version technique : Spring Boot 4.1 (Spring Framework 7, Spring Security 7, Jackson 3, Hibernate 7) et Angular 21. Nécessite désormais *Tomcat 11* (Servlet 6.1) et *Node 24* pour la compilation.
 
 === Corrections
 - Création d'un script de migration pour que legacy ait le même schéma que baseline.

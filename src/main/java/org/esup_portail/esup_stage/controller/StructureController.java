@@ -1,8 +1,8 @@
 package org.esup_portail.esup_stage.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
@@ -109,7 +109,7 @@ public class StructureController {
         Map filterMap;
         try {
             filterMap = objectMapper.readValue(filters, Map.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
         boolean estEtudiant = UtilisateurHelper.isRole(Objects.requireNonNull(ServiceContext.getUtilisateur()), Role.ETU);
@@ -287,7 +287,7 @@ public class StructureController {
             archive.put("value", false);
             filterMap.put("archive", archive);
             return objectMapper.writeValueAsString(filterMap);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Filtres invalides");
         }
     }
@@ -327,7 +327,7 @@ public class StructureController {
         String oldStructure;
         try {
             oldStructure = objectMapper.writeValueAsString(structure);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Erreur lors de la sérialisation de la structure d'origine", e);
         }
         setStructureData(structure, structureFormDto);
@@ -349,7 +349,7 @@ public class StructureController {
         String oldStructure;
         try {
             oldStructure = objectMapper.writeValueAsString(structure);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Erreur lors de la sérialisation de la structure d'origine", e);
         }
 
@@ -368,7 +368,7 @@ public class StructureController {
         String oldStructure;
         try {
             oldStructure = objectMapper.writeValueAsString(structure);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Erreur lors de la sÃ©rialisation de la structure d'origine", e);
         }
 
@@ -388,7 +388,7 @@ public class StructureController {
                     String jsonStructure;
                     try{
                         jsonStructure = objectMapper.writeValueAsString(structure);
-                    }catch(JsonProcessingException e){
+                    }catch(JacksonException e){
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
                     }
                     sireneService.update(jsonStructure,structure);
@@ -601,7 +601,7 @@ public class StructureController {
         String jsonStructure;
         try{
             jsonStructure = objectMapper.writeValueAsString(structure);
-        }catch(JsonProcessingException e){
+        }catch(JacksonException e){
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR,"Erreur lors de la mise à jour de la structure");
         }
         sireneService.update(jsonStructure,structure);

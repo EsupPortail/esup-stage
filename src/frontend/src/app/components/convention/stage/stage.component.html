@@ -9,7 +9,9 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Thématique du stage</mat-label>
             <mat-select formControlName="idTheme" required>
-              <mat-option *ngFor="let thematique of thematiques" [value]="thematique.id">{{thematique.libelle}}</mat-option>
+              @for (thematique of thematiques; track thematique) {
+                <mat-option [value]="thematique.id">{{thematique.libelle}}</mat-option>
+              }
             </mat-select>
             <mat-error><app-form-error [field]="form.get('idTheme')"></app-form-error></mat-error>
           </mat-form-field>
@@ -18,9 +20,11 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Sujet</mat-label>
             <textarea matInput formControlName="sujetStage" maxlength="{{ MAX_LENTGH_INPUT.longText }}" [required]="!enMasse"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('sujetStage')" style="color:var(--dangerColor);">
-              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-            </mat-hint>
+            @if (isLongTextLimitReached('sujetStage')) {
+              <mat-hint style="color:var(--dangerColor);">
+                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+              </mat-hint>
+            }
             <mat-error><app-form-error [field]="form.get('sujetStage')"></app-form-error></mat-error>
           </mat-form-field>
 
@@ -35,17 +39,20 @@
               (blur)="focused = focused === 'competences' ? null : focused"
             ></textarea>
 
-            <mat-error *ngIf="hasError('competences')">
-              <app-form-error [field]="form.get('competences')"></app-form-error>
-            </mat-error>
+            @if (hasError('competences')) {
+              <mat-error>
+                <app-form-error [field]="form.get('competences')"></app-form-error>
+              </mat-error>
+            }
 
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('competences') && focused === 'competences'"
-              [ngStyle]="{ color: counterColor('competences') }"
-            >
-              {{ len('competences') }}/{{ MAX_LENTGH_INPUT.competences }}
-            </mat-hint>
+            @if (!hasError('competences') && focused === 'competences') {
+              <mat-hint
+                align="end"
+                [ngStyle]="{ color: counterColor('competences') }"
+                >
+                {{ len('competences') }}/{{ MAX_LENTGH_INPUT.competences }}
+              </mat-hint>
+            }
           </mat-form-field>
 
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
@@ -59,25 +66,30 @@
               (blur)="focused = focused === 'fonctionsEtTaches' ? null : focused"
             ></textarea>
 
-            <mat-error *ngIf="hasError('fonctionsEtTaches')">
-              <app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error>
-            </mat-error>
+            @if (hasError('fonctionsEtTaches')) {
+              <mat-error>
+                <app-form-error [field]="form.get('fonctionsEtTaches')"></app-form-error>
+              </mat-error>
+            }
 
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('fonctionsEtTaches') && focused === 'fonctionsEtTaches'"
-              [ngStyle]="{ color: counterColor('fonctionsEtTaches') }"
-            >
-              {{ len('fonctionsEtTaches') }}/{{ MAX_LENTGH_INPUT.fonctionsEtTaches }}
-            </mat-hint>
+            @if (!hasError('fonctionsEtTaches') && focused === 'fonctionsEtTaches') {
+              <mat-hint
+                align="end"
+                [ngStyle]="{ color: counterColor('fonctionsEtTaches') }"
+                >
+                {{ len('fonctionsEtTaches') }}/{{ MAX_LENTGH_INPUT.fonctionsEtTaches }}
+              </mat-hint>
+            }
           </mat-form-field>
 
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Détails</mat-label>
             <textarea matInput formControlName="details" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('details')" style="color:var(--dangerColor);">
-              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-            </mat-hint>
+            @if (isLongTextLimitReached('details')) {
+              <mat-hint style="color:var(--dangerColor);">
+                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+              </mat-hint>
+            }
             <mat-error><app-form-error [field]="form.get('details')"></app-form-error></mat-error>
           </mat-form-field>
         </div>
@@ -89,394 +101,457 @@
           <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Date de début du stage</mat-label>
             <input matInput [min]="minDateDebutStage" [max]="maxDateDebutStage" [matDatepicker]="dateDebutStagePicker"
-                   (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage" required>
-            <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateDebutStagePicker></mat-datepicker>
-            <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Date de fin du stage</mat-label>
-            <input matInput  [min]="minDateFinStage" [max]="maxDateFinStage" [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required>
-            <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
-            <mat-datepicker #dateFinStagePicker></mat-datepicker>
-            <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
-          </mat-form-field>
+              (dateChange)="dateDebutChanged($event)" formControlName="dateDebutStage" required>
+              <mat-datepicker-toggle matSuffix [for]="dateDebutStagePicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateDebutStagePicker></mat-datepicker>
+              <mat-error><app-form-error [field]="form.get('dateDebutStage')"></app-form-error></mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Date de fin du stage</mat-label>
+              <input matInput  [min]="minDateFinStage" [max]="maxDateFinStage" [matDatepicker]="dateFinStagePicker" formControlName="dateFinStage" required>
+              <mat-datepicker-toggle matSuffix [for]="dateFinStagePicker"></mat-datepicker-toggle>
+              <mat-datepicker #dateFinStagePicker></mat-datepicker>
+              <mat-error><app-form-error [field]="form.get('dateFinStage')"></app-form-error></mat-error>
+            </mat-form-field>
 
-          <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2">Interruption au cours du stage ?</div>
-            <mat-radio-group formControlName="interruptionStage" (change)="checkInterruptionsPeriodesValid()">
-              <mat-radio-button [value]="true">Oui</mat-radio-button>
-              <mat-radio-button [value]="false" (click)="deleteInterruptionStageByConvention()">Non</mat-radio-button>
-            </mat-radio-group>
+            <div class="col-sm-12 col-md-12 mb-2">
+              <div class="mb-2">Interruption au cours du stage ?</div>
+              <mat-radio-group formControlName="interruptionStage" (change)="checkInterruptionsPeriodesValid()">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false" (click)="deleteInterruptionStageByConvention()">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
           </div>
-        </div>
 
-        <div class="row" *ngIf="form.value.interruptionStage">
-          <div class="col-6 mb-3">
-            <button class="valid-button" mat-button mat-flat-button type="button" (click)="openInterruptionsCreateFormModal()">Ajouter des nouvelles périodes d'interruptions</button>
-            <mat-error *ngIf="!periodesInterruptionsValid">Veuillez ajouter une période d'interruption</mat-error>
-          </div>
-          <div class="col-md-12 mb-3" *ngIf="interruptionsStage.length > 0">
-            <h4 class="text-title">Périodes d'interruptions actuelles :</h4>
-            <table mat-table [dataSource]="interruptionsStage">
-              <ng-container matColumnDef="dateDebutInterruption">
-                <th mat-header-cell *matHeaderCellDef>date de Debut</th>
-                <td mat-cell *matCellDef="let row">{{row.dateDebutInterruption|date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="dateFinInterruption">
-                <th mat-header-cell *matHeaderCellDef>date de Fin</th>
-                <td mat-cell *matCellDef="let row">{{row.dateFinInterruption|date:'dd/MM/yyyy'}}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>actions</th>
-                <td mat-cell *matCellDef="let row">
-                  <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="openInterruptionsEditFormModal(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
-                  <button class="delete-button" mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)"><span class="fa fa-trash-alt"></span></button>
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="interruptionsStageTableColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: interruptionsStageTableColumns;"></tr>
-            </table>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2" >Avez-vous des horaires de travail réguliers</div>
-            <mat-radio-group formControlName="horairesReguliers" (change)="setHorairesReguliersFormControls($event)">
-              <mat-radio-button [value]="true">Oui</mat-radio-button>
-              <mat-radio-button [value]="false">Non</mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </div>
-        <div class="row" *ngIf="form.value.horairesReguliers">
-          <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
-            <mat-label>Nombre d’heures hebdomadaires du stage</mat-label>
-            <input type="text" inputmode="decimal" matInput formControlName="nbHeuresHebdo" required />
-            <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
-            <mat-label>Nombre de jours de congés autorisés</mat-label>
-            <input type="text" step="any" maxlength="{{MAX_LENTGH_INPUT.nbConges}}"  matInput formControlName="nbConges" (focus)="focused = 'nbConges'" (blur)="focused = focused === 'nbConges' ? null : focused"/>
-            <mat-hint>ou modalités des congés et autorisations d'absence durant le stage</mat-hint>
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('nbConges') && focused === 'nbConges'"
-              [ngStyle]="{ color: counterColor('nbConges') }"
-            >
-              {{ len('nbConges') }}/{{ MAX_LENTGH_INPUT.nbConges }}
-            </mat-hint>
-            <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
-          </mat-form-field>
-        </div>
-        <div class="row" *ngIf="!form.value.horairesReguliers">
-          <div class="col-6 mb-3">
-            <button class="valid-button" mat-button mat-flat-button type="button" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
-            <mat-error *ngIf="periodesCalculHeuresStage.length === 0">Veuillez définir au moins une période de travail</mat-error>
-          </div>
-          <div class="col-md-12 mb-3" *ngIf="periodesCalculHeuresStage.length > 0">
-            <h4 class="text-title">Périodes de travail actuelles :</h4>
-            <div class="scrollable-content">
-              <div class="detail-section">
-                <table class="table">
-                  <thead>
-                  <tr class="header-row">
-                    <th class="table-header">Date de début</th>
-                    <th class="table-header">Date de fin</th>
-                    <th class="table-header">Heures par jour</th>
-                    <th class="table-header">Actions</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr *ngFor="let periode of periodesCalculHeuresStage; let i = index" class="detail-row">
-                    <td class="detail-value">{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
-                    <td class="detail-value">{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
-                    <td class="detail-value">{{periode.nbHeuresJournalieres}}</td>
-                    <td class="detail-value">
-                      <div class="actions-container">
-                        <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="openCalendar()" *ngIf="modifiable">
-                          <span class="fa fa-pen" aria-label="Modifier"></span>
-                        </button>
-                        <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeStage(i)" class="delete-button" *ngIf="modifiable">
-                          <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
+          @if (form.value.interruptionStage) {
+            <div class="row">
+              <div class="col-6 mb-3">
+                <button class="valid-button" mat-button mat-flat-button type="button" (click)="openInterruptionsCreateFormModal()">Ajouter des nouvelles périodes d'interruptions</button>
+                @if (!periodesInterruptionsValid) {
+                  <mat-error>Veuillez ajouter une période d'interruption</mat-error>
+                }
               </div>
+              @if (interruptionsStage.length > 0) {
+                <div class="col-md-12 mb-3">
+                  <h4 class="text-title">Périodes d'interruptions actuelles :</h4>
+                  <table mat-table [dataSource]="interruptionsStage">
+                    <ng-container matColumnDef="dateDebutInterruption">
+                      <th mat-header-cell *matHeaderCellDef>date de Debut</th>
+                      <td mat-cell *matCellDef="let row">{{row.dateDebutInterruption|date:'dd/MM/yyyy'}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="dateFinInterruption">
+                      <th mat-header-cell *matHeaderCellDef>date de Fin</th>
+                      <td mat-cell *matCellDef="let row">{{row.dateFinInterruption|date:'dd/MM/yyyy'}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>actions</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="openInterruptionsEditFormModal(row)"><span class="fa fa-pen" aria-label="Modifier"></span></button>
+                        <button class="delete-button" mat-icon-button matTooltip="Supprimer" (click)="deleteInterruptionStage(row)"><span class="fa fa-trash-alt"></span></button>
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="interruptionsStageTableColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: interruptionsStageTableColumns;"></tr>
+                  </table>
+                </div>
+              }
             </div>
-          </div>
-        </div>
-        <div class="form-row row align-items-start">
-          <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Durée effective du stage en nombre d'heures</mat-label>
-            <input type="text" inputmode="decimal" matInput formControlName="dureeExceptionnelle" required />
-            <mat-error>
-              <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
-            </mat-error>
-          </mat-form-field>
-          <div class="periode-wrapper col-12 col-md-6 mb-2" *ngIf="!updatingPeriode">
-            <mat-form-field class="periode-field" appearance="fill">
-              <mat-label>Mois</mat-label>
-              <input type="number" matInput formControlName="periodeStageMois" />
-            </mat-form-field>
-            <mat-form-field class="periode-field" appearance="fill">
-              <mat-label>Jour(s)</mat-label>
-              <input type="number" matInput formControlName="periodeStageJours" />
-            </mat-form-field>
-            <mat-form-field class="periode-field" appearance="fill">
-              <mat-label>Heure(s)</mat-label>
-              <input type="number" matInput formControlName="periodeStageHeures" />
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="row">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Temps de travail</mat-label>
-            <mat-select formControlName="idTempsTravail" required>
-              <mat-option *ngFor="let tempsTravail of tempsTravails" [value]="tempsTravail.id">{{tempsTravail.libelle}}</mat-option>
-            </mat-select>
-            <mat-error><app-form-error [field]="form.get('idTempsTravail')"></app-form-error></mat-error>
-          </mat-form-field>
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Commentaire sur le temps de travail</mat-label>
-            <textarea matInput formControlName="commentaireDureeTravail" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('commentaireDureeTravail')" style="color:var(--dangerColor);">
-              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-            </mat-hint>
-            <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
-          </mat-form-field>
+          }
 
-        </div>
-
-        <h4 class="text-title">Gratification</h4>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2">Gratification au cours du stage ?</div>
-            <mat-radio-group formControlName="gratificationStage" (change)="setGratificationStageFormControls($event)">
-              <mat-radio-button [value]="true">Oui</mat-radio-button>
-              <mat-radio-button [value]="false">Non</mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </div>
-        <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration" *ngIf="form.value.gratificationStage">
-        </div>
-        <div *ngIf="form.value.gratificationStage">
-          <h4 class="text-title">Montant de la gratification</h4>
-        </div>
-        <div *ngIf="form.value.gratificationStage">
-          <div class="row" style="align-items: baseline">
-            <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
-              <mat-label>Montant de la gratification</mat-label>
-              <input matInput formControlName="montantGratification" required />
-              <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
-            </mat-form-field>
-            <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
-              <mat-label>Type de gratification</mat-label>
-              <mat-select formControlName="idUniteGratification" required>
-                <mat-option *ngFor="let uniteGratification of uniteGratifications" [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
-            </mat-form-field>
-            <mat-label>par</mat-label>
-            <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
-              <mat-label>Durée</mat-label>
-              <mat-select formControlName="idUniteDuree" required>
-                <mat-option *ngFor="let uniteDuree of uniteDurees" [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
-            </mat-form-field>
-          </div>
           <div class="row">
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-              <mat-label>Monnaie utilisée pour le paiement</mat-label>
-              <mat-select formControlName="idDevise" required>
-                <mat-option *ngFor="let devise of devises" [value]="devise.id">{{devise.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
-            </mat-form-field>
-            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-              <mat-label>Modalité de versement de la gratification</mat-label>
-              <mat-select formControlName="idModeVersGratification" required>
-                <mat-option *ngFor="let modeVersGratification of modeVersGratifications" [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="text-title">Protection Sociale (article 6.3)</div>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row">
-          <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local. Décocher la case pour annuler la saisie :</div>
-            <div class="d-flex flex-column">
-              <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === true"
-                            [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
-                            (change)="setProtectionSocialeOrganismeAccueil(true, $event.checked)">
-                OUI : cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français
-              </mat-checkbox>
-              <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === false"
-                            [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
-                            (change)="setProtectionSocialeOrganismeAccueil(false, $event.checked)">
-                NON : la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant
-              </mat-checkbox>
-            </div>
-            <div class="mt-2">Si aucune case n'est cochée, le 6.3-1 s'applique.</div>
-          </div>
-        </div>
-
-        <div class="text-title" *ngIf="annuaireActif && !enMasse">Annuaire des étudiants ayant réalisé un stage</div>
-        <mat-divider class="mb-2" *ngIf="annuaireActif && !enMasse"></mat-divider>
-        <div class="row" *ngIf="annuaireActif && !enMasse">
-          <div class="col-sm-12 col-md-12 mb-2">
-            <div class="mb-2" [innerHTML]="'TEXTE_ACCORD_ANNUAIRE_INTRO'|contenu"></div>
-            <div class="d-flex flex-column">
-              <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === true"
-                            [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
-                            (change)="setAccordAnnuaireEtudiant(true, $event.checked)">
-                {{'LIBELLE_ACCORD_ANNUAIRE_OUI'|contenu}}
-              </mat-checkbox>
-              <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === false"
-                            [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
-                            (change)="setAccordAnnuaireEtudiant(false, $event.checked)">
-                {{'LIBELLE_ACCORD_ANNUAIRE_NON'|contenu}}
-              </mat-checkbox>
-            </div>
-            <div class="error-message mat-caption mt-2"
-                 *ngIf="form.get('accordAnnuaireEtudiant')!.hasError('required') && form.get('accordAnnuaireEtudiant')!.touched">
-              Vous devez cocher l'une des deux cases.
-            </div>
-          </div>
-        </div>
-
-        <h4 class="text-title">Divers</h4>
-        <mat-divider class="mb-2"></mat-divider>
-        <div class="row" *ngIf="!enMasse">
-          <div class="col-sm-12 col-md-6">
-            <mat-form-field class="w-100 mb-2" appearance="fill">
-              <mat-label>Comment le stage a-t-il été trouvé ?</mat-label>
-              <mat-select formControlName="idOrigineStage" required>
-                <mat-option *ngFor="let origineStage of origineStages" [value]="origineStage.id">{{origineStage.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idOrigineStage')"></app-form-error></mat-error>
-            </mat-form-field>
-            <div class="mb-2">
-              <div class="mb-2">Confidentialité du stage / Thème du stage</div>
-              <mat-radio-group formControlName="confidentiel">
+            <div class="col-sm-12 col-md-12 mb-2">
+              <div class="mb-2" >Avez-vous des horaires de travail réguliers</div>
+              <mat-radio-group formControlName="horairesReguliers" (change)="setHorairesReguliersFormControls($event)">
                 <mat-radio-button [value]="true">Oui</mat-radio-button>
                 <mat-radio-button [value]="false">Non</mat-radio-button>
               </mat-radio-group>
             </div>
-            <mat-form-field class="w-100 mb-2" appearance="fill">
-              <mat-label>Nature du travail à fournir suite au stage</mat-label>
-              <mat-select formControlName="idNatureTravail" required>
-                <mat-option *ngFor="let natureTravail of natureTravails" [value]="natureTravail.id">{{natureTravail.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idNatureTravail')"></app-form-error></mat-error>
-            </mat-form-field>
-            <mat-form-field class="w-100 mb-2" appearance="fill">
-              <mat-label>Modalité de validation du stage</mat-label>
-              <mat-select formControlName="idModeValidationStage" required>
-                <mat-option *ngFor="let modeValidationStage of modeValidationStages" [value]="modeValidationStage.id">{{modeValidationStage.libelle}}</mat-option>
-              </mat-select>
-              <mat-error><app-form-error [field]="form.get('idModeValidationStage')"></app-form-error></mat-error>
-            </mat-form-field>
           </div>
-          <div class="col-sm-12 col-md-6">
-            <mat-form-field class="w-100 mb-2" appearance="fill">
-              <mat-label>Modalité de suivi du stagiaire</mat-label>
-              <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
-                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-              </mat-hint>
-              <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
+          @if (form.value.horairesReguliers) {
+            <div class="row">
+              <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
+                <mat-label>Nombre d’heures hebdomadaires du stage</mat-label>
+                <input type="text" inputmode="decimal" matInput formControlName="nbHeuresHebdo" required />
+                <mat-error><app-form-error [field]="form.get('nbHeuresHebdo')"></app-form-error></mat-error>
+              </mat-form-field>
+              <mat-form-field class="col-sm-6 col-md-6 mb-2" appearance="fill">
+                <mat-label>Nombre de jours de congés autorisés</mat-label>
+                <input type="text" step="any" maxlength="{{MAX_LENTGH_INPUT.nbConges}}"  matInput formControlName="nbConges" (focus)="focused = 'nbConges'" (blur)="focused = focused === 'nbConges' ? null : focused"/>
+                <mat-hint>ou modalités des congés et autorisations d'absence durant le stage</mat-hint>
+                @if (!hasError('nbConges') && focused === 'nbConges') {
+                  <mat-hint
+                    align="end"
+                    [ngStyle]="{ color: counterColor('nbConges') }"
+                    >
+                    {{ len('nbConges') }}/{{ MAX_LENTGH_INPUT.nbConges }}
+                  </mat-hint>
+                }
+                <mat-error><app-form-error [field]="form.get('nbConges')"></app-form-error></mat-error>
+              </mat-form-field>
+            </div>
+          }
+          @if (!form.value.horairesReguliers) {
+            <div class="row">
+              <div class="col-6 mb-3">
+                <button class="valid-button" mat-button mat-flat-button type="button" (click)="openCalendar()">Calcul du nombre d'heures de stages</button>
+                @if (periodesCalculHeuresStage.length === 0) {
+                  <mat-error>Veuillez définir au moins une période de travail</mat-error>
+                }
+              </div>
+              @if (periodesCalculHeuresStage.length > 0) {
+                <div class="col-md-12 mb-3">
+                  <h4 class="text-title">Périodes de travail actuelles :</h4>
+                  <div class="scrollable-content">
+                    <div class="detail-section">
+                      <table class="table">
+                        <thead>
+                          <tr class="header-row">
+                            <th class="table-header">Date de début</th>
+                            <th class="table-header">Date de fin</th>
+                            <th class="table-header">Heures par jour</th>
+                            <th class="table-header">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (periode of periodesCalculHeuresStage; track periode; let i = $index) {
+                            <tr class="detail-row">
+                              <td class="detail-value">{{periode.dateDebut | date:'dd/MM/yyyy'}}</td>
+                              <td class="detail-value">{{periode.dateFin | date:'dd/MM/yyyy'}}</td>
+                              <td class="detail-value">{{periode.nbHeuresJournalieres}}</td>
+                              <td class="detail-value">
+                                <div class="actions-container">
+                                  @if (modifiable) {
+                                    <button class="edit-button" mat-icon-button matTooltip="Éditer" (click)="openCalendar()">
+                                      <span class="fa fa-pen" aria-label="Modifier"></span>
+                                    </button>
+                                  }
+                                  @if (modifiable) {
+                                    <button mat-icon-button matTooltip="Supprimer" (click)="deletePeriodeStage(i)" class="delete-button">
+                                      <span class="fa fa-trash-alt" aria-label="Supprimer"></span>
+                                    </button>
+                                  }
+                                </div>
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          <div class="form-row row align-items-start">
+            <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Durée effective du stage en nombre d'heures</mat-label>
+              <input type="text" inputmode="decimal" matInput formControlName="dureeExceptionnelle" required />
+              <mat-error>
+                <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
+              </mat-error>
             </mat-form-field>
-            <mat-form-field class="w-100 mb-2" appearance="fill">
-              <mat-label>Liste des avantages en nature</mat-label>
-              <textarea matInput formControlName="avantagesNature" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('avantagesNature')" style="color:var(--dangerColor);">
-                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-              </mat-hint>
-              <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
+            @if (!updatingPeriode) {
+              <div class="periode-wrapper col-12 col-md-6 mb-2">
+                <mat-form-field class="periode-field" appearance="fill">
+                  <mat-label>Mois</mat-label>
+                  <input type="number" matInput formControlName="periodeStageMois" />
+                </mat-form-field>
+                <mat-form-field class="periode-field" appearance="fill">
+                  <mat-label>Jour(s)</mat-label>
+                  <input type="number" matInput formControlName="periodeStageJours" />
+                </mat-form-field>
+                <mat-form-field class="periode-field" appearance="fill">
+                  <mat-label>Heure(s)</mat-label>
+                  <input type="number" matInput formControlName="periodeStageHeures" />
+                </mat-form-field>
+              </div>
+            }
+          </div>
+          <div class="row">
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Temps de travail</mat-label>
+              <mat-select formControlName="idTempsTravail" required>
+                @for (tempsTravail of tempsTravails; track tempsTravail) {
+                  <mat-option [value]="tempsTravail.id">{{tempsTravail.libelle}}</mat-option>
+                }
+              </mat-select>
+              <mat-error><app-form-error [field]="form.get('idTempsTravail')"></app-form-error></mat-error>
             </mat-form-field>
-
-            <mat-form-field class="w-100 mb-3" appearance="fill">
-              <mat-label>Travail exceptionnel</mat-label>
-              <textarea matInput formControlName="travailNuitFerie" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-              <mat-hint *ngIf="isLongTextLimitReached('travailNuitFerie')" style="color:var(--dangerColor);">
-                Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-              </mat-hint>
-              <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
-              <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
+            <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+              <mat-label>Commentaire sur le temps de travail</mat-label>
+              <textarea matInput formControlName="commentaireDureeTravail" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+              @if (isLongTextLimitReached('commentaireDureeTravail')) {
+                <mat-hint style="color:var(--dangerColor);">
+                  Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                </mat-hint>
+              }
+              <mat-error><app-form-error [field]="form.get('commentaireDureeTravail')"></app-form-error></mat-error>
             </mat-form-field>
 
           </div>
 
-          <mat-form-field class="col-12 mt-3 mb-3" appearance="fill">
-            <mat-label>Informations complémentaires</mat-label>
-            <textarea
-              matInput
-              formControlName="informationsComplementaires"
-              maxlength="{{ MAX_LENTGH_INPUT.informationsComplementaires }}"
-              (focus)="focused = 'informationsComplementaires'"
-              (blur)="focused = focused === 'informationsComplementaires' ? null : focused"
-            ></textarea>
+          <h4 class="text-title">Gratification</h4>
+          <mat-divider class="mb-2"></mat-divider>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 mb-2">
+              <div class="mb-2">Gratification au cours du stage ?</div>
+              <mat-radio-group formControlName="gratificationStage" (change)="setGratificationStageFormControls($event)">
+                <mat-radio-button [value]="true">Oui</mat-radio-button>
+                <mat-radio-button [value]="false">Non</mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+          @if (form.value.gratificationStage) {
+            <div class="alert alert-info text-center" [innerHTML]="texteLimiteRenumeration">
+            </div>
+          }
+          @if (form.value.gratificationStage) {
+            <div>
+              <h4 class="text-title">Montant de la gratification</h4>
+            </div>
+          }
+          @if (form.value.gratificationStage) {
+            <div>
+              <div class="row" style="align-items: baseline">
+                <mat-form-field class="col-sm-3 col-md-3 mb-2" appearance="fill">
+                  <mat-label>Montant de la gratification</mat-label>
+                  <input matInput formControlName="montantGratification" required />
+                  <mat-error><app-form-error [field]="form.get('montantGratification')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
+                  <mat-label>Type de gratification</mat-label>
+                  <mat-select formControlName="idUniteGratification" required>
+                    @for (uniteGratification of uniteGratifications; track uniteGratification) {
+                      <mat-option [value]="uniteGratification.id">{{uniteGratification.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idUniteGratification')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-label>par</mat-label>
+                <mat-form-field class="col-sm-2 col-md-2 mb-2" appearance="fill">
+                  <mat-label>Durée</mat-label>
+                  <mat-select formControlName="idUniteDuree" required>
+                    @for (uniteDuree of uniteDurees; track uniteDuree) {
+                      <mat-option [value]="uniteDuree.id">{{uniteDuree.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idUniteDuree')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+              <div class="row">
+                <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+                  <mat-label>Monnaie utilisée pour le paiement</mat-label>
+                  <mat-select formControlName="idDevise" required>
+                    @for (devise of devises; track devise) {
+                      <mat-option [value]="devise.id">{{devise.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idDevise')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+                  <mat-label>Modalité de versement de la gratification</mat-label>
+                  <mat-select formControlName="idModeVersGratification" required>
+                    @for (modeVersGratification of modeVersGratifications; track modeVersGratification) {
+                      <mat-option [value]="modeVersGratification.id">{{modeVersGratification.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idModeVersGratification')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          }
 
-            <mat-error *ngIf="hasError('informationsComplementaires')">
-              <app-form-error [field]="form.get('informationsComplementaires')"></app-form-error>
-            </mat-error>
+          <div class="text-title">Protection Sociale (article 6.3)</div>
+          <mat-divider class="mb-2"></mat-divider>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 mb-2">
+              <div class="mb-2">En cochant la case appropriée, l'organisme d'accueil indique ci-après s'il fournit une protection Maladie au stagiaire, en vertu du droit local. Décocher la case pour annuler la saisie :</div>
+              <div class="d-flex flex-column">
+                <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === true"
+                  [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
+                  (change)="setProtectionSocialeOrganismeAccueil(true, $event.checked)">
+                  OUI : cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français
+                </mat-checkbox>
+                <mat-checkbox [checked]="form.get('protectionSocialeOrganismeAccueil')!.value === false"
+                  [disabled]="form.get('protectionSocialeOrganismeAccueil')!.disabled"
+                  (change)="setProtectionSocialeOrganismeAccueil(false, $event.checked)">
+                  NON : la protection découle alors exclusivement du maintien, à l'étranger, des droits issus du régime français étudiant
+                </mat-checkbox>
+              </div>
+              <div class="mt-2">Si aucune case n'est cochée, le 6.3-1 s'applique.</div>
+            </div>
+          </div>
 
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('informationsComplementaires') && focused === 'informationsComplementaires'"
-              [ngStyle]="{ color: counterColor('informationsComplementaires') }"
-            >
-              {{ len('informationsComplementaires') }}/{{ MAX_LENTGH_INPUT.informationsComplementaires }}
-            </mat-hint>
-          </mat-form-field>
+          @if (annuaireActif && !enMasse) {
+            <div class="text-title">Annuaire des étudiants ayant réalisé un stage</div>
+          }
+          @if (annuaireActif && !enMasse) {
+            <mat-divider class="mb-2"></mat-divider>
+          }
+          @if (annuaireActif && !enMasse) {
+            <div class="row">
+              <div class="col-sm-12 col-md-12 mb-2">
+                <div class="mb-2" [innerHTML]="'TEXTE_ACCORD_ANNUAIRE_INTRO'|contenu"></div>
+                <div class="d-flex flex-column">
+                  <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === true"
+                    [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
+                    (change)="setAccordAnnuaireEtudiant(true, $event.checked)">
+                    {{'LIBELLE_ACCORD_ANNUAIRE_OUI'|contenu}}
+                  </mat-checkbox>
+                  <mat-checkbox [checked]="form.get('accordAnnuaireEtudiant')!.value === false"
+                    [disabled]="form.get('accordAnnuaireEtudiant')!.disabled"
+                    (change)="setAccordAnnuaireEtudiant(false, $event.checked)">
+                    {{'LIBELLE_ACCORD_ANNUAIRE_NON'|contenu}}
+                  </mat-checkbox>
+                </div>
+                @if (form.get('accordAnnuaireEtudiant')!.hasError('required') && form.get('accordAnnuaireEtudiant')!.touched) {
+                  <div class="error-message mat-caption mt-2"
+                    >
+                    Vous devez cocher l'une des deux cases.
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <h4 class="text-title">Divers</h4>
+          <mat-divider class="mb-2"></mat-divider>
+          @if (!enMasse) {
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <mat-form-field class="w-100 mb-2" appearance="fill">
+                  <mat-label>Comment le stage a-t-il été trouvé ?</mat-label>
+                  <mat-select formControlName="idOrigineStage" required>
+                    @for (origineStage of origineStages; track origineStage) {
+                      <mat-option [value]="origineStage.id">{{origineStage.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idOrigineStage')"></app-form-error></mat-error>
+                </mat-form-field>
+                <div class="mb-2">
+                  <div class="mb-2">Confidentialité du stage / Thème du stage</div>
+                  <mat-radio-group formControlName="confidentiel">
+                    <mat-radio-button [value]="true">Oui</mat-radio-button>
+                    <mat-radio-button [value]="false">Non</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+                <mat-form-field class="w-100 mb-2" appearance="fill">
+                  <mat-label>Nature du travail à fournir suite au stage</mat-label>
+                  <mat-select formControlName="idNatureTravail" required>
+                    @for (natureTravail of natureTravails; track natureTravail) {
+                      <mat-option [value]="natureTravail.id">{{natureTravail.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idNatureTravail')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="w-100 mb-2" appearance="fill">
+                  <mat-label>Modalité de validation du stage</mat-label>
+                  <mat-select formControlName="idModeValidationStage" required>
+                    @for (modeValidationStage of modeValidationStages; track modeValidationStage) {
+                      <mat-option [value]="modeValidationStage.id">{{modeValidationStage.libelle}}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-error><app-form-error [field]="form.get('idModeValidationStage')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <mat-form-field class="w-100 mb-2" appearance="fill">
+                  <mat-label>Modalité de suivi du stagiaire</mat-label>
+                  <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+                  @if (isLongTextLimitReached('modeEncadreSuivi')) {
+                    <mat-hint style="color:var(--dangerColor);">
+                      Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                    </mat-hint>
+                  }
+                  <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="w-100 mb-2" appearance="fill">
+                  <mat-label>Liste des avantages en nature</mat-label>
+                  <textarea matInput formControlName="avantagesNature" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+                  @if (isLongTextLimitReached('avantagesNature')) {
+                    <mat-hint style="color:var(--dangerColor);">
+                      Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                    </mat-hint>
+                  }
+                  <mat-error><app-form-error [field]="form.get('avantagesNature')"></app-form-error></mat-error>
+                </mat-form-field>
+                <mat-form-field class="w-100 mb-3" appearance="fill">
+                  <mat-label>Travail exceptionnel</mat-label>
+                  <textarea matInput formControlName="travailNuitFerie" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+                  @if (isLongTextLimitReached('travailNuitFerie')) {
+                    <mat-hint style="color:var(--dangerColor);">
+                      Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                    </mat-hint>
+                  }
+                  <mat-hint>Si le stagiaire doit télétravailler, être présent la nuit, le dimanche ou un jour férié, préciser</mat-hint>
+                  <mat-error><app-form-error [field]="form.get('travailNuitFerie')"></app-form-error></mat-error>
+                </mat-form-field>
+              </div>
+              <mat-form-field class="col-12 mt-3 mb-3" appearance="fill">
+                <mat-label>Informations complémentaires</mat-label>
+                <textarea
+                  matInput
+                  formControlName="informationsComplementaires"
+                  maxlength="{{ MAX_LENTGH_INPUT.informationsComplementaires }}"
+                  (focus)="focused = 'informationsComplementaires'"
+                  (blur)="focused = focused === 'informationsComplementaires' ? null : focused"
+                ></textarea>
+                @if (hasError('informationsComplementaires')) {
+                  <mat-error>
+                    <app-form-error [field]="form.get('informationsComplementaires')"></app-form-error>
+                  </mat-error>
+                }
+                @if (!hasError('informationsComplementaires') && focused === 'informationsComplementaires') {
+                  <mat-hint
+                    align="end"
+                    [ngStyle]="{ color: counterColor('informationsComplementaires') }"
+                    >
+                    {{ len('informationsComplementaires') }}/{{ MAX_LENTGH_INPUT.informationsComplementaires }}
+                  </mat-hint>
+                }
+              </mat-form-field>
+            </div>
+          }
+
+          @if (enMasse) {
+            <div class="row">
+              <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
+                <mat-label>Modalité de suivi du stagiaire</mat-label>
+                <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
+                @if (isLongTextLimitReached('modeEncadreSuivi')) {
+                  <mat-hint style="color:var(--dangerColor);">
+                    Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
+                  </mat-hint>
+                }
+                <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
+              </mat-form-field>
+              <mat-form-field class="col-12 mt-3 mb-3" appearance="fill">
+                <mat-label>Informations complémentaires</mat-label>
+                <textarea
+                  matInput
+                  formControlName="informationsComplementaires"
+                  maxlength="{{ MAX_LENTGH_INPUT.informationsComplementaires }}"
+                  (focus)="focused = 'informationsComplementaires'"
+                  (blur)="focused = focused === 'informationsComplementaires' ? null : focused"
+                ></textarea>
+                @if (hasError('informationsComplementaires')) {
+                  <mat-error>
+                    <app-form-error [field]="form.get('informationsComplementaires')"></app-form-error>
+                  </mat-error>
+                }
+                @if (!hasError('informationsComplementaires') && focused === 'informationsComplementaires') {
+                  <mat-hint
+                    align="end"
+                    [ngStyle]="{ color: counterColor('informationsComplementaires') }"
+                    >
+                    {{ len('informationsComplementaires') }}/{{ MAX_LENTGH_INPUT.informationsComplementaires }}
+                  </mat-hint>
+                }
+              </mat-form-field>
+            </div>
+          }
         </div>
-
-        <div class="row" *ngIf="enMasse">
-          <mat-form-field class="col-sm-12 col-md-6 mb-2" appearance="fill">
-            <mat-label>Modalité de suivi du stagiaire</mat-label>
-            <textarea matInput formControlName="modeEncadreSuivi" maxlength="{{ MAX_LENTGH_INPUT.longText }}"></textarea>
-            <mat-hint *ngIf="isLongTextLimitReached('modeEncadreSuivi')" style="color:var(--dangerColor);">
-              Limite de {{ MAX_LENTGH_INPUT.longText }} caractères atteinte
-            </mat-hint>
-            <mat-error><app-form-error [field]="form.get('modeEncadreSuivi')"></app-form-error></mat-error>
-          </mat-form-field>
-
-          <mat-form-field class="col-12 mt-3 mb-3" appearance="fill">
-            <mat-label>Informations complémentaires</mat-label>
-            <textarea
-              matInput
-              formControlName="informationsComplementaires"
-              maxlength="{{ MAX_LENTGH_INPUT.informationsComplementaires }}"
-              (focus)="focused = 'informationsComplementaires'"
-              (blur)="focused = focused === 'informationsComplementaires' ? null : focused"
-            ></textarea>
-
-            <mat-error *ngIf="hasError('informationsComplementaires')">
-              <app-form-error [field]="form.get('informationsComplementaires')"></app-form-error>
-            </mat-error>
-
-            <mat-hint
-              align="end"
-              *ngIf="!hasError('informationsComplementaires') && focused === 'informationsComplementaires'"
-              [ngStyle]="{ color: counterColor('informationsComplementaires') }"
-            >
-              {{ len('informationsComplementaires') }}/{{ MAX_LENTGH_INPUT.informationsComplementaires }}
-            </mat-hint>
-          </mat-form-field>
-        </div>
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card>
+      </form>
+    </mat-card-content>
+  </mat-card>
 

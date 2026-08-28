@@ -28,52 +28,55 @@
             (cdkDropListDropped)="drop($event)"
             role="list"
             aria-label="Liste des signataires - utilisez le glisser-déposer ou les boutons pour réorganiser">
-            <div
-              class="ordre"
-              [cdkDragDisabled]="!canMoveSignataire"
-              *ngFor="let signataire of signataires; let index = index; let first = first; let last = last"
-              cdkDrag
-              role="listitem"
-              [attr.aria-label]="'Signataire ' + signataire.ordre + ' : ' + signataire.id.signataire">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <span cdkDragHandle [class.draggable]="canMoveSignataire" aria-hidden="true">{{signataire.ordre}}</span>
-                  {{signataire.id.signataire}}
-                </div>
-                <div class="col-6">
-                  <mat-radio-group
-                    [(ngModel)]="signataire.type"
-                    [ngModelOptions]="{standalone: true}"
-                    (ngModelChange)="updateSignataire()"
-                    [attr.aria-label]="'Type de signature pour ' + signataire.id.signataire">
-                    <mat-radio-button style="margin-left: 10px" [value]="'otp'">Signature OTP</mat-radio-button>
-                    <mat-radio-button style="margin-left: 10px" [value]="'serveur'">Signature serveur</mat-radio-button>
-                  </mat-radio-group>
-                </div>
-                <div class="col-2 text-end" *ngIf="canMoveSignataire">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    [disabled]="first"
-                    (click)="moveUp(index)"
-                    [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le haut'"
-                    matTooltip="Déplacer vers le haut"
-                    class="move-button">
-                    <mat-icon aria-hidden="true">arrow_upward</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    [disabled]="last"
-                    (click)="moveDown(index)"
-                    [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le bas'"
-                    matTooltip="Déplacer vers le bas"
-                    class="move-button">
-                    <mat-icon aria-hidden="true">arrow_downward</mat-icon>
-                  </button>
+            @for (signataire of signataires; track signataire; let index = $index; let first = $first; let last = $last) {
+              <div
+                class="ordre"
+                [cdkDragDisabled]="!canMoveSignataire"
+                cdkDrag
+                role="listitem"
+                [attr.aria-label]="'Signataire ' + signataire.ordre + ' : ' + signataire.id.signataire">
+                <div class="row align-items-center">
+                  <div class="col-4">
+                    <span cdkDragHandle [class.draggable]="canMoveSignataire" aria-hidden="true">{{signataire.ordre}}</span>
+                    {{signataire.id.signataire}}
+                  </div>
+                  <div class="col-6">
+                    <mat-radio-group
+                      [(ngModel)]="signataire.type"
+                      [ngModelOptions]="{standalone: true}"
+                      (ngModelChange)="updateSignataire()"
+                      [attr.aria-label]="'Type de signature pour ' + signataire.id.signataire">
+                      <mat-radio-button style="margin-left: 10px" [value]="'otp'">Signature OTP</mat-radio-button>
+                      <mat-radio-button style="margin-left: 10px" [value]="'serveur'">Signature serveur</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+                  @if (canMoveSignataire) {
+                    <div class="col-2 text-end">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        [disabled]="first"
+                        (click)="moveUp(index)"
+                        [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le haut'"
+                        matTooltip="Déplacer vers le haut"
+                        class="move-button">
+                        <mat-icon aria-hidden="true">arrow_upward</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        type="button"
+                        [disabled]="last"
+                        (click)="moveDown(index)"
+                        [attr.aria-label]="'Déplacer ' + signataire.id.signataire + ' vers le bas'"
+                        matTooltip="Déplacer vers le bas"
+                        class="move-button">
+                        <mat-icon aria-hidden="true">arrow_downward</mat-icon>
+                      </button>
+                    </div>
+                  }
                 </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>

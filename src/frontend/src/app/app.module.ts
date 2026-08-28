@@ -143,6 +143,9 @@ import {CentreProprietaireDialogComponent} from "./components/gestion-etab-accue
 import {ColumnSelectorComponent} from "./components/table/column-selector/column-selector.component";
 import {TachePlanifieComponent} from "./components/admin/taches-planifiees/tache-planifie.component";
 import {DroitOppositionComponent} from "./components/admin/droit-opposition/droit-opposition.component";
+import {ApiTokensComponent} from "./components/admin/api-tokens/api-tokens.component";
+import {ApiTokenCreateDialogComponent} from "./components/admin/api-tokens/create-dialog/api-token-create-dialog.component";
+import {ApiTokenValueDialogComponent} from "./components/admin/api-tokens/token-value-dialog/api-token-value-dialog.component";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {ConfirmEnvoieMailComponent} from "./components/convention/evaluation-stage/confirm-envoie-mail/confirm-envoie-mail.component";
 import { ImageCropperComponent } from 'ngx-image-cropper';
@@ -281,6 +284,9 @@ export class FrenchDateProvider extends NativeDateAdapter {
     ColumnSelectorComponent,
     TachePlanifieComponent,
     DroitOppositionComponent,
+    ApiTokensComponent,
+    ApiTokenCreateDialogComponent,
+    ApiTokenValueDialogComponent,
     ConfirmEnvoieMailComponent,
     EnvoiMailEnMasseEvalComponent,
     ExportEvaluationComponent,

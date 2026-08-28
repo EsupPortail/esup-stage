@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.service.ldap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.config.properties.ReferentielProperties;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
@@ -78,7 +78,7 @@ public class LdapService {
             List<LdapUser> users = Arrays.asList(mapper.readValue(response, LdapUser[].class));
             log.info("{} utilisateurs trouvé",users.size());
             return users;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("context",e);
             log.error("Erreur lors de la lecture de la réponse sur l'api {}", api);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
@@ -102,7 +102,7 @@ public class LdapService {
                 log.info("Utilisateur login = {} non trouvé", login);
             }
             return null;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Erreur lors de la lecture de la réponse sur l'api bySupannAliasLogin", e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur technique est survenue.");
         }

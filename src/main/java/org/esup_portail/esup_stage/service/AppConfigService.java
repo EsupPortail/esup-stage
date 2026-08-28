@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,9 +66,9 @@ public class AppConfigService {
                 }
             }
             return configGeneraleDto;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JacksonException");
         }
     }
 
@@ -80,9 +80,9 @@ public class AppConfigService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(appConfig.getParametres(), ConfigAlerteMailDto.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JacksonException");
         }
     }
 
@@ -109,7 +109,7 @@ public class AppConfigService {
             return configThemeDto;
         } catch (IOException e) {
             logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JsonProcessingException");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigGeneraleDto::getConfigGenerale ERROR: JacksonException");
         }
     }
 
@@ -121,9 +121,9 @@ public class AppConfigService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(appConfig.getParametres(), ConfigSignatureDto.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             logger.error(e);
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigSignatureDto::getConfigSignature ERROR: JsonProcessingException");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "ConfigSignatureDto::getConfigSignature ERROR: JacksonException");
         }
     }
 

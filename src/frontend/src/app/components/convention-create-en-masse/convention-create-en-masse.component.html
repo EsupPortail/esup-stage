@@ -1,4 +1,6 @@
-<app-retour-liste *ngIf="isModif" path="/convention-create-en-masse/groupes" ></app-retour-liste>
+@if (isModif) {
+  <app-retour-liste path="/convention-create-en-masse/groupes" ></app-retour-liste>
+}
 <mat-tab-group #tabGroup class="convention" (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="conventionTabIndex">
   <mat-tab #selectEtuTab>
     <ng-template mat-tab-label>
@@ -16,7 +18,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-selection-groupe-etu *ngIf="tabs[0].init"  (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-selection-groupe-etu>
+    @if (tabs[0].init) {
+      <app-selection-groupe-etu  (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-selection-groupe-etu>
+    }
   </mat-tab>
   <mat-tab #infosStageTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
@@ -34,7 +38,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-infos-stage *ngIf="infosStageTab.isActive || tabs[1].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-infos-stage>
+    @if (infosStageTab.isActive || tabs[1].init) {
+      <app-infos-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-infos-stage>
+    }
   </mat-tab>
   <mat-tab #cadreStageTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
@@ -52,7 +58,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-cadre-stage *ngIf="cadreStageTab.isActive || tabs[2].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-cadre-stage>
+    @if (cadreStageTab.isActive || tabs[2].init) {
+      <app-cadre-stage (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-cadre-stage>
+    }
   </mat-tab>
   <mat-tab #etabAccueilTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
@@ -70,7 +78,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-etab-accueil-groupe *ngIf="etabAccueilTab.isActive || tabs[3].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-etab-accueil-groupe>
+    @if (etabAccueilTab.isActive || tabs[3].init) {
+      <app-etab-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-etab-accueil-groupe>
+    }
   </mat-tab>
   <mat-tab #serviceAccueilTab [disabled]="!groupeEtudiant || !percentValidStructure()">
     <ng-template mat-tab-label>
@@ -88,7 +98,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-service-accueil-groupe *ngIf="serviceAccueilTab.isActive || tabs[4].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-service-accueil-groupe>
+    @if (serviceAccueilTab.isActive || tabs[4].init) {
+      <app-service-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-service-accueil-groupe>
+    }
   </mat-tab>
   <mat-tab #tuteurAccueilTab [disabled]="!groupeEtudiant || !percentValidService()">
     <ng-template mat-tab-label>
@@ -106,7 +118,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-tuteur-accueil-groupe *ngIf="tuteurAccueilTab.isActive || tabs[5].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-tuteur-accueil-groupe>
+    @if (tuteurAccueilTab.isActive || tabs[5].init) {
+      <app-tuteur-accueil-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-tuteur-accueil-groupe>
+    }
   </mat-tab>
   <mat-tab #enseignantTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>
@@ -124,7 +138,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-enseignant-groupe *ngIf="enseignantTab.isActive || tabs[6].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-enseignant-groupe>
+    @if (enseignantTab.isActive || tabs[6].init) {
+      <app-enseignant-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-enseignant-groupe>
+    }
   </mat-tab>
   <mat-tab #signataireTab [disabled]="!groupeEtudiant || !percentValidStructure()">
     <ng-template mat-tab-label>
@@ -142,7 +158,9 @@
         ></mat-progress-bar>
       </div>
     </ng-template>
-    <app-signataire-groupe *ngIf="signataireTab.isActive || tabs[7].init" (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-signataire-groupe>
+    @if (signataireTab.isActive || tabs[7].init) {
+      <app-signataire-groupe (validated)="updateGroupeEtudiant($event)" [groupeEtudiant]="groupeEtudiant" [sharedData]="sharedData"></app-signataire-groupe>
+    }
   </mat-tab>
   <mat-tab #validationCreationTab [disabled]="!groupeEtudiant">
     <ng-template mat-tab-label>

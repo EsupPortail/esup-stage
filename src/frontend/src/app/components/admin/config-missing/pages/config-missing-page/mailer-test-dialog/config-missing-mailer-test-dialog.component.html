@@ -6,22 +6,30 @@
       <mat-form-field class="col-12" appearance="fill">
         <mat-label>Email destinataire</mat-label>
         <input matInput formControlName="mailto" required>
-        <mat-error *ngIf="form.get('mailto')?.hasError('required')">Champ obligatoire</mat-error>
-        <mat-error *ngIf="form.get('mailto')?.hasError('pattern')">Adresse email invalide</mat-error>
+        @if (form.get('mailto')?.hasError('required')) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
+        @if (form.get('mailto')?.hasError('pattern')) {
+          <mat-error>Adresse email invalide</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="row">
       <mat-form-field class="col-12" appearance="fill">
         <mat-label>Sujet</mat-label>
         <input matInput formControlName="subject" required>
-        <mat-error *ngIf="form.get('subject')?.hasError('required')">Champ obligatoire</mat-error>
+        @if (form.get('subject')?.hasError('required')) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="row">
       <mat-form-field class="col-12" appearance="fill">
         <mat-label>Contenu</mat-label>
         <textarea matInput formControlName="content" rows="6" required></textarea>
-        <mat-error *ngIf="form.get('content')?.hasError('required')">Champ obligatoire</mat-error>
+        @if (form.get('content')?.hasError('required')) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="row">

@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.pojo;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.StringNode;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -348,7 +348,7 @@ class PojoAccessorsTest {
             return Duration.ofMinutes(variant);
         }
         if (type == JsonNode.class) {
-            return TextNode.valueOf("json-" + variant);
+            return StringNode.valueOf("json-" + variant);
         }
         if (type == MultipartFile.class) {
             return new MockMultipartFile("fichier-" + variant, ("contenu-" + variant).getBytes());

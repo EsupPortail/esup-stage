@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>{{ data.titre }}</h1>
+<div mat-dialog-content>
+  <p class="token-application">Application : <strong>{{ data.nomApplication }}</strong></p>
+
+  <div class="token-value">
+    <code aria-live="polite">{{ valeurAffichee }}</code>
+    <button type="button" mat-icon-button (click)="toggleVisible()"
+      [matTooltip]="visible ? 'Masquer la valeur' : 'Afficher la valeur'"
+      [attr.aria-label]="visible ? 'Masquer la valeur du token' : 'Afficher la valeur du token'">
+      <mat-icon aria-hidden="true">{{ visible ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+    <button type="button" mat-icon-button (click)="copier()"
+      matTooltip="Copier dans le presse-papier" aria-label="Copier le token dans le presse-papier">
+      <mat-icon aria-hidden="true">content_copy</mat-icon>
+    </button>
+  </div>
+  @if (copie) {
+    <span class="token-copied" aria-live="polite">Copié</span>
+  }
+
+  <p class="token-hint">
+    Transmettez cette valeur à l'application appelante. Elle reste consultable depuis le tableau
+    des tokens tant que le token n'a pas été renouvelé.
+  </p>
+
+  <div class="row">
+    <div class="col-12 text-right">
+      <button type="button" class="valid-button" mat-flat-button (click)="close()">{{'BOUTON_FERMER'|contenu}}</button>
+    </div>
+  </div>
+</div>

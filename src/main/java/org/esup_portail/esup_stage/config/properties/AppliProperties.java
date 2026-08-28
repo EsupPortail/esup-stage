@@ -6,10 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 @Data
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "appli")
@@ -20,7 +18,6 @@ public class AppliProperties {
     private String localApi;
     private String adminTechnique;
     private String dataDir;
-    private List<String> tokens;
     private String jwtSecret;
     private Long nbJoursValideToken;
     private String configEncryptionKey;
@@ -46,16 +43,6 @@ public class AppliProperties {
 
     public boolean isAdminTechnique(final String login){
         return getAdminTechnique().contains(login);
-    }
-
-    public String[] getPublicTokens() {
-        if (tokens == null || tokens.isEmpty()) {
-            return new String[]{};
-        }
-        return tokens.stream()
-                .filter(StringUtils::hasText) // Filtre les tokens non vides
-                .flatMap(token -> Stream.of(token.split(";"))) // Divise les tokens par ";"
-                .toArray(String[]::new);
     }
 
     @Data

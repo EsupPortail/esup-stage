@@ -82,7 +82,7 @@ class SireneServiceTest {
 
         org.mockito.Mockito.reset(restTemplate);
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(SirenResponse.class)))
-                .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>((SirenResponse) null, HttpStatus.OK));
         assertThat(service.getEtablissement("12345678901234")).isNull();
     }
 

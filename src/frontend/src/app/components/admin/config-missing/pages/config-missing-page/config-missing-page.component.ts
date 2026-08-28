@@ -41,7 +41,6 @@ export class ConfigMissingPageComponent implements OnInit {
   testEsupSign:    TestState = emptyTest();
 
   show: Record<string, boolean> = {};
-  copiedTokens = false;
 
   private readonly secretKeys = new Set<string>();
   private secretMeta: Record<string, { isSecret: boolean; hasValue: boolean }> = {};
@@ -61,7 +60,6 @@ export class ConfigMissingPageComponent implements OnInit {
 
   private readonly FIELD_TO_KEY: Record<string, string> = {
     appli_url: 'appli.url',
-    appli_tokens: 'appli.tokens',
     appli_jwt_secret: 'appli.jwt_secret',
     appli_nb_jours_valide_token: 'appli.nb_jours_valide_token',
 
@@ -130,7 +128,6 @@ export class ConfigMissingPageComponent implements OnInit {
   private buildForm(): void {
     this.configForm = this.fb.group({
       appli_url: [null],
-      appli_tokens: [null],
       appli_jwt_secret: [null],
       appli_nb_jours_valide_token: [null],
 
@@ -235,39 +232,6 @@ export class ConfigMissingPageComponent implements OnInit {
 
   toggleShown(key: string): void {
     this.show[key] = !this.show[key];
-  }
-
-  copyTokens(): void {
-    const value = this.configForm.get('appli_tokens')?.value;
-    if (!value) return;
-    const text = String(value);
-
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(text).then(
-        () => this.flashCopied(),
-        () => this.fallbackCopy(text)
-      );
-      return;
-    }
-    this.fallbackCopy(text);
-  }
-
-  private fallbackCopy(text: string): void {
-    const el = document.createElement('textarea');
-    el.value = text;
-    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
-    document.body.appendChild(el);
-    el.select();
-    try {
-      document.execCommand('copy');
-      this.flashCopied();
-    } catch { }
-    finally { document.body.removeChild(el); }
-  }
-
-  private flashCopied(): void {
-    this.copiedTokens = true;
-    setTimeout(() => (this.copiedTokens = false), 1800);
   }
 
   isMailerTestable(): boolean {

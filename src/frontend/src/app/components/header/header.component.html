@@ -1,5 +1,5 @@
 <header>
-<mat-toolbar id="app-toolbar" class="toolbar-primary">
+  <mat-toolbar id="app-toolbar" class="toolbar-primary">
     <a routerLink="/">
       <img #logo id="app-logo" src="" alt="logo" />
       <span class="app-name">{{'TITRE_APPLICATION'|contenu}}</span>
@@ -7,25 +7,27 @@
 
     <span class="spacer"></span>
 
-    <button
-      class="header-button-accessibility"
-      mat-icon-button
-      (click)="openAccessibilityDialog()"
-      title="Paramètres d'accessibilité"
-      *ngIf="isConnected()"
-      aria-label="Ouvrir le menu d'accessibilité"
-      type="button">
-      <span class="fa-solid fa-universal-access"></span>
-    </button>
+    @if (isConnected()) {
+      <button
+        class="header-button-accessibility"
+        mat-icon-button
+        (click)="openAccessibilityDialog()"
+        title="Paramètres d'accessibilité"
+        aria-label="Ouvrir le menu d'accessibilité"
+        type="button">
+        <span class="fa-solid fa-universal-access"></span>
+      </button>
+    }
 
-    <button
-      class="header-button-disconnect"
-      mat-icon-button
-      title="Déconnexion"
-      (click)="logout()"
-      *ngIf="isConnected()"
-      aria-label="Se déconnecter">
-      <span class="fa-solid fa-right-from-bracket"></span>
-    </button>
+    @if (isConnected()) {
+      <button
+        class="header-button-disconnect"
+        mat-icon-button
+        title="Déconnexion"
+        (click)="logout()"
+        aria-label="Se déconnecter">
+        <span class="fa-solid fa-right-from-bracket"></span>
+      </button>
+    }
   </mat-toolbar>
 </header>

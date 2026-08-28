@@ -1,30 +1,35 @@
-<li *ngIf="!item.canView || item.canView()" class="menu-item">
-  <div class="menu-item__row" [style.padding-left.px]="(depth * 12) + 8">
-    <ng-container *ngIf="!hasChildren; else parentButton">
-      <a class="menu-item__link"
-         [routerLink]="item.path"
-         [ngClass]="{'active': item.path ? router.isActive(item.path, true): false}"
-         [attr.aria-current]="item.path && router.isActive(item.path, true) ? 'page' : null"
-         (click)="onItemSelected(item)">
-        <mat-icon aria-hidden="true" class="icon-primary" *ngIf="item.icon" fontSet="fa" [fontIcon]="item.icon"></mat-icon>
-        <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
-      </a>
-    </ng-container>
-
-    <ng-template #parentButton>
-      <button type="button"
-              class="menu-item__link menu-item__link--parent"
-              (click)="toggleChildren()"
-              [attr.aria-expanded]="expanded"
-              [attr.aria-controls]="submenuId"
-              [attr.aria-label]="(expanded ? 'Fermer' : 'Ouvrir') + ' le sous-menu ' + item.libelle">
-        <mat-icon aria-hidden="true" class="icon-primary" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'">chevron_right</mat-icon>
-        <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
-      </button>
-    </ng-template>
-  </div>
-
-  <ul *ngIf="hasChildren && expanded" [id]="submenuId" class="menu-sublist">
-    <app-menu *ngFor="let child of item.children" [item]="child" [depth]="depth+1"></app-menu>
-  </ul>
-</li>
+@if (!item.canView || item.canView()) {
+  <li class="menu-item">
+    <div class="menu-item__row" [style.padding-left.px]="(depth * 12) + 8">
+      @if (!hasChildren) {
+        <a class="menu-item__link"
+          [routerLink]="item.path"
+          [ngClass]="{'active': item.path ? router.isActive(item.path, true): false}"
+          [attr.aria-current]="item.path && router.isActive(item.path, true) ? 'page' : null"
+          (click)="onItemSelected(item)">
+          @if (item.icon) {
+            <mat-icon aria-hidden="true" class="icon-primary" fontSet="fa" [fontIcon]="item.icon"></mat-icon>
+          }
+          <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
+        </a>
+      } @else {
+        <button type="button"
+          class="menu-item__link menu-item__link--parent"
+          (click)="toggleChildren()"
+          [attr.aria-expanded]="expanded"
+          [attr.aria-controls]="submenuId"
+          [attr.aria-label]="(expanded ? 'Fermer' : 'Ouvrir') + ' le sous-menu ' + item.libelle">
+          <mat-icon aria-hidden="true" class="icon-primary" [@indicatorRotate]="expanded ? 'expanded': 'collapsed'">chevron_right</mat-icon>
+          <span [class.badge-alerte]="item.alerte">{{item.libelle}}</span>
+        </button>
+      }
+    </div>
+    @if (hasChildren && expanded) {
+      <ul [id]="submenuId" class="menu-sublist">
+        @for (child of item.children; track child) {
+          <app-menu [item]="child" [depth]="depth+1"></app-menu>
+        }
+      </ul>
+    }
+  </li>
+}

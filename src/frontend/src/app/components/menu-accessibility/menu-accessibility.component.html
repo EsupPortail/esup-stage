@@ -113,9 +113,11 @@
       (selectionChange)="onFontChange($event.value)"
       aria-label="Choisir une police de caractères"
       class="font-select">
-      <mat-option *ngFor="let font of availableFonts" [value]="font.value" [style.font-family]="font.family">
-        {{font.label}}
-      </mat-option>
+      @for (font of availableFonts; track font) {
+        <mat-option [value]="font.value" [style.font-family]="font.family">
+          {{font.label}}
+        </mat-option>
+      }
     </mat-select>
   </div>
 

@@ -1,6 +1,6 @@
 package org.esup_portail.esup_stage.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.esup_portail.esup_stage.model.Contact;

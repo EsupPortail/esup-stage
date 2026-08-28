@@ -1,7 +1,7 @@
 package org.esup_portail.esup_stage.service.Structure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.esup_portail.esup_stage.events.StructureCreatedEvent;
 import org.esup_portail.esup_stage.events.StructureDeletedEvent;
@@ -36,7 +36,7 @@ public class StructureService {
             String newStructureJson;
             try {
                 newStructureJson = objectMapper.writeValueAsString(savedStructure);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new RuntimeException("Erreur de sérialisation de la nouvelle structure", e);
             }
             eventPublisher.publishEvent(new StructureUpdatedEvent(structure,oldStructureJson, newStructureJson,false));

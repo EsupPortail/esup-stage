@@ -9,48 +9,64 @@
     <div class="scrollable-content">
       <form [formGroup]="form" (submit)="save()">
         <div class="row">
-          <div class="col-sm-12" *ngIf="form.get('libelle')">
-            <mat-form-field appearance="fill" style="width: 100%">
-              <mat-label>Libellé</mat-label>
-              <input matInput formControlName="libelle">
-              <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
-            </mat-form-field>
-          </div>
+          @if (form.get('libelle')) {
+            <div class="col-sm-12">
+              <mat-form-field appearance="fill" style="width: 100%">
+                <mat-label>Libellé</mat-label>
+                <input matInput formControlName="libelle">
+                <mat-error><app-form-error [field]="form.get('libelle')"></app-form-error></mat-error>
+              </mat-form-field>
+            </div>
+          }
         </div>
 
-        <div *ngIf="form.get('typeStructure')">
-          <mat-form-field appearance="fill">
-            <mat-label>Type d'établissement</mat-label>
-            <mat-select formControlName="typeStructure" [compareWith]="compare">
-              <mat-option *ngFor="let typeStructure of typeStructures" [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div *ngIf="form.get('typeOffre')">
-          <mat-form-field appearance="fill">
-            <mat-label>Type d'offre</mat-label>
-            <mat-select formControlName="typeOffre" [compareWith]="compare">
-              <mat-option *ngFor="let typeOffre of typeOffres" [value]="typeOffre">{{typeOffre.libelle}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div *ngIf="form.get('siretObligatoire')">
-          <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label>
-          <mat-radio-group formControlName="siretObligatoire">
-            <mat-radio-button [value]=true>Oui</mat-radio-button>
-            <mat-radio-button [value]=false>Non</mat-radio-button>
-          </mat-radio-group>
-        </div>
-        <div *ngIf="form.get('regimesInscription')" class="row">
-          <div class="col-12">
-            <mat-form-field appearance="fill" class="w-100">
-              <mat-label>Type d'inscription</mat-label>
-              <mat-select multiple formControlName="regimesInscription" [compareWith]="compare">
-                <mat-option *ngFor="let ti of typeInscription" [value]="ti">{{ti.code}} - {{ti.libelle}}</mat-option>
+        @if (form.get('typeStructure')) {
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Type d'établissement</mat-label>
+              <mat-select formControlName="typeStructure" [compareWith]="compare">
+                @for (typeStructure of typeStructures; track typeStructure) {
+                  <mat-option [value]="typeStructure">{{typeStructure.libelle}}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
-        </div>
+        }
+        @if (form.get('typeOffre')) {
+          <div>
+            <mat-form-field appearance="fill">
+              <mat-label>Type d'offre</mat-label>
+              <mat-select formControlName="typeOffre" [compareWith]="compare">
+                @for (typeOffre of typeOffres; track typeOffre) {
+                  <mat-option [value]="typeOffre">{{typeOffre.libelle}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+        @if (form.get('siretObligatoire')) {
+          <div>
+            <mat-label id="siret-label">Numéro SIRET obligatoire ?</mat-label>
+            <mat-radio-group formControlName="siretObligatoire">
+              <mat-radio-button [value]=true>Oui</mat-radio-button>
+              <mat-radio-button [value]=false>Non</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        }
+        @if (form.get('regimesInscription')) {
+          <div class="row">
+            <div class="col-12">
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Type d'inscription</mat-label>
+                <mat-select multiple formControlName="regimesInscription" [compareWith]="compare">
+                  @for (ti of typeInscription; track ti) {
+                    <mat-option [value]="ti">{{ti.code}} - {{ti.libelle}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        }
       </form>
     </div>
 

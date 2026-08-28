@@ -17,7 +17,9 @@
           <mat-form-field class="col-sm-12 col-md-12 mb-2" appearance="fill">
             <mat-label>Type de la réponse demandée</mat-label>
             <mat-select formControlName="typeQuestion">
-              <mat-option *ngFor="let typeQuestion of typeQuestions" [value]="typeQuestion.code">{{typeQuestion.libelle}}</mat-option>
+              @for (typeQuestion of typeQuestions; track typeQuestion) {
+                <mat-option [value]="typeQuestion.code">{{typeQuestion.libelle}}</mat-option>
+              }
             </mat-select>
             <mat-error><app-form-error [field]="form.get('typeQuestion')"></app-form-error></mat-error>
           </mat-form-field>

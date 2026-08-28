@@ -18,6 +18,25 @@ public class PublicSecurityConfiguration {
 
     public static String PATH_FILTER = "/public";
 
+    /** Chemins de documentation de l'API publique, accessibles sans token. */
+    public static final String[] DOC_PATH_PATTERNS = {
+            PATH_FILTER + "/api-docs/**",
+            PATH_FILTER + "/swagger-ui.html",
+            PATH_FILTER + "/swagger-ui/**"
+    };
+
+    /**
+     * Indique si l'URL correspond à la documentation de l'API publique, laissée en accès libre.
+     * Utilisé par {@link PublicTokenFilter} pour ne pas exiger de token sur ces chemins.
+     */
+    public static boolean isDocumentationPath(String path) {
+        if (path == null) {
+            return false;
+        }
+        return path.startsWith(PATH_FILTER + "/api-docs")
+                || path.startsWith(PATH_FILTER + "/swagger-ui");
+    }
+
     @Autowired
     public PublicTokenFilter tokenFilter;
 
@@ -26,7 +45,7 @@ public class PublicSecurityConfiguration {
         http
                 .securityMatcher(PATH_FILTER+"/**")
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(PATH_FILTER+"/api-docs/**", PATH_FILTER+"/swagger-ui.html", PATH_FILTER+"/swagger-ui/**").permitAll()
+                        .requestMatchers(DOC_PATH_PATTERNS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)

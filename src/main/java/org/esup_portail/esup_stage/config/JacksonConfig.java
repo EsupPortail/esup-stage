@@ -1,21 +1,24 @@
 package org.esup_portail.esup_stage.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 public class JacksonConfig {
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false); // Ignore les beans vides
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);  // Ignore les propriétés inconnues
-        objectMapper.registerModule(new JavaTimeModule()); // Active la prise en charge de LocalDateTime
-        return objectMapper;
+    public JsonMapper objectMapper() {
+        return JsonMapper.builder()
+                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false) // Ignore les beans vides
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) // Ignore les propriétés inconnues
+                // Jackson 3 sérialise les dates en ISO-8601 par défaut, là où Jackson 2 utilisait
+                // des timestamps numériques. On conserve explicitement le contrat d'origine pour
+                // ne pas modifier le format des dates exposé au frontend et à l'API publique.
+                .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
     }
 }

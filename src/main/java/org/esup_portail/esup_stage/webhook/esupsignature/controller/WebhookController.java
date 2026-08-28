@@ -6,6 +6,7 @@ import org.esup_portail.esup_stage.config.properties.AppliProperties;
 import org.esup_portail.esup_stage.dto.MetadataSignataireDto;
 import org.esup_portail.esup_stage.dto.PdfMetadataDto;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.service.apitoken.ApiTokenService;
 import org.esup_portail.esup_stage.webhook.esupsignature.service.WebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +24,15 @@ public class WebhookController {
     private final WebClient webClient;
     private final WebhookService webhookService;
     private final AppliProperties appliProperties;
+    private final ApiTokenService apiTokenService;
     private Logger logger = LoggerFactory.getLogger(WebhookController.class);
 
     @Autowired
-    public WebhookController(WebClient.Builder builder, WebhookService webhookService, AppliProperties appliProperties) {
+    public WebhookController(WebClient.Builder builder, WebhookService webhookService, AppliProperties appliProperties, ApiTokenService apiTokenService) {
         this.webClient = builder.build();
         this.webhookService = webhookService;
         this.appliProperties = appliProperties;
+        this.apiTokenService = apiTokenService;
     }
 
     @PostMapping("/webhook/esup-signature")
@@ -38,7 +41,8 @@ public class WebhookController {
         if ((conventionId == null && avenantId == null) || (conventionId != null && avenantId != null)) {
             throw new AppException(HttpStatus.BAD_REQUEST, "conventionid OU avenantid obligatoire");
         }
-        String token = appliProperties.getPublicTokens()[0];
+        // Token réservé à l'usage interne, créé automatiquement à la première utilisation
+        String token = apiTokenService.getInternalToken();
         String type = "conventions";
         Integer id = conventionId;
         if (avenantId != null) {

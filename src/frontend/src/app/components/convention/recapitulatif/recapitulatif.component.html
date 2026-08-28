@@ -2,21 +2,20 @@
   <mat-card-content>
     <div class="col-sm-12 text-center">
       <mat-card-actions>
-        <ng-container *ngIf="tmpConvention.validationCreation">
+        @if (tmpConvention.validationCreation) {
           <span [matTooltip]="!canPrint ? printDisabledReason : ''"
             matTooltipShowDelay="200"
             class="d-inline-block">
-
             <button class="valid-button" mat-button mat-flat-button
               (click)="printConvention(false)"
               [disabled]="!canPrint">
-                Imprimer la convention
+              Imprimer la convention
             </button>
           </span>
           <button class="valid-button" mat-button mat-flat-button (click)="printConvention(true)">
             Imprimer le récapitulatif
           </button>
-        </ng-container>
+        }
       </mat-card-actions>
     </div>
     <div class="mt-3 mb-3">
@@ -112,26 +111,36 @@
           <div class="col-sm-3 font-weight-bold">Interruption au cours du stage</div>
           <div class="col-sm-9">{{tmpConvention.interruptionStage ? 'Oui' : 'Non'}}</div>
         </div>
-        <div class="row" *ngIf="tmpConvention.interruptionStage">
-          <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
-          <div class="col-sm-9">
-            <div *ngFor="let interruption of interruptionsStage" class="mb-2 pl-2 border-left border-danger">
-              {{'Du ' + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}
+        @if (tmpConvention.interruptionStage) {
+          <div class="row">
+            <div class="col-sm-3 font-weight-bold">Périodes d'interruption du stage</div>
+            <div class="col-sm-9">
+              @for (interruption of interruptionsStage; track interruption) {
+                <div class="mb-2 pl-2 border-left border-danger">
+                  {{'Du ' + (interruption.dateDebutInterruption|date:'shortDate') + ' au '+ (interruption.dateFinInterruption|date:'shortDate')}}
+                </div>
+              }
             </div>
           </div>
-        </div>
-        <div class="row" *ngIf="tmpConvention.horairesReguliers || tmpConvention.horairesReguliers == null">
-          <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
-          <div class="col-sm-9">{{tmpConvention.nbHeuresHebdo}}</div>
-        </div>
-        <div class="row" *ngIf="tmpConvention.horairesReguliers == false">
-          <div class="col-sm-3 font-weight-bold">Périodes de stage</div>
-          <div class="col-sm-9">
-            <div *ngFor="let periodeStage of periodesStage" class="mb-2 pl-2 border-left border-success">
-              {{'Du ' + (periodeStage.dateDebut|date:'shortDate') + ' au '+ (periodeStage.dateFin|date:'shortDate')}}
+        }
+        @if (tmpConvention.horairesReguliers || tmpConvention.horairesReguliers == null) {
+          <div class="row">
+            <div class="col-sm-3 font-weight-bold">Nombre d'heures hebdomadaires</div>
+            <div class="col-sm-9">{{tmpConvention.nbHeuresHebdo}}</div>
+          </div>
+        }
+        @if (tmpConvention.horairesReguliers == false) {
+          <div class="row">
+            <div class="col-sm-3 font-weight-bold">Périodes de stage</div>
+            <div class="col-sm-9">
+              @for (periodeStage of periodesStage; track periodeStage) {
+                <div class="mb-2 pl-2 border-left border-success">
+                  {{'Du ' + (periodeStage.dateDebut|date:'shortDate') + ' au '+ (periodeStage.dateFin|date:'shortDate')}}
+                </div>
+              }
             </div>
           </div>
-        </div>
+        }
         <div class="row">
           <div class="col-sm-3 font-weight-bold">Durée effective du stage</div>
           <div class="col-sm-9">{{tmpConvention.dureeExceptionnelle}} heures</div>
@@ -154,14 +163,16 @@
           <div class="col-sm-3 font-weight-bold">Gratification au cours du stage ?</div>
           <div class="col-sm-9">{{tmpConvention.gratificationStage? 'Oui' : 'Non' }}</div>
         </div>
-        <div class="row" *ngIf="tmpConvention.gratificationStage">
-          <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
-          <div class="col-sm-9">{{tmpConvention.montantGratification + ' ' + tmpConvention.uniteGratificationLibelle + ' ' + tmpConvention.uniteDureeGratificationLibelle}}</div>
-          <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
-          <div class="col-sm-9">{{tmpConvention.deviseLibelle}}</div>
-          <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
-          <div class="col-sm-9">{{tmpConvention.modeVersGratificationLibelle}}</div>
-        </div>
+        @if (tmpConvention.gratificationStage) {
+          <div class="row">
+            <div class="col-sm-3 font-weight-bold">Montant de la gratification</div>
+            <div class="col-sm-9">{{tmpConvention.montantGratification + ' ' + tmpConvention.uniteGratificationLibelle + ' ' + tmpConvention.uniteDureeGratificationLibelle}}</div>
+            <div class="col-sm-3 font-weight-bold">Monnaie utilisée pour le paiement</div>
+            <div class="col-sm-9">{{tmpConvention.deviseLibelle}}</div>
+            <div class="col-sm-3 font-weight-bold">Modalité de versement de la gratification</div>
+            <div class="col-sm-9">{{tmpConvention.modeVersGratificationLibelle}}</div>
+          </div>
+        }
       </div>
 
       <h4 class="text-title">Divers</h4>
@@ -217,66 +228,74 @@
           <div class="col-sm-3 font-weight-bold">Coordonnées tuteur professionnel</div>
           <div class="col-sm-9">{{(tmpConvention.contact.mail? 'Mail : ' + tmpConvention.contact.mail : '') +
             (tmpConvention.contact.tel? ' - Tel : ' + tmpConvention.contact.tel : '')+
-            (tmpConvention.contact.fax? ' - Fax : ' + tmpConvention.contact.fax : '')}}</div>
+          (tmpConvention.contact.fax? ' - Fax : ' + tmpConvention.contact.fax : '')}}</div>
           <div class="col-sm-3 font-weight-bold">{{ "SIGNATAIRE_RECAPITULATIF"|contenu }}</div>
           <div class="col-sm-9">{{tmpConvention.signataire ? (tmpConvention.signataire.civilite ? tmpConvention.signataire.civilite.libelle + ' ' : '') +tmpConvention.signataire.nom + ' ' +tmpConvention.signataire.prenom +
-            (tmpConvention.signataire.fonction ? ', ' + tmpConvention.signataire.fonction : '') : ''}}</div>
+          (tmpConvention.signataire.fonction ? ', ' + tmpConvention.signataire.fonction : '') : ''}}</div>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
         <mat-card-actions>
-          <button class="valid-button" mat-button mat-flat-button (click)="validate()" *ngIf="!tmpConvention.validationCreation">
-            {{'BOUTON_VALIDER'|contenu}}
-          </button>
-          <ng-container *ngIf="tmpConvention.validationCreation">
+          @if (!tmpConvention.validationCreation) {
+            <button class="valid-button" mat-button mat-flat-button (click)="validate()">
+              {{'BOUTON_VALIDER'|contenu}}
+            </button>
+          }
+          @if (tmpConvention.validationCreation) {
             <button class="valid-button" mat-button mat-flat-button
-                    (click)="printConvention(false)"
-                    [disabled]="!canPrint"
-                    [matTooltip]="!canPrint ? printDisabledReason : ''">
+              (click)="printConvention(false)"
+              [disabled]="!canPrint"
+              [matTooltip]="!canPrint ? printDisabledReason : ''">
               Imprimer la convention
             </button>
             <button class="valid-button" mat-button mat-flat-button (click)="printConvention(true)">
               Imprimer le récapitulatif
             </button>
-          </ng-container>
+          }
 
           <!-- Message d'erreur affiché lorsque les boutons sont désactivés -->
-          <div *ngIf="tmpConvention.validationCreation && !canPrint" class="error-message mat-caption">
-            {{ printDisabledReason }}
-          </div>
+          @if (tmpConvention.validationCreation && !canPrint) {
+            <div class="error-message mat-caption">
+              {{ printDisabledReason }}
+            </div>
+          }
         </mat-card-actions>
       </div>
     </div>
-    <div class="row" *ngIf="annuaireActif">
-      <div class="col-sm-12">
-        <h4 class="text-title">Annuaire des étudiants ayant réalisé un stage</h4>
-        <mat-divider></mat-divider>
-
-        <div class="mt-3 mb-3" *ngIf="canEditAccordAnnuaire">
-          <div class="mb-2" [innerHTML]="'TEXTE_ACCORD_ANNUAIRE_INTRO'|contenu"></div>
-          <div class="d-flex flex-column">
-            <mat-checkbox [checked]="tmpConvention.accordAnnuaireEtudiant === true"
-                          (change)="setAccordAnnuaire(true, $event.checked)">
-              {{'LIBELLE_ACCORD_ANNUAIRE_OUI'|contenu}}
-            </mat-checkbox>
-            <mat-checkbox [checked]="tmpConvention.accordAnnuaireEtudiant === false"
-                          (change)="setAccordAnnuaire(false, $event.checked)">
-              {{'LIBELLE_ACCORD_ANNUAIRE_NON'|contenu}}
-            </mat-checkbox>
-          </div>
-          <div class="mat-caption mt-2">Vous pouvez modifier ou retirer votre accord à tout moment.</div>
-        </div>
-
-        <div class="mt-3 mb-3" *ngIf="!canEditAccordAnnuaire">
-          <div class="row">
-            <div class="col-sm-3 font-weight-bold">Accord pour figurer dans l'annuaire</div>
-            <div class="col-sm-9">{{tmpConvention.accordAnnuaireEtudiant == null ? 'Non renseigné' : (tmpConvention.accordAnnuaireEtudiant ? 'Oui' : 'Non')}}</div>
-          </div>
+    @if (annuaireActif) {
+      <div class="row">
+        <div class="col-sm-12">
+          <h4 class="text-title">Annuaire des étudiants ayant réalisé un stage</h4>
+          <mat-divider></mat-divider>
+          @if (canEditAccordAnnuaire) {
+            <div class="mt-3 mb-3">
+              <div class="mb-2" [innerHTML]="'TEXTE_ACCORD_ANNUAIRE_INTRO'|contenu"></div>
+              <div class="d-flex flex-column">
+                <mat-checkbox [checked]="tmpConvention.accordAnnuaireEtudiant === true"
+                  (change)="setAccordAnnuaire(true, $event.checked)">
+                  {{'LIBELLE_ACCORD_ANNUAIRE_OUI'|contenu}}
+                </mat-checkbox>
+                <mat-checkbox [checked]="tmpConvention.accordAnnuaireEtudiant === false"
+                  (change)="setAccordAnnuaire(false, $event.checked)">
+                  {{'LIBELLE_ACCORD_ANNUAIRE_NON'|contenu}}
+                </mat-checkbox>
+              </div>
+              <div class="mat-caption mt-2">Vous pouvez modifier ou retirer votre accord à tout moment.</div>
+            </div>
+          }
+          @if (!canEditAccordAnnuaire) {
+            <div class="mt-3 mb-3">
+              <div class="row">
+                <div class="col-sm-3 font-weight-bold">Accord pour figurer dans l'annuaire</div>
+                <div class="col-sm-9">{{tmpConvention.accordAnnuaireEtudiant == null ? 'Non renseigné' : (tmpConvention.accordAnnuaireEtudiant ? 'Oui' : 'Non')}}</div>
+              </div>
+            </div>
+          }
         </div>
       </div>
-    </div>
+    }
   </mat-card-content>
   <mat-divider></mat-divider>
   <div class="mt-3 mb-3">

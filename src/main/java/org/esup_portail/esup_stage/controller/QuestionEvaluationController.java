@@ -111,7 +111,7 @@ public class QuestionEvaluationController {
     private List<String> tryReadList(String json, List<String> keys) {
         if (json == null || json.isBlank()) return List.of();
         try {
-            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            var mapper = new tools.jackson.databind.ObjectMapper();
             var node = mapper.readTree(json);
             for (String k : keys) {
                 var arr = node.get(k);
