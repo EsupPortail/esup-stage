@@ -1,29 +1,56 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import {Observable, firstValueFrom, of, EMPTY} from "rxjs";
 import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
+import { SILENT_REQUEST } from "../interceptors/http-context.tokens";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
   userConnected: any = undefined;
   appVersion: any = undefined;
   private refreshPromise?: Promise<void>;
-  private redirecting = false;
+  // Marqueur persistant (survit au rechargement provoqué par la redirection) empêchant
+  // toute boucle de redirection vers CAS.
+  private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getCurrentUser(): Observable<any> {
     return this.http.get(environment.apiUrl + "/users/connected").pipe(
-      catchError(() => {
-        this.handleUnauthorized();
+      catchError((error) => {
+        if (error?.status === 401) {
+          this.handleUnauthorized();
+        }
         return EMPTY;
       })
     );
+  }
+
+  /**
+   * Ping léger et silencieux d'un endpoint authentifié.
+   *
+   * Sert au keep-alive : l'appel rafraîchit le lastAccessedTime de la session
+   * HTTP côté serveur sans afficher de loader ni de popup d'erreur (voir
+   * {@link SILENT_REQUEST}). Ne met volontairement pas à jour userConnected.
+   */
+  pingSession(): Observable<any> {
+    return this.http.get(environment.apiUrl + "/users/connected", {
+      context: new HttpContext().set(SILENT_REQUEST, true),
+    });
+  }
+
+  /**
+   * Indique qu'une redirection CAS est déjà en cours (garde anti-boucle).
+   * S'appuie sur le marqueur posé par {@link handleUnauthorized} (valeur '1').
+   */
+  isCasRedirectInProgress(): boolean {
+    return sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1';
   }
 
   getAppVersion(): Observable<any> {
@@ -33,14 +60,16 @@ export class AuthService {
   }
 
   private handleUnauthorized() {
-    if (!this.redirecting) {
-      this.redirecting = true;
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/login/cas') {
-        sessionStorage.setItem('redirectUrl', currentPath);
-        window.location.href = '/login/cas';
-      }
+    const currentPath = window.location.pathname;
+    if (currentPath === '/login/cas') {
+      return;
     }
+    if (sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1') {
+      return;
+    }
+    sessionStorage.setItem(AuthService.CAS_REDIRECT_FLAG, '1');
+    sessionStorage.setItem('redirectUrl', currentPath);
+    window.location.href = '/login/cas';
   }
 
   logout() {
@@ -69,6 +98,7 @@ export class AuthService {
 
   createUser(user: any) {
     this.userConnected = user;
+    sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
   }
 
   checkRights(right: any) {

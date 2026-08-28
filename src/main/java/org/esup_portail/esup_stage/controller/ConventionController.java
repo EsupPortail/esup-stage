@@ -201,6 +201,7 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
+        convention.setDocumentSigneDisponible(signatureService.isSignedPdfPresent(convention));
         return convention;
     }
 
@@ -592,6 +593,7 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         signatureService.update(convention);
+        convention.setDocumentSigneDisponible(signatureService.isSignedPdfPresent(convention));
         return convention;
     }
 

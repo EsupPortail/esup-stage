@@ -19,4 +19,12 @@ public interface AvenantJpaRepository extends JpaRepository<Avenant, Integer> {
 
     @Query("SELECT a FROM Avenant a WHERE a.temAvenantSigne = false AND a.validationAvenant = true AND a.dateEnvoiSignature IS NOT NULL")
     List<Avenant> findAvenantNonSignes();
+
+    @Query("SELECT a FROM Avenant a WHERE a.documentId IS NOT NULL " +
+            "AND a.dateSignatureEtudiant IS NOT NULL AND a.dateDepotEtudiant IS NOT NULL " +
+            "AND a.dateSignatureEnseignant IS NOT NULL AND a.dateDepotEnseignant IS NOT NULL " +
+            "AND a.dateSignatureTuteur IS NOT NULL AND a.dateDepotTuteur IS NOT NULL " +
+            "AND a.dateSignatureSignataire IS NOT NULL AND a.dateDepotSignataire IS NOT NULL " +
+            "AND a.dateSignatureViseur IS NOT NULL AND a.dateDepotViseur IS NOT NULL")
+    List<Avenant> findAvenantsSignes();
 }

@@ -15,7 +15,14 @@
         <div class="col-sm-9">{{NomPrenomEnvoiSignature}}</div>
         <ng-container *ngIf="convention.allSignedDateSetted">
           <div class="col-sm-3 font-weight-bold">Document signé</div>
-          <div class="col-sm-9"><a href (click)="downloadSignedDoc($event, convention)">Télécharger</a></div>
+          <div class="col-sm-9" *ngIf="convention.documentSigneDisponible; else documentEnRecuperation">
+            <a href (click)="downloadSignedDoc($event, convention)">Télécharger</a>
+          </div>
+          <ng-template #documentEnRecuperation>
+            <div class="col-sm-9 text-muted">
+              Le document signé est en cours de récupération auprès du prestataire de signature. Il sera disponible sous peu (nouvelle tentative automatique toutes les heures).
+            </div>
+          </ng-template>
         </ng-container>
       </div>
     </div>
