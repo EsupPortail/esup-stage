@@ -62,6 +62,8 @@ class AppConfigServiceTest {
         ConfigGeneraleDto config = service.getConfigGenerale();
 
         assertThat(config).isNotNull();
+        // La fonctionnalité annuaire doit être désactivée tant qu'on ne l'active pas.
+        assertThat(config.isActiverAnnuaireEtudiants()).isFalse();
     }
 
     @Test

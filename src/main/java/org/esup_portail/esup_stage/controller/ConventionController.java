@@ -289,6 +289,9 @@ public class  ConventionController {
     @PatchMapping("/{id}/accord-annuaire")
     @Secure(fonctions = AppFonctionEnum.CONVENTION, droits = {DroitEnum.MODIFICATION})
     public Convention updateAccordAnnuaire(@PathVariable("id") int id, @Valid @RequestBody AccordAnnuaireDto accordAnnuaireDto) {
+        if (!appConfigService.getConfigGenerale().isActiverAnnuaireEtudiants()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "La fonctionnalité annuaire des étudiants est désactivée");
+        }
         Convention convention = conventionJpaRepository.findById(id);
         if (convention == null) {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
@@ -800,7 +803,8 @@ public class  ConventionController {
         if(Objects.equals(conventionSingleFieldDto.getField(),"protectionSocialeOrganismeAccueil")) {
             convention.setProtectionSocialeOrganismeAccueil((Boolean) conventionSingleFieldDto.getValue());
         }
-        if (Objects.equals(conventionSingleFieldDto.getField(), "accordAnnuaireEtudiant")) {
+        if (Objects.equals(conventionSingleFieldDto.getField(), "accordAnnuaireEtudiant")
+                && appConfigService.getConfigGenerale().isActiverAnnuaireEtudiants()) {
             convention.setAccordAnnuaireEtudiant((Boolean) conventionSingleFieldDto.getValue());
         }
 

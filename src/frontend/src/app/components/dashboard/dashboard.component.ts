@@ -40,6 +40,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ];
   exportColumns = {};
   exportPresets: any[] = [];
+  annuaireActif = false;
+  exportGuideCode = '';
   tableCanLoad = false;
   savedFilters: any[] = [];
 
@@ -91,6 +93,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.configService.getConfigGenerale().subscribe({
       next: (response: any) => {
+        this.annuaireActif = response?.activerAnnuaireEtudiants === true;
+        this.exportGuideCode = this.annuaireActif ? 'GUIDE_EXPORT_EXCEL_CONVENTION' : '';
         this.initializeValidationLibelles(response);
         this.initializeDashboardType();
         this.loadSavedFilters();
@@ -242,7 +246,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
-      { id: 'accordAnnuaireEtudiant', libelle: 'Accord pour figurer dans l\'annuaire des étudiants', type: 'boolean', specific: true, colSpan: 4 },
+      ...(this.annuaireActif ? [{ id: 'accordAnnuaireEtudiant', libelle: 'Accord pour figurer dans l\'annuaire des étudiants', type: 'boolean', specific: true, colSpan: 4 }] : []),
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
@@ -310,7 +314,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             avenant: { title: 'Avenant(s) à la convention' },
             dateCreation: { title: 'Date création convention' },
             dateModif: { title: 'Date modification convention' },
-            accordAnnuaireEtudiant: { title: 'Accord annuaire étudiant' },
+            ...(this.annuaireActif ? { accordAnnuaireEtudiant: { title: 'Accord annuaire étudiant' } } : {}),
           }
         },
         {
@@ -350,7 +354,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Modèles de colonnes proposés dans la modale d'export. Une clé absente de
     // exportColumns est ignorée à l'application : dashboard.component.spec.ts
     // vérifie qu'elles existent toutes.
-    this.exportPresets = [
+    this.exportPresets = !this.annuaireActif ? [] : [
       {
         libelle: 'Annuaire des étudiants',
         description: 'Coordonnées à communiquer aux futurs étudiants en recherche de stage',

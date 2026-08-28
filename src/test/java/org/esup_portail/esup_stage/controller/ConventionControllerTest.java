@@ -578,6 +578,13 @@ class ConventionControllerTest {
     // singleFieldUpdate : mise à jour champ par champ
     // ------------------------------------------------------------------
 
+    /** Active la fonctionnalité annuaire, désactivée par défaut dans la configuration. */
+    private void annuaireActif(boolean actif) {
+        ConfigGeneraleDto config = mock(ConfigGeneraleDto.class);
+        when(config.isActiverAnnuaireEtudiants()).thenReturn(actif);
+        when(appConfigService.getConfigGenerale()).thenReturn(config);
+    }
+
     private Convention conventionModifiable() {
         Convention convention = conventionDEtudiant("etu1", true);
         when(conventionService.isConventionModifiable(eq(convention), any())).thenReturn(true);
@@ -594,6 +601,7 @@ class ConventionControllerTest {
     @Test
     void singleFieldUpdateModifieLesChampsSimples() {
         connecte("ges1", Role.GES);
+        annuaireActif(true);
         Convention convention = conventionModifiable();
 
         patch("sujetStage", "Sujet");
@@ -642,6 +650,7 @@ class ConventionControllerTest {
     @Test
     void updateAccordAnnuaireResteAutoriseSurUneConventionNonModifiable() {
         connecte("etu1", Role.ETU);
+        annuaireActif(true);
         Convention convention = conventionDEtudiant("etu1", true);
         // La convention n'est plus modifiable : le PATCH générique serait refusé,
         // mais le retrait de l'accord annuaire doit rester possible.
@@ -657,8 +666,34 @@ class ConventionControllerTest {
     }
 
     @Test
+    void updateAccordAnnuaireEstRefuseQuandLaFonctionnaliteEstDesactivee() {
+        connecte("etu1", Role.ETU);
+        annuaireActif(false);
+        conventionDEtudiant("etu1", true);
+
+        AccordAnnuaireDto dto = new AccordAnnuaireDto();
+        dto.setAccordAnnuaireEtudiant(Boolean.TRUE);
+
+        assertThatThrownBy(() -> controller.updateAccordAnnuaire(42, dto))
+                .isInstanceOf(AppException.class)
+                .hasMessageContaining("désactivée");
+    }
+
+    @Test
+    void singleFieldUpdateIgnoreLAccordAnnuaireQuandLaFonctionnaliteEstDesactivee() {
+        connecte("ges1", Role.GES);
+        annuaireActif(false);
+        Convention convention = conventionModifiable();
+
+        patch("accordAnnuaireEtudiant", Boolean.TRUE);
+
+        assertThat(convention.getAccordAnnuaireEtudiant()).isNull();
+    }
+
+    @Test
     void updateAccordAnnuaireRefuseUneConventionInconnue() {
         connecte("etu1", Role.ETU);
+        annuaireActif(true);
         when(conventionJpaRepository.findById(42)).thenReturn(null);
 
         AccordAnnuaireDto dto = new AccordAnnuaireDto();

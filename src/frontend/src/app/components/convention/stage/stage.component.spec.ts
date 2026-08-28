@@ -6,6 +6,7 @@ import { TempsTravailService } from "../../../services/temps-travail.service";
 import { ConventionService } from "../../../services/convention.service";
 import { AuthService } from "../../../services/auth.service";
 import { ContenuService } from "../../../services/contenu.service";
+import { ConfigService } from "../../../services/config.service";
 import { PaysService } from "../../../services/pays.service";
 import { ThemeService } from "../../../services/theme.service";
 import { LangueConventionService } from "../../../services/langue-convention.service";
@@ -33,6 +34,7 @@ describe('StageComponent', () => {
         { provide: ConventionService, useValue: { controleChevauchement: () => of(false) } },
         { provide: AuthService, useValue: { isEtudiant: () => false, isGestionnaire: () => true, isAdmin: () => false } },
         { provide: ContenuService, useValue: { get: () => of({ texte: '' }) } },
+        { provide: ConfigService, useValue: { getConfigGenerale: () => of({ activerAnnuaireEtudiants: true }) } },
         { provide: PaysService, useValue: { getPaginated: () => of({ data: [] }) } },
         { provide: ThemeService, useValue: { getPaginated: () => of({ data: [] }) } },
         { provide: LangueConventionService, useValue: { getPaginated: () => of({ data: [] }) } },
@@ -166,6 +168,16 @@ describe('StageComponent', () => {
 
       expect(control.value).toBeNull();
       expect(control.hasError('required')).toBeTrue();
+    });
+
+    it('n\u2019impose rien quand la fonctionnalité est désactivée', () => {
+      component.annuaireActif = false;
+      // Même expression que dans le composant lors de la lecture de la configuration
+      component.toggleValidators(['accordAnnuaireEtudiant'], component.annuaireActif && !component.enMasse);
+      const control = component.form.get('accordAnnuaireEtudiant')!;
+      control.setValue(null);
+
+      expect(control.valid).toBeTrue();
     });
 
     it('ne bloque pas la création en masse', () => {

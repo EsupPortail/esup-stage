@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
 import { PeriodeStageService } from "../../../services/periode-stage.service"
 import { ConventionService } from "../../../services/convention.service";
+import { ConfigService } from "../../../services/config.service";
 import { MessageService } from "../../../services/message.service";
 import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
@@ -27,6 +28,7 @@ export class RecapitulatifComponent implements OnInit {
   nomPrenomModification: string = '';
   avenants: any[] = [];
   loadingAvenants = true;
+  annuaireActif = false;
   canEditAccordAnnuaire: boolean = false;
 
   constructor(private periodeInterruptionStageService: PeriodeInterruptionStageService,
@@ -37,7 +39,8 @@ export class RecapitulatifComponent implements OnInit {
               private router: Router,
               private userService: UserService,
               private avenantService: AvenantService,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private configService: ConfigService) {
   }
 
   ngOnInit(): void {
@@ -59,6 +62,9 @@ export class RecapitulatifComponent implements OnInit {
     // Le consentement annuaire reste modifiable après validation de la convention :
     // l'étudiant doit pouvoir retirer son accord à tout moment.
     this.canEditAccordAnnuaire = this.authService.isEtudiant() || this.authService.isGestionnaire() || this.authService.isAdmin();
+    this.configService.getConfigGenerale().subscribe((response: any) => {
+      this.annuaireActif = response?.activerAnnuaireEtudiants === true;
+    });
 
     if(this.tmpConvention.interruptionStage){
       this.loadInterruptionsStage();

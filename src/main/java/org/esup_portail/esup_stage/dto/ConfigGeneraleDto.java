@@ -58,6 +58,11 @@ public class ConfigGeneraleDto {
 
     private boolean modifRaisonSocialeGestionnaire = false;
 
+    // Recueil de l'accord de l'étudiant pour figurer dans un annuaire des anciens stagiaires.
+    // Exposé en vue Etu : l'étudiant en a besoin pour l'onglet Stage et le récapitulatif.
+    @JsonView(Views.Etu.class)
+    private boolean activerAnnuaireEtudiants = false;
+
     private String mailDpo;
 
     // Délai (en années) après la fin du stage au bout duquel une convention SANS gratification est archivée
