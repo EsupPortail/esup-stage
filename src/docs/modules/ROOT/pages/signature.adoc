@@ -6,7 +6,7 @@ La signature électronique est activée si au moins une des configuration ci-des
 
 WARNING: Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
 
-Les paramètres Docaposte se trouve dans le fichier `estage.properties` :
+Les paramètres Docaposte se trouvent dans le fichier `application.properties` :
 
 [,properties]
 ----
@@ -25,7 +25,7 @@ Les certificats pour Docaposte peuvent être déposés où vous le souhaitez en 
 
 WARNING: Les paramètres ne doivent pas être ajoutés s'ils ne sont pas utilisés
 
-ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.tokens`. La liste des api se trouve dans `/public/swagger-ui.html`.
+ESUP-Stage met à disposition des api "public" accessible avec un des tokens paramétrés dans `appli.tokens` (anciennement `appli.public.tokens` avant la version 3). La liste des api se trouve dans `/public/swagger-ui.html`.
 
 Le paramétrage "webhook" correspondent à l'appel vers une api externe pour la signature électronique (cette solution est à mettre en place par chaque établissement). Les api vers ESUP-Signature sont intégrés dans ESUP-Stage mais la configuration est la même pour une solution externe.
 
