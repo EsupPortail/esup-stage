@@ -353,4 +353,66 @@ class SignatureServiceHistoriqueTest {
         when(conventionJpaRepository.findConventionNonSignees()).thenReturn(null);
         assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
     }
+
+    @Test
+    void updateAvenantInterrogeLeClientSelonLApplication() {
+        // Docaposte via le client de signature générique
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        Avenant avenant = avenantSignature();
+        when(signatureClient.getHistorique(eq("DOC9"), anyList()))
+                .thenReturn(List.of(historique(SignataireEnum.tuteur, new Date(), new Date())));
+        service.update(avenant);
+        assertThat(avenant.getDateSignatureTuteur()).isNotNull();
+        assertThat(avenant.isTemAvenantSigne()).as("signatures incomplètes").isFalse();
+
+        // esup-signature via le statut
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.ESUPSIGNATURE);
+        Avenant esup = avenantSignature();
+        when(webhookService.getHistoriqueStatus(eq("DOC9"), any(Convention.class))).thenReturn(List.of());
+        service.update(esup);
+        verify(avenantJpaRepository).save(esup);
+
+        // externe : délégué au webhook
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.EXTERNE);
+        Avenant externe = avenantSignature();
+        service.update(externe);
+        verify(webhookService).getHistoriqueExterne(externe);
+    }
+
+    @Test
+    void updateAvenantMarqueLAvenantSigneQuandToutEstSigne() {
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        Avenant avenant = avenantSignature();
+        Date date = new Date();
+        when(signatureClient.getHistorique(eq("DOC9"), anyList())).thenReturn(List.of(
+                historique(SignataireEnum.etudiant, date, date),
+                historique(SignataireEnum.enseignant, date, date),
+                historique(SignataireEnum.tuteur, date, date),
+                historique(SignataireEnum.signataire, date, date),
+                historique(SignataireEnum.viseur, date, date)
+        ));
+
+        service.update(avenant);
+
+        assertThat(avenant.isTemAvenantSigne()).isTrue();
+    }
+
+    @Test
+    void updateAutoTraiteAussiLesAvenants() {
+        when(signatureProperties.getAppSignatureType()).thenReturn(AppSignatureEnum.DOCAPOSTE);
+        when(conventionJpaRepository.findConventionNonSignees()).thenReturn(null);
+        Avenant enErreur = avenantSignature();
+        Avenant correct = avenantSignature();
+        correct.setDocumentId("DOC10");
+        when(avenantJpaRepository.findAvenantNonSignes()).thenReturn(List.of(enErreur, correct));
+        when(signatureClient.getHistorique(eq("DOC9"), anyList())).thenThrow(new RuntimeException("api down"));
+        when(signatureClient.getHistorique(eq("DOC10"), anyList())).thenReturn(List.of());
+
+        assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
+        verify(avenantJpaRepository).save(correct);
+
+        // aucun avenant à traiter
+        when(avenantJpaRepository.findAvenantNonSignes()).thenReturn(null);
+        assertThatCode(() -> service.updateAuto()).doesNotThrowAnyException();
+    }
 }

@@ -560,8 +560,8 @@ public class SignatureService {
     }
 
     /**
-     * Méthode pour mettre à jour automatiquement les conventions non signées.
-     * Cette méthode est appelée par un scheduler pour mettre à jour les conventions non signées
+     * Méthode pour mettre à jour automatiquement les conventions et les avenants non signés.
+     * Cette méthode est appelée par un scheduler pour mettre à jour les conventions et les avenants non signés
      */
 
     @Transactional
@@ -572,7 +572,6 @@ public class SignatureService {
                 conventionsNonSignee != null ? conventionsNonSignee.size() : "null");
 
         if (conventionsNonSignee != null && !conventionsNonSignee.isEmpty()) {
-            int idx = 0;
             for (Convention convention : conventionsNonSignee) {
                 try {
                     update(convention);
@@ -580,7 +579,21 @@ public class SignatureService {
                     log.error("Erreur lors du traitement de la convention id={} : {}",
                             convention != null ? convention.getId() : "null", e.getMessage(), e);
                 }
-                idx++;
+            }
+        }
+
+        List<Avenant> avenantsNonSignes = avenantJpaRepository.findAvenantNonSignes();
+        log.info("Avenants à traiter trouvés : {}",
+                avenantsNonSignes != null ? avenantsNonSignes.size() : "null");
+
+        if (avenantsNonSignes != null && !avenantsNonSignes.isEmpty()) {
+            for (Avenant avenant : avenantsNonSignes) {
+                try {
+                    update(avenant);
+                } catch (Exception e) {
+                    log.error("Erreur lors du traitement de l'avenant id={} : {}",
+                            avenant != null ? avenant.getId() : "null", e.getMessage(), e);
+                }
             }
         }
 
@@ -743,10 +756,21 @@ public class SignatureService {
             }
             historiques = switch (appSignature) {
                 case DOCAPOSTE -> signatureClient.getHistorique(avenant.getDocumentId(), avenant.getConvention().getCentreGestion().getSignataires());
-                case ESUPSIGNATURE -> webhookService.getHistorique(avenant.getDocumentId(), avenant.getConvention());
+                case ESUPSIGNATURE -> webhookService.getHistoriqueStatus(avenant.getDocumentId(), avenant.getConvention());
                 default -> historiques;
             };
             setSignatureHistorique(avenant, historiques);
+
+            if (avenant.getDateSignatureEtudiant() != null
+                    && avenant.getDateSignatureTuteur() != null
+                    && avenant.getDateSignatureEnseignant() != null
+                    && avenant.getDateSignatureSignataire() != null
+                    && avenant.getDateSignatureViseur() != null) {
+                // set le champ temAvenantSigne à true si l'avenant est totalement signé
+                avenant.setTemAvenantSigne(true);
+                avenantJpaRepository.save(avenant);
+                log.info("Avenant signé complètement. ID = {}", avenant.getId());
+            }
         } catch (Exception e) {
             logger.error(e);
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur de la récupération de l'historique");
