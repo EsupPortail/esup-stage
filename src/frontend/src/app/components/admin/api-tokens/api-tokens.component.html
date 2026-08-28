@@ -52,7 +52,7 @@
                 <mat-icon class="sort-icon" aria-hidden="true">{{sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}}</mat-icon>
               }
             </th>
-            <th role="columnheader">Actif</th>
+            <th role="columnheader">Statut</th>
             <th role="columnheader" (click)="sort('dateCreation')" class="sortable" tabindex="0" [attr.aria-sort]="ariaSort('dateCreation')">
               Date création
               @if (sortPredicate==='dateCreation') {
@@ -77,11 +77,9 @@
               <td role="cell">{{ token.nom }}</td>
               <td role="cell">{{ token.nomApplication }}</td>
               <td role="cell" class="text-center">
-                <mat-slide-toggle
-                  [ngModel]="token.actif"
-                  [ngModelOptions]="{standalone: true}"
-                  (change)="changerActivation(token, $event.checked)"
-                [attr.aria-label]="'Activer ou désactiver le token ' + token.nom"></mat-slide-toggle>
+                <span class="statut-badge" [class.statut-badge--inactif]="!token.actif">
+                  {{ token.actif ? 'Actif' : 'Désactivé' }}
+                </span>
               </td>
               <td role="cell">{{ token.dateCreation | date: 'short' }}</td>
               <td role="cell">{{ token.loginCreation }}</td>
@@ -92,6 +90,9 @@
                   matTooltip="Copier le token" [attr.aria-label]="'Copier le token ' + token.nom">
                   <mat-icon aria-hidden="true">content_copy</mat-icon>
                 </button>
+                @if (tokenCopieId === token.id) {
+                  <span class="token-copied" aria-live="polite">Copié</span>
+                }
                 <button mat-icon-button (click)="modifier(token)"
                   matTooltip="Modifier" [attr.aria-label]="'Modifier le token ' + token.nom">
                   <mat-icon aria-hidden="true">edit</mat-icon>
@@ -102,6 +103,19 @@
                     <mat-icon aria-hidden="true">autorenew</mat-icon>
                   </button>
                 </span>
+                @if (token.actif) {
+                  <span (confirm)="changerActivation(token, false)"
+                    [confirmMessage]="'Désactiver le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra immédiatement l\'accès à l\'API, sans que le token soit supprimé.'">
+                    <button class="disable-button" mat-icon-button matTooltip="Désactiver" [attr.aria-label]="'Désactiver le token ' + token.nom">
+                      <mat-icon aria-hidden="true">block</mat-icon>
+                    </button>
+                  </span>
+                } @else {
+                  <button class="enable-button" mat-icon-button (click)="changerActivation(token, true)"
+                    matTooltip="Réactiver" [attr.aria-label]="'Réactiver le token ' + token.nom">
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                  </button>
+                }
                 <span (confirm)="supprimer(token)"
                   [confirmMessage]="'Supprimer définitivement le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra l\'accès à l\'API.'">
                   <button class="delete-button" mat-icon-button matTooltip="Supprimer" [attr.aria-label]="'Supprimer le token ' + token.nom">
@@ -138,12 +152,12 @@
               <span>{{ token.nomApplication }}</span>
             </div>
             <div class="token-field">
-              <label class="field-label">Actif</label>
-              <mat-slide-toggle
-                [ngModel]="token.actif"
-                [ngModelOptions]="{standalone: true}"
-                (change)="changerActivation(token, $event.checked)"
-              [attr.aria-label]="'Activer ou désactiver le token ' + token.nom"></mat-slide-toggle>
+              <label class="field-label">Statut</label>
+              <span>
+                <span class="statut-badge" [class.statut-badge--inactif]="!token.actif">
+                  {{ token.actif ? 'Actif' : 'Désactivé' }}
+                </span>
+              </span>
             </div>
             <div class="token-field">
               <label class="field-label">Date création</label>
@@ -165,6 +179,9 @@
               <button mat-icon-button (click)="copier(token)" matTooltip="Copier le token" [attr.aria-label]="'Copier le token ' + token.nom">
                 <mat-icon aria-hidden="true">content_copy</mat-icon>
               </button>
+              @if (tokenCopieId === token.id) {
+                <span class="token-copied" aria-live="polite">Copié</span>
+              }
               <button mat-icon-button (click)="modifier(token)" matTooltip="Modifier" [attr.aria-label]="'Modifier le token ' + token.nom">
                 <mat-icon aria-hidden="true">edit</mat-icon>
               </button>
@@ -174,6 +191,19 @@
                   <mat-icon aria-hidden="true">autorenew</mat-icon>
                 </button>
               </span>
+              @if (token.actif) {
+                <span (confirm)="changerActivation(token, false)"
+                  [confirmMessage]="'Désactiver le token &laquo; ' + token.nom + ' &raquo; ? L\'application &laquo; ' + token.nomApplication + ' &raquo; perdra immédiatement l\'accès à l\'API, sans que le token soit supprimé.'">
+                  <button class="disable-button" mat-icon-button matTooltip="Désactiver" [attr.aria-label]="'Désactiver le token ' + token.nom">
+                    <mat-icon aria-hidden="true">block</mat-icon>
+                  </button>
+                </span>
+              } @else {
+                <button class="enable-button" mat-icon-button (click)="changerActivation(token, true)"
+                  matTooltip="Réactiver" [attr.aria-label]="'Réactiver le token ' + token.nom">
+                  <mat-icon aria-hidden="true">check_circle</mat-icon>
+                </button>
+              }
               <span (confirm)="supprimer(token)"
                 [confirmMessage]="'Supprimer définitivement le token &laquo; ' + token.nom + ' &raquo; ?'">
                 <button class="delete-button" mat-icon-button matTooltip="Supprimer" [attr.aria-label]="'Supprimer le token ' + token.nom">

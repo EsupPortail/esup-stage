@@ -118,8 +118,40 @@ tbody td {
   white-space: nowrap;
 }
 
+.token-copied {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primaryColor, #3f51b5);
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
 .delete-button {
   color: var(--dangerColor, #f44336);
+}
+
+.disable-button {
+  color: #b26a00;
+}
+
+.enable-button {
+  color: #2e7d32;
+}
+
+/* Statut en lecture seule : l'activation se fait par le bouton dédié de la colonne Actions */
+.statut-badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.statut-badge--inactif {
+  background: rgba(178, 106, 0, 0.14);
+  color: #b26a00;
 }
 
 /* ========== CARTES MOBILES ========== */

@@ -34,8 +34,8 @@ export class ApiTokenService {
     return this.http.get<PaginatedResponse<ApiToken>>(this.baseUrl, {params: {page, perPage, predicate, sortOrder, filters}});
   }
 
-  create(data: { nom: string, nomApplication: string }): Observable<ApiTokenSecret> {
-    return this.http.post<ApiTokenSecret>(this.baseUrl, data);
+  create(data: { nom: string, nomApplication: string }): Observable<ApiToken> {
+    return this.http.post<ApiToken>(this.baseUrl, data);
   }
 
   update(id: number, data: { nom: string, nomApplication: string }): Observable<ApiToken> {

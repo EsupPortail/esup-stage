@@ -46,15 +46,14 @@ public class ApiTokenController {
     }
 
     /**
-     * Crée un token et renvoie sa valeur en clair pour que l'administrateur puisse la transmettre
-     * à l'application appelante.
+     * Crée un token. La valeur en clair n'est pas renvoyée ici : elle se récupère à la demande
+     * via /{id}/valeur, ce qui évite de la transmettre quand personne ne la consulte.
      */
     @PostMapping
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.CREATION})
-    public ApiTokenSecretDto create(@RequestBody ApiTokenFormDto form) {
+    public ApiToken create(@RequestBody ApiTokenFormDto form) {
         adminService.requireAdmin();
-        ApiToken apiToken = apiTokenService.create(form.getNom(), form.getNomApplication());
-        return new ApiTokenSecretDto(apiToken, apiTokenService.reveal(apiToken.getId()));
+        return apiTokenService.create(form.getNom(), form.getNomApplication());
     }
 
     @PutMapping("/{id}")

@@ -8,6 +8,7 @@ import {
   ApiTokenFormResult
 } from './create-dialog/api-token-create-dialog.component';
 import { ApiTokenValueDialogComponent } from './token-value-dialog/api-token-value-dialog.component';
+import { copyToClipboard } from '../../../utils/clipboard.utils';
 
 @Component({
   selector: 'app-api-tokens',
@@ -24,6 +25,8 @@ export class ApiTokensComponent implements OnInit {
   sortPredicate: string = 'id';
   sortOrder: string = 'asc';
   filtersObj: any = {};
+  /** Ligne dont la valeur vient d'être copiée, pour la confirmation « Copié ». */
+  tokenCopieId: number | null = null;
   private filterTimeout: any;
 
   constructor(
@@ -49,9 +52,10 @@ export class ApiTokensComponent implements OnInit {
       .afterClosed()
       .subscribe((form: ApiTokenFormResult | undefined) => {
         if (!form) return;
-        this.apiTokenService.create(form).subscribe(secret => {
+        // La valeur n'est pas affichée ici : elle reste copiable depuis le tableau
+        this.apiTokenService.create(form).subscribe(() => {
+          this.messageService.setSuccess('Token créé');
           this.getPaginated();
-          this.afficherValeur('Token créé', secret);
         });
       });
   }
@@ -68,9 +72,26 @@ export class ApiTokensComponent implements OnInit {
       });
   }
 
+  /**
+   * Récupère la valeur en clair et la place directement dans le presse-papier,
+   * sans passer par une boîte de dialogue.
+   */
   copier(apiToken: ApiToken): void {
     this.apiTokenService.reveal(apiToken.id).subscribe(secret => {
-      this.afficherValeur('Valeur du token', secret);
+      copyToClipboard(secret.token).then(succes => {
+        if (succes) {
+          this.tokenCopieId = apiToken.id;
+          setTimeout(() => {
+            if (this.tokenCopieId === apiToken.id) {
+              this.tokenCopieId = null;
+            }
+          }, 1800);
+        } else {
+          // La copie automatique peut être refusée si le navigateur considère que le geste
+          // utilisateur a expiré pendant l'appel serveur : on affiche alors la valeur
+          this.afficherValeur('Valeur du token', secret);
+        }
+      });
     });
   }
 
@@ -87,7 +108,7 @@ export class ApiTokensComponent implements OnInit {
         this.messageService.setSuccess(actif ? 'Token activé' : 'Token désactivé');
         this.getPaginated();
       },
-      // Remise du curseur dans son état réel si le serveur a refusé
+      // Réaffichage de l'état réel si le serveur a refusé
       error: () => this.getPaginated(),
     });
   }
