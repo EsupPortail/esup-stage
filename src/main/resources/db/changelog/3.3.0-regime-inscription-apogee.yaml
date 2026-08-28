@@ -95,3 +95,20 @@ databaseChangeLog:
               - column:
                   name: active
                   valueBoolean: true
+
+  - changeSet:
+      id: 3.3.0-add-libelle-court-regime-inscription-apogee
+      author: thouveno9
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: RegimeInscriptionApogee
+                columnName: libelleCourt
+      changes:
+        - addColumn:
+            tableName: RegimeInscriptionApogee
+            columns:
+              - column:
+                  name: libelleCourt
+                  type: VARCHAR(100)

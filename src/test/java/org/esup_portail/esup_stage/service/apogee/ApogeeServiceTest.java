@@ -170,6 +170,49 @@ class ApogeeServiceTest {
     }
 
     @Test
+    void lesRegimesDInscriptionSontMappesDepuisLeFormatListe() {
+        reponses.put("/regimesInscriptions", """
+                [
+                  {"codeRegimeInscription":"1","libelleRegimeInscription":"Formation initiale","libelleRegimeInscriptionCourt":"FI"},
+                  {"codeRegimeInscription":"2","libelleRegimeInscription":"Formation continue","libelleRegimeInscriptionCourt":"FC"}
+                ]""");
+
+        List<RegimeInscriptionDto> regimes = service.getRegimesInscriptions();
+
+        assertThat(regimes).hasSize(2);
+        assertThat(regimes.get(0).getCode()).isEqualTo("1");
+        assertThat(regimes.get(0).getLibelle()).isEqualTo("Formation initiale");
+        assertThat(regimes.get(1).getCode()).isEqualTo("2");
+        assertThat(regimes.get(0).getLibelleCourt()).isEqualTo("FI");
+        assertThat(regimes.get(1).getLibelleCourt()).isEqualTo("FC");
+        assertThat(regimes.get(1).getLibelle()).isEqualTo("Formation continue");
+    }
+
+    @Test
+    void leLibelleCourtSertDeSecoursEtLesEntreesSansCodeSontIgnorees() {
+        reponses.put("/regimesInscriptions", """
+                [
+                  {"codeRegimeInscription":"1","libelleRegimeInscriptionCourt":"FI"},
+                  {"codeRegimeInscription":"2"},
+                  {"codeRegimeInscription":"  ","libelleRegimeInscription":"Sans code"},
+                  {"libelleRegimeInscription":"Code absent"}
+                ]""");
+
+        List<RegimeInscriptionDto> regimes = service.getRegimesInscriptions();
+
+        assertThat(regimes).hasSize(2);
+        assertThat(regimes.get(0).getLibelle()).isEqualTo("FI");
+        assertThat(regimes.get(1).getLibelle()).isEqualTo("2");
+    }
+
+    @Test
+    void unFormatInattenduDeRegimesDInscriptionRenvoieUneListeVide() {
+        reponses.put("/regimesInscriptions", "\"inattendu\"");
+
+        assertThat(service.getRegimesInscriptions()).isEmpty();
+    }
+
+    @Test
     void laRechercheDEtudiantsParDiplomeEtapePasseTousLesFiltres() {
         reponses.put("/listEtuParEtapeEtDiplome", "[]");
         EtudiantDiplomeEtapeSearch recherche = mock(EtudiantDiplomeEtapeSearch.class);
