@@ -80,7 +80,7 @@ class AppConfigControllerLibellesImpressionTest {
         LibelleImpressionLangueDto francais = langues.get(0);
         assertThat(francais.getNbClesRenseignees()).isEqualTo(francais.getNbClesTotal()).isPositive();
         assertThat(francais.isSurcharge()).isFalse();
-        assertThat(langues.get(1).getNbClesRenseignees()).isZero();
+        assertThat(langues.get(1).getNbClesRenseignees()).isEqualTo(langues.get(1).getNbClesTotal()).isPositive();
     }
 
     @Test
@@ -90,7 +90,7 @@ class AppConfigControllerLibellesImpressionTest {
         LibelleImpressionLangueDto anglais = controller.getLibellesImpression().get(1);
         assertThat(anglais.isSurcharge()).isTrue();
         assertThat(anglais.getDateModification()).isNotNull();
-        assertThat(anglais.getNbClesRenseignees()).isEqualTo(1);
+        assertThat(anglais.getNbClesRenseignees()).isEqualTo(anglais.getNbClesTotal()).isPositive();
     }
 
     @Test
@@ -104,11 +104,11 @@ class AppConfigControllerLibellesImpressionTest {
 
     @Test
     void leDepotEstPrisEnCompteImmediatement() {
-        assertThat(libelleImpressionService.getLibelles("en").get(CLE_OUI)).isEqualTo("OUI");
-
-        controller.updateLibellesImpression("en", fichier("impression_en.properties", CLE_OUI + "=YES\n"));
-
         assertThat(libelleImpressionService.getLibelles("en").get(CLE_OUI)).isEqualTo("YES");
+
+        controller.updateLibellesImpression("en", fichier("impression_en.properties", CLE_OUI + "=CUSTOM\n"));
+
+        assertThat(libelleImpressionService.getLibelles("en").get(CLE_OUI)).isEqualTo("CUSTOM");
     }
 
     @Test
@@ -130,12 +130,12 @@ class AppConfigControllerLibellesImpressionTest {
 
     @Test
     void laSuppressionRetablitLeComportementLivre() {
-        controller.updateLibellesImpression("en", fichier("impression_en.properties", CLE_OUI + "=YES\n"));
+        controller.updateLibellesImpression("en", fichier("impression_en.properties", CLE_OUI + "=CUSTOM\n"));
 
         controller.deleteLibellesImpression("en");
 
         assertThat(cheminSurcharge("en")).doesNotExist();
-        assertThat(libelleImpressionService.getLibelles("en").get(CLE_OUI)).isEqualTo("OUI");
+        assertThat(libelleImpressionService.getLibelles("en").get(CLE_OUI)).isEqualTo("YES");
     }
 
     @Test
