@@ -53,9 +53,14 @@ class LibelleImpressionServiceTest {
     }
 
     @Test
+    void sertLesLibellesAnglaisLivresParDefaut() {
+        assertThat(service.getLibelles("en").get(CLE_OUI)).isEqualTo("YES");
+        assertThat(service.getLibelles("en").get("commun.debut")).isEqualTo("Start");
+    }
+
+    @Test
     void replieSurLeFrancaisQuandLaLangueLivreeNestPasTraduite() {
-        // les fichiers livrés pour les langues étrangères sont volontairement vides
-        assertThat(service.getLibelles("en")).isEqualTo(service.getLibelles("fr"));
+        assertThat(service.getLibelles("it")).isEqualTo(service.getLibelles("fr"));
     }
 
     @Test
@@ -87,7 +92,7 @@ class LibelleImpressionServiceTest {
 
         Map<String, String> libelles = service.getLibelles("en");
         assertThat(libelles.get(CLE_OUI)).isEqualTo("YES");
-        assertThat(libelles.get(CLE_TEXTE)).isEqualTo("cette protection s'ajoute au maintien, à l'étranger, des droits issus du droit français.");
+        assertThat(libelles.get(CLE_TEXTE)).isEqualTo("this protection is in addition to the continued entitlement, abroad, to rights under French law.");
         assertThat(libelles.keySet()).isEqualTo(service.getClesAutorisees());
     }
 
@@ -128,11 +133,12 @@ class LibelleImpressionServiceTest {
     void compteLesLibellesEffectivementTraduits() {
         int total = service.getClesAutorisees().size();
         assertThat(service.compterClesTraduites("fr")).isEqualTo(total);
-        assertThat(service.compterClesTraduites("en")).isZero();
+        assertThat(service.compterClesTraduites("en")).isEqualTo(total);
+        assertThat(service.compterClesTraduites("it")).isZero();
 
-        service.ecrireSurcharge("en", (CLE_OUI + "=YES\n" + CLE_TEXTE + "=\n").getBytes(StandardCharsets.UTF_8));
+        service.ecrireSurcharge("it", (CLE_OUI + "=SI\n" + CLE_TEXTE + "=\n").getBytes(StandardCharsets.UTF_8));
 
-        assertThat(service.compterClesTraduites("en")).isEqualTo(1);
+        assertThat(service.compterClesTraduites("it")).isEqualTo(1);
     }
 
     @Test
