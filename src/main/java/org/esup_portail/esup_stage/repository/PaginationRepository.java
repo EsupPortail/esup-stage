@@ -274,7 +274,7 @@ public class PaginationRepository<T extends Exportable> {
         TypedQuery<Integer> query = em.createQuery(queryString, Integer.class);
         query.setParameter("libelle", libelle);
         List<Integer> results = query.getResultList();
-        if (id == 0 && results.isEmpty()) {
+        if (id == 0 && results.size() > 0) {
             return true;
         }
 
