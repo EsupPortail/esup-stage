@@ -491,6 +491,19 @@ export class EtudiantComponent implements OnInit, OnChanges {
     return inscription?.etapeInscription?.codeComposante || null;
   }
 
+  getFormationDisplayLabel(inscription: any): string {
+    const code = inscription?.etapeInscription?.codeEtp ?? '';
+    const libelle = this.getInscriptionLibelle(inscription);
+    return libelle ? `${code} - ${libelle}` : code;
+  }
+
+  getFormationTooltip(inscription: any): string {
+    const code = inscription?.etapeInscription?.codeEtp ?? '';
+    const libelle = this.getInscriptionLibelle(inscription);
+    const composante = inscription?.etapeInscription?.libComposante;
+    return [code, libelle, composante].filter(Boolean).join(' — ');
+  }
+
   shouldDisplayFormationSelect(): boolean {
     if (!this.convention?.id) {
       return this.inscriptions.length > 1;

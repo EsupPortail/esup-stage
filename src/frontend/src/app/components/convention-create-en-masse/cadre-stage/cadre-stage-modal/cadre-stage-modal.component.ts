@@ -203,6 +203,23 @@ export class CadreStageModalComponent implements OnInit {
     return this.formConvention.controls.inscription.value;
   }
 
+  getInscriptionLibelle(inscription: any): string {
+    return inscription?.etapeInscription?.libWebVet || '';
+  }
+
+  getFormationDisplayLabel(inscription: any): string {
+    const code = inscription?.etapeInscription?.codeEtp ?? '';
+    const libelle = this.getInscriptionLibelle(inscription);
+    return libelle ? `${code} - ${libelle}` : code;
+  }
+
+  getFormationTooltip(inscription: any): string {
+    const code = inscription?.etapeInscription?.codeEtp ?? '';
+    const libelle = this.getInscriptionLibelle(inscription);
+    const composante = inscription?.etapeInscription?.libComposante;
+    return [code, libelle, composante].filter(Boolean).join(' — ');
+  }
+
   validate(): void {
     if (this.aucunTypeConventionDisponible) {
       this.messageService.setError(this.aucunTypeConventionMessage);
