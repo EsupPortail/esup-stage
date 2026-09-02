@@ -87,6 +87,7 @@ export class StageComponent implements OnInit {
   texteLimiteRenumeration: string = '';
 
   periodesInterruptionsValid:boolean = false;
+  periodesTravailValid: boolean = true;
   minDateDebutStage!: Date;
   maxDateDebutStage!: Date;
   minDateFinStage!: Date;
@@ -273,6 +274,9 @@ export class StageComponent implements OnInit {
         if (['interruptionStage','horairesReguliers','nbHeuresHebdo'].includes(key)){
           this.updateHeuresTravail();
         }
+        if (key === 'horairesReguliers') {
+          this.checkPeriodesTravailValid();
+        }
         // controle du chevauchement avant mise à jour
         if (['dateDebutStage','dateFinStage'].includes(key)) {
           if (this.isChevauchementAutorise()) {
@@ -388,7 +392,7 @@ export class StageComponent implements OnInit {
   validateForm() : void{
     let status = 0;
     if (Object.keys(this.form.value).some(k => !!this.form.value[k])) status = 1;
-    if ((this.form.valid || this.form.disabled) && this.periodesInterruptionsValid) status = 2;
+    if ((this.form.valid || this.form.disabled) && this.periodesInterruptionsValid && this.periodesTravailValid) status = 2;
     this.validated.emit(status);
   }
 
@@ -417,6 +421,15 @@ export class StageComponent implements OnInit {
 
   }
 
+  checkPeriodesTravailValid(): void {
+    if (this.form.get('horairesReguliers')?.value === false) {
+      this.periodesTravailValid = this.periodesCalculHeuresStage.length >= 1;
+    } else {
+      this.periodesTravailValid = true;
+    }
+    this.validateForm();
+  }
+
   setHorairesReguliersFormControls(event: any): void {
     this.toggleValidators(['nbHeuresHebdo'], event.value);
     if (!event.value) {
@@ -427,6 +440,7 @@ export class StageComponent implements OnInit {
       }
       this.periodesCalculHeuresStage = [];
       this.updateHeuresTravail();
+      this.checkPeriodesTravailValid();
     }
   }
 
@@ -521,6 +535,7 @@ export class StageComponent implements OnInit {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.periodesCalculHeuresStage = response;
       this.updateHeuresTravail(true);
+      this.checkPeriodesTravailValid();
     });
   }
 
@@ -528,6 +543,7 @@ export class StageComponent implements OnInit {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.periodesCalculHeuresStage = response;
       this.updateHeuresTravail();
+      this.checkPeriodesTravailValid();
     });
   }
 
@@ -539,6 +555,7 @@ export class StageComponent implements OnInit {
         periodesUpdated.splice(index, 1);
         this.periodesCalculHeuresStage = periodesUpdated;
         this.updateHeuresTravail();
+        this.checkPeriodesTravailValid();
       },
       error: (error) => {
         console.error("Error deleting period:", error);
@@ -586,6 +603,7 @@ export class StageComponent implements OnInit {
             // Handle the case where there are no periods
             this.periodesCalculHeuresStage = [];
             this.updateHeuresTravail();
+            this.checkPeriodesTravailValid();
           }
         } else {
           // For regular hours, just update the calculation

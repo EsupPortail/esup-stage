@@ -111,6 +111,8 @@ public class  ConventionController {
     @Autowired
     MailerService mailerService;
 
+    @Autowired
+    PeriodeStageJpaRepository periodeStageJpaRepository;
 
 
     @GetMapping
@@ -328,6 +330,9 @@ public class  ConventionController {
 
         // Contrôle chevauchement de dates
         checkChevauchement(convention,utilisateur);
+
+        // Contrôle des périodes de travail pour horaires irréguliers
+        checkPeriodesTravail(convention);
 
         convention.setValidationCreation(true);
         convention.setDateValidationCreation(new Date());
@@ -1040,6 +1045,18 @@ public class  ConventionController {
                     HttpStatus.BAD_REQUEST,
                     "Les dates de début et fin de stage se chevauchent avec une de vos conventions"
             );
+        }
+    }
+
+    private void checkPeriodesTravail(Convention convention) {
+        if (Boolean.FALSE.equals(convention.getHorairesReguliers())) {
+            List<PeriodeStage> periodes = periodeStageJpaRepository.findByConvention(convention);
+            if (periodes == null || periodes.isEmpty()) {
+                throw new AppException(
+                        HttpStatus.BAD_REQUEST,
+                        "Au moins une période de travail est requise pour les horaires irréguliers"
+                );
+            }
         }
     }
 

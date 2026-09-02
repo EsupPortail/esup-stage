@@ -17,6 +17,8 @@ import { OrigineStageService } from "../../../services/origine-stage.service";
 import { NatureTravailService } from "../../../services/nature-travail.service";
 import { ModeValidationStageService } from "../../../services/mode-validation-stage.service";
 import { PeriodeInterruptionStageService } from "../../../services/periode-interruption-stage.service";
+import { PeriodeStageService } from "../../../services/periode-stage.service";
+import { TypeConventionService } from "../../../services/type-convention.service";
 import { MatDialog } from '@angular/material/dialog';
 
 describe('StageComponent', () => {
@@ -44,6 +46,8 @@ describe('StageComponent', () => {
         { provide: NatureTravailService, useValue: { getPaginated: () => of({ data: [] }) } },
         { provide: ModeValidationStageService, useValue: { getPaginated: () => of({ data: [] }) } },
         { provide: PeriodeInterruptionStageService, useValue: { getByConvention: () => of([]), create: () => of({}), update: () => of({}), delete: () => of({}), deleteByConvention: () => of({}) } },
+        { provide: PeriodeStageService, useValue: { getByConvention: () => of([]), create: () => of({}), update: () => of({}), delete: () => of({}), deleteByConvention: () => of({}) } },
+        { provide: TypeConventionService, useValue: { getPaginated: () => of({ data: [] }) } },
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of([]) }) } }
       ]
     })
@@ -137,5 +141,56 @@ describe('StageComponent', () => {
     ];
     const result = component.calculHeuresTravails(periodes);
     expect(result).toBe(105); // 17.5 + 35 + 17.5 + 35
+  });
+
+  describe('validateForm - periodes de travail', () => {
+    let fb: FormBuilder;
+    let lastStatus: number | undefined;
+
+    beforeEach(() => {
+      fb = TestBed.inject(FormBuilder);
+      lastStatus = undefined;
+      component.validated.subscribe((status: number) => lastStatus = status);
+      component.form = fb.group({
+        horairesReguliers: [false],
+        interruptionStage: [false],
+      });
+      component.periodesInterruptionsValid = true;
+    });
+
+    it('should emit status 1 when irregular hours without periods', () => {
+      component.periodesCalculHeuresStage = [];
+      component.checkPeriodesTravailValid();
+      expect(lastStatus).toBe(1);
+    });
+
+    it('should emit status 2 when irregular hours with at least one period and valid form', () => {
+      component.form.disable();
+      component.periodesCalculHeuresStage = [
+        { id: 1, dateDebut: new Date('2023-01-01'), dateFin: new Date('2023-01-07'), nbHeuresJournalieres: 7 }
+      ];
+      component.checkPeriodesTravailValid();
+      expect(lastStatus).toBe(2);
+    });
+
+    it('should emit status 2 when regular hours without periods', () => {
+      component.form = fb.group({ horairesReguliers: [true], interruptionStage: [false] });
+      component.form.disable();
+      component.periodesCalculHeuresStage = [];
+      component.checkPeriodesTravailValid();
+      expect(lastStatus).toBe(2);
+    });
+
+    it('should invalidate tab after deleting last period', () => {
+      component.form.disable();
+      component.periodesCalculHeuresStage = [
+        { id: 42, dateDebut: new Date('2023-01-01'), dateFin: new Date('2023-01-07'), nbHeuresJournalieres: 7 }
+      ];
+      component.checkPeriodesTravailValid();
+      expect(lastStatus).toBe(2);
+
+      component.deletePeriodeStage(0);
+      expect(lastStatus).toBe(1);
+    });
   });
 });
