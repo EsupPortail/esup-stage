@@ -1,77 +1,202 @@
 = Gestion des conditions dans les templates
-:sectnums:
-:imagesdir: ../../images
-:reftext: Gestion des conditions dans les modèles (templates) de convention
+:reftext: Gestion des conditions dans les modèles (templates)
+:navtitle: Conditions dans les templates
 
-Dans les modèles (templates) de convention de stage, il est possible d'afficher
-les variables en fonction de conditions. Les conditions, pour fonctionner,
-doivent respecter les règles suivantes : 
+Dans les modèles (templates) de convention, d'avenant et de mail, il est possible d'afficher du contenu en fonction de conditions. L'éditeur utilise une syntaxe simplifiée (`$IF`, `$ELSE`, `$ENDIF`…) qui est convertie en expressions FreeMarker avant la génération du document.
 
-== Conditions simples
+Cette syntaxe s'applique aux templates éditables depuis l'interface :
 
-[literal]
-$IF condition
-vContenu si la condition est vraie.
-$ELSE
-Contenu si la condition est fausse.
-$ENDIF
+* *Paramétrage global > Templates de convention* (convention et avenant)
+* *Paramétrage global > Template de mails*
 
-== Conditions multiples
+[NOTE]
+====
+Les fichiers HTML fournis par défaut dans l'application utilisent directement la syntaxe FreeMarker (`<#if>`, `<#else>`, `</#if>`). La syntaxe `$IF` décrite ici concerne les modèles personnalisés saisis dans l'éditeur enrichi.
+====
 
-[literal]
-$IF condition1
-Contenu si condition1 est vraie.
-$ELSEIF condition2
-Contenu si condition2 est vraie.
-$ELSE
-Contenu si aucune condition n'est vraie.
-$ENDIF
+== Principe de fonctionnement
 
-== Utilisation avec des variables dynamiques
+Avant le traitement FreeMarker, l'application convertit les marqueurs simplifiés :
 
-[literal]
-$IF user.name != ''
-Bonjour, ${user.name} !
-$ELSE
-Bonjour, utilisateur anonyme.
-$ENDIF
-
-== La structure $IF ... $FI
-
-Cela encadre une condition. Si la condition est vraie, le contenu placé entre $IF et $ENDIF sera affiché. +
-
-== Opérateurs logiques
-
-[%header,cols="1m,1,1m"]
+[cols="1m,2", options="header"]
 |===
-|Opérateur
-|Signification
-|Exemple
+|Marqueur saisi |Équivalent FreeMarker
 
-| ==
-| Égal à
-| $IF user.age == 18
+|`$IF`
+|`<#if`
 
-| !=
-| Différent de
-| $IF user.country != 'FR'
+|` $FI` (espace + `$FI`)
+|`>` (ferme l'ouverture de la condition)
 
-| > / <
-| Supérieur / Inférieur
-| $IF product.price > 100
+|`$ELSE`
+|`<#else>`
 
-| >= / +<=+
-| Supérieur ou égal / Inférieur ou égal
-| $IF user.age >= 18
+|`$ENDIF`
+|`</#if>`
 
-| AND
-| ET logique
-| $IF user.age > 18 AND user.member == true
+|`$EQUALS `
+|`=="` (comparaison d'égalité sur une chaîne)
 
-| OR
-| OU logique
-| $IF user.age < 18 OR user.student == true
-
+|`??$`
+|`??>` (test d'existence / de non-vacuité)
 |===
 
-WARNING: veuillez utiliser uniquement les simples quotes (pas celles courbées) lorsque vous utilisez cette syntaxe.
+[WARNING]
+====
+Utilisez uniquement des *guillemets droits* (`'` ou `"`), pas de guillemets courbes, dans les expressions de condition.
+====
+
+== Structure d'une condition simple
+
+[literal]
+$IF (convention.creditECTS != '') $FI
+Contenu affiché si la condition est vraie.
+$ELSE
+Contenu affiché si la condition est fausse.
+$ENDIF
+
+Ce bloc est converti en :
+
+[literal]
+<#if (convention.creditECTS != '')>
+Contenu affiché si la condition est vraie.
+<#else>
+Contenu affiché si la condition est fausse.
+</#if>
+
+[IMPORTANT]
+====
+Le marqueur `$FI` (précédé d'un espace) *ferme l'ouverture* de la condition en ajoutant le caractère `>`. Il ne remplace pas `$ENDIF`, qui *clôture* le bloc conditionnel.
+
+`$ELSEIF` n'est *pas* pris en charge. Pour plusieurs cas, imbriquez des blocs `$IF` / `$ENDIF` ou utilisez des conditions composées (voir ci-dessous).
+====
+
+== Test d'existence d'une variable
+
+Pour vérifier qu'une variable est renseignée, utilisez le suffixe `??$` à la place de `$FI` :
+
+[literal]
+$IF etudiant.nom??$Bonjour ${etudiant.nom} !$ELSE Utilisateur inconnu $ENDIF
+
+Ce bloc est converti en :
+
+[literal]
+<#if etudiant.nom??>Bonjour ${etudiant.nom} !<#else> Utilisateur inconnu </#if>
+
+== Comparaison d'égalité avec $EQUALS
+
+Pour comparer une variable à une valeur textuelle, utilisez le marqueur `$EQUALS` :
+
+[literal]
+$IF convention.interruptionStage $EQUALS Oui $FI
+Le stage comporte une interruption.
+$ENDIF
+
+== Opérateurs disponibles
+
+Les expressions entre `$IF` et `$FI` (ou avant `??$`) suivent la syntaxe FreeMarker.
+
+[cols="1m,1,2m", options="header"]
+|===
+|Opérateur |Signification |Exemple
+
+|`==`
+|Égal à
+|`$IF (convention.deviseGratification == 'euros') $FI`
+
+|`!=`
+|Différent de
+|`$IF (convention.creditECTS != '') $FI`
+
+|`>`, `<`
+|Supérieur, inférieur
+|`$IF (convention.montantGratification?number > 0) $FI`
+
+|`>=`, `<=`
+|Supérieur ou égal, inférieur ou égal
+|`$IF (convention.nbJoursHebdo?number >= 5) $FI`
+
+|`&&`
+|ET logique
+|`$IF (convention.montantGratification != '' && convention.deviseGratification != '') $FI`
+
+|`||`
+|OU logique
+|`$IF (convention.interruptionStage == 'Oui' || convention.nbConges != '') $FI`
+|===
+
+[WARNING]
+====
+Les mots-clés `AND` et `OR` ne sont *pas* reconnus. Utilisez `&&` et `||`.
+====
+
+== Variables utilisables
+
+Les conditions s'appuient sur les mêmes variables que l'insertion de paramètres `${...}`. Les principaux objets disponibles sont :
+
+[cols="1m,2", options="header"]
+|===
+|Objet |Exemples de propriétés
+
+|`convention`
+|`creditECTS`, `montantGratification`, `dateDebutStage`, `sujetStage`, `interruptionStage`…
+
+|`etudiant`
+|`nom`, `prenom`, `mail`, `numEtudiant`…
+
+|`centreGestion`
+|`nomCentre`, `nomViseur`, `mail`, `codeUniversite`…
+
+|`structure`
+|`raisonSociale`, `numeroSiret`, `commune`, `paysLibelle`…
+
+|`contact`
+|`nom`, `prenom`, `mail`, `fonction`…
+
+|`enseignant`
+|`nom`, `prenom`, `mail`, `affectationLibelle`…
+
+|`avenant`
+|`sujetStage`, `motifAvenant`, `dateDebutStage`…
+
+|`signataire`
+|`nom`, `prenom`, `fonction`, `mail`…
+|===
+
+La liste complète des paramètres disponibles est affichée dans l'écran d'édition des templates de convention (*Liste des paramètres*).
+
+== Exemples courants
+
+=== Afficher un bloc uniquement si une gratification est prévue
+
+[literal]
+$IF (convention.montantGratification != '') $FI
+Gratification : ${convention.montantGratification} ${convention.deviseGratification}
+$ENDIF
+
+=== Afficher un texte différent selon la présence de crédits ECTS
+
+[literal]
+$IF (convention.creditECTS != '') $FI
+Stage évalué à ${convention.creditECTS} crédits ECTS.
+$ELSE
+Stage sans crédits ECTS.
+$ENDIF
+
+=== Personnaliser un mail selon l'étudiant
+
+[literal]
+$IF etudiant.prenom??$Bonjour ${etudiant.prenom},$ELSE Bonjour,$ENDIF
+Votre convention de stage est en attente de validation.
+
+== Bonnes pratiques
+
+* Testez le rendu via la prévisualisation PDF (templates de convention) ou l'envoi de mail de test (templates de mails).
+* Vérifiez le comportement lorsque la variable testée est vide : une chaîne vide `''` n'est pas toujours équivalente à une variable absente (`??$`).
+* Placez chaque marqueur (`$IF`, `$FI`, `$ELSE`, `$ENDIF`) de façon explicite ; un `$ENDIF` manquant provoque une erreur à la génération.
+* Pour les comparaisons numériques, utilisez le qualificateur FreeMarker `?number` si la variable est stockée sous forme de texte.
+
+== Limites connues
+
+* `$ELSEIF` n'est pas supporté.
+* La syntaxe `$LIST` / `$ENDLIST` mentionnée dans certains exemples historiques de paramètres n'est pas convertie par l'application : pour parcourir une liste, préférez les boucles FreeMarker natives (`<#list>`) dans les templates techniques, ou structurez le contenu autrement dans les modèles éditables.
