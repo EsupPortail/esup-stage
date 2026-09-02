@@ -39,6 +39,9 @@ public class ReponseEvaluation {
     @JsonView(Views.List.class)
     private Boolean impressionEntreprise;
 
+    /** 1 = format réponses pré-3.2.0 (ETUI7 ancien), 2 = format courant */
+    private Integer schemaVersion;
+
     private Integer reponseEnt1;
     @Lob
     private String reponseEnt1bis;

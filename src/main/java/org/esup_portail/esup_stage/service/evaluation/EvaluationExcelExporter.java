@@ -31,6 +31,8 @@ public class EvaluationExcelExporter {
 
     private Map<String, QuestionEvaluation> questionsByCode;
     private final ObjectMapper mapper = new ObjectMapper();
+    /** Version du schéma de la réponse en cours d'export (ETUI7) */
+    private int exportSchemaVersion = 2;
     private static final List<String> LIKERT_5 = List.of("Excellent","Très bien","Bien","Satisfaisant","Insuffisant");
     private static final List<String> AGREEMENT_5 = List.of("Tout à fait d'accord","Plutôt d'accord","Sans avis","Plutôt pas d'accord","Pas du tout d'accord");
 
@@ -562,6 +564,7 @@ public class EvaluationExcelExporter {
 
     private void fillDataRow(Row row, EvaluationDto eval, ExportType type, CellStyle dataStyle, List<String> columnCodes) {
         ReponseEvaluation reponse = eval.getReponseEvaluation();
+        exportSchemaVersion = resolveSchemaVersion(reponse != null ? reponse.getSchemaVersion() : null);
 
         // Si pas de filtrage, utiliser l'ancienne méthode
         if (columnCodes == null || columnCodes.isEmpty()) {
@@ -770,6 +773,7 @@ public class EvaluationExcelExporter {
         createCell(row, colNum++, eval.getAnneeUniversitaire(), dataStyle);
 
         ReponseEvaluation reponse = eval.getReponseEvaluation();
+        exportSchemaVersion = resolveSchemaVersion(reponse != null ? reponse.getSchemaVersion() : null);
         if (reponse == null) {
             return;
         }
@@ -1042,11 +1046,11 @@ public class EvaluationExcelExporter {
     private String formatSpecialCaseValue(String code, Object value) {
         switch (code) {
             case "ETUI7_bis1":
-                return formatEtuI7Bis1(value);
+                return formatEtuI7Bis1(value, exportSchemaVersion);
             case "ETUI7_bis2":
-                return formatEtuI7Bis2(value);
+                return formatEtuI7Bis2(value, exportSchemaVersion);
             case "ETUII5a":
-                return formatEtuII5a(value);
+                return formatEtuII5a(value, exportSchemaVersion);
             case "ETUII5b":
                 return formatEtuII5b(value);
             default:
@@ -1054,10 +1058,17 @@ public class EvaluationExcelExporter {
         }
     }
 
-    private String formatEtuI7Bis1(Object value) {
+    private int resolveSchemaVersion(Integer schemaVersion) {
+        return schemaVersion == null || schemaVersion < 2 ? 1 : schemaVersion;
+    }
+
+    private String formatEtuI7Bis1(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
         int index = (Integer) value;
+        if (schemaVersion < 2) {
+            return index == 1 ? "Oui" : "Non";
+        }
         List<String> options = List.of(
                 "Proposé par votre tuteur professionnel",
                 "Proposé par votre tuteur enseignant",
@@ -1072,10 +1083,13 @@ public class EvaluationExcelExporter {
         return "";
     }
 
-    private String formatEtuI7Bis2(Object value) {
+    private String formatEtuI7Bis2(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
         int index = (Integer) value;
+        if (schemaVersion < 2) {
+            return index == 1 ? "Oui" : "Non";
+        }
         List<String> options = List.of(
                 "Je n'ai pas eu besoin d'aide",
                 "Je ne savais pas à qui m'adresser"
@@ -1087,8 +1101,16 @@ public class EvaluationExcelExporter {
         return "";
     }
 
-    private String formatEtuII5a(Object value) {
-        return value != null ? value.toString() : "";
+    private String formatEtuII5a(Object value, int schemaVersion) {
+        if (!(value instanceof Integer)) return value != null ? value.toString() : "";
+        int index = (Integer) value;
+        List<String> options = schemaVersion < 2
+                ? List.of("Très importantes", "Importantes", "Peu importantes")
+                : List.of("Technique", "Organisationnelle", "Communication");
+        if (index >= 0 && index < options.size()) {
+            return options.get(index);
+        }
+        return "";
     }
 
     private String formatEtuII5b(Object value) {

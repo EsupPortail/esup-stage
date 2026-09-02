@@ -7,6 +7,18 @@
     <div class="column-selector-dialog">
       <!-- Choix type fiche -->
       <div class="type-eval-form" [formGroup]="form">
+        <div class="radio-block export-scope-block" role="group" aria-label="Périmètre d'export">
+          <label class="block-label">Périmètre d'export : </label>
+          <mat-radio-group [(ngModel)]="exportScope" [ngModelOptions]="{standalone: true}">
+            <mat-radio-button value="filtered">
+              Tout le résultat filtré ({{ data.total ?? 0 }} évaluation(s))
+            </mat-radio-button>
+            <mat-radio-button value="page">
+              Page courante uniquement ({{ data.rows?.length ?? 0 }} évaluation(s))
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
         <div class="radio-block" role="group" aria-label="Choix du types d'évaluation">
           <label class="block-label">Types d'évaluation : </label>
           <mat-radio-group formControlName="typeFiche">

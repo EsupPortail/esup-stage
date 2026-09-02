@@ -178,7 +178,14 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     const normalized = this.normalizeExportColumns(this.exportColumns);
     this.dialog.open(ExportEvaluationComponent, {
       width: '800px',
-      data: { sheets:normalized.sheets,rows:this.appTable?.data }
+      data: {
+        sheets: normalized.sheets,
+        rows: this.appTable?.data,
+        total: this.appTable?.total,
+        sortColumn: this.sortColumn,
+        sortOrder: this.sortDirection,
+        filters: JSON.stringify(this.appTable?.filterValuesToSend ?? {}),
+      }
     });
   }
 

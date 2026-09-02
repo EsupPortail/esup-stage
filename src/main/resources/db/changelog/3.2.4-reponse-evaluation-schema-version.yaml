@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.4-reponse-evaluation-schema-version
+      author: esup
+      changes:
+        - addColumn:
+            tableName: ReponseEvaluation
+            columns:
+              - column:
+                  name: schemaVersion
+                  type: INT
+                  defaultValueNumeric: 1
+        - update:
+            tableName: ReponseEvaluation
+            columns:
+              - column:
+                  name: schemaVersion
+                  valueNumeric: 1
+            where: schemaVersion IS NULL

@@ -1,10 +1,13 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { FicheEvaluationService } from "../../../services/fiche-evaluation.service";
 import { MessageService } from "../../../services/message.service";
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { QuestionSupplementaireFormComponent } from './question-supplementaire-form/question-supplementaire-form.component';
 import { ContenuService } from "../../../services/contenu.service";
+import { QuestionsEvaluationService } from "../../../services/questions-evaluation.service";
+import { forkJoin } from "rxjs";
+import { TypeQuestionEvaluation } from "../../../constants/type-question-evaluation";
 
 @Component({
     selector: 'app-fiche-evaluation',
@@ -29,639 +32,17 @@ export class FicheEvaluationComponent implements OnInit {
   ficheEnseignantForm: FormGroup;
   ficheEntrepriseForm: FormGroup;
 
-  FicheEtudiantIQuestions: any = [
-    {
-      title: "Avez-vous rencontré des difficultés pour trouver un stage ?",
-      texte: [
-              "Non, il est automatiquement proposé dans le cadre de la formation",
-              "Non, je l’ai trouvé assez facilement par moi-même",
-              "Oui j’ai eu des difficultés",
-             ],
-      controlName: "questionEtuI1",
-    },
-    {
-      title: "Combien de temps a duré votre recherche de stage ?",
-      texte: [
-              "1 jour à 1 semaine",
-              "2 semaines à 1 mois",
-              "1 mois à 3 mois",
-              "3 mois à 6 mois",
-              "+ de 6 mois",
-             ],
-      controlName: "questionEtuI2",
-    },
-    {
-      title: "Combien d'établissement(s) d'accueil avez-vous prospecté(s) ?",
-      texte: [
-              "1 à 5",
-              "6 à 10",
-              "11 à 20",
-              "20 et plus",
-             ],
-      controlName: "questionEtuI3",
-    },
-    {
-      title: "Quel(s) procédé(s) de démarchage avez-vous utilisé(s) ?",
-      texte: [
-              "Mail Oui / Non",
-              "Téléphone Oui / Non",
-              "Courrier Oui / Non",
-              "Prospection directe Oui / Non",
-             ],
-      controlName: "questionEtuI4",
-    },
-    {
-      title: "Comment avez-vous trouvé votre stage ? (récupération de l'information depuis la convention)",
-      texte: [
-              "Réponse à une offre de stage",
-              "Candidature spontanée",
-              "Réseau de connaissance",
-              "Proposé par le département",
-             ],
-      controlName: "questionEtuI5",
-    },
-    {
-      title: "Comment avez-vous déterminé le contenu de stage ?",
-      texte: [
-              "Proposé par votre tuteur professionnel",
-              "Proposé par votre tuteur enseignant",
-              "Élaboré par vous-même",
-              "Négocié entre les parties",
-             ],
-      controlName: "questionEtuI6",
-    },
-    {
-      title: "Avez-vous été accompagné(e) dans vos démarches ?",
-      texte: [
-              "Oui / Non",
-              " ",
-              "Si oui, par qui ?",
-              "    Par votre réseau personnel",
-              "    Au sein de votre formation",
-              "    Par le service d'Information, d'Orientation et d'Insertion Professionnelle",
-              "    Par le Bureau d'Aide à l'Insertion Professionnelle",
-              "    Autre",
-              " ",
-              "Si non, pourquoi ?",
-              "    Par choix",
-              "    Par méconnaissance des dispositifs proposés par votre université",
-             ],
-      controlName: "questionEtuI7",
-    },
-    {
-      title: "Est-ce que les modalités d'évaluation de stage vous ont été clairement présentées avant le début du stage ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuI8",
-    },
-  ];
+  FicheEtudiantIQuestions: any[] = [];
+  FicheEtudiantIIQuestions: any[] = [];
+  FicheEtudiantIIIQuestions: any[] = [];
+  FicheEnseignantIQuestions: any[] = [];
+  FicheEnseignantIIQuestions: any[] = [];
+  FicheEntrepriseIQuestions: any[] = [];
+  FicheEntrepriseIIQuestions: any[] = [];
+  FicheEntrepriseIIIQuestions: any[] = [];
 
-  FicheEtudiantIIQuestions: any = [
-    {
-      title: "Comment qualifieriez-vous l'accueil de votre entreprise ?",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEtuII1",
-    },
-    {
-      title: "Comment qualifieriez-vous l'encadrement de votre stage ?",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEtuII2",
-    },
-    {
-      title: "Comment qualifieriez-vous votre adaptation au sein de l'établissement d'accueil ?",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEtuII3",
-    },
-    {
-      title: "Les conditions matérielles vous ont permis d’atteindre les objectifs de votre stage :",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "questionEtuII4",
-    },
-    {
-      title: "Avez-vous exercé des responsabilités ?",
-      texte: [
-              "Oui / Non",
-              " ",
-              "Si oui : a) de quel ordre ?",
-              "    Très importantes",
-              "    Importantes",
-              "    Peu importantes",
-              " ",
-              "b) avec autonomie ?",
-              "    Oui / Non",
-             ],
-      controlName: "questionEtuII5",
-    },
-    {
-      title: "Votre stage avait-il une dimension internationale ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuII6",
-    },
-  ];
-
-  FicheEtudiantIIIQuestions: any = [
-    {
-      title: "Votre sujet de stage était à l'origine : (récuperation du sujet depuis la convention). L'avez-vous modifié ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII1",
-    },
-    {
-      title: "Selon vous, le stage a-t-il bien été en adéquation avec votre formation ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII2",
-    },
-    {
-      title: "Les missions confiées ont été ?",
-      texte: [
-              "Très au-dessous de vos compétences",
-              "Au-dessous de vos compétences",
-              "A votre niveau de compétences",
-              "Au-dessus de vos compétences",
-              "Très au-dessus de vos compétences",
-              "Inatteignables",
-             ],
-      controlName: "questionEtuIII4",
-    },
-    {
-      title: "Ce stage vous a-t-il permis d'acquérir :",
-      texte: [
-              "Compétences techniques Oui / Non",
-              "Nouvelles méthodologies Oui / Non",
-              "Nouvelles connaissances théoriques Oui / Non",
-             ],
-      controlName: "questionEtuIII5",
-    },
-    {
-      title: "Ce stage vous a permis de progresser dans la construction de votre projet personnel et professionnel :",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "questionEtuIII6",
-    },
-    {
-      title: "Ce stage vous paraît déterminant à cette étape de votre formation :",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "questionEtuIII7",
-    },
-    {
-      title: "Votre travail a-t-il abouti à une réorganisation du travail ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII8",
-    },
-    {
-      title: "Allez-vous valoriser cette expérience dans une prochaine recherche d'emploi/stage ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII9",
-    },
-    {
-      title: "Votre travail va-t-il donner lieu à un dépôt de brevet ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII10",
-    },
-    {
-      title: "Avez-vous reçu une attestation de stage ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII11",
-    },
-    {
-      title: "Avez-vous rencontré des difficultés à percevoir votre gratification ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII12",
-    },
-    {
-      title: "Ce stage a-t-il donné lieu à une proposition d'emploi ou d'alternance ?",
-      texte: [
-              "Oui / Non",
-             ],
-      controlName: "questionEtuIII14",
-    },
-    {
-      title: "Conseilleriez-vous cet établissement d'accueil à un autre étudiant ?",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "questionEtuIII15",
-    },
-    {
-      title: "Indiquez votre appréciation générale sur le stage :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEtuIII16",
-    },
-  ];
-
-  FicheEnseignantIQuestions: any = [
-    {
-      title: "Modalité(s) d’échange(s) avec le stagiaire :",
-      texte: [
-              "Téléphone Oui / Non",
-              "Mail Oui / Non",
-              "Rencontre Oui / Non",
-             ],
-      controlName: "questionEnsI1",
-    },
-    {
-      title: "Modalité(s) d’échange(s) avec le tuteur professionnel :",
-      texte: [
-              "Téléphone Oui / Non",
-              "Mail Oui / Non",
-              "Rencontre Oui / Non",
-             ],
-      controlName: "questionEnsI2",
-    },
-    {
-      title: "Commentaire(s) :",
-      texte: [
-              "Champ de texte libre",
-             ],
-      controlName: "questionEnsI3",
-    },
-  ]
-
-  FicheEnseignantIIQuestions: any = [
-    {
-      title: "Impression générale et présentation de l’étudiant :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII1",
-    },
-    {
-      title: "Aptitude à cerner et situer le projet :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII2",
-    },
-    {
-      title: "Aptitude à appliquer ses connaissances :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII3",
-    },
-    {
-      title: "Maîtrise du sujet, argumentation, analyse :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII4",
-    },
-    {
-      title: "Mise en évidence des éléments importants de l’étude :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII5",
-    },
-    {
-      title: "Utilisation des moyens de communication :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII6",
-    },
-    {
-      title: "Qualité de l’expression orale :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII7",
-    },
-    {
-      title: "Capacité à intéresser l’auditoire :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII8",
-    },
-    {
-      title: "Pertinence des réponses :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII9",
-    },
-    {
-      title: "Respect du temps alloué :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnsII10",
-    },
-    {
-      title: "Commentaire(s) :",
-      texte: [
-              "Champ de texte libre",
-             ],
-      controlName: "questionEnsII11",
-    },
-  ]
-
-  FicheEntrepriseIQuestions: any = [
-    {
-      title: "Adaptation au milieu professionnel :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnt1",
-    },
-    {
-      title: "Intégration au groupe de travail :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnt2",
-    },
-    {
-      title: "Assiduité - ponctualité :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnt3",
-    },
-    {
-      title: "Intérêt pour l'établissement, les services, et les métiers :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt5",
-    },
-    {
-      title: "Sens de l'organisation :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt9",
-    },
-    {
-      title: "Capacité d'autonomie :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt11",
-    },
-    {
-      title: "Initiative personnelle :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt12",
-    },
-    {
-      title: "Implication :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt13",
-    },
-    {
-      title: "Rigueur et précision dans le travail :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt14",
-    },
-  ]
-
-  FicheEntrepriseIIQuestions: any = [
-    {
-      title: "Aptitude à cerner et situer le projet :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt4",
-    },
-    {
-      title: "Aptitude à appliquer ses connaissances",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt6",
-    },
-    {
-      title: "Esprit d'observation et pertinence des remarques :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt7",
-    },
-    {
-      title: "Esprit de synthèse :",
-      texte: [
-        "Excellent",
-        "Très bien",
-        "Bien",
-        "Satisfaisant",
-        "Insuffisant",
-      ],
-      controlName: "questionEnt8",
-    },
-    {
-      title: "Aptitude à la communication :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnt15",
-    },
-  ]
-
-  FicheEntrepriseIIIQuestions: any = [
-    {
-      title: "Les objectifs ont-ils été atteints ?",
-      texte: [
-              "Tout à fait d'accord",
-              "Plutôt d'accord",
-              "Sans avis",
-              "Plutôt pas d'accord",
-              "Pas du tout d'accord",
-             ],
-      controlName: "questionEnt16",
-    },
-    {
-      title: "Indiquez votre appréciation générale de ce stage :",
-      texte: [
-              "Excellent",
-              "Très bien",
-              "Bien",
-              "Satisfaisant",
-              "Insuffisant",
-             ],
-      controlName: "questionEnt17",
-    },
-    {
-      title: "Observations :",
-      texte: [
-        "Champ de texte libre",
-      ],
-      controlName: "questionEnt19",
-    },
-    {
-      title: "Avez-vous remis au stagiaire une attestation de stage ?",
-      texte: [
-        "Oui / Non",
-      ],
-      controlName: "questionEnt10",
-    },
-    {
-      title: "Accepteriez-vous de reprendre un de nos étudiants en stage ?",
-      texte: [
-        "Oui / Non",
-      ],
-      controlName: "questionEnt18",
-    },
-  ]
+  private readonly LIKERT_5 = ['Excellent', 'Très bien', 'Bien', 'Satisfaisant', 'Insuffisant'];
+  private readonly AGREEMENT_5 = ['Tout à fait d\'accord', 'Plutôt d\'accord', 'Sans avis', 'Plutôt pas d\'accord', 'Pas du tout d\'accord'];
 
   @Input() idCentreGestion: any;
 
@@ -670,6 +51,7 @@ export class FicheEvaluationComponent implements OnInit {
               private messageService: MessageService,
               public matDialog: MatDialog,
               public contenuService: ContenuService,
+              private questionsEvaluationService: QuestionsEvaluationService,
   ) {
     this.ficheEtudiantForm = this.fb.group({
       questionEtuI1: [null],
@@ -745,9 +127,19 @@ export class FicheEvaluationComponent implements OnInit {
       this.texteAlerte = response.texte;
     });
 
+    forkJoin({
+      etu: this.questionsEvaluationService.getQuestionsEtu(),
+      ens: this.questionsEvaluationService.getQuestionsEns(),
+      ent: this.questionsEvaluationService.getQuestionsEnt(),
+    }).subscribe(({ etu, ens, ent }) => {
+      this.buildQuestionSections(etu, ens, ent);
+      this.loadFicheEvaluation();
+    });
+  }
+
+  private loadFicheEvaluation(): void {
     this.ficheEvaluationService.getByCentreGestion(this.idCentreGestion).subscribe((response: any) => {
       this.ficheEvaluation = response;
-
       this.getQuestionSupplementaire();
 
       this.ficheEtudiantForm.setValue({
@@ -820,6 +212,117 @@ export class FicheEvaluationComponent implements OnInit {
         questionEnt19: this.ficheEvaluation.questionEnt19,
       });
     });
+  }
+
+  private buildQuestionSections(etu: any[], ens: any[], ent: any[]): void {
+    this.FicheEtudiantIQuestions = [];
+    this.FicheEtudiantIIQuestions = [];
+    this.FicheEtudiantIIIQuestions = [];
+    this.FicheEnseignantIQuestions = [];
+    this.FicheEnseignantIIQuestions = [];
+    this.FicheEntrepriseIQuestions = [];
+    this.FicheEntrepriseIIQuestions = [];
+    this.FicheEntrepriseIIIQuestions = [];
+
+    for (const q of etu ?? []) {
+      this.bucketForEtu(q.code).push(this.buildPreviewQuestion(q));
+    }
+    for (const q of ens ?? []) {
+      this.bucketForEns(q.code).push(this.buildPreviewQuestion(q));
+    }
+    for (const q of ent ?? []) {
+      this.bucketForEnt(q.code).push(this.buildPreviewQuestion(q));
+    }
+  }
+
+  private bucketForEtu(code: string): any[] {
+    if (code.startsWith('ETUIII')) return this.FicheEtudiantIIIQuestions;
+    if (code.startsWith('ETUII')) return this.FicheEtudiantIIQuestions;
+    return this.FicheEtudiantIQuestions;
+  }
+
+  private bucketForEns(code: string): any[] {
+    if (code.startsWith('ENSII')) return this.FicheEnseignantIIQuestions;
+    return this.FicheEnseignantIQuestions;
+  }
+
+  private bucketForEnt(code: string): any[] {
+    if (['ENT4', 'ENT6', 'ENT7', 'ENT8', 'ENT15'].includes(code)) return this.FicheEntrepriseIIQuestions;
+    if (['ENT16', 'ENT17', 'ENT18', 'ENT19', 'ENT10'].includes(code)) return this.FicheEntrepriseIIIQuestions;
+    return this.FicheEntrepriseIQuestions;
+  }
+
+  private toControlName(code: string): string {
+    if (code.startsWith('ETU')) return 'questionEtu' + code.substring(3);
+    if (code.startsWith('ENS')) return 'questionEns' + code.substring(3);
+    if (code.startsWith('ENT')) return 'questionEnt' + code.substring(3);
+    return 'question' + code;
+  }
+
+  private parseParamsJson(paramsJson?: string | null): any {
+    if (!paramsJson) return null;
+    try {
+      return JSON.parse(paramsJson);
+    } catch {
+      return null;
+    }
+  }
+
+  private extractItems(q: any): string[] {
+    const params = this.parseParamsJson(q.paramsJson);
+    if (params?.items && Array.isArray(params.items)) {
+      return params.items.map((x: any) => String(x));
+    }
+    if (q.type === TypeQuestionEvaluation.SCALE_LIKERT_5) return this.LIKERT_5;
+    if (q.type === TypeQuestionEvaluation.SCALE_AGREEMENT_5) return this.AGREEMENT_5;
+    return [];
+  }
+
+  private buildPreviewQuestion(q: any): { title: string; texte: string[]; controlName: string } {
+    const lines: string[] = [];
+    const params = this.parseParamsJson(q.paramsJson);
+    const type = q.type as TypeQuestionEvaluation;
+
+    if (q.code === 'ETUI7') {
+      lines.push('Oui / Non');
+      if (params?.oui?.items) {
+        lines.push(' ', params.oui.label || 'Si oui, par qui ?');
+        params.oui.items.forEach((item: string) => lines.push('    ' + item));
+      }
+      if (params?.non?.items) {
+        lines.push(' ', params.non.label || 'Si non, pourquoi ?');
+        params.non.items.forEach((item: string) => lines.push('    ' + item));
+      }
+    } else if (q.code === 'ETUII5') {
+      lines.push('Oui / Non', ' ', 'Si oui : a) de quel ordre ?');
+      (params?.a?.items ?? params?.items ?? []).forEach((item: string) => lines.push('    ' + item));
+      lines.push(' ', 'b) avec autonomie ?', '    Oui / Non');
+    } else if (q.code === 'ETUIII5') {
+      const items = params?.items ?? [
+        'Compétences techniques',
+        'Nouvelles méthodologies',
+        'Nouvelles connaissances théoriques',
+      ];
+      items.forEach((item: string) => lines.push(item + ' Oui / Non'));
+    } else if (type === TypeQuestionEvaluation.YES_NO) {
+      lines.push('Oui / Non');
+      if (q.bisQuestion) lines.push(' ', q.bisQuestion);
+    } else if (type === TypeQuestionEvaluation.BOOLEAN_GROUP) {
+      this.extractItems(q).forEach(item => lines.push(item + ' Oui / Non'));
+    } else if (type === TypeQuestionEvaluation.AUTO) {
+      lines.push('(Récupération automatique depuis la convention)');
+    } else if (type === TypeQuestionEvaluation.TEXT) {
+      lines.push('Champ de texte libre');
+    } else {
+      this.extractItems(q).forEach(item => lines.push(item));
+      if (q.bisQuestion) lines.push(' ', q.bisQuestion);
+    }
+
+    return {
+      title: q.texte,
+      texte: lines.length ? lines : ['—'],
+      controlName: this.toControlName(q.code),
+    };
   }
 
   saveAndValidateFicheEtudiant(): void {

@@ -237,7 +237,13 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
 
         this.reponseEvaluation = rep ?? null;
         if (rep) {
-          this.reponseEtudiantForm.patchValue(rep);
+          const repToPatch = { ...rep };
+          const schemaVersion = rep.schemaVersion == null || rep.schemaVersion < 2 ? 1 : rep.schemaVersion;
+          if (schemaVersion < 2) {
+            repToPatch.reponseEtuI7bis1 = null;
+            repToPatch.reponseEtuI7bis2 = null;
+          }
+          this.reponseEtudiantForm.patchValue(repToPatch);
           this.reponseEnseignantForm.patchValue(rep);
           this.reponseEntrepriseForm.patchValue(rep);
         }
@@ -689,12 +695,16 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
   }
 
   public getETUII5Options(q: any): { a: string[] } {
+    const schemaVersion = this.reponseEvaluation?.schemaVersion == null || this.reponseEvaluation.schemaVersion < 2 ? 1 : 2;
+    if (schemaVersion < 2) {
+      return { a: ['Très importantes', 'Importantes', 'Peu importantes'] };
+    }
     const obj = this.parseObjectLoose(q?.paramsJson);
     const aFromJson: string[] = Array.isArray(obj?.a) ? obj.a : [];
     if (aFromJson.length) return { a: aFromJson };
 
     const opts: string[] = Array.isArray(q?.options) ? q.options : [];
-    if (!opts.length) return { a: ["Technique", "Organisationnelle", "Communication"] };
+    if (!opts.length) return { a: ['Technique', 'Organisationnelle', 'Communication'] };
     return { a: opts };
   }
 

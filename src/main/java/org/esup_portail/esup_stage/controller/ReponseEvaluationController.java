@@ -88,6 +88,7 @@ public class ReponseEvaluationController {
             logger.debug("error envoie mail");
         }
         evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
+        reponseEvaluation.setSchemaVersion(2);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
@@ -110,6 +111,7 @@ public class ReponseEvaluationController {
             mailerService.sendValidationMail(convention, null, utilisateur, TemplateMail.CODE_EVAL_ETU_REMPLIE, sendMailEtudiant, sendMailEnseignant, sendMailGestionnaire, sendMailRespGestionnaire);
         }
         evaluationService.setReponseEvaluationEtudiantData(reponseEvaluation, reponseEtudiantFormDto);
+        reponseEvaluation.setSchemaVersion(2);
         return reponseEvaluationJpaRepository.saveAndFlush(reponseEvaluation);
     }
 
