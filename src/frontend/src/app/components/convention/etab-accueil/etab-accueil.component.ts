@@ -116,6 +116,11 @@ export class EtabAccueilComponent implements OnInit {
     });
   }
 
+  showSireneInfo(): boolean {
+    return this.isSireneActive
+      && (!this.authService.isEtudiant() || !this.autorisationCreationFrance);
+  }
+
   canCreate(): boolean {
     let hasRight = this.authService.checkRights({fonction: AppFonction.ORGA_ACC, droits: [Droit.CREATION]});
     if(this.authService.isEtudiant() && !this.autorisationCreationHorsFrance && !this.autorisationCreationFrance){
