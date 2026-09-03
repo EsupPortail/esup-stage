@@ -56,7 +56,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   contacts:any[] = [];
 
-  isSireneAcitve: boolean = false;
+  isSireneActive: boolean = false;
   nbMinResultats: number = 0;
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
@@ -118,7 +118,7 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.civilites = response.data;
     });
     this.structureService.getSireneInfo().subscribe((response: any) => {
-      this.isSireneAcitve = response.isApiSireneActive;
+      this.isSireneActive = response.isApiSireneActive;
       this.nbMinResultats = response.nombreResultats;
     });
   }
