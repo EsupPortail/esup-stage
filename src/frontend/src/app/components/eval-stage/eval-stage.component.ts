@@ -7,6 +7,7 @@ import { SortDirection } from "@angular/material/sort";
 import { TitleService } from "../../services/title.service";
 import { CentreGestionService } from "../../services/centre-gestion.service";
 import { UfrService } from "../../services/ufr.service";
+import { EtapeService } from "../../services/etape.service";
 import {EnvoiMailEnMasseEvalComponent} from "./envoi-mail-en-masse-eval/envoi-mail-en-masse-eval.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ExportEvaluationComponent} from "./export-evaluation/export-evaluation.component";
@@ -46,6 +47,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
     private titleService: TitleService,
     private centreGestionService: CentreGestionService,
     private ufrService: UfrService,
+    private etapeService: EtapeService,
     private dialog: MatDialog,
     private questionsEvaluationService: QuestionsEvaluationService) {
   }
@@ -73,6 +75,7 @@ export class EvalStageComponent implements OnInit, OnDestroy {
         { id: 'id', libelle: 'N° de la convention', type: 'int' },
         { id: 'etudiant', libelle: 'Étudiant', specific: true },
         { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+        { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
         { id: 'centreGestion.nomCentre', libelle: 'Centres de gestion', type: 'list', options: [], keyId: 'nomCentre', keyLibelle: 'nomCentre', colSpan: 6, infoBulleCentre: true },
         { id: 'stageTermine', libelle: 'N\'afficher que les stages terminés ?', type: 'boolean', specific: true }
       );
