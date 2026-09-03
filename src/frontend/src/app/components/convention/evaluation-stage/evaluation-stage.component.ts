@@ -818,9 +818,11 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
 
   private refreshConditionalQuestions(): void {
     const etui7Ctrl = this.reponseEtudiantForm.get('reponseEtuI7');
-    if (etui7Ctrl) {
-      etui7Ctrl.updateValueAndValidity({ emitEvent: true });
-    }
+    if (!etui7Ctrl) return;
+    // valueChanges ne se déclenche pas au patchValue : forcer l'application des validateurs ETUI7
+    const val = etui7Ctrl.value;
+    this.setRequired(this.reponseEtudiantForm, ['reponseEtuI7bis1'], !!val, TypeQuestionEvaluation.SINGLE_CHOICE);
+    this.setRequired(this.reponseEtudiantForm, ['reponseEtuI7bis2'], val === false, TypeQuestionEvaluation.SINGLE_CHOICE);
   }
 
 

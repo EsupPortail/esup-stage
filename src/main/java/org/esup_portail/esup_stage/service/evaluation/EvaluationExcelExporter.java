@@ -1119,12 +1119,13 @@ public class EvaluationExcelExporter {
     private String formatEtuI7Bis1(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
-        int index = (Integer) value;
+        // Ancien format : indices Oui/Non non réexploitables dans les colonnes « Si oui / Si non »
         if (schemaVersion < 2) {
-            return index == 1 ? "Oui" : "Non";
+            return "";
         }
-        List<String> options = qEtui7BisItems("oui");
 
+        int index = (Integer) value;
+        List<String> options = qEtui7BisItems("oui");
         if (index >= 0 && index < options.size()) {
             return options.get(index);
         }
@@ -1134,12 +1135,12 @@ public class EvaluationExcelExporter {
     private String formatEtuI7Bis2(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
-        int index = (Integer) value;
         if (schemaVersion < 2) {
-            return index == 1 ? "Oui" : "Non";
+            return "";
         }
-        List<String> options = qEtui7BisItems("non");
 
+        int index = (Integer) value;
+        List<String> options = qEtui7BisItems("non");
         if (index >= 0 && index < options.size()) {
             return options.get(index);
         }

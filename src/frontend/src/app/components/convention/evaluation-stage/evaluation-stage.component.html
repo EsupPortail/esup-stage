@@ -141,22 +141,20 @@
                     <!-- ETUI7 -->
                     <ng-container *ngIf="q.code === 'ETUI7'">
                       <div *ngIf="isEtui7LegacySchema()" class="mt-2 text-sm text-muted">
-                        Réponse saisie selon l'ancien format — non réexploitable à l'export.
+                        Réponse saisie selon l'ancien format. Merci de sélectionner à nouveau la sous-option ci-dessous (l'ancienne réponse complémentaire n'est pas récupérable).
                       </div>
-                      <ng-container *ngIf="!isEtui7LegacySchema()">
-                        <div *ngIf="getMainValue(q) === true" class="mt-2">
-                          <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelOui || 'Si oui, par qui ?' }}</b></div>
-                          <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis1'" style="display:grid">
-                            <mat-radio-button *ngFor="let opt of getETUI7Options(q).oui; let i = index" [value]="i">{{ opt }}</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                        <div *ngIf="getMainValue(q) === false" class="mt-2">
-                          <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelNon || 'Si non, pourquoi ?' }}</b></div>
-                          <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis2'" style="display:grid">
-                            <mat-radio-button *ngFor="let opt of getETUI7Options(q).non; let i = index" [value]="i">{{ opt }}</mat-radio-button>
-                          </mat-radio-group>
-                        </div>
-                      </ng-container>
+                      <div *ngIf="getMainValue(q) === true" class="mt-2">
+                        <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelOui || 'Si oui, par qui ?' }}</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis1'" style="display:grid">
+                          <mat-radio-button *ngFor="let opt of getETUI7Options(q).oui; let i = index" [value]="i">{{ opt }}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                      <div *ngIf="getMainValue(q) === false" class="mt-2">
+                        <div class="text-sm mb-1"><b>{{ getETUI7Options(q).labelNon || 'Si non, pourquoi ?' }}</b></div>
+                        <mat-radio-group [formControlName]="toControlBase(q.code) + 'bis2'" style="display:grid">
+                          <mat-radio-button *ngFor="let opt of getETUI7Options(q).non; let i = index" [value]="i">{{ opt }}</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
                     </ng-container>
 
                     <!-- ETUII5 : Si oui → a) choix radio ; b) oui/non -->
