@@ -242,10 +242,14 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
           if (schemaVersion < 2) {
             repToPatch.reponseEtuI7bis1 = null;
             repToPatch.reponseEtuI7bis2 = null;
+          } else {
+            repToPatch.reponseEtuI7bis1 = this.coerceIndex(repToPatch.reponseEtuI7bis1);
+            repToPatch.reponseEtuI7bis2 = this.coerceIndex(repToPatch.reponseEtuI7bis2);
           }
           this.reponseEtudiantForm.patchValue(repToPatch);
           this.reponseEnseignantForm.patchValue(rep);
           this.reponseEntrepriseForm.patchValue(rep);
+          this.refreshConditionalQuestions();
         }
         this.getQuestionSupplementaire();
 
@@ -633,10 +637,18 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
 
   getAutoValue(code: string): string {
     switch (code) {
-      case 'ETUI5': return this.convention?.origineStage?.libelle || '';
+      case 'ETUI5':
+        return this.convention?.origineStage?.libelle
+          || this.convention?.nomenclature?.origineStage
+          || '';
       case 'ETUIII0': return this.convention?.sujetStage || '';
       default: return '';
     }
+  }
+
+  isEtui7LegacySchema(): boolean {
+    const v = this.reponseEvaluation?.schemaVersion;
+    return v == null || v < 2;
   }
 
   toControlBase(code: string): string {
@@ -660,7 +672,24 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
     const non = Array.isArray(obj?.non?.items) ? obj.non.items : [];
     const labelOui = typeof obj?.oui?.label === 'string' ? obj.oui.label : undefined;
     const labelNon = typeof obj?.non?.label === 'string' ? obj.non.label : undefined;
-    return { oui, non, labelOui, labelNon };
+    if (oui.length || non.length) {
+      return { oui, non, labelOui, labelNon };
+    }
+    return {
+      oui: [
+        'Proposé par votre tuteur professionnel',
+        'Proposé par votre tuteur enseignant',
+        'Élaboré par vous-même',
+        'Négocié entre les parties',
+        'Autre'
+      ],
+      non: [
+        'Je n\'ai pas eu besoin d\'aide',
+        'Je ne savais pas à qui m\'adresser'
+      ],
+      labelOui: 'Si oui, par qui ?',
+      labelNon: 'Si non, pourquoi ?'
+    };
   }
 
   /** Affichage du bloc “bis” texte */
@@ -751,7 +780,7 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
   }
 
   private setAutoEtuI5(): void {
-    const libelle = this.convention?.origineStage?.libelle ?? '';
+    const libelle = this.getAutoValue('ETUI5');
     const idx = this.optionsETUI5.indexOf(libelle);
     const ctrl = this.reponseEtudiantForm.get('reponseEtuI5');
     if (!ctrl) return;
@@ -779,6 +808,19 @@ export class EvaluationStageComponent implements OnInit, OnDestroy {
   isLongTextLimitReached(name: string): boolean {
     const value = this.getLongTextControl(name)?.value;
     return typeof value === 'string' && value.length >= this.MAX_LENTGH_INPUT.longText;
+  }
+
+  private coerceIndex(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  private refreshConditionalQuestions(): void {
+    const etui7Ctrl = this.reponseEtudiantForm.get('reponseEtuI7');
+    if (etui7Ctrl) {
+      etui7Ctrl.updateValueAndValidity({ emitEvent: true });
+    }
   }
 
 

@@ -274,6 +274,15 @@
   flex-wrap: wrap;
 }
 
+.export-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+  color: #555;
+  font-size: 0.9rem;
+}
+
 /* Cible aussi le bouton Valider, encapsulé dans un <span> pour le tooltip,
    afin que les deux boutons aient exactement la même taille. */
 .actions .cancel-button,

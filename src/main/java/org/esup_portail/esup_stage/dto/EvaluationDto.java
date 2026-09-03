@@ -21,6 +21,7 @@ public class EvaluationDto {
     private CentreGestion centreGestion;
     private Etape etape;
     private String anneeUniversitaire;
+    private String origineStageLibelle;
     private FicheEvaluation ficheEvaluation;
     private ReponseEvaluation reponseEvaluation;
     private List<QuestionSupplementaire> questionSupplementaires;
@@ -35,6 +36,11 @@ public class EvaluationDto {
         this.centreGestion = convention.getCentreGestion();
         this.etape = convention.getEtape();
         this.anneeUniversitaire = convention.getAnnee();
+        if (convention.getOrigineStage() != null && convention.getOrigineStage().getLibelle() != null) {
+            this.origineStageLibelle = convention.getOrigineStage().getLibelle();
+        } else if (convention.getNomenclature() != null && convention.getNomenclature().getOrigineStage() != null) {
+            this.origineStageLibelle = convention.getNomenclature().getOrigineStage();
+        }
         this.ficheEvaluation = convention.getCentreGestion().getFicheEvaluation();
         this.reponseEvaluation = convention.getReponseEvaluation();
         this.questionSupplementaires = questionSupplementaires;

@@ -174,9 +174,15 @@
       </ng-container>
 
       <div class="actions" role="group" aria-label="Actions principales">
+        <div *ngIf="exporting" class="export-progress" aria-live="polite">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span>Export en cours…</span>
+        </div>
+
         <button class="cancel-button" mat-flat-button
                 type="button"
                 (click)="cancel()"
+                [disabled]="exporting"
                 aria-label="Annuler et fermer">
           Annuler
         </button>
@@ -187,7 +193,7 @@
               [tabindex]="form.valid ? -1 : 0">
           <button class="valid-button" mat-flat-button
                   type="button"
-                  [disabled]="!form.valid"
+                  [disabled]="!form.valid || exporting"
                   (click)="confirm()"
                   aria-label="Valider la sélection et exporter">
             Valider
