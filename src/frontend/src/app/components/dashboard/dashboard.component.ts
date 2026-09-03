@@ -410,27 +410,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   changeAnnee(): void {
-    if (!this.appTable || !this.anneeEnCours){
+    if (!this.appTable || !this.anneeEnCours) {
       this.logError("Erreur lors du chargement du tableau");
-    }else if(this.appTable?.getFilters().annee?.value === "Toutes les années"){
-      delete this.appTable.filterValues['annee'];
-      this.appTable?.update();
-      this.countConvention();
-    } else {
+      return;
+    }
 
-      // Mettre à jour le filtre
-      this.appTable?.setFilter({
+    if (this.anneeEnCours.any) {
+      // Pas de filtre API pour "Toutes les années", mais on mémorise le choix pour le retour
+      delete this.appTable.filterValues['annee'];
+    } else {
+      this.appTable.setFilter({
         id: 'annee',
         type: 'text',
-        value: this.anneeEnCours.any ? "" : this.anneeEnCours.libelle,
+        value: this.anneeEnCours.libelle,
         specific: false,
         permanent: true
       });
-
-      // mise à jour du tableau
-      this.appTable.update();
-      this.countConvention();
     }
+
+    this.appTable.update();
+    this.countConvention();
+  }
+
+  private persistDashboardFilters(): void {
+    if (!this.appTable) {
+      return;
+    }
+    const filters = this.appTable.getFilterValues();
+    if (this.anneeEnCours?.any) {
+      filters['annee'] = {
+        id: 'annee',
+        type: 'text',
+        value: 'Toutes les années',
+        specific: false,
+        permanent: true
+      };
+    }
+    sessionStorage.setItem('dashboard-filters', JSON.stringify(filters));
   }
 
 
@@ -475,10 +491,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.typeDashboard !== 3 && this.appTable) {
       this.nbConventionsEnAttente = this.appTable.total;
     }
-    if (this.appTable) {
-      const filters = this.appTable?.getFilterValues();
-      sessionStorage.setItem('dashboard-filters', JSON.stringify(filters));
-    }
+    this.persistDashboardFilters();
   }
 
   goToConvention(id: number): void {
@@ -525,11 +538,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       try {
         switch (key) {
           case 'annee':
-            if (filterValue.value) {
+            if (filterValue.value === 'Toutes les années' || filterValue.value === '') {
+              this.anneeEnCours = this.annees.find((a: any) => a.any === true);
+            } else if (filterValue.value) {
               this.anneeEnCours = this.annees.find((a: any) => a.libelle === filterValue.value);
-              if (this.anneeEnCours) {
-                this.changeAnnee();
-              }
+            }
+            if (this.anneeEnCours) {
+              this.changeAnnee();
             }
             break;
 
@@ -678,6 +693,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     sessionStorage.setItem('dashboard-paging', JSON.stringify({ page: this.appTable?.page, pageSize: this.appTable?.pageSize, sortColumn: this.appTable?.sortColumn, sortOrder: this.appTable?.sortOrder }));
-    sessionStorage.setItem('dashboard-filters', JSON.stringify(this.appTable?.getFilterValues()))
+    this.persistDashboardFilters();
   }
 }
