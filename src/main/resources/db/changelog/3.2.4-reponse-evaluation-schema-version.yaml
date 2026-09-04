@@ -17,3 +17,19 @@ databaseChangeLog:
                   name: schemaVersion
                   valueNumeric: 1
             where: schemaVersion IS NULL
+
+  # ETUI7 utilise bis1/bis2 dédiés : les flags bis génériques ne doivent plus activer un contrôle fantôme
+  - changeSet:
+      id: 3.2.4-etui7-clear-generic-bis-flags
+      author: esup
+      changes:
+        - update:
+            tableName: QuestionEvaluation
+            columns:
+              - column:
+                  name: bisQuestionTrue
+                  valueBoolean: false
+              - column:
+                  name: bisQuestionFalse
+                  valueBoolean: false
+            where: "codeQuestionEvaluation = 'ETUI7'"
