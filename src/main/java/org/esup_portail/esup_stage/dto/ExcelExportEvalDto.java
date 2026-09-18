@@ -10,4 +10,8 @@ public class ExcelExportEvalDto {
     List<Integer> idConventions;
     Integer typeFiche;
     List<String> colonnes;
+    /** Filtres JSON (export complet filtré, alternative à idConventions) */
+    String filters;
+    String predicate;
+    String sortOrder;
 }

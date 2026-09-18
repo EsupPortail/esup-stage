@@ -1,5 +1,8 @@
 export interface ExcelExportEval {
-  idConventions: number[];
+  idConventions?: number[];
   typeFiche: number;       // 0,1,2,3
   colonnes?: string[];     // optionnel
+  filters?: string;        // export complet filtré
+  predicate?: string;
+  sortOrder?: string;
 }

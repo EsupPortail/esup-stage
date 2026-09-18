@@ -297,6 +297,7 @@ public class EvaluationService {
         reponseEvaluation.setReponseEvaluationId(reponseEvaluationId);
         reponseEvaluation.setFicheEvaluation(ficheEvaluation);
         reponseEvaluation.setConvention(convention);
+        reponseEvaluation.setSchemaVersion(2);
 
         return reponseEvaluation;
     }

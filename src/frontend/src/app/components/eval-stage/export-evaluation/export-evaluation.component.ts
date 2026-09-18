@@ -2,8 +2,11 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {EvaluationService} from "../../../services/evaluation.service";
+import {MessageService} from "../../../services/message.service";
 import * as FileSaver from "file-saver";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import {ExcelExportEval} from "../../../models/excel-export-eval.model";
+import {finalize} from "rxjs";
 
 type TypeFiche = 0 | 1 | 2 | 3; // 0 = étudiant, 1 = enseignant référent, 2 = tuteur pro, 3 = tous
 
@@ -24,13 +27,24 @@ export class ExportEvaluationComponent {
   selectedAvailableKeys = new Set<string>();
   selectedChosenKeys = new Set<string>();
 
+  /** 'page' = page courante, 'filtered' = tout le résultat filtré */
+  exportScope: 'page' | 'filtered' = 'filtered';
+
+  exporting = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: {
       sheets: any[];
-      rows: any[] },
+      rows: any[];
+      total?: number;
+      sortColumn?: string;
+      sortOrder?: string;
+      filters?: string;
+    },
     public dialogRef: MatDialogRef<ExportEvaluationComponent>,
     private readonly fb: FormBuilder,
     private readonly evaluationService : EvaluationService,
+    private readonly messageService: MessageService,
   ) {
     this.form = this.fb.group({
       typeFiche: [null as TypeFiche | null, Validators.required],
@@ -49,15 +63,40 @@ export class ExportEvaluationComponent {
 
 // composant
   confirm() {
-    let SelectedColumns: string[] =  this.getSelectedColumnKeys(this.form.value.typeFiche);
+    if (this.exporting) return;
 
-    this.evaluationService
-      .getExportExcel(this.data.rows.map(r => r.id), this.form.value.typeFiche, SelectedColumns)
-      .subscribe((res) => {
+    const selectedColumns: string[] = this.getSelectedColumnKeys(this.form.value.typeFiche);
+    const typeFiche = this.form.value.typeFiche;
+
+    let payload: ExcelExportEval = {
+      typeFiche,
+      ...(selectedColumns.length ? { colonnes: selectedColumns } : {})
+    };
+
+    if (this.exportScope === 'page') {
+      payload = { ...payload, idConventions: this.data.rows.map(r => r.id) };
+    } else {
+      payload = {
+        ...payload,
+        filters: this.data.filters ?? '{}',
+        predicate: this.data.sortColumn ?? 'id',
+        sortOrder: this.data.sortOrder ?? 'desc',
+      };
+    }
+
+    this.exporting = true;
+    this.evaluationService.getExportExcel(payload).pipe(
+      finalize(() => { this.exporting = false; })
+    ).subscribe({
+      next: (res) => {
         const blob = res.body!;
-        FileSaver.saveAs(blob,'export_' + Date.now() + '.xlsx');
+        FileSaver.saveAs(blob, 'export_' + Date.now() + '.xlsx');
         this.dialogRef.close();
-      });
+      },
+      error: () => {
+        this.messageService.setError('Erreur lors de la génération de l\'export Excel.');
+      }
+    });
   }
 
 
@@ -192,7 +231,7 @@ export class ExportEvaluationComponent {
   }
 
   get isLocked(): boolean {
-    return !(this.form?.valid);
+    return !(this.form?.valid) || this.exporting;
   }
 
   getFilteredColumns(t: TypeFiche): {

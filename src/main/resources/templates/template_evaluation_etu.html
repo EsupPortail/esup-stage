@@ -132,31 +132,49 @@
             <#if reponse.reponseEtuI7 == false>Non</#if>
           </#if>
         </p>
-        <#-- Détails si oui : on utilise les champs *bis* -->
-        <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == true>
-          <ul>
-            <#if reponse.reponseEtuI7bis1??>
-              <li>Par votre réseau personnel :
-                <#if reponse.reponseEtuI7bis1 == 0>Non</#if>
-                <#if reponse.reponseEtuI7bis1 == 1>Oui</#if>
-              </li>
-            </#if>
-            <#if reponse.reponseEtuI7bis1a??>
-              <li>Au sein de votre formation :
-                <#if reponse.reponseEtuI7bis1a == 0>Non</#if>
-                <#if reponse.reponseEtuI7bis1a == 1>Oui</#if>
-              </li>
-            </#if>
-            <#if reponse.reponseEtuI7bis1b?? && reponse.reponseEtuI7bis1b != "">
-              <li>Autre : ${reponse.reponseEtuI7bis1b}</li>
-            </#if>
-            <#if reponse.reponseEtuI7bis2??>
-              <li>Service(s) d'accompagnement (BAIP, SUIO-IP, etc.) :
-                <#if reponse.reponseEtuI7bis2 == 0>Non</#if>
-                <#if reponse.reponseEtuI7bis2 == 1>Oui</#if>
-              </li>
-            </#if>
-          </ul>
+        <#assign etui7Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2) ? 2 : 1>
+        <#if etui7Schema gte 2>
+          <#-- Format >= 3.2.0 : choix unique si oui / si non -->
+          <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == true && reponse.reponseEtuI7bis1??>
+            <#assign etui7Q = questionEvaluations?filter(q -> q.code == "ETUI7")[0]>
+            <#assign etui7OuiOptions = ["Proposé par votre tuteur professionnel", "Proposé par votre tuteur enseignant", "Élaboré par vous-même", "Négocié entre les parties", "Autre"]>
+            <p>Si oui, par qui ? :
+              <#if reponse.reponseEtuI7bis1 gte 0 && reponse.reponseEtuI7bis1 < etui7OuiOptions?size>${etui7OuiOptions[reponse.reponseEtuI7bis1]}</#if>
+            </p>
+          </#if>
+          <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == false && reponse.reponseEtuI7bis2??>
+            <#assign etui7NonOptions = ["Je n'ai pas eu besoin d'aide", "Je ne savais pas à qui m'adresser"]>
+            <p>Si non, pourquoi ? :
+              <#if reponse.reponseEtuI7bis2 gte 0 && reponse.reponseEtuI7bis2 < etui7NonOptions?size>${etui7NonOptions[reponse.reponseEtuI7bis2]}</#if>
+            </p>
+          </#if>
+        <#else>
+          <#-- Format historique <= 3.1.x -->
+          <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == true>
+            <ul>
+              <#if reponse.reponseEtuI7bis1??>
+                <li>Par votre réseau personnel :
+                  <#if reponse.reponseEtuI7bis1 == 0>Non</#if>
+                  <#if reponse.reponseEtuI7bis1 == 1>Oui</#if>
+                </li>
+              </#if>
+              <#if reponse.reponseEtuI7bis1a??>
+                <li>Au sein de votre formation :
+                  <#if reponse.reponseEtuI7bis1a == 0>Non</#if>
+                  <#if reponse.reponseEtuI7bis1a == 1>Oui</#if>
+                </li>
+              </#if>
+              <#if reponse.reponseEtuI7bis1b?? && reponse.reponseEtuI7bis1b != "">
+                <li>Autre : ${reponse.reponseEtuI7bis1b}</li>
+              </#if>
+              <#if reponse.reponseEtuI7bis2??>
+                <li>Service(s) d'accompagnement (BAIP, SUIO-IP, etc.) :
+                  <#if reponse.reponseEtuI7bis2 == 0>Non</#if>
+                  <#if reponse.reponseEtuI7bis2 == 1>Oui</#if>
+                </li>
+              </#if>
+            </ul>
+          </#if>
         </#if>
       </div>
     </#if>
@@ -178,14 +196,16 @@
   <div>
     <h3>II. Pendant le stage</h3>
 
-    <#-- II1 : moment de présentation des modalités (pas de code en base dans le changelog fourni) -->
+    <#-- II1 : Accueil (ETUII1) -->
     <#if ficheEvaluation.questionEtuII1>
       <div class="evaluation-item">
-        <p><strong>- Quand ces modalités vous ont-elles été présentées ?</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII1")[0].texte}</strong>
           <#if reponse.reponseEtuII1??>
-            <#if reponse.reponseEtuII1 == 0>Avant le début du stage</#if>
-            <#if reponse.reponseEtuII1 == 1>Pendant le stage</#if>
-            <#if reponse.reponseEtuII1 == 2>Jamais</#if>
+            <#if reponse.reponseEtuII1 == 0>Excellent</#if>
+            <#if reponse.reponseEtuII1 == 1>Très bien</#if>
+            <#if reponse.reponseEtuII1 == 2>Bien</#if>
+            <#if reponse.reponseEtuII1 == 3>Satisfaisant</#if>
+            <#if reponse.reponseEtuII1 == 4>Insuffisant</#if>
           </#if>
         </p>
         <#if reponse.reponseEtuII1bis?? && reponse.reponseEtuII1bis != "">
@@ -194,10 +214,10 @@
       </div>
     </#if>
 
-    <#-- II2 : Accueil -->
+    <#-- II2 : Encadrement (ETUII2) -->
     <#if ficheEvaluation.questionEtuII2>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII1")[0].texte}</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII2")[0].texte}</strong>
           <#if reponse.reponseEtuII2??>
             <#if reponse.reponseEtuII2 == 0>Excellent</#if>
             <#if reponse.reponseEtuII2 == 1>Très bien</#if>
@@ -212,10 +232,10 @@
       </div>
     </#if>
 
-    <#-- II3 : Encadrement -->
+    <#-- II3 : Adaptation (ETUII3) -->
     <#if ficheEvaluation.questionEtuII3>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII2")[0].texte}</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII3")[0].texte}</strong>
           <#if reponse.reponseEtuII3??>
             <#if reponse.reponseEtuII3 == 0>Excellent</#if>
             <#if reponse.reponseEtuII3 == 1>Très bien</#if>
@@ -230,45 +250,54 @@
       </div>
     </#if>
 
-    <#-- II4 : Adaptation -->
+    <#-- II4 : Conditions matérielles (ETUII4) -->
     <#if ficheEvaluation.questionEtuII4>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII3")[0].texte}</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII4")[0].texte}</strong>
           <#if reponse.reponseEtuII4??>
-            <#if reponse.reponseEtuII4 == 0>Excellent</#if>
-            <#if reponse.reponseEtuII4 == 1>Très bien</#if>
-            <#if reponse.reponseEtuII4 == 2>Bien</#if>
-            <#if reponse.reponseEtuII4 == 3>Satisfaisant</#if>
-            <#if reponse.reponseEtuII4 == 4>Insuffisant</#if>
+            <#if reponse.reponseEtuII4 == 0>Tout à fait d'accord</#if>
+            <#if reponse.reponseEtuII4 == 1>Plutôt d'accord</#if>
+            <#if reponse.reponseEtuII4 == 2>Sans avis</#if>
+            <#if reponse.reponseEtuII4 == 3>Plutôt pas d'accord</#if>
+            <#if reponse.reponseEtuII4 == 4>Pas du tout d'accord</#if>
           </#if>
         </p>
       </div>
     </#if>
 
-    <#-- II5/II5a/II5b : Conditions matérielles -->
+    <#-- II5 : Responsabilités (ETUII5) -->
     <#if ficheEvaluation.questionEtuII5>
+      <#assign etuii5Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2) ? 2 : 1>
+      <#assign etuii5aOptions = etuii5Schema gte 2
+        ? ["Technique", "Organisationnelle", "Communication"]
+        : ["Très importantes", "Importantes", "Peu importantes"]>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII4")[0].texte}</strong>
-          <#if reponse.reponseEtuII5a??>
-            <#if reponse.reponseEtuII5a == 0>Tout à fait d'accord</#if>
-            <#if reponse.reponseEtuII5a == 1>Plutôt d'accord</#if>
-            <#if reponse.reponseEtuII5a == 2>Plutôt pas d'accord</#if>
-            <#if reponse.reponseEtuII5a == 3>Pas du tout d'accord</#if>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII5")[0].texte}</strong>
+          <#if reponse.reponseEtuII5??>
+            <#if reponse.reponseEtuII5 == true>Oui</#if>
+            <#if reponse.reponseEtuII5 == false>Non</#if>
           </#if>
         </p>
-        <#if reponse.reponseEtuII5b??>
-          <p>• Précision :
-            <#if reponse.reponseEtuII5b == true>Oui</#if>
-            <#if reponse.reponseEtuII5b == false>Non</#if>
-          </p>
+        <#if reponse.reponseEtuII5?? && reponse.reponseEtuII5 == true>
+          <#if reponse.reponseEtuII5a??>
+            <p>Si oui, de quel ordre ?
+              <#if reponse.reponseEtuII5a gte 0 && reponse.reponseEtuII5a < etuii5aOptions?size>${etuii5aOptions[reponse.reponseEtuII5a]}</#if>
+            </p>
+          </#if>
+          <#if reponse.reponseEtuII5b??>
+            <p>Avec autonomie ?
+              <#if reponse.reponseEtuII5b == true>Oui</#if>
+              <#if reponse.reponseEtuII5b == false>Non</#if>
+            </p>
+          </#if>
         </#if>
       </div>
     </#if>
 
-    <#-- II6 : Responsabilités -->
+    <#-- II6 : Dimension internationale (ETUII6) -->
     <#if ficheEvaluation.questionEtuII6>
       <div class="evaluation-item">
-        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII5")[0].texte}</strong>
+        <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII6")[0].texte}</strong>
           <#if reponse.reponseEtuII6??>
             <#if reponse.reponseEtuII6 == true>Oui</#if>
             <#if reponse.reponseEtuII6 == false>Non</#if>

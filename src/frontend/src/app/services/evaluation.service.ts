@@ -11,19 +11,11 @@ export class EvaluationService {
 
   constructor(private readonly http: HttpClient) { }
 
-  getExportExcel(idConventions: number[], typeFiche: number, columns?: string[]): Observable<any> {
-    let body:ExcelExportEval = {
-      idConventions,
-      typeFiche,
-      ...(columns?.length ? { colonnes: columns } : {})
-    };
-
+  getExportExcel(payload: ExcelExportEval): Observable<any> {
     return this.http.post<Blob>(`${environment.apiUrl}/evaluations/excel`,
-      body,
+      payload,
       {responseType: 'blob' as 'json', observe: 'response'}
     );
   }
-
-
 
 }

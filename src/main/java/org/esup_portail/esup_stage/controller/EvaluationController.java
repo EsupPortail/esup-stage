@@ -9,6 +9,7 @@ import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.repository.ConventionJpaRepository;
+import org.esup_portail.esup_stage.repository.ConventionRepository;
 import org.esup_portail.esup_stage.repository.QuestionSupplementaireJpaRepository;
 import org.esup_portail.esup_stage.security.interceptor.Secure;
 import org.esup_portail.esup_stage.service.evaluation.EvaluationService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApiController
 @RequestMapping("/evaluations")
@@ -28,6 +30,9 @@ public class EvaluationController {
 
     @Autowired
     private ConventionJpaRepository conventionJpaRepository;
+
+    @Autowired
+    private ConventionRepository conventionRepository;
 
     @Autowired
     private QuestionSupplementaireJpaRepository questionSupplementaireJpaRepository;
@@ -55,9 +60,27 @@ public class EvaluationController {
     @PostMapping(value = "/excel", produces = "application/vnd.ms-excel")
     @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.LECTURE})
     public ResponseEntity<byte[]> exportExcel(@RequestBody ExcelExportEvalDto excelExportEvalDto) {
-
-        byte[] bytes = evaluationService.getEvaluationToExcel(getEvalsFromConventions(excelExportEvalDto.getIdConventions()),excelExportEvalDto.getTypeFiche(),excelExportEvalDto.getColonnes());
+        List<Integer> idConventions = resolveConventionIds(excelExportEvalDto);
+        byte[] bytes = evaluationService.getEvaluationToExcel(
+                getEvalsFromConventions(idConventions),
+                excelExportEvalDto.getTypeFiche(),
+                excelExportEvalDto.getColonnes());
         return ResponseEntity.ok().body(bytes);
+    }
+
+    private List<Integer> resolveConventionIds(ExcelExportEvalDto dto) {
+        if (dto.getIdConventions() != null && !dto.getIdConventions().isEmpty()) {
+            return dto.getIdConventions();
+        }
+        if (dto.getFilters() != null && !dto.getFilters().isBlank()) {
+            String predicate = dto.getPredicate() != null && !dto.getPredicate().isBlank() ? dto.getPredicate() : "id";
+            String sortOrder = dto.getSortOrder() != null && !dto.getSortOrder().isBlank() ? dto.getSortOrder() : "desc";
+            return conventionRepository.findPaginated(1, 0, predicate, sortOrder, dto.getFilters())
+                    .stream()
+                    .map(Convention::getId)
+                    .collect(Collectors.toList());
+        }
+        throw new AppException(HttpStatus.BAD_REQUEST, "Aucune convention à exporter : fournir idConventions ou filters");
     }
 
     /* ===================== Helpers ===================== */

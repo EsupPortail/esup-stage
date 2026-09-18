@@ -577,13 +577,9 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else if (data.annee == null && this.convention?.annee) {
         data.annee = this.convention.annee.split('/')[0];
       }
-      if (this.formConvention.value.inscriptionElp) {
-        Object.assign(data, {
-          codeElp: this.formConvention.value.inscriptionElp.codElp,
-          libelleELP: this.formConvention.value.inscriptionElp.libElp,
-          creditECTS: this.formConvention.value.inscriptionElp.nbrCrdElp,
-        });
-      }
+      data.codeElp = this.formConvention.value.inscriptionElp?.codElp ?? null;
+      data.libelleELP = this.formConvention.value.inscriptionElp?.libElp ?? null;
+      data.creditECTS = this.formConvention.value.inscriptionElp?.nbrCrdElp ?? null;
       if (this.isEtudiant) {
         data.etudiantLogin = this.authService.userConnected.uid;
       } else if (this.selectedRow && this.selectedRow.uid) {

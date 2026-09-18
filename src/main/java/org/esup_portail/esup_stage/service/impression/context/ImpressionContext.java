@@ -664,10 +664,13 @@ public class ImpressionContext {
         @Lob
         private String reponseEnsII11;
 
+        private Integer schemaVersion;
+
         public ReponseEvaluationContext(ReponseEvaluation reponseEvaluation) {
             if (reponseEvaluation == null) {
                 return;
             }
+            this.schemaVersion = reponseEvaluation.getSchemaVersion() != null && reponseEvaluation.getSchemaVersion() >= 2 ? 2 : 1;
             this.reponseEnt1 = reponseEvaluation.getReponseEnt1();
             this.reponseEnt1bis = reponseEvaluation.getReponseEnt1bis();
             this.reponseEnt2 = reponseEvaluation.getReponseEnt2();
@@ -967,11 +970,13 @@ public class ImpressionContext {
         private String code;
         private String texte;
         private TypeQuestionEvaluation type;
+        private String paramsJson;
 
         public QuestionEvaluationContext(QuestionEvaluation questionEvaluation) {
             this.code = questionEvaluation.getCode();
             this.texte = questionEvaluation.getTexte();
             this.type = questionEvaluation.getType();
+            this.paramsJson = questionEvaluation.getParamsJson();
         }
     }
 }

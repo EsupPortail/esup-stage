@@ -31,6 +31,8 @@ public class EvaluationExcelExporter {
 
     private Map<String, QuestionEvaluation> questionsByCode;
     private final ObjectMapper mapper = new ObjectMapper();
+    /** Version du schéma de la réponse en cours d'export (ETUI7) */
+    private int exportSchemaVersion = 2;
     private static final List<String> LIKERT_5 = List.of("Excellent","Très bien","Bien","Satisfaisant","Insuffisant");
     private static final List<String> AGREEMENT_5 = List.of("Tout à fait d'accord","Plutôt d'accord","Sans avis","Plutôt pas d'accord","Pas du tout d'accord");
 
@@ -155,6 +157,40 @@ public class EvaluationExcelExporter {
             }
         } catch (Exception ignored) {}
         return Collections.emptyList();
+    }
+
+    private List<String> qEtui7BisItems(String branch) {
+        QuestionEvaluation q = questionsByCode.get("ETUI7");
+        if (q == null || q.getParamsJson() == null || q.getParamsJson().isBlank()) {
+            return defaultEtui7BisItems(branch);
+        }
+        try {
+            Map<String, Object> m = mapper.readValue(q.getParamsJson(), new TypeReference<Map<String, Object>>() {});
+            Object branchObj = m.get(branch);
+            if (branchObj instanceof Map<?, ?> branchMap) {
+                Object items = branchMap.get("items");
+                if (items instanceof List<?> list && !list.isEmpty()) {
+                    return list.stream().map(String::valueOf).toList();
+                }
+            }
+        } catch (Exception ignored) {}
+        return defaultEtui7BisItems(branch);
+    }
+
+    private List<String> defaultEtui7BisItems(String branch) {
+        if ("oui".equals(branch)) {
+            return List.of(
+                    "Proposé par votre tuteur professionnel",
+                    "Proposé par votre tuteur enseignant",
+                    "Élaboré par vous-même",
+                    "Négocié entre les parties",
+                    "Autre"
+            );
+        }
+        return List.of(
+                "Je n'ai pas eu besoin d'aide",
+                "Je ne savais pas à qui m'adresser"
+        );
     }
 
     private void createSheet(Workbook workbook, List<EvaluationDto> evaluations, ExportType type, String sheetName, List<String> columnFilter) {
@@ -382,7 +418,8 @@ public class EvaluationExcelExporter {
 
         switch (type) {
             case ETUDIANT:
-                return fiche.getValidationEtudiant() != null && fiche.getValidationEtudiant();
+                return fiche.getValidationEtudiant() != null && fiche.getValidationEtudiant()
+                        && Boolean.TRUE.equals(eval.getReponseEvaluation().getValidationEtudiant());
             case ENSEIGNANT:
                 return fiche.getValidationEnseignant() != null && fiche.getValidationEnseignant();
             case ENTREPRISE:
@@ -562,6 +599,7 @@ public class EvaluationExcelExporter {
 
     private void fillDataRow(Row row, EvaluationDto eval, ExportType type, CellStyle dataStyle, List<String> columnCodes) {
         ReponseEvaluation reponse = eval.getReponseEvaluation();
+        exportSchemaVersion = resolveSchemaVersion(reponse != null ? reponse.getSchemaVersion() : null);
 
         // Si pas de filtrage, utiliser l'ancienne méthode
         if (columnCodes == null || columnCodes.isEmpty()) {
@@ -611,14 +649,14 @@ public class EvaluationExcelExporter {
         if (r == null) return "";
 
         switch (type) {
-            case ETUDIANT: return getEtudiantValue(code, r);
+            case ETUDIANT: return getEtudiantValue(code, eval, r);
             case ENSEIGNANT: return getEnseignantValue(code, r);
             case ENTREPRISE: return getEntrepriseValue(code, r);
             default: return "";
         }
     }
 
-    private Object getEtudiantValue(String code, ReponseEvaluation r) {
+    private Object getEtudiantValue(String code, EvaluationDto eval, ReponseEvaluation r) {
         return switch (code) {
             case "ETUI1" -> r.getReponseEtuI1();
             case "ETUI1bis" -> r.getReponseEtuI1bis();
@@ -628,7 +666,7 @@ public class EvaluationExcelExporter {
             case "ETUI4b" -> r.getReponseEtuI4b();
             case "ETUI4c" -> r.getReponseEtuI4c();
             case "ETUI4d" -> r.getReponseEtuI4d();
-            case "ETUI5" -> r.getReponseEtuI5();
+            case "ETUI5" -> resolveEtui5Value(eval, r);
             case "ETUI6" -> r.getReponseEtuI6();
             case "ETUI7" -> r.getReponseEtuI7();
             case "ETUI7_bis1" -> r.getReponseEtuI7bis1();
@@ -672,6 +710,20 @@ public class EvaluationExcelExporter {
             case "ETUIII16bis" -> r.getReponseEtuIII16bis();
             default -> "";
         };
+    }
+
+    private Object resolveEtui5Value(EvaluationDto eval, ReponseEvaluation r) {
+        if (r.getReponseEtuI5() != null) {
+            QuestionEvaluation question = questionsByCode.get("ETUI5");
+            if (question != null) {
+                String formatted = formatSingleChoice(question, r.getReponseEtuI5());
+                if (!formatted.isBlank()) {
+                    return formatted;
+                }
+            }
+            return r.getReponseEtuI5();
+        }
+        return eval.getOrigineStageLibelle() != null ? eval.getOrigineStageLibelle() : "";
     }
 
     private Object getEnseignantValue(String code, ReponseEvaluation r) {
@@ -770,12 +822,13 @@ public class EvaluationExcelExporter {
         createCell(row, colNum++, eval.getAnneeUniversitaire(), dataStyle);
 
         ReponseEvaluation reponse = eval.getReponseEvaluation();
+        exportSchemaVersion = resolveSchemaVersion(reponse != null ? reponse.getSchemaVersion() : null);
         if (reponse == null) {
             return;
         }
 
         switch (type) {
-            case ETUDIANT -> colNum = fillEtudiantData(row, colNum, reponse, dataStyle);
+            case ETUDIANT -> colNum = fillEtudiantData(row, colNum, eval, reponse, dataStyle);
             case ENSEIGNANT -> colNum = fillEnseignantData(row, colNum, reponse, dataStyle);
             case ENTREPRISE -> colNum = fillEntrepriseData(row, colNum, reponse, dataStyle);
         }
@@ -809,7 +862,7 @@ public class EvaluationExcelExporter {
         }
     }
 
-    private int fillEtudiantData(Row row, int colNum, ReponseEvaluation r, CellStyle style) {
+    private int fillEtudiantData(Row row, int colNum, EvaluationDto eval, ReponseEvaluation r, CellStyle style) {
         createCell(row, colNum++, "ETUI1",  r.getReponseEtuI1(), style);
         createCell(row, colNum++, "ETUI1bis", r.getReponseEtuI1bis(), style);
         createCell(row, colNum++, "ETUI2",  r.getReponseEtuI2(), style);
@@ -818,7 +871,7 @@ public class EvaluationExcelExporter {
         createCell(row, colNum++, "ETUI4b", r.getReponseEtuI4b(), style);
         createCell(row, colNum++, "ETUI4c", r.getReponseEtuI4c(), style);
         createCell(row, colNum++, "ETUI4d", r.getReponseEtuI4d(), style);
-        createCell(row, colNum++, "ETUI5",  r.getReponseEtuI5(), style);
+        createCell(row, colNum++, "ETUI5",  getEtudiantValue("ETUI5", eval, r), style);
         createCell(row, colNum++, "ETUI6",  r.getReponseEtuI6(), style);
         createCell(row, colNum++, "ETUI7",  r.getReponseEtuI7(), style);
         createCell(row, colNum++, "ETUI7_bis1", r.getReponseEtuI7bis1(), style);
@@ -933,6 +986,11 @@ public class EvaluationExcelExporter {
             return;
         }
 
+        if (value instanceof String) {
+            cell.setCellValue((String) value);
+            return;
+        }
+
         QuestionEvaluation question = questionsByCode.get(code);
         if (question == null) {
             cell.setCellValue(formatSpecialCaseValue(code, value));
@@ -1042,11 +1100,11 @@ public class EvaluationExcelExporter {
     private String formatSpecialCaseValue(String code, Object value) {
         switch (code) {
             case "ETUI7_bis1":
-                return formatEtuI7Bis1(value);
+                return formatEtuI7Bis1(value, exportSchemaVersion);
             case "ETUI7_bis2":
-                return formatEtuI7Bis2(value);
+                return formatEtuI7Bis2(value, exportSchemaVersion);
             case "ETUII5a":
-                return formatEtuII5a(value);
+                return formatEtuII5a(value, exportSchemaVersion);
             case "ETUII5b":
                 return formatEtuII5b(value);
             default:
@@ -1054,41 +1112,51 @@ public class EvaluationExcelExporter {
         }
     }
 
-    private String formatEtuI7Bis1(Object value) {
+    private int resolveSchemaVersion(Integer schemaVersion) {
+        return schemaVersion == null || schemaVersion < 2 ? 1 : schemaVersion;
+    }
+
+    private String formatEtuI7Bis1(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
-        int index = (Integer) value;
-        List<String> options = List.of(
-                "Proposé par votre tuteur professionnel",
-                "Proposé par votre tuteur enseignant",
-                "Élaboré par vous-même",
-                "Négocié entre les parties",
-                "Autre"
-        );
+        // Ancien format : indices Oui/Non non réexploitables dans les colonnes « Si oui / Si non »
+        if (schemaVersion < 2) {
+            return "";
+        }
 
+        int index = (Integer) value;
+        List<String> options = qEtui7BisItems("oui");
         if (index >= 0 && index < options.size()) {
             return options.get(index);
         }
         return "";
     }
 
-    private String formatEtuI7Bis2(Object value) {
+    private String formatEtuI7Bis2(Object value, int schemaVersion) {
         if (!(value instanceof Integer)) return value != null ? value.toString() : "";
 
-        int index = (Integer) value;
-        List<String> options = List.of(
-                "Je n'ai pas eu besoin d'aide",
-                "Je ne savais pas à qui m'adresser"
-        );
+        if (schemaVersion < 2) {
+            return "";
+        }
 
+        int index = (Integer) value;
+        List<String> options = qEtui7BisItems("non");
         if (index >= 0 && index < options.size()) {
             return options.get(index);
         }
         return "";
     }
 
-    private String formatEtuII5a(Object value) {
-        return value != null ? value.toString() : "";
+    private String formatEtuII5a(Object value, int schemaVersion) {
+        if (!(value instanceof Integer)) return value != null ? value.toString() : "";
+        int index = (Integer) value;
+        List<String> options = schemaVersion < 2
+                ? List.of("Très importantes", "Importantes", "Peu importantes")
+                : List.of("Technique", "Organisationnelle", "Communication");
+        if (index >= 0 && index < options.size()) {
+            return options.get(index);
+        }
+        return "";
     }
 
     private String formatEtuII5b(Object value) {
