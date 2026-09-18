@@ -214,7 +214,7 @@
         <div class="form-row row align-items-start">
           <mat-form-field class="duree-field col-12 col-md-6 mb-2" appearance="fill">
             <mat-label>Durée effective du stage en nombre d'heures</mat-label>
-            <input type="text" inputmode="decimal" matInput formControlName="dureeExceptionnelle" required />
+            <input type="text" inputmode="decimal" matInput formControlName="dureeExceptionnelle" (input)="onDureeExceptionnelleManualInput()" required />
             <mat-error>
               <app-form-error [field]="form.get('dureeExceptionnelle')"></app-form-error>
             </mat-error>

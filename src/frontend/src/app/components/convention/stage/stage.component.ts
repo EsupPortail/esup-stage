@@ -98,6 +98,12 @@ export class StageComponent implements OnInit {
   updatingPeriode = false;
   initialLoading: boolean = true;
   initialDureeExceptionnelleMissing: boolean = false;
+  // Passe à true dès que l'utilisateur saisit lui-même la durée : le recalcul
+  // automatique ne doit alors plus écraser cette valeur.
+  dureeExceptionnelleManuelle: boolean = false;
+  // Idem pour les champs Mois / Jour(s) / Heure(s) : une période saisie manuellement
+  // ne doit plus être réécrite par le recalcul automatique.
+  dureeStageManuelle: boolean = false;
   private readonly periodeStageFields = ['periodeStageMois', 'periodeStageJours', 'periodeStageHeures'];
 
   @Output() validated = new EventEmitter<number>();
@@ -219,14 +225,17 @@ export class StageComponent implements OnInit {
 
     this.form.get('periodeStageMois')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeMois = value;
+      this.dureeStageManuelle = true;
     });
 
     this.form.get('periodeStageJours')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeJours = value;
+      this.dureeStageManuelle = true;
     });
 
     this.form.get('periodeStageHeures')!.valueChanges.subscribe(value => {
       this.dureeStage.dureeHeures = value;
+      this.dureeStageManuelle = true;
     });
 
     this.form.get('nbHeuresHebdo')!.valueChanges.subscribe((value) => {
@@ -257,7 +266,7 @@ export class StageComponent implements OnInit {
     this.toggleValidators(['sujetStage','competences','fonctionsEtTaches','idOrigineStage','confidentiel','idNatureTravail','idModeValidationStage'],!this.enMasse);
 
     this.loadJoursFeries();
-    this.refreshPeriodeStageFields();
+    this.refreshPeriodeStageFields(true);
     this.loadInterruptionsStage();
     if (!this.form.get('horairesReguliers')?.value) {
       this.loadPeriodesStage();
@@ -321,9 +330,9 @@ export class StageComponent implements OnInit {
 
     //le timeout permet de laisser le temps aux données d'être chargées
     setTimeout(() => {
-      this.updateHeuresTravail(true);
+      this.updateHeuresTravail(true, false);
       this.initialLoading = false;
-      this.refreshPeriodeStageFields();
+      this.refreshPeriodeStageFields(true);
       this.persistMissingCalculatedDureeExceptionnelle();
     }, 1000);
   }
@@ -486,7 +495,7 @@ export class StageComponent implements OnInit {
   loadInterruptionsStage() : void{
     this.periodeInterruptionStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.interruptionsStage = response;
-      this.updateHeuresTravail(true);
+      this.updateHeuresTravail(true, false);
       this.checkInterruptionsPeriodesValid();
     });
   }
@@ -534,7 +543,7 @@ export class StageComponent implements OnInit {
   loadPeriodesStage() : void {
     this.periodeStageService.getByConvention(this.convention.id).subscribe((response: any) => {
       this.periodesCalculHeuresStage = response;
-      this.updateHeuresTravail(true);
+      this.updateHeuresTravail(true, false);
       this.checkPeriodesTravailValid();
     });
   }
@@ -694,8 +703,18 @@ export class StageComponent implements OnInit {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
-  refreshPeriodeStageFields(): void {
+  refreshPeriodeStageFields(background: boolean = false): void {
     if (!this.form) {
+      return;
+    }
+
+    // Ne jamais écraser une période (mois/jours/heures) saisie manuellement par l'utilisateur.
+    if (this.dureeStageManuelle) {
+      return;
+    }
+
+    const periodeDejaPresente = !!(this.dureeStage.dureeMois || this.dureeStage.dureeJours || this.dureeStage.dureeHeures);
+    if (background && periodeDejaPresente) {
       return;
     }
 
@@ -707,10 +726,30 @@ export class StageComponent implements OnInit {
     }, { emitEvent: false });
   }
 
-  private setCalculatedDureeExceptionnelle(totalHeures: number): void {
+  onDureeExceptionnelleManualInput(): void {
+    this.dureeExceptionnelleManuelle = true;
+  }
+
+  private setCalculatedDureeExceptionnelle(totalHeures: number, persist: boolean = true): void {
+    const background = !persist;
+    // Ne jamais écraser une durée explicitement saisie par l'utilisateur.
+    if (this.dureeExceptionnelleManuelle) {
+      this.refreshPeriodeStageFields(background);
+      return;
+    }
+    const valeurActuelle = this.parseDecimal(this.form.get('dureeExceptionnelle')?.value);
+    if (background && !Number.isNaN(valeurActuelle)) {
+      this.refreshPeriodeStageFields(background);
+      return;
+    }
+    if (valeurActuelle === totalHeures) {
+      this.refreshPeriodeStageFields(background);
+      return;
+    }
     this.convention.dureeExceptionnelle = totalHeures;
-    this.form.get('dureeExceptionnelle')?.setValue(totalHeures, { emitEvent: !this.initialLoading });
-    this.refreshPeriodeStageFields();
+    const emitEvent = persist && !this.initialLoading;
+    this.form.get('dureeExceptionnelle')?.setValue(totalHeures, { emitEvent });
+    this.refreshPeriodeStageFields(background);
   }
 
   private persistMissingCalculatedDureeExceptionnelle(): void {
@@ -737,7 +776,7 @@ export class StageComponent implements OnInit {
     return parseFloat(value.toString().replace(',', '.'));
   }
 
-  updateHeuresTravail(force: boolean = false): void {
+  updateHeuresTravail(force: boolean = false, persist: boolean = true): void {
     if (this.initialLoading && !force) return;
 
     this.updatingPeriode = true;
@@ -766,16 +805,16 @@ export class StageComponent implements OnInit {
 
         // Calculate total hours
         const totalHeures = this.calculHeuresTravails(periodes);
-        this.setCalculatedDureeExceptionnelle(totalHeures);
+        this.setCalculatedDureeExceptionnelle(totalHeures, persist);
       }
     } else {
       // For irregular hours
       if (this.initialLoading && this.periodesCalculHeuresStage.length === 0) {
-        this.refreshPeriodeStageFields();
+        this.refreshPeriodeStageFields(!persist);
         return;
       }
       const totalHeures = this.calculHeuresTravails(this.periodesCalculHeuresStage);
-      this.setCalculatedDureeExceptionnelle(totalHeures);
+      this.setCalculatedDureeExceptionnelle(totalHeures, persist);
     }
   }
 
