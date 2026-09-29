@@ -55,11 +55,11 @@
                 <br>
                 <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Qualité du représentant : </strong>${signataire.fonction}</span>
                 <br>
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Nom du tuteur professionnel : </strong>${contact.civiliteLibelle} ${contact.nom} ${contact.prenom}</span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Nom du tuteur professionnel : </strong>${avenant.contact}</span>
                 <br>
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Tel : </strong>${contact.tel}</span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Tel : </strong>${avenant.contact.tel}</span>
                 <br>
-                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Mail : </strong>${contact.mail}</span>
+                <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>Mail : </strong>${avenant.contact.mail}</span>
             </td>
         </tr>
         </tbody>
@@ -158,9 +158,7 @@ ${avenant.motifs}
                 <p>
                     <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Tuteur Organisme d'accueil :</u></span>
                 </p>
-                <p>
-                    <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><strong>${contact.nom} ${contact.prenom}</strong></span>
-                </p>
+                ${avenant.contact}
                 <p>
                     <span class="text-small" style="font-family:'Times New Roman', Times, serif;"><u>Tuteur Etablissement d'enseignement sup. :</u></span>
                 </p>

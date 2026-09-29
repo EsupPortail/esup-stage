@@ -27,3 +27,31 @@ databaseChangeLog:
               name: exemple
               value: Jane Doe
       - tableName: ParamConvention
+- changeSet:
+    id: 3.2.0-ajout-contact-tel-mail-param-avenant
+    author: thouveno9
+    changes:
+    - insert:
+      - columns:
+            - column:
+                name: code
+                value: avenant.contact.tel
+            - column:
+                name: libelle
+                value: téléphone du nouveau contact
+            - column:
+                name: exemple
+                value: 06 12 34 56 78
+      - tableName: ParamConvention
+    - insert:
+      - columns:
+          - column:
+              name: code
+              value: avenant.contact.mail
+          - column:
+              name: libelle
+              value: mail du nouveau contact
+          - column:
+              name: exemple
+              value: jane.doe@example.com
+      - tableName: ParamConvention
