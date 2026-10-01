@@ -314,6 +314,14 @@ public class ImpressionService {
             String avenantContact = getDefaultText("/templates/template_avenant_contact.html");
             texte = texte.replace("${avenant.contact}", avenantContact);
 
+            // Remplacement ${avenant.contact.mail} par le mail du bon signataire si il a ete change
+            String avenantContactMail = getDefaultText("/templates/template_avenant_contact_mail.html");
+            texte = texte.replace("${avenant.contact.mail}", avenantContactMail);
+
+            // Remplacement ${avenant.contact.tel} par le telephone du bon signataire si il a ete change
+            String avenantContactTel = getDefaultText("/templates/template_avenant_contact_tel.html");
+            texte = texte.replace("${avenant.contact.tel}", avenantContactTel);
+
             // Remplacement ${avenant.enseignant} par le bon signataire (nom & prénom) si il a ete change
             String avenantEnseignant = getDefaultText("/templates/template_avenant_enseignant.html");
             texte = texte.replace("${avenant.enseignant}", avenantEnseignant);
