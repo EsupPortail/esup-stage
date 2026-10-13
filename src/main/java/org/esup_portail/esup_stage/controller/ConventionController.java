@@ -23,6 +23,7 @@ import org.esup_portail.esup_stage.service.impression.ImpressionService;
 import org.esup_portail.esup_stage.service.signature.SignatureService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -220,7 +221,15 @@ public class  ConventionController {
         convention.setValidationCreation(false);
         conventionService.setConventionData(convention, conventionFormDto);
         convention.setValeurNomenclature();
-        convention = conventionJpaRepository.saveAndFlush(convention);
+        try {
+            convention = conventionJpaRepository.saveAndFlush(convention);
+        } catch (DataIntegrityViolationException e) {
+            // Création concurrente : la contrainte d'unicité du brouillon par loginCreation a été violée
+            if (conventionJpaRepository.findBrouillon(utilisateur.getLogin()) != null) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Vous avez déjà une convention en cours de création. Veuillez rafraichir la page.");
+            }
+            throw e;
+        }
         return convention;
     }
 
