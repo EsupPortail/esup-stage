@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit, Output, EventEmitter } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
-import { PeriodeStageService } from "../../../../services/periode-stage.service"
 
 @Component({
     selector: 'app-calendrier',
@@ -26,7 +25,6 @@ export class CalendrierComponent implements OnInit  {
 
   constructor(private fb: FormBuilder,
               private dialogRef: MatDialogRef<CalendrierComponent>,
-              private periodeStageService: PeriodeStageService,
               @Inject(MAT_DIALOG_DATA) data: any
   ) {
     this.convention = data.convention;
@@ -96,10 +94,8 @@ export class CalendrierComponent implements OnInit  {
   }
 
   removePeriode(periode: any): void {
+    // La suppression en base est faite par l'onglet Stage, seulement si la fenêtre est validée.
     this.removeItemOnce(this.periodes, periode);
-    if(periode.id){
-      this.periodeStageService.delete(periode.id).subscribe();
-    }
     this.heuresJournalieresForm.removeControl(periode.formControlName);
   }
 
