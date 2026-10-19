@@ -65,21 +65,63 @@ Par défaut à l'installation, les rôles *ADM*, *RESP_GES* et *GES* disposent d
 ESUP-SISCOL peut autoriser l'activation simultanée de `mode_apogee` et `mode_pegase`. En pratique, une instance (ou une base de test) qui mélange les deux SI scolarité peut produire des comportements instables (étudiants listés puis erreurs en aval). Pour la création en masse, privilégier une configuration et un jeu de données *homogènes* (un SI scolarité de référence par environnement).
 ====
 
+=== Comprendre les informations renvoyées par le SI scolarité
+
+Lors de l'ajout d'un étudiant au groupe, ESUP-Stage interroge le *SI scolarité* (Apogée ou Pégase) via *ESUP-SISCOL*. Ce n'est pas le gestionnaire qui saisit les codes de régime dans le wizard : ils sont *remontés automatiquement* pour chaque étudiant / année.
+
+Les termes suivants sont utiles pour paramétrer correctement les types de convention :
+
+[cols="2,3", options="header"]
+|===
+|Terme |Signification
+
+|*SI scolarité*
+|Système qui porte les inscriptions et les régimes des étudiants (Apogée ou Pégase dans votre établissement).
+
+|*ESUP-SISCOL*
+|Composant qui fait le lien entre ESUP-Stage et le SI scolarité (et l'annuaire). Voir xref:ESUP-SISCOL.adoc[].
+
+|*Régime d'inscription*
+|Mode d'inscription de l'étudiant pour une année universitaire (par exemple formation initiale ou continue). C'est cette information qui permet de choisir automatiquement le *type de convention*.
+
+|*Libellé court du régime* (`licRegIns`)
+|Abréviation du régime telle que renvoyée par le SI (exemples fréquents : `FI`, `FC`, `INITIALE`…). Ce n'est *pas* le diplôme « licence » : « lic » désigne ici un *libellé court*. C'est la *première* valeur utilisée pour retrouver le type de convention.
+
+|*Code du régime* (`codRegIns`)
+|Code du régime renvoyé par le SI. Utilisé en *repli* si aucun type ne correspond au libellé court.
+
+|*Code* du type de convention (`codeCtrl`)
+|Champ *Code* dans `Tables des nomenclatures` > *Type de convention*. Il doit être *identique* (sans tenir compte de la casse) au libellé court ou, à défaut, au code du régime remonté par le SI.
+
+|*Template PDF*
+|Modèle d'impression de la convention, associé à un type et à une langue (au minimum `fr`).
+
+|*Césure*
+|Situation particulière (cursus aménagé) qui peut imposer un type de convention dédié, prioritaire sur le régime habituel.
+|===
+
+==== Comment connaître les valeurs pour votre établissement ?
+
+Ces codes ne sont pas affichés dans le wizard de création en masse. Pour les identifier :
+
+* en cas d'erreur `Type de convention non trouvé`, les *logs applicatifs* consignent le code du régime et le libellé court (`codRegIns`, `licRegIns`) pour l'étudiant concerné ;
+* sinon, consultez le référentiel des régimes dans votre SI scolarité, ou demandez à la DSI / scolarité centrale les valeurs réellement remontées via ESUP-SISCOL.
+
+Les nomenclatures livrées avec ESUP-Stage peuvent déjà contenir des *Codes* de type adaptés à Apogée (`FI`, `FC`, …) ou à Pégase (`INITIALE`, `CONTINUE`, …) : adaptez-les à *votre* référentiel.
+
 === Types de convention et modèles PDF
 
-À l'ajout d'un étudiant dans le groupe, l'application détermine automatiquement un type de convention à partir du *régime d'inscription* renvoyé par le SI scolarité :
+À l'ajout d'un étudiant dans le groupe, l'application détermine automatiquement un type de convention à partir du régime d'inscription renvoyé par le SI :
 
-. recherche d'un type dont le *Code* (`codeCtrl`) correspond à `licRegIns` ;
-. si aucun résultat, recherche avec `codRegIns` ;
+. recherche d'un type *actif* dont le *Code* est égal au *libellé court du régime* ;
+. si aucun résultat, même recherche avec le *code du régime* ;
 . le cas échéant, remplacement par le type césure lorsque le cursus aménagé l'impose ;
 . si aucun type n'est trouvé → erreur `Type de convention non trouvé`.
 
 .Actions de paramétrage
 . Ouvrir `Tables des nomenclatures` > *Type de convention*.
-. Vérifier que chaque régime utile dispose d'un type *actif* dont le *Code* (`codeCtrl`) correspond à la valeur `licRegIns` ou, à défaut, `codRegIns` renvoyée par le SI (Apogée ou Pégase via SISCOL).
+. Pour chaque régime utile dans votre établissement, disposer d'un type *actif* dont le *Code* correspond au libellé court du régime ou, à défaut, au code du régime (voir section précédente).
 . Associer à chaque type utilisé un *template PDF* pour chaque langue concernée (au minimum `fr`).
-
-Les nomenclatures livrées peuvent contenir à la fois des codes de type Apogée (`FI`, `FC`, …) et des codes plus proches de Pégase (`INITIALE`, `CONTINUE`, …) : créez ou adaptez les codes selon *votre* référentiel.
 
 ==== Deux mécanismes distincts à ne pas confondre
 
@@ -88,7 +130,7 @@ Les nomenclatures livrées peuvent contenir à la fois des codes de type Apogée
 |Mécanisme |Règle
 
 |Affectation automatique du type *à l'ajout d'un étudiant* au groupe
-|Correspondance `codeCtrl` ↔ `licRegIns` puis `codRegIns` (voir ci-dessus). Sans correspondance, l'ajout échoue.
+|Le *Code* du type doit correspondre au libellé court du régime, puis au code du régime (voir ci-dessus). Sans correspondance, l'ajout échoue.
 
 |Liste *Type de convention du groupe* (onglet *Cadre du stage*)
 |Propose les types *actifs* qui disposent d'un template PDF. Cette liste *n'est pas filtrée* par le régime de chaque étudiant.
@@ -96,17 +138,12 @@ Les nomenclatures livrées peuvent contenir à la fois des codes de type Apogée
 
 [IMPORTANT]
 ====
-Un type peut apparaître dans la liste du *Cadre du stage* (actif + template) et pourtant provoquer `Type de convention non trouvé` à l'ajout d'étudiants si son *Code* ne correspond pas au régime SI. Les deux réglages sont complémentaires.
-====
-
-[NOTE]
-====
-À partir de *3.3.x*, la résolution du type s'appuie sur une association régimes d'inscription ↔ types de convention (nomenclatures), et non plus uniquement sur l'égalité `codeCtrl` / `licRegIns` / `codRegIns`. Consultez alors la documentation de la version concernée.
+Un type peut apparaître dans la liste du *Cadre du stage* (actif + template) et pourtant provoquer `Type de convention non trouvé` à l'ajout d'étudiants si son *Code* ne correspond pas au régime remonté par le SI. Les deux réglages sont complémentaires.
 ====
 
 === Autres prérequis
 
-* *Structures d'accueil* présentes en base (affectation manuelle ou import CSV par RNE / SIRET dans le wizard).
+* *Structures d'accueil* présentes en base (affectation manuelle ou import CSV par *RNE* / *SIRET* — identifiants nationaux de l'établissement d'accueil — dans le wizard).
 * *Templates de mails* dédiés aux groupes (menu *Template de mails*), pour l'envoi depuis la gestion des groupes.
 
 == Finalisation : créer le groupe ou valider les conventions
@@ -196,8 +233,8 @@ Les messages ci-dessous sont ceux renvoyés par l'application en création en ma
 |Symptôme / message |Cause probable |Action
 
 |`Type de convention non trouvé`
-|Aucun type dont le *Code* (`codeCtrl`) égale `licRegIns` puis `codRegIns` ; type inactif ; cas césure non couvert.
-|Créer ou corriger le type et son *Code* ; vérifier les valeurs de régime renvoyées par le SI ; associer un template PDF au type.
+|Aucun type dont le *Code* égale le libellé court du régime puis le code du régime ; type inactif ; cas césure non couvert.
+|Créer ou corriger le type et son *Code* ; consulter les logs (valeurs de régime) ou le référentiel SI ; associer un template PDF au type.
 
 |`Aucun inscription trouvée`
 |L'inscription choisie ne correspond plus aux données SI.
