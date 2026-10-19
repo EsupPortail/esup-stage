@@ -71,6 +71,8 @@ ainsi que les corrections et évolutions associées.
   xref:attachment$TUTORIEL_ETUDIANT-Formation_Initiale.pdf[Consulter le tutoriel]
 * *Guide du gestionnaire de stage* +
   xref:attachment$TUTORIEL_GESTIONNAIRE-Formation_Initiale.pdf[Consulter le tutoriel]
+* *Création de conventions en masse* +
+  xref:Creation-de-convention-en-masse.adoc[Consulter le guide]
 
 '''
 
