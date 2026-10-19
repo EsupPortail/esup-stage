@@ -302,6 +302,7 @@ public class MailerService {
         private SignataireContext signataire = new SignataireContext();
         private ModifieParContext modifiePar = new ModifieParContext();
         private EtudiantContext etudiant = new EtudiantContext();
+        private EnseignantContext enseignant = new EnseignantContext();
         private AvenantContext avenant = new AvenantContext();
         private String lienEvaluationTuteur= "";
 
@@ -311,6 +312,7 @@ public class MailerService {
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.enseignant = new EnseignantContext(convention.getEnseignant());
                 this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
@@ -325,6 +327,7 @@ public class MailerService {
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.enseignant = new EnseignantContext(convention.getEnseignant());
                 this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
@@ -424,6 +427,21 @@ public class MailerService {
                 this.tel = tel;
             }
          }
+
+        @Data
+        @NoArgsConstructor
+        public static class EnseignantContext {
+            private String nom = "";
+            private String prenom = "";
+
+            public EnseignantContext(Enseignant enseignant) {
+                if (enseignant == null) {
+                    return;
+                }
+                this.nom = enseignant.getNom() != null ? enseignant.getNom() : "";
+                this.prenom = enseignant.getPrenom() != null ? enseignant.getPrenom() : "";
+            }
+        }
 
         @Data
         @NoArgsConstructor
