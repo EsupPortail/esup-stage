@@ -125,6 +125,8 @@ gestionnaires.
 
 Le template de convention est actuellement choisi pour chaque groupe.
 
+Voir le xref:exploitation:guide-creation-convention-en-masse.adoc[guide de création de conventions en masse].
+
 == Évaluation de stage
 
 Esup-Stage propose une fonctionnalité d’évaluation des stages. Il s’agit de listes de questions, pouvant être celles proposées par défaut par l’application, ou bien des questions personnalisées ajoutées par un utilisateur.
