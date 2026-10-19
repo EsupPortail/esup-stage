@@ -21,5 +21,3 @@ avec un code commençant par `INSPE` (peu importe le libellé).
 → les étudiants ne pourront pas les choisir.
 * peuvent être affectés à un groupe d'étudiant +
 (Cadre du stage > Modifier les informations du groupe).
-* les champs relatifs à la CPAM deviennent facultatifs dans les conventions en masses de ce type +
-(Cadre du stage > Action > 🖋️ Modifier).

@@ -96,14 +96,18 @@ export class CadreStageModalComponent implements OnInit {
         telEtudiant: [this.convention.telEtudiant, []],
         telPortableEtudiant: [this.convention.telPortableEtudiant, []],
         courrielPersoEtudiant: [this.convention.courrielPersoEtudiant, [Validators.required, Validators.pattern(REGEX.EMAIL), Validators.maxLength(255)]],
-        regionCPAM: [this.convention.regionCPAM, [Validators.required]],
-        libelleCPAM: [this.convention.libelleCPAM, [Validators.required]],
-        adresseCPAM: [this.convention.adresseCPAM, [Validators.required]],
+        regionCPAM: [this.convention.regionCPAM, []],
+        libelleCPAM: [this.convention.libelleCPAM, []],
+        adresseCPAM: [this.convention.adresseCPAM, []],
         inscription: [null, [Validators.required]],
         inscriptionElp: [null, []],
         idTypeConvention: [this.convention.typeConvention ? this.convention.typeConvention.id : null, [Validators.required]],
         codeLangueConvention: [this.convention.langueConvention ? this.convention.langueConvention.code : null, [Validators.required]],
       });
+      // Options type dès l'init (#557) : ne pas attendre choose()/Apogée
+      if (this.convention.typeConvention?.id != null) {
+        this.typeConventions = this.ensureConventionTypeInOptions([]);
+      }
       this.sansElp = configGenerale.autoriserElementPedagogiqueFacultatif;
       if (!this.sansElp) {
         this.formConvention.get('inscriptionElp')?.setValidators([Validators.required]);
@@ -174,7 +178,6 @@ export class CadreStageModalComponent implements OnInit {
       this.formConvention.get('idTypeConvention')?.valueChanges.subscribe((val: any) => {
         if (val) {
           this.loadLangues(val, this.formConvention.get('codeLangueConvention')?.value);
-          this.applyCPAMForTypeConvention(val);
         } else {
           this.langueConventions = [];
         }
@@ -268,15 +271,6 @@ export class CadreStageModalComponent implements OnInit {
     this.dialogRef.close(null);
   }
 
-  setCPAMObligatoire(required:boolean) {
-    this.formConvention.get('regionCPAM')?.setValidators(required?[Validators.required]:[]);
-    this.formConvention.get('libelleCPAM')?.setValidators(required?[Validators.required]:[]);
-    this.formConvention.get('adresseCPAM')?.setValidators(required?[Validators.required]:[]);
-    this.formConvention.get('regionCPAM')?.updateValueAndValidity();
-    this.formConvention.get('libelleCPAM')?.updateValueAndValidity();
-    this.formConvention.get('adresseCPAM')?.updateValueAndValidity();
-  }
-
   setCPAMLibelles(event: any) {
     this.formConvention.get('libelleCPAM')?.enable();
     this.libelles = this.CPAMs.filter((c : any) => c.region === event.value);
@@ -292,7 +286,7 @@ export class CadreStageModalComponent implements OnInit {
   }
 
   /**
-   * Synchronise options / disable / langues / CPAM à l'ouverture, sans clear ELP ni auto-type (#557).
+   * Synchronise options / disable / langues à l'ouverture, sans clear ELP ni auto-type (#557).
    */
   private syncInscriptionOuverture(inscription: any): void {
     this.centreGestion = inscription.centreGestion;
@@ -311,7 +305,6 @@ export class CadreStageModalComponent implements OnInit {
 
     if (currentId) {
       this.loadLangues(currentId, this.formConvention.get('codeLangueConvention')?.value);
-      this.applyCPAMForTypeConvention(currentId);
     }
   }
 
@@ -332,12 +325,6 @@ export class CadreStageModalComponent implements OnInit {
 
   private sameTypeConventionId(a: any, b: any): boolean {
     return a != null && b != null && Number(a) === Number(b);
-  }
-
-  private applyCPAMForTypeConvention(idTypeConvention: any): void {
-    const typeConvention = this.typeConventions.find((tc: any) => this.sameTypeConventionId(tc.id, idTypeConvention))
-      || this.convention?.typeConvention;
-    this.setCPAMObligatoire(!(typeConvention?.codeCtrl?.startsWith('INSPE')));
   }
 
   private loadLangues(idTypeConvention: number, currentCode?: string | null): void {
