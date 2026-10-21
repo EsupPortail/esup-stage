@@ -273,6 +273,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
       autoriserImpressionAvenant: [null],
       conditionValidationImpressionAvenant: [null],
       autorisationEtudiantCreationConvention: [null],
+      activerDepotDocuments: [false],
       validationPedagogique: [null],
       verificationAdministrative: [null],
       validationConvention: [null],
@@ -307,6 +308,7 @@ export class CentreGestionComponent implements OnInit,OnDestroy {
     this.centreGestion.autoriserImpressionAvenant = this.paramCentreForm.get('autoriserImpressionAvenant')?.value;
     this.centreGestion.conditionValidationImpressionAvenant = this.paramCentreForm.get('conditionValidationImpressionAvenant')?.value;
     this.centreGestion.autorisationEtudiantCreationConvention = this.paramCentreForm.get('autorisationEtudiantCreationConvention')?.value;
+    this.centreGestion.activerDepotDocuments = this.paramCentreForm.get('activerDepotDocuments')?.value;
     this.centreGestion.validationPedagogique = this.paramCentreForm.get('validationPedagogique')?.value;
     this.centreGestion.verificationAdministrative = this.paramCentreForm.get('verificationAdministrative')?.value;
     this.centreGestion.validationConvention = this.paramCentreForm.get('validationConvention')?.value;
