@@ -212,8 +212,13 @@ public class CentreGestion extends ObjetMetier implements Exportable {
     @Column
     private boolean desactiverSelectionAutomatiqueTypeConvention = false;
 
+    @JsonView(Views.List.class)
+    @Column
+    private boolean activerDepotDocuments = false;
+
     @Transient
     public String getAdresseComplete() {
+
         return getVoie() + " " + getCodePostal() + " " + getCommune();
     }
 

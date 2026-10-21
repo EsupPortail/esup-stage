@@ -194,6 +194,7 @@ export class ParamCentreComponent implements OnInit, OnDestroy {
       autoriserImpressionAvenant: this.centreGestion.autoriserImpressionAvenant,
       conditionValidationImpressionAvenant: this.centreGestion.conditionValidationImpressionAvenant,
       autorisationEtudiantCreationConvention: this.centreGestion.autorisationEtudiantCreationConvention,
+      activerDepotDocuments: this.centreGestion.activerDepotDocuments ?? false,
       validationPedagogique: this.centreGestion.validationPedagogique,
       verificationAdministrative: this.centreGestion.verificationAdministrative,
       validationConvention: this.centreGestion.validationConvention,

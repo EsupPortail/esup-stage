@@ -5,6 +5,7 @@ import { MatTabChangeEvent, MatTabGroup } from "@angular/material/tabs";
 import { TitleService } from "../../services/title.service";
 import { AuthService } from "../../services/auth.service";
 import { ConfigService } from "../../services/config.service";
+import { ConventionDocumentService } from "../../services/convention-documents.service";
 import { AppFonction } from '../../constants/app-fonction';
 import { Droit } from '../../constants/droit';
 import { getProgressText } from '../../utils/text-progress-bar.utils';
@@ -39,6 +40,8 @@ export class ConventionComponent implements OnInit {
   allValid = false;
   modifiable = true;
   signatureEnabled = false;
+  /** Documents déjà déposés : permet d'afficher l'onglet en lecture si le dépôt est désactivé sur le centre. */
+  hasDepotDocumentsExistants = false;
   protected readonly getProgressText = getProgressText;
 
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
@@ -50,6 +53,7 @@ export class ConventionComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private configService: ConfigService,
+    private conventionDocumentService: ConventionDocumentService,
   ) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
@@ -71,6 +75,7 @@ export class ConventionComponent implements OnInit {
           this.convention = response;
           this.titleService.title = 'Création d\'une convention';
           this.majStatus();
+          this.refreshDepotDocumentsVisibility();
         });
         this.modifiable = true;
       } else {
@@ -80,6 +85,7 @@ export class ConventionComponent implements OnInit {
           this.titleService.title = 'Gestion de la convention n°' + pathId
           + ' ' + this.convention.etudiant.nom + ' ' + this.convention.etudiant.prenom;
           this.majStatus();
+          this.refreshDepotDocumentsVisibility();
           // Une convention archivée est en lecture seule pour tout le monde, admin compris
           if (this.convention.dateArchivage) {
             this.modifiable = false;
@@ -180,6 +186,7 @@ export class ConventionComponent implements OnInit {
   updateConvention(data: any): void {
     this.convention = data;
     this.setStatus(0,2);
+    this.refreshDepotDocumentsVisibility();
   }
 
   updateEtab(data: any): void {
@@ -240,19 +247,55 @@ export class ConventionComponent implements OnInit {
     return this.authService.isEtudiant();
   }
 
-  canAccessDepotDocuments(): boolean {
+  private hasDepotDocumentsRole(): boolean {
     return this.authService.isEtudiant()
       || this.authService.isGestionnaire()
       || this.authService.isAdmin()
       || this.authService.isEnseignant();
   }
 
+  private isDepotDocumentsActifSurCentre(): boolean {
+    return !!this.convention?.centreGestion?.activerDepotDocuments;
+  }
+
+  canAccessDepotDocuments(): boolean {
+    if (!this.hasDepotDocumentsRole()) {
+      return false;
+    }
+    return this.isDepotDocumentsActifSurCentre() || this.hasDepotDocumentsExistants;
+  }
+
+  /**
+   * Affiche l'onglet si le dépôt est activé sur le centre, ou en lecture seule
+   * s'il reste des documents déjà déposés alors que le dépôt a été désactivé.
+   */
+  refreshDepotDocumentsVisibility(): void {
+    if (!this.hasDepotDocumentsRole() || !this.convention?.id) {
+      this.hasDepotDocumentsExistants = false;
+      return;
+    }
+    if (this.isDepotDocumentsActifSurCentre()) {
+      this.hasDepotDocumentsExistants = false;
+      return;
+    }
+    this.conventionDocumentService.list(this.convention.id).subscribe({
+      next: (response) => {
+        this.hasDepotDocumentsExistants = (response.documents?.length ?? 0) > 0;
+      },
+      error: () => {
+        this.hasDepotDocumentsExistants = false;
+      }
+    });
+  }
+
   conventionValidated(convention: any): any {
     this.convention = convention;
+    this.refreshDepotDocumentsVisibility();
     if (this.tabGroup) {
       if (this.isConventionValide()) {
         this.tabGroup.selectedIndex = 1;
       } else {
+        // Indices Material (onglets visibles) : éviter d'empirer la navigation hardcodée existante.
         this.tabGroup.selectedIndex = this.canAccessDepotDocuments() ? 9 : 8;
       }
     }
@@ -260,5 +303,6 @@ export class ConventionComponent implements OnInit {
 
   conventionUpdated(convention: any): any {
     this.convention = convention;
+    this.refreshDepotDocumentsVisibility();
   }
 }

@@ -62,6 +62,9 @@
             <mat-checkbox formControlName="autorisationEtudiantCreationConvention">Autoriser les étudiants à créer des conventions</mat-checkbox>
           </div>
           <div>
+            <mat-checkbox formControlName="activerDepotDocuments">Activer le dépôt de documents sur les conventions</mat-checkbox>
+          </div>
+          <div>
             <mat-checkbox formControlName="recupInscriptionAnterieure" (change)="toggleRecupInscription()">Autoriser les gestionnaires à créer des conventions sur l'année universitaire précédente</mat-checkbox>
           </div>
           @if (form.get('recupInscriptionAnterieure')?.value) {
