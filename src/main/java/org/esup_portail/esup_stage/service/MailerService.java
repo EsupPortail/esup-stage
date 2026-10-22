@@ -294,6 +294,18 @@ public class MailerService {
                 .replaceAll("\\$ENDIF", "</#if>");
     }
 
+    /**
+     * Construit le lien vers une convention utilisé dans les mails.
+     * <p>
+     * Les slashs finaux de {@code appli.url} sont retirés pour éviter un {@code //frontend}
+     * lorsque l'URL est configurée avec un slash terminal. Le {@code #} est ajouté après
+     * concaténation : passé à {@code UriComponentsBuilder}, il serait encodé.
+     */
+    static String buildConventionLink(String appliUrl, int conventionId) {
+        String baseUrl = appliUrl == null ? "" : appliUrl.replaceAll("/+$", "");
+        return baseUrl + "/frontend/#/conventions/" + conventionId;
+    }
+
     @Data
     @NoArgsConstructor
     public static class MailContext {
@@ -361,7 +373,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = appliProperties.getUrl() + "/frontend/#/conventions/" + convention.getId();
+                this.lien = buildConventionLink(appliProperties.getUrl(), convention.getId());
             }
         }
 
