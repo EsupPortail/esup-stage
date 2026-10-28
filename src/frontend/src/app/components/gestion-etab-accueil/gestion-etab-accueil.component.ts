@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { StructureService } from "../../services/structure.service";
 import { ServiceService } from "../../services/service.service";
@@ -27,7 +27,7 @@ import {ConfirmDeleteDialogComponent} from "./confirm-delete-dialog/confirm-dele
     styleUrls: ['./gestion-etab-accueil.component.scss'],
     standalone: false
 })
-export class GestionEtabAccueilComponent implements OnInit {
+export class GestionEtabAccueilComponent implements OnInit, OnDestroy {
 
   columns = ['raisonSociale', 'numeroSiret', 'nafN5.nafN1.libelle', 'pays.lib', 'commune', 'typeStructure.libelle', 'statutJuridique.libelle', 'action'];
   sortColumn = 'raisonSociale';
@@ -49,6 +49,8 @@ export class GestionEtabAccueilComponent implements OnInit {
   historique: any[] = [];
 
   formTabIndex = 1;
+  /** Index d'onglet pour lequel CKEditor peut être monté ; -1 = éditeur détruit. */
+  activeEditorTabIndex = -1;
   data: any = {};
 
   services:any[] = [];
@@ -61,6 +63,7 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   @ViewChild(TableComponent) appTable: TableComponent | undefined;
   @ViewChild('tabs') tabs: MatTabGroup | undefined;
+  private editorRenderFrame?: number;
 
   constructor(
     public structureService: StructureService,
@@ -75,7 +78,7 @@ export class GestionEtabAccueilComponent implements OnInit {
     private messageService: MessageService,
     protected authService: AuthService,
     public matDialog: MatDialog,
-
+    private changeDetector: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -125,7 +128,11 @@ export class GestionEtabAccueilComponent implements OnInit {
 
   tabChanged(event: MatTabChangeEvent): void {
     if (event.index !== this.formTabIndex) {
-      this.data = {}
+      // Détruire l'éditeur avant de vider le formulaire (sinon il se réinitialise sur {}).
+      this.hideActiviteEditor();
+      this.data = {};
+    } else {
+      this.renderActiviteEditor();
     }
   }
 
@@ -152,6 +159,10 @@ export class GestionEtabAccueilComponent implements OnInit {
       this.data = response;
       this.service = null;
       this.refreshServices();
+      // Remonter CKEditor sur le FormGroup reconstruit après chargement de la fiche.
+      if (this.tabs?.selectedIndex === this.formTabIndex) {
+        this.renderActiviteEditor();
+      }
     });
   }
 
@@ -271,6 +282,36 @@ export class GestionEtabAccueilComponent implements OnInit {
     if (this.tabs) {
       this.tabs.selectedIndex = 0;
     }
+  }
+
+  /**
+   * Monte CKEditor uniquement une fois l'onglet Création/Édition réellement affiché
+   * (double rAF, même approche que les templates de convention).
+   */
+  private renderActiviteEditor(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+    }
+    this.activeEditorTabIndex = -1;
+    this.editorRenderFrame = requestAnimationFrame(() => {
+      this.editorRenderFrame = requestAnimationFrame(() => {
+        this.activeEditorTabIndex = this.formTabIndex;
+        this.changeDetector.detectChanges();
+        this.editorRenderFrame = undefined;
+      });
+    });
+  }
+
+  private hideActiviteEditor(): void {
+    if (this.editorRenderFrame) {
+      cancelAnimationFrame(this.editorRenderFrame);
+      this.editorRenderFrame = undefined;
+    }
+    this.activeEditorTabIndex = -1;
+  }
+
+  ngOnDestroy(): void {
+    this.hideActiviteEditor();
   }
 
   importCsv(event: any): void {

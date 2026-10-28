@@ -67,7 +67,10 @@
     <mat-accordion>
       <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>Établissement d'accueil</mat-expansion-panel-header>
-        <app-etab-accueil-form [etab]="data" (canceled)="returnToList()"></app-etab-accueil-form>
+        <app-etab-accueil-form
+          [etab]="data"
+          [editorActive]="activeEditorTabIndex === formTabIndex"
+          (canceled)="returnToList()"></app-etab-accueil-form>
       </mat-expansion-panel>
       <mat-expansion-panel *ngIf="data.id">
         <mat-expansion-panel-header>Contacts</mat-expansion-panel-header>
