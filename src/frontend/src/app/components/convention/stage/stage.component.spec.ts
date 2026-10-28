@@ -286,4 +286,24 @@ describe('StageComponent', () => {
     expect(service.delete).toHaveBeenCalledOnceWith(2);
     expect(service.update).toHaveBeenCalled();
   });
+
+  it('passe une copie des périodes au calendrier pour préserver la détection des suppressions', () => {
+    const dialog = TestBed.inject(MatDialog) as any;
+    let dialogData: any;
+    spyOn(dialog, 'open').and.callFake((_comp: any, config: any) => {
+      dialogData = config.data;
+      return { afterClosed: () => of(null) };
+    });
+
+    component.periodesCalculHeuresStage = [
+      { id: 1, dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 0, 6), nbHeuresJournalieres: 7 }
+    ];
+
+    component.openCalendar();
+
+    expect(dialogData.periodes).not.toBe(component.periodesCalculHeuresStage);
+    expect(dialogData.periodes[0]).not.toBe(component.periodesCalculHeuresStage[0]);
+    expect(dialogData.periodes[0].id).toBe(1);
+    expect(component.periodesCalculHeuresStage.length).toBe(1);
+  });
 });

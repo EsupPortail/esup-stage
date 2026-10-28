@@ -587,7 +587,9 @@ export class StageComponent implements OnInit {
     dialogConfig.data = {
       convention: this.convention,
       interruptionsStage: this.interruptionsStage,
-      periodes: this.periodesCalculHeuresStage,
+      // Snapshot : même si le calendrier mutait la liste reçue, la source Stage reste intacte
+      // pour que savePeriodesStage puisse calculer les delete à la validation.
+      periodes: this.periodesCalculHeuresStage.map((periode: any) => ({ ...periode })),
       joursFeries: this.joursFeries
     };
 
