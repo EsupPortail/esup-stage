@@ -132,20 +132,20 @@
             <#if reponse.reponseEtuI7 == false>Non</#if>
           </#if>
         </p>
-        <#assign etui7Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2) ? 2 : 1>
+        <#assign etui7Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2)?then(2, 1)>
         <#if etui7Schema gte 2>
           <#-- Format >= 3.2.0 : choix unique si oui / si non -->
           <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == true && reponse.reponseEtuI7bis1??>
             <#assign etui7Q = questionEvaluations?filter(q -> q.code == "ETUI7")[0]>
             <#assign etui7OuiOptions = ["Proposé par votre tuteur professionnel", "Proposé par votre tuteur enseignant", "Élaboré par vous-même", "Négocié entre les parties", "Autre"]>
             <p>Si oui, par qui ? :
-              <#if reponse.reponseEtuI7bis1 gte 0 && reponse.reponseEtuI7bis1 < etui7OuiOptions?size>${etui7OuiOptions[reponse.reponseEtuI7bis1]}</#if>
+              <#if reponse.reponseEtuI7bis1 gte 0 && reponse.reponseEtuI7bis1 lt etui7OuiOptions?size>${etui7OuiOptions[reponse.reponseEtuI7bis1]}</#if>
             </p>
           </#if>
           <#if reponse.reponseEtuI7?? && reponse.reponseEtuI7 == false && reponse.reponseEtuI7bis2??>
             <#assign etui7NonOptions = ["Je n'ai pas eu besoin d'aide", "Je ne savais pas à qui m'adresser"]>
             <p>Si non, pourquoi ? :
-              <#if reponse.reponseEtuI7bis2 gte 0 && reponse.reponseEtuI7bis2 < etui7NonOptions?size>${etui7NonOptions[reponse.reponseEtuI7bis2]}</#if>
+              <#if reponse.reponseEtuI7bis2 gte 0 && reponse.reponseEtuI7bis2 lt etui7NonOptions?size>${etui7NonOptions[reponse.reponseEtuI7bis2]}</#if>
             </p>
           </#if>
         <#else>
@@ -267,10 +267,10 @@
 
     <#-- II5 : Responsabilités (ETUII5) -->
     <#if ficheEvaluation.questionEtuII5>
-      <#assign etuii5Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2) ? 2 : 1>
-      <#assign etuii5aOptions = etuii5Schema gte 2
-        ? ["Technique", "Organisationnelle", "Communication"]
-        : ["Très importantes", "Importantes", "Peu importantes"]>
+      <#assign etuii5Schema = (reponse.schemaVersion?? && reponse.schemaVersion gte 2)?then(2, 1)>
+      <#assign etuii5aOptions = (etuii5Schema gte 2)?then(
+        ["Technique", "Organisationnelle", "Communication"],
+        ["Très importantes", "Importantes", "Peu importantes"])>
       <div class="evaluation-item">
         <p><strong>- ${questionEvaluations?filter(q -> q.code == "ETUII5")[0].texte}</strong>
           <#if reponse.reponseEtuII5??>
@@ -281,7 +281,7 @@
         <#if reponse.reponseEtuII5?? && reponse.reponseEtuII5 == true>
           <#if reponse.reponseEtuII5a??>
             <p>Si oui, de quel ordre ?
-              <#if reponse.reponseEtuII5a gte 0 && reponse.reponseEtuII5a < etuii5aOptions?size>${etuii5aOptions[reponse.reponseEtuII5a]}</#if>
+              <#if reponse.reponseEtuII5a gte 0 && reponse.reponseEtuII5a lt etuii5aOptions?size>${etuii5aOptions[reponse.reponseEtuII5a]}</#if>
             </p>
           </#if>
           <#if reponse.reponseEtuII5b??>
