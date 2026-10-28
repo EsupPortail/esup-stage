@@ -30,7 +30,10 @@ export class CalendrierComponent implements OnInit  {
     this.convention = data.convention;
     this.interruptionsStage = data.interruptionsStage;
     if (data.periodes) {
-      this.periodes = data.periodes;
+      // Copie pour ne pas muter periodesCalculHeuresStage de l'onglet Stage :
+      // sinon removePeriode splice aussi la liste source et savePeriodesStage
+      // ne détecte plus les suppressions à envoyer en base.
+      this.periodes = data.periodes.map((periode: any) => ({ ...periode }));
       this.idPeriod = this.periodes.length;
     }
   }
