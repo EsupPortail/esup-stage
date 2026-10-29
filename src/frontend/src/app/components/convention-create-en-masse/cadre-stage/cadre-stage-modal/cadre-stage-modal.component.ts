@@ -211,8 +211,10 @@ export class CadreStageModalComponent implements OnInit {
             });
             this.formConvention.get('inscriptionElp')?.reset(inscriptionElp, {emitEvent: false});
           }
-        } else if (this.inscriptions.length > 1) {
-          this.formConvention.get('inscription')?.reset();
+        } else if (this.inscriptions.length >= 1) {
+          // Pas de match : forcer un choix manuel (y compris s'il n'y a qu'une inscription).
+          // emitEvent:false pour ne pas vider typeConventions via valueChanges avant le choix.
+          this.formConvention.get('inscription')?.reset(null, {emitEvent: false});
         }
       } else if (this.inscriptions.length === 1) {
         const inscription = this.inscriptions[0];

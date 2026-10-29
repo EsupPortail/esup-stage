@@ -112,7 +112,7 @@
                       Vous n'êtes inscrit à aucune formation éligible.
                     </div>
                   } @else {
-                    @if (inscriptions.length > 1) {
+                    @if (inscriptions.length >= 1 && !selectedInscription) {
                       <div class="row">
                         <mat-form-field class="col-sm-12 mb-2" appearance="fill">
                           <mat-label>Formation</mat-label>

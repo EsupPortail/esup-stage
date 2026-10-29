@@ -121,6 +121,39 @@ describe('CadreStageModalComponent', () => {
     expect(component.typeConventions.some((tc: any) => tc.id === typeAutre.id)).toBeTrue();
   }));
 
+  it('laisse inscription vide si une seule inscription Apogée ne matche pas l\'étape', fakeAsync(() => {
+    initForm();
+
+    const inscriptionNonMatchee = {
+      ...inscriptionSansTypeGroupe,
+      etapeInscription: { ...inscriptionSansTypeGroupe.etapeInscription, codeEtp: 'AUTRE', codVrsVet: '9' },
+    };
+    getApogeeInscriptions$.next([inscriptionNonMatchee]);
+    tick();
+
+    expect(component.inscriptions.length).toBe(1);
+    expect(component.formConvention.get('inscription')?.value).toBeNull();
+    expect(component.selectedInscription).toBeFalsy();
+    expect(component.centreGestion).toBeFalsy();
+  }));
+
+  it('active centreGestion après sélection manuelle d\'une inscription non matchée', fakeAsync(() => {
+    initForm();
+
+    const inscriptionNonMatchee = {
+      ...inscriptionSansTypeGroupe,
+      etapeInscription: { ...inscriptionSansTypeGroupe.etapeInscription, codeEtp: 'AUTRE', codVrsVet: '9' },
+    };
+    getApogeeInscriptions$.next([inscriptionNonMatchee]);
+    tick();
+
+    component.formConvention.get('inscription')?.setValue(inscriptionNonMatchee);
+    tick();
+
+    expect(component.selectedInscription).toBe(inscriptionNonMatchee);
+    expect(component.centreGestion?.id).toBe(1);
+  }));
+
   it('ajoute le type du groupe aux options même s\'il est absent de typeConventionsDisponibles', fakeAsync(() => {
     initForm();
 
