@@ -432,4 +432,40 @@ class ExportValueTest {
         assertThat(vide.getExportValue("typeStructure")).isEmpty();
         assertThat(vide.getExportValue("statutJuridique")).isEmpty();
     }
+
+    @Test
+    void laCommuneEstVideAExportQuandLaStructureEstConfidentielle() {
+        Structure structure = new Structure();
+        structure.setRaisonSociale("ACME");
+        structure.setCommune("Paris");
+        structure.setConfidentialiteCoordonnees(true);
+
+        assertThat(structure.getExportValue("commune")).isEmpty();
+        assertThat(structure.getExportValue("raisonSociale")).isEqualTo("ACME");
+    }
+
+    @Test
+    void lesCoordonneesStructureSontVidesAExportQuandOrganismeConfidentiel() {
+        Convention convention = conventionComplete();
+        assertThat(convention.getExportValue("structureAdresse")).isEqualTo("2 avenue du Parc");
+        assertThat(convention.getExportValue("structureCP")).isEqualTo("75001");
+        assertThat(convention.getExportValue("structureCommune")).isEqualTo("Paris");
+        assertThat(convention.getExportValue("structurePhone")).isEqualTo("0101020304");
+        assertThat(convention.getExportValue("structureMail")).isEqualTo("contact@acme.fr");
+        assertThat(convention.getExportValue("structurePays")).isEqualTo("France");
+        assertThat(convention.getExportValue("structure")).isEqualTo("ACME");
+        assertThat(convention.getExportValue("structureSiteWeb")).isEqualTo("https://acme.fr");
+
+        convention.getStructure().setConfidentialiteCoordonnees(true);
+
+        assertThat(convention.getExportValue("structureAdresse")).isEmpty();
+        assertThat(convention.getExportValue("structureCP")).isEmpty();
+        assertThat(convention.getExportValue("structureCommune")).isEmpty();
+        assertThat(convention.getExportValue("structurePhone")).isEmpty();
+        assertThat(convention.getExportValue("structureMail")).isEmpty();
+        assertThat(convention.getExportValue("structurePays")).isEqualTo("France");
+        assertThat(convention.getExportValue("structure")).isEqualTo("ACME");
+        assertThat(convention.getExportValue("structureSiteWeb")).isEqualTo("https://acme.fr");
+        assertThat(convention.getExportValue("structureSiret")).isEqualTo("12345678901234");
+    }
 }

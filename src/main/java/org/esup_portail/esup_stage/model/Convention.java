@@ -751,17 +751,17 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "structureAdresse":
                 if (getStructure() != null) {
-                    value = getStructure().getVoie();
+                    value = getStructureCoordinateExportValue(getStructure().getVoie());
                 }
                 break;
             case "structureCP":
                 if (getStructure() != null) {
-                    value = getStructure().getCodePostal();
+                    value = getStructureCoordinateExportValue(getStructure().getCodePostal());
                 }
                 break;
             case "structureCommune":
                 if (getStructure() != null) {
-                    value = getStructure().getCommune();
+                    value = getStructureCoordinateExportValue(getStructure().getCommune());
                 }
                 break;
             case "structurePays":
@@ -801,12 +801,12 @@ public class Convention extends ObjetMetier implements Exportable {
                 break;
             case "structurePhone":
                 if (getStructure() != null) {
-                    value = getStructure().getTelephone();
+                    value = getStructureCoordinateExportValue(getStructure().getTelephone());
                 }
                 break;
             case "structureMail":
                 if (getStructure() != null) {
-                    value = getStructure().getMail();
+                    value = getStructureCoordinateExportValue(getStructure().getMail());
                 }
                 break;
             case "structureSiteWeb":
@@ -883,7 +883,7 @@ public class Convention extends ObjetMetier implements Exportable {
         return value;
     }
 
-        private String getConfidentialExportValue(String key, String value) {
+    private String getConfidentialExportValue(String key, String value) {
         if (Boolean.TRUE.equals(getConfidentiel()) && isConfidentialExportField(key)) {
             return "";
         }
@@ -896,6 +896,18 @@ public class Convention extends ObjetMetier implements Exportable {
                 || "competences".equals(key)
                 || "details".equals(key)
                 || "commentaireStage".equals(key);
+    }
+
+    /**
+     * Coordonnées de l'organisme à l'export : si l'organisme est marqué Confidentiel,
+     * les colonnes correspondantes sont vides pour tout exportant (même règle que
+     * {@link Structure#getExportValue} pour {@code commune} et que le sujet confidentiel).
+     */
+    private String getStructureCoordinateExportValue(String value) {
+        if (getStructure() != null && getStructure().isConfidentialiteCoordonnees()) {
+            return "";
+        }
+        return value;
     }
 
     /**

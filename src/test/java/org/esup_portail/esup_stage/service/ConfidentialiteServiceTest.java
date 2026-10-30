@@ -125,10 +125,20 @@ class ConfidentialiteServiceTest {
         Structure confidentielle = new Structure();
         confidentielle.setConfidentialiteCoordonnees(true);
         confidentielle.setCentreGestionProprietaire(centre(2, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
-        assertThat(service.canViewStructureCoordinates(demandeur, confidentielle)).isTrue();
+        assertThat(service.canViewStructureCoordinates(demandeur, confidentielle)).isFalse();
 
         confidentielle.setCentreGestionProprietaire(centre(3, ConfidentialiteService.CONFIDENTIALITE_TOTALE));
         assertThat(service.canViewStructureCoordinates(demandeur, confidentielle)).isFalse();
+
+        Structure confidentielleMemeCentre = new Structure();
+        confidentielleMemeCentre.setConfidentialiteCoordonnees(true);
+        confidentielleMemeCentre.setCentreGestionProprietaire(centre(1, ConfidentialiteService.PAS_DE_CONFIDENTIALITE));
+        assertThat(service.canViewStructureCoordinates(demandeur, confidentielleMemeCentre)).isTrue();
+
+        Structure confidentielleMemeCentreTotale = new Structure();
+        confidentielleMemeCentreTotale.setConfidentialiteCoordonnees(true);
+        confidentielleMemeCentreTotale.setCentreGestionProprietaire(centre(1, ConfidentialiteService.CONFIDENTIALITE_TOTALE));
+        assertThat(service.canViewStructureCoordinates(demandeur, confidentielleMemeCentreTotale)).isTrue();
 
         assertThat(service.canViewStructureCoordinates(demandeur, (Structure) null)).isFalse();
     }

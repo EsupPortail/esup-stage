@@ -7,6 +7,14 @@
     </div>
   </form>
 }
+@if (etab?.id && (getOwnerCentreLabel() || canChangeOwnerCentre())) {
+  <div class="mb-2">
+    <span>Centre propriétaire : {{ getOwnerCentreLabel() || 'Non renseigné' }}</span>
+    @if (canChangeOwnerCentre()) {
+      <button mat-stroked-button type="button" class="ms-2" (click)="changeOwnerCentre()">Changer le centre propriétaire</button>
+    }
+  </div>
+}
 <form [formGroup]="form" novalidate (submit)="save()">
   <h4 class="text-title">Général</h4>
   <mat-divider class="etab-accueil-divider mb-2"></mat-divider>

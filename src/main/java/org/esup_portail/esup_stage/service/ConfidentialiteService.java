@@ -77,7 +77,9 @@ public class ConfidentialiteService {
         if (structure.getCentreGestionProprietaire() == null) {
             return false;
         }
-        return canViewCentreData(demandeur, structure.getCentreGestionProprietaire());
+        // Organisme confidentiel : coords visibles uniquement pour le centre propriétaire
+        // (indépendamment de la confidentialité configurée de ce centre).
+        return isSameCentre(demandeur, structure.getCentreGestionProprietaire());
     }
 
     public String getEffectiveConfidentialityForCentre(CentreGestion porteur) {
