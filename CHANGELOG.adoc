@@ -12,6 +12,7 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 
 === Améliorations
 - Permettre d'associer de 1 à n régimes d'inscription par type de convention.
+- Afficher l'intitulé de la formation sur l'onglet Étudiant, sur une ligne avec infobulle (#112).
 - Possibilité pour un admin de supprimer un établissement d'accueil via un bouton (#256).
 - Demander à l’étudiant de répondre au choix proposé par l’article 6.3.
 - Installation de l’application dans une webapp spécifique.

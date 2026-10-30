@@ -223,7 +223,12 @@
                         <div class="row mb-2">
                           <div class="col-sm-4 font-weight-bold">Formation</div>
                           <div class="col-sm-8 formation-display">
-                            <span>{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</span>
+                            <span
+                              class="formation-label"
+                              [matTooltip]="getFormationTooltip(selectedInscription)"
+                              matTooltipShowDelay="300">
+                              {{ getFormationDisplayLabel(selectedInscription) }}
+                            </span>
                             @if (modifiable && convention.id && !isEditingFormation) {
                               <button
                                 type="button"

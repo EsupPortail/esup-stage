@@ -11,9 +11,18 @@
   align-items: center;
   display: flex;
   gap: 6px;
+  min-width: 0;
+}
+
+.formation-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .edit-formation-button{
+  flex-shrink: 0;
   width:24px;
   height:24px;
   line-height:24px;
