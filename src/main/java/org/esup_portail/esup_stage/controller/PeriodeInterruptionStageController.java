@@ -111,7 +111,7 @@ public class PeriodeInterruptionStageController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.CONVENTION}, droits = {DroitEnum.MODIFICATION})
     public boolean delete(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionStage periodeInterruptionStage = periodeInterruptionStageJpaRepository.findById(id);
