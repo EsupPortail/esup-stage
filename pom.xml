@@ -192,6 +192,11 @@
 			<artifactId>liquibase-core</artifactId>
 			<version>5.0.1</version>
 		</dependency>
+		<!-- Boot 4 : le detecteur qui ordonne SpringLiquibase avant JPA a quitte spring-boot pour ce module -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-liquibase</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
