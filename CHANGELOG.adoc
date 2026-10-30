@@ -1,17 +1,22 @@
 == Version stable
-https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
+https://github.com/EsupPortail/esup-stage/releases/tag/3.2.7[Esup-Stage v3.2.7]
 
 == ESUP-Stage v3.3.0 (À venir)
 === Nouveautés
 - Ajout d'un paramètre autorisant l'impression d'un avenant sous conditions (#293).
 - Création d'un paramètre permettant d'autoriser l'impression de l'avenant sous conditions (#218).
-- Intégration de la conformité au RPGD.
+- Archivage et purge des conventions et structures d'accueil (RGPD), dispositif optionnel avec tâches inactives par défaut.
+- Article 13 relatif à la protection des données personnelles et paramétrage du mail DPO.
+- Droit d'opposition des contacts en entreprise.
+- Annuaire des étudiants optionnel (accord et paramétrage).
+- Traduction des libellés d'impression selon la langue de la convention (libellés générés en anglais par défaut).
 - Ajout de la vérification administrative dans le filtre de recherche du tableau de bord.
-- Fonctionnalité de dépôt de documents par les étudiants.
+- Fonctionnalité de dépôt de documents par les étudiants (activation par centre de gestion, désactivée par défaut).
 - Ajout d'un champ d'informations complémentaires dans l'onglet Stage (existait déjà dans Pstage).
 
 === Améliorations
 - Permettre d'associer de 1 à n régimes d'inscription par type de convention.
+- Afficher l'intitulé de la formation sur l'onglet Étudiant, sur une ligne avec infobulle (#112).
 - Possibilité pour un admin de supprimer un établissement d'accueil via un bouton (#256).
 - Demander à l’étudiant de répondre au choix proposé par l’article 6.3.
 - Installation de l’application dans une webapp spécifique.
@@ -20,6 +25,8 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 - Augmentation du nombre de caractères maximum des champs mails.
 - Rendre facultatif le numéro de téléphone des organismes d'accueil (#415).
 - Finalisation de la gestion de la confidentialité.
+- Désactivation par défaut des tâches planifiées (activation volontaire par l'établissement).
+- Montée de version technique : Spring Boot 4.1 (Spring Framework 7, Spring Security 7, Jackson 3, Hibernate 7) et Angular 21. Nécessite désormais *Tomcat 11* (Servlet 6.1) et *Node 24* pour la compilation.
 
 === Corrections
 - Création d'un script de migration pour que legacy ait le même schéma que baseline.
