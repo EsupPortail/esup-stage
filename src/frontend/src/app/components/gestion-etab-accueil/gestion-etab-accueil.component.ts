@@ -428,29 +428,45 @@ export class GestionEtabAccueilComponent implements OnInit {
   }
 
   private async resolveOwnerCentreForCreation(): Promise<number | undefined | null> {
-    if (!this.authService.isGestionnaire()) {
-      return undefined;
-    }
-    if (this.gestionnaireCentres.length === 0) {
-      const uid = this.authService.userConnected?.uid;
-      if (uid) {
-        const filters = JSON.stringify({
-          personnel: { value: uid, specific: true }
-        });
-        const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
-        this.gestionnaireCentres = response?.data ?? [];
+    if (this.authService.isGestionnaire()) {
+      if (this.gestionnaireCentres.length === 0) {
+        const uid = this.authService.userConnected?.uid;
+        if (uid) {
+          const filters = JSON.stringify({
+            personnel: { value: uid, specific: true }
+          });
+          const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
+          this.gestionnaireCentres = response?.data ?? [];
+        }
       }
-    }
-    if (this.gestionnaireCentres.length === 1) {
-      return this.gestionnaireCentres[0].id;
-    }
-    if (this.gestionnaireCentres.length === 0) {
-      return undefined;
+      if (this.gestionnaireCentres.length === 1) {
+        return this.gestionnaireCentres[0].id;
+      }
+      if (this.gestionnaireCentres.length === 0) {
+        return undefined;
+      }
+      return this.openOwnerCentreDialog(this.gestionnaireCentres);
     }
 
+    if (this.authService.isAdmin()) {
+      const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', '{}'));
+      const centres = response?.data ?? [];
+      if (centres.length === 0) {
+        return null;
+      }
+      if (centres.length === 1) {
+        return centres[0].id;
+      }
+      return this.openOwnerCentreDialog(centres);
+    }
+
+    return undefined;
+  }
+
+  private async openOwnerCentreDialog(centres: any[]): Promise<number | null> {
     const dialogRef = this.matDialog.open(CentreProprietaireDialogComponent, {
       width: '560px',
-      data: { centres: this.gestionnaireCentres }
+      data: { centres }
     });
     const selectedCentreId = await firstValueFrom(dialogRef.afterClosed());
     return selectedCentreId ?? null;

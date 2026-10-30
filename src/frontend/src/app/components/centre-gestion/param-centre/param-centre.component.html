@@ -18,7 +18,7 @@
           </div>
           @if (isConfidentialiteLibre()) {
             <div>
-              <label for="codeConfidentialiteConventionOrpheline">Confidentialite des conventions sans centre proprietaire : </label>
+              <label for="codeConfidentialiteConventionOrpheline">Confidentialité du centre établissement (conventions sans centre propriétaire) : </label>
               <mat-form-field id="codeConfidentialiteConventionOrpheline" class="col-sm-12 col-md-6" appearance="fill">
                 <mat-select formControlName="codeConfidentialiteConventionOrpheline" [compareWith]="compareCode">
                   @for (confidentialite of confidentialitesConventionOrpheline; track confidentialite) {

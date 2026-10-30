@@ -834,30 +834,89 @@ export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewIni
     });
   }
 
-  private async resolveOwnerCentreForCreation(): Promise<number | undefined | null> {
-    if (!this.authService.isGestionnaire()) {
-      return undefined;
+  canChangeOwnerCentre(): boolean {
+    return !!this.etab?.id && this.isConfidentialiteEditable();
+  }
+
+  getOwnerCentreLabel(): string {
+    return this.etab?.centreGestionProprietaire?.nomCentre
+      ?? this.etab?.centreGestionProprietaire?.nom
+      ?? '';
+  }
+
+  async changeOwnerCentre(): Promise<void> {
+    if (!this.canChangeOwnerCentre()) {
+      return;
     }
-    if (this.gestionnaireCentres.length === 0) {
-      const uid = this.authService.userConnected?.uid;
-      if (uid) {
-        const filters = JSON.stringify({
-          personnel: { value: uid, specific: true }
-        });
-        const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
-        this.gestionnaireCentres = response?.data ?? [];
+    const centres = await this.loadCentresForOwnerDialog();
+    if (centres.length === 0) {
+      this.messageService.setError('Aucun centre de gestion disponible');
+      return;
+    }
+    const selectedCentreId = await this.openOwnerCentreDialog(centres);
+    if (selectedCentreId == null) {
+      return;
+    }
+    this.structureService.updateCentreGestionProprietaire(this.etab.id, selectedCentreId).subscribe({
+      next: (response: any) => {
+        this.etab = response;
+        this.syncConfidentialiteForm(response);
+        this.messageService.setSuccess('Centre propriétaire modifié');
       }
-    }
-    if (this.gestionnaireCentres.length === 1) {
-      return this.gestionnaireCentres[0].id;
-    }
-    if (this.gestionnaireCentres.length === 0) {
-      return undefined;
+    });
+  }
+
+  private async resolveOwnerCentreForCreation(): Promise<number | undefined | null> {
+    if (this.authService.isGestionnaire()) {
+      if (this.gestionnaireCentres.length === 0) {
+        const uid = this.authService.userConnected?.uid;
+        if (uid) {
+          const filters = JSON.stringify({
+            personnel: { value: uid, specific: true }
+          });
+          const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', filters));
+          this.gestionnaireCentres = response?.data ?? [];
+        }
+      }
+      if (this.gestionnaireCentres.length === 1) {
+        return this.gestionnaireCentres[0].id;
+      }
+      if (this.gestionnaireCentres.length === 0) {
+        return undefined;
+      }
+      return this.openOwnerCentreDialog(this.gestionnaireCentres);
     }
 
+    if (this.authService.isAdmin()) {
+      const centres = await this.loadCentresForOwnerDialog();
+      if (centres.length === 0) {
+        this.messageService.setError('Aucun centre de gestion disponible pour définir le propriétaire');
+        return null;
+      }
+      if (centres.length === 1) {
+        return centres[0].id;
+      }
+      return this.openOwnerCentreDialog(centres);
+    }
+
+    return undefined;
+  }
+
+  private async loadCentresForOwnerDialog(): Promise<any[]> {
+    if (this.authService.isGestionnaire()) {
+      if (this.gestionnaireCentres.length === 0) {
+        this.loadGestionnaireCentres();
+      }
+      return this.gestionnaireCentres;
+    }
+    const response: any = await firstValueFrom(this.centreGestionService.getPaginated(1, 0, 'nomCentre', 'asc', '{}'));
+    return response?.data ?? [];
+  }
+
+  private async openOwnerCentreDialog(centres: any[]): Promise<number | null> {
     const dialogRef = this.matDialog.open(CentreProprietaireDialogComponent, {
       width: '560px',
-      data: { centres: this.gestionnaireCentres }
+      data: { centres }
     });
     const selectedCentreId = await firstValueFrom(dialogRef.afterClosed());
     return selectedCentreId ?? null;

@@ -539,7 +539,7 @@ public class CentreGestionController {
         if (orphanConfidentialite == null
                 || orphanConfidentialite.getCode() == null
                 || ConfidentialiteService.CONFIDENTIALITE_LIBRE.equals(orphanConfidentialite.getCode())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité effective des conventions orphelines doit être renseignée");
+            throw new AppException(HttpStatus.BAD_REQUEST, "La confidentialité du centre établissement (conventions sans centre propriétaire) doit être renseignée");
         }
         return orphanConfidentialite;
     }

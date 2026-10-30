@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-structure-proprietaire-backfill-etab
+      author: esup-stage
+      comment: Rattache les organismes sans centre propriétaire au centre de niveau ETABLISSEMENT lorsqu'il existe.
+      changes:
+        - sql:
+            sql: |
+              UPDATE Structure s
+              INNER JOIN (
+                SELECT cg.idCentreGestion AS idEtab
+                FROM CentreGestion cg
+                INNER JOIN NiveauCentre nc ON nc.idNiveauCentre = cg.idNiveauCentre
+                WHERE nc.libelleNiveauCentre = 'ETABLISSEMENT'
+                LIMIT 1
+              ) etab ON 1 = 1
+              SET s.idCentreGestionProprietaire = etab.idEtab
+              WHERE s.idCentreGestionProprietaire IS NULL;
+
+  - changeSet:
+      id: 3.3.0-structure-proprietaire-not-null
+      author: esup-stage
+      comment: Rend le centre propriétaire obligatoire après backfill (uniquement s'il ne reste plus de NULL).
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM Structure WHERE idCentreGestionProprietaire IS NULL
+      changes:
+        - addNotNullConstraint:
+            tableName: Structure
+            columnName: idCentreGestionProprietaire
+            columnDataType: INT

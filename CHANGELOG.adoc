@@ -20,12 +20,14 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 - Suppression du champ url dans centre de gestion.
 - Augmentation du nombre de caractères maximum des champs mails.
 - Rendre facultatif le numéro de téléphone des organismes d'accueil (#415).
-- Finalisation de la gestion de la confidentialité.
+- Finalisation de la gestion de la confidentialité (organisme Confidentiel réservé au centre propriétaire à l'écran ; centre propriétaire obligatoire ; guide métier dédié).
 - Montée de version technique : Spring Boot 4.1 (Spring Framework 7, Spring Security 7, Jackson 3, Hibernate 7) et Angular 21. Nécessite désormais *Tomcat 11* (Servlet 6.1) et *Node 24* pour la compilation.
 
 === Corrections
 - Création d'un script de migration pour que legacy ait le même schéma que baseline.
 - Intégration des corrections d'anomalies de l'UNISTRA sur la création de convention en masse.
+- Alignement de l'export des conventions : si un organisme est Confidentiel, les colonnes adresse, code postal, commune, téléphone et mail sont vides pour tout exportant.
+- Clarification du libellé et de la documentation du champ de confidentialité du centre établissement (conventions sans centre propriétaire).
 
 == ESUP-Stage v3.4.0 (À venir)
 === Nouveautés

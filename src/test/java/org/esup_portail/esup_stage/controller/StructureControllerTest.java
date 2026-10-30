@@ -623,8 +623,16 @@ class StructureControllerTest {
 
     @Test
     void leCentreProprietaireSuitLesReglesDeRole() {
-        // admin avec centre demandé inexistant
+        // admin sans centre propriétaire : obligatoire
         connecte("adm1", Role.ADM);
+        StructureFormDto dtoSansProprietaire = formulaireValide();
+        dtoSansProprietaire.setIdCentreGestionProprietaire(null);
+        assertThatThrownBy(() -> controller.create(dtoSansProprietaire))
+                .isInstanceOf(AppException.class)
+                .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.BAD_REQUEST))
+                .hasMessageContaining("propriétaire est obligatoire");
+
+        // admin avec centre demandé inexistant
         StructureFormDto dto = formulaireValide();
         dto.setIdCentreGestionProprietaire(33);
         when(centreGestionJpaRepository.findById((Integer) 33)).thenReturn(Optional.empty());
@@ -705,6 +713,8 @@ class StructureControllerTest {
 
         StructureFormDto dto = formulaireValide();
         dto.setCodeNafN5("62.01Z");
+        dto.setIdCentreGestionProprietaire(33);
+        when(centreGestionJpaRepository.findById((Integer) 33)).thenReturn(Optional.of(new CentreGestion()));
         when(nafN5JpaRepository.findByCode("62.01Z")).thenReturn(null);
         assertThatThrownBy(() -> controller.create(dto))
                 .isInstanceOf(AppException.class)

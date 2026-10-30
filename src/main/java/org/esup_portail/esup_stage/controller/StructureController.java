@@ -546,7 +546,7 @@ public class StructureController {
 
         if (!isGestionnaire) {
             if (requestedCentreId == null) {
-                return null;
+                throw new AppException(HttpStatus.BAD_REQUEST, "Le centre de gestion propriétaire est obligatoire");
             }
             CentreGestion centreGestion = centreGestionJpaRepository.findById(requestedCentreId).orElse(null);
             if (centreGestion == null) {
