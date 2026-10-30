@@ -5,6 +5,7 @@ import org.esup_portail.esup_stage.dto.ConfigGeneraleDto;
 import org.esup_portail.esup_stage.dto.ConventionDocumentsResponseDto;
 import org.esup_portail.esup_stage.enums.FolderEnum;
 import org.esup_portail.esup_stage.exception.AppException;
+import org.esup_portail.esup_stage.model.CentreGestion;
 import org.esup_portail.esup_stage.model.Convention;
 import org.esup_portail.esup_stage.model.ConventionDocumentEtudiant;
 import org.esup_portail.esup_stage.model.ConventionDocumentEtudiantHistorique;
@@ -83,10 +84,18 @@ class ConventionDocumentEtudiantServiceTest {
         when(config.getTailleMaxDepotDocumentsMo()).thenReturn(5);
         when(appConfigService.getConfigGenerale()).thenReturn(config);
 
-        Convention convention = new Convention();
-        convention.setId(42);
+        Convention convention = conventionAvecDepot(true);
         when(conventionJpaRepository.findById(42)).thenReturn(convention);
         when(documentRepository.findByConventionIdOrderByDateCreationDesc(42)).thenReturn(List.of());
+    }
+
+    private Convention conventionAvecDepot(boolean actif) {
+        CentreGestion centreGestion = new CentreGestion();
+        centreGestion.setActiverDepotDocuments(actif);
+        Convention convention = new Convention();
+        convention.setId(42);
+        convention.setCentreGestion(centreGestion);
+        return convention;
     }
 
     @AfterEach
@@ -193,14 +202,54 @@ class ConventionDocumentEtudiantServiceTest {
     }
 
     private ConventionDocumentEtudiant documentEnBase(String nom) {
-        Convention convention = new Convention();
-        convention.setId(42);
+        Convention convention = conventionAvecDepot(true);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
         ConventionDocumentEtudiant document = new ConventionDocumentEtudiant();
         document.setConvention(convention);
         document.setNom(nom);
         document.setNomReel("rapport.pdf");
         when(documentRepository.findById(4)).thenReturn(document);
         return document;
+    }
+
+    @Test
+    void listAvecDepotDesactiveAutoriseLaLectureMaisPasLEcriture() {
+        connecte("ges1", Role.GES);
+        when(conventionJpaRepository.findById(42)).thenReturn(conventionAvecDepot(false));
+
+        ConventionDocumentsResponseDto reponse = service.list(42);
+
+        assertThat(reponse.isCanUpload()).isFalse();
+        assertThat(reponse.isCanDelete()).isFalse();
+        assertThat(reponse.isCanDownload()).isTrue();
+        assertThat(reponse.isCanPreview()).isTrue();
+    }
+
+    @Test
+    void addDocumentRefuseSiDepotDesactiveSurLeCentre() {
+        connecte("etu1", Role.ETU);
+        when(conventionJpaRepository.findById(42)).thenReturn(conventionAvecDepot(false));
+        MockMultipartFile doc = new MockMultipartFile("doc", "rapport.pdf", "application/pdf", "PDF".getBytes());
+
+        assertThatThrownBy(() -> service.addDocument(42, doc, false))
+                .isInstanceOf(AppException.class)
+                .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    void deleteDocumentRefuseSiDepotDesactiveSurLeCentre() {
+        connecte("ges1", Role.GES);
+        Convention convention = conventionAvecDepot(false);
+        when(conventionJpaRepository.findById(42)).thenReturn(convention);
+        ConventionDocumentEtudiant document = new ConventionDocumentEtudiant();
+        document.setConvention(convention);
+        document.setNom("doc.pdf");
+        document.setNomReel("rapport.pdf");
+        when(documentRepository.findById(4)).thenReturn(document);
+
+        assertThatThrownBy(() -> service.deleteDocument(42, 4))
+                .isInstanceOf(AppException.class)
+                .satisfies(e -> assertThat(((AppException) e).getHttpStatus()).isEqualTo(HttpStatus.FORBIDDEN));
     }
 
     @Test

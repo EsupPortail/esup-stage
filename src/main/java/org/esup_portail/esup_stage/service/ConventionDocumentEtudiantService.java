@@ -267,6 +267,9 @@ public class ConventionDocumentEtudiantService {
         if (!canWrite(ServiceContext.getUtilisateur())) {
             throw new AppException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à modifier les documents de cette convention");
         }
+        if (!isDepotDocumentsActif(convention)) {
+            throw new AppException(HttpStatus.FORBIDDEN, "Le dépôt de documents n'est pas activé pour ce centre de gestion");
+        }
         return convention;
     }
 
@@ -280,6 +283,10 @@ public class ConventionDocumentEtudiantService {
                 || UtilisateurHelper.isRole(utilisateur, Role.ETU);
     }
 
+    private boolean isDepotDocumentsActif(Convention convention) {
+        return convention.getCentreGestion() != null && convention.getCentreGestion().isActiverDepotDocuments();
+    }
+
     private ConventionDocumentEtudiant getDocument(Convention convention, int idDocument) {
         ConventionDocumentEtudiant document = documentRepository.findById(idDocument);
         if (document == null || document.getConvention() == null || document.getConvention().getId() != convention.getId()) {
@@ -290,7 +297,7 @@ public class ConventionDocumentEtudiantService {
 
     private ConventionDocumentsResponseDto buildResponse(Convention convention) {
         ConfigGeneraleDto config = appConfigService.getConfigGenerale();
-        boolean canWrite = canWrite(ServiceContext.getUtilisateur());
+        boolean canWrite = canWrite(ServiceContext.getUtilisateur()) && isDepotDocumentsActif(convention);
 
         ConventionDocumentsResponseDto response = new ConventionDocumentsResponseDto();
         response.setMessage(config.getMessageDepotDocuments());

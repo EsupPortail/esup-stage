@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.3.0-ajout-param-activerDepotDocuments
+      author: csylvanie
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: CentreGestion
+              columnName: activerDepotDocuments
+      changes:
+        - addColumn:
+            tableName: CentreGestion
+            columns:
+              - column:
+                  name: activerDepotDocuments
+                  type: BOOLEAN
+                  defaultValueBoolean: false

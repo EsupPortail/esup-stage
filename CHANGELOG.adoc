@@ -7,7 +7,7 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 - Création d'un paramètre permettant d'autoriser l'impression de l'avenant sous conditions (#218).
 - Intégration de la conformité au RPGD.
 - Ajout de la vérification administrative dans le filtre de recherche du tableau de bord.
-- Fonctionnalité de dépôt de documents par les étudiants.
+- Fonctionnalité de dépôt de documents par les étudiants (activation par centre de gestion, désactivée par défaut).
 - Ajout d'un champ d'informations complémentaires dans l'onglet Stage (existait déjà dans Pstage).
 
 === Améliorations
