@@ -338,8 +338,28 @@ export class EtudiantComponent implements OnInit, OnChanges {
           this.loadApogeeInscriptions(row.codEtu);
         }
       },
-      error: (error: any) => this.handleApogeeError(error, true)
+      error: (error: any) => {
+        if (error?.status === 404) {
+          this.handleEtudiantAbsentDuSi();
+          return;
+        }
+        this.handleApogeeError(error, true);
+      }
     });
+  }
+
+  private handleEtudiantAbsentDuSi(): void {
+    this.etudiant = undefined;
+    this.selectedRow = undefined;
+    this.selectedNumEtudiant = null;
+    this.inscriptions = [];
+    this.centreGestion = undefined;
+    this.formConvention.get('inscription')?.reset();
+    this.formConvention.get('inscriptionElp')?.reset();
+    this.messageService.setWarning("étudiant non trouvé");
+    if (this.searchEtudiantPanel) {
+      this.searchEtudiantPanel.expanded = true;
+    }
   }
 
   loadApogeeInscriptionsOnDemand(isOpened: boolean = true): void {
