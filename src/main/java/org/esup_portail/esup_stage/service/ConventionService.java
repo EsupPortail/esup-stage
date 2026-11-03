@@ -319,21 +319,67 @@ public class ConventionService {
     }
 
     public void canViewEditConvention(Convention convention, Utilisateur utilisateur) {
-        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
-            if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
-                if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
-                if (convention.getEnseignant() == null || !convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid())) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            } else { // cas gestionnaire, responsable gestionnaire et profil non défini
-                if (convention.getCentreGestion() == null || convention.getCentreGestion().getPersonnels() == null || convention.getCentreGestion().getPersonnels().stream().noneMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()))) {
-                    throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
-                }
-            }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ADM)) {
+            return;
         }
+        if (UtilisateurHelper.isRole(utilisateur, Role.ETU)) {
+            if (convention.getEtudiant() == null || !convention.getEtudiant().getIdentEtudiant().equalsIgnoreCase(utilisateur.getUid())) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+            }
+            return;
+        }
+        // Union des périmètres : un cumul GES+ENS doit pouvoir ouvrir une convention
+        // visible via le centre (personnel) ou via le statut d'enseignant référent.
+        // Un enseignant seul reste limité aux conventions dont il est référent.
+        boolean allowed = false;
+        if (UtilisateurHelper.isRole(utilisateur, Role.ENS) && isEnseignantReferent(convention, utilisateur)) {
+            allowed = true;
+        }
+        if (!allowed && canAccessConventionAsGestionnaire(convention, utilisateur)) {
+            allowed = true;
+        }
+        if (!allowed) {
+            throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
+        }
+    }
+
+    /**
+     * Accès gestionnaire (ou profil non enseignant) : l'utilisateur doit figurer dans les
+     * personnels du centre de gestion de la convention. Un rôle ENS seul n'ouvre pas ce
+     * périmètre — il faut GES/RESP_GES, ou l'absence du rôle ENS (comportement historique
+     * « profil non défini »).
+     */
+    private boolean canAccessConventionAsGestionnaire(Convention convention, Utilisateur utilisateur) {
+        boolean gestionnaire = UtilisateurHelper.isRole(utilisateur, Role.GES)
+                || UtilisateurHelper.isRole(utilisateur, Role.RESP_GES);
+        boolean enseignantSansGestion = UtilisateurHelper.isRole(utilisateur, Role.ENS) && !gestionnaire;
+        if (enseignantSansGestion) {
+            return false;
+        }
+        return isPersonnelDuCentre(convention, utilisateur);
+    }
+
+    private boolean isEnseignantReferent(Convention convention, Utilisateur utilisateur) {
+        return convention.getEnseignant() != null
+                && convention.getEnseignant().getUidEnseignant().equalsIgnoreCase(utilisateur.getUid());
+    }
+
+    private boolean isPersonnelDuCentre(Convention convention, Utilisateur utilisateur) {
+        return convention.getCentreGestion() != null
+                && convention.getCentreGestion().getPersonnels() != null
+                && convention.getCentreGestion().getPersonnels().stream()
+                .anyMatch(p -> p.getUidPersonnel().equalsIgnoreCase(utilisateur.getUid()));
+    }
+
+    /**
+     * Un enseignant sans rôle gestionnaire/admin n'a les droits que sur la validation pédagogique.
+     * Le cumul GES/RESP_GES + ENS conserve les validations gestionnaire.
+     */
+    public boolean isEnseignantSansGestionnaire(Utilisateur utilisateur) {
+        return UtilisateurHelper.isRole(utilisateur, Role.ENS)
+                && !UtilisateurHelper.isRole(utilisateur, Role.GES)
+                && !UtilisateurHelper.isRole(utilisateur, Role.RESP_GES)
+                && !UtilisateurHelper.isRole(utilisateur, Role.ADM);
     }
 
     public boolean isConventionModifiable(Convention convention, Utilisateur utilisateur) {
