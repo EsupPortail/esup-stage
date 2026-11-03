@@ -184,14 +184,20 @@
                     }
                   }
                 </div>
-                @if (selectedInscription) {
+                @if (selectedInscription && (consigneEtablissement || centreGestion?.consigne)) {
                   <div>
                     <h4 class="text-title"><span class="fa fa-book-open" aria-hidden="true"></span> Consignes</h4>
                     <mat-divider></mat-divider>
-                    <div class="mt-2" [innerHTML]="consigneEtablissement.texte"></div>
-                    @for (doc of consigneEtablissement.documents; track doc) {
+                    @if (consigneEtablissement) {
                       <div>
-                        <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip" aria-hidden="true"></span> {{doc.nomReel}}</a>
+                        @if (consigneEtablissement.texte != null) {
+                          <div class="mt-2" [innerHTML]="consigneEtablissement.texte"></div>
+                        }
+                        @for (doc of consigneEtablissement.documents; track doc) {
+                          <div>
+                            <a href (click)="downloadDoc($event, doc)"><span class="fa fa-paperclip" aria-hidden="true"></span> {{doc.nomReel}}</a>
+                          </div>
+                        }
                       </div>
                     }
                     @if (centreGestion && centreGestion.niveauCentre.libelle !== 'ETABLISSEMENT' && centreGestion.consigne) {
