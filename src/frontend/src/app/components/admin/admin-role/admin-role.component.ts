@@ -128,6 +128,14 @@ export class AdminRoleComponent implements OnInit {
     return Droit;
   }
 
+  /**
+   * Le droit VALIDATION n'est consommé que pour CONVENTION / AVENANT.
+   * Pour ORGA_ACC et SERVICE_CONTACT_ACC l'icône est trompeuse (aucun contrôle runtime).
+   */
+  showValidationRight(fonction: AppFonction): boolean {
+    return fonction === AppFonction.CONVENTION || fonction === AppFonction.AVENANT;
+  }
+
   canEdit(): boolean {
     return this.authService.checkRights({fonction: AppFonction.PARAM_GLOBAL, droits: [Droit.MODIFICATION]});
   }
