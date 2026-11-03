@@ -66,7 +66,7 @@ export class LogoCentreComponent implements OnInit, OnDestroy {
     this.getLogo();
     this.resizeLogoOnChange();
 
-    this.templateConventionService.getAll().subscribe((templates: any[]) => {
+    this.templateConventionService.getAllLite().subscribe((templates: any[]) => {
       this.templateConvention = templates;
     });
     this.templateCtrl.valueChanges.subscribe((templateId) => {
