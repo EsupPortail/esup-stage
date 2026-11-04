@@ -20,7 +20,7 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.7[Esup-Stage v3.2.7]
 - Correction du `ParseException` FreeMarker à l'impression de l'évaluation étudiant (#764).
 - Signature OTP Docaposte : le mail est envoyé au viseur (ou délégataire), et non au centre de gestion (#729).
 - Correction de l'erreur de chargement des données Apogée lors de la consultation d'une convention par un enseignant.
-- Avenant de changement de tuteur professionnel : le tuteur affiché et le tuteur signataire sont le nouveau tuteur (#285).
+- Avenant de changement de tuteur professionnel : le tuteur affiché et le tuteur signataire sont le nouveau tuteur (#285). Pour les modèles d'avenant déjà personnalisés, remplacer dans le template les variables du contact initial (`${contact.nom}`, `${contact.prenom}`, `${contact.tel}`, `${contact.mail}`) par `${avenant.contact}`, `${avenant.contact.tel}` et `${avenant.contact.mail}` (écran de personnalisation des conventions).
 - Correction d'une régression empêchant un étudiant de modifier un service, un contact ou un signataire qu'il avait créé.
 - La durée effective et les champs mois/jours/heures ne sont plus recalculés automatiquement lorsqu'ils ont été modifiés manuellement.
 - Correction du message de confirmation lors de la modification de la fiche signataire (#715).
