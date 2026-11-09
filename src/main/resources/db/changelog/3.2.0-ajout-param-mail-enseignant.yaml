@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3.2.0-ajout-param-mail-enseignant
+      author: csylvanie
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: enseignant.nom
+              - column:
+                  name: libelle
+                  value: Nom de l'enseignant référent
+            tableName: ParamMail
+        - insert:
+            columns:
+              - column:
+                  name: code
+                  value: enseignant.prenom
+              - column:
+                  name: libelle
+                  value: Prénom de l'enseignant référent
+            tableName: ParamMail

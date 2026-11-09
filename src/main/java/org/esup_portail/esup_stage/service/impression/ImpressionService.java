@@ -244,21 +244,13 @@ public class ImpressionService {
                     break;
                 case viseur:
                     // Ajout du directeur du département
-                    if(convention.getCentreGestion().getPrenomDelegataireViseur() != null && !convention.getCentreGestion().getPrenomDelegataireViseur().isEmpty()) {
-                        otp.add(new HashMap<>() {{
-                            put(firstnameKey, convention.getCentreGestion().getPrenomDelegataireViseur());
-                            put(lastnameKey, convention.getCentreGestion().getNomDelegataireViseur());
-                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
-                        }});
-                    }else{
-                        otp.add(new HashMap<>() {{
-                            put(firstnameKey, convention.getCentreGestion().getPrenomViseur());
-                            put(lastnameKey, convention.getCentreGestion().getNomViseur());
-                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
-                        }});
-                    }
+                    boolean hasDelegataireViseur = convention.getCentreGestion().getMailDelegataireViseur() != null && !convention.getCentreGestion().getMailDelegataireViseur().isEmpty();
+                    otp.add(new HashMap<>() {{
+                        put(firstnameKey, hasDelegataireViseur ? convention.getCentreGestion().getPrenomDelegataireViseur() : convention.getCentreGestion().getPrenomViseur());
+                        put(lastnameKey, hasDelegataireViseur ? convention.getCentreGestion().getNomDelegataireViseur() : convention.getCentreGestion().getNomViseur());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                        put(emailKey, getOtpDataEmail(hasDelegataireViseur ? convention.getCentreGestion().getMailDelegataireViseur() : convention.getCentreGestion().getMailViseur()));
+                    }});
                     break;
                 default:
                     break;
@@ -313,6 +305,14 @@ public class ImpressionService {
             // Remplacement ${avenant.contact} par le bon signataire (nom & prénom) si il a ete change
             String avenantContact = getDefaultText("/templates/template_avenant_contact.html");
             texte = texte.replace("${avenant.contact}", avenantContact);
+
+            // Remplacement ${avenant.contact.mail} par le mail du bon signataire si il a ete change
+            String avenantContactMail = getDefaultText("/templates/template_avenant_contact_mail.html");
+            texte = texte.replace("${avenant.contact.mail}", avenantContactMail);
+
+            // Remplacement ${avenant.contact.tel} par le telephone du bon signataire si il a ete change
+            String avenantContactTel = getDefaultText("/templates/template_avenant_contact_tel.html");
+            texte = texte.replace("${avenant.contact.tel}", avenantContactTel);
 
             // Remplacement ${avenant.enseignant} par le bon signataire (nom & prénom) si il a ete change
             String avenantEnseignant = getDefaultText("/templates/template_avenant_enseignant.html");

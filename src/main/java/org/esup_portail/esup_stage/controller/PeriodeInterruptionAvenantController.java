@@ -110,7 +110,7 @@ public class PeriodeInterruptionAvenantController {
     }
 
     @DeleteMapping("/{id}")
-    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.SUPPRESSION})
+    @Secure(fonctions = {AppFonctionEnum.AVENANT}, droits = {DroitEnum.MODIFICATION})
     public boolean delete(@PathVariable("id") int id) {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         PeriodeInterruptionAvenant periodeInterruptionAvenant = periodeInterruptionAvenantJpaRepository.findById(id);

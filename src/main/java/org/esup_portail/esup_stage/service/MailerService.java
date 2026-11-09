@@ -294,6 +294,18 @@ public class MailerService {
                 .replaceAll("\\$ENDIF", "</#if>");
     }
 
+    /**
+     * Construit le lien vers une convention utilisé dans les mails.
+     * <p>
+     * Les slashs finaux de {@code appli.url} sont retirés pour éviter un {@code //frontend}
+     * lorsque l'URL est configurée avec un slash terminal. Le {@code #} est ajouté après
+     * concaténation : passé à {@code UriComponentsBuilder}, il serait encodé.
+     */
+    static String buildConventionLink(String appliUrl, int conventionId) {
+        String baseUrl = appliUrl == null ? "" : appliUrl.replaceAll("/+$", "");
+        return baseUrl + "/frontend/#/conventions/" + conventionId;
+    }
+
     @Data
     @NoArgsConstructor
     public static class MailContext {
@@ -302,6 +314,7 @@ public class MailerService {
         private SignataireContext signataire = new SignataireContext();
         private ModifieParContext modifiePar = new ModifieParContext();
         private EtudiantContext etudiant = new EtudiantContext();
+        private EnseignantContext enseignant = new EnseignantContext();
         private AvenantContext avenant = new AvenantContext();
         private String lienEvaluationTuteur= "";
 
@@ -311,6 +324,7 @@ public class MailerService {
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.enseignant = new EnseignantContext(convention.getEnseignant());
                 this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
@@ -325,6 +339,7 @@ public class MailerService {
                 this.tuteurPro = new TuteurProContext(convention.getContact(), convention.getStructure(), convention.getService());
                 this.signataire = new SignataireContext(convention.getSignataire());
                 this.etudiant = new EtudiantContext(convention.getEtudiant(), convention.getCourrielPersoEtudiant(), convention.getTelEtudiant());
+                this.enseignant = new EnseignantContext(convention.getEnseignant());
                 this.lienEvaluationTuteur =  lienEvaluationTuteur;
             }
             if (avenant != null) {
@@ -361,7 +376,7 @@ public class MailerService {
                 this.dateFin = convention.getDateFinStage() != null ? df.format(convention.getDateFinStage()) : null;
                 this.tempsTravail = convention.getTempsTravail() != null ? convention.getTempsTravail().getLibelle() : null;
                 this.tempsTravailComment = convention.getCommentaireDureeTravail();
-                this.lien = appliProperties.getUrl() + "/frontend/#/conventions/" + convention.getId();
+                this.lien = buildConventionLink(appliProperties.getUrl(), convention.getId());
             }
         }
 
@@ -424,6 +439,21 @@ public class MailerService {
                 this.tel = tel;
             }
          }
+
+        @Data
+        @NoArgsConstructor
+        public static class EnseignantContext {
+            private String nom = "";
+            private String prenom = "";
+
+            public EnseignantContext(Enseignant enseignant) {
+                if (enseignant == null) {
+                    return;
+                }
+                this.nom = enseignant.getNom() != null ? enseignant.getNom() : "";
+                this.prenom = enseignant.getPrenom() != null ? enseignant.getPrenom() : "";
+            }
+        }
 
         @Data
         @NoArgsConstructor

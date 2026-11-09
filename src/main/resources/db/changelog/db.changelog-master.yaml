@@ -339,3 +339,6 @@ databaseChangeLog:
   - include:
         file: 3.2.4-reponse-evaluation-schema-version.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.0-ajout-param-mail-enseignant.yaml
+        relativeToChangelogFile: true

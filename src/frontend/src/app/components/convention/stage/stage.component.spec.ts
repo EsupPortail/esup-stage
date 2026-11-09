@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { StageComponent } from './stage.component';
 import { of } from 'rxjs';
 import { TempsTravailService } from "../../../services/temps-travail.service";
@@ -57,6 +57,7 @@ describe('StageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StageComponent);
     component = fixture.componentInstance;
+    component.convention = {};
     fixture.detectChanges();
   });
 
@@ -192,5 +193,117 @@ describe('StageComponent', () => {
       component.deletePeriodeStage(0);
       expect(lastStatus).toBe(1);
     });
+  });
+
+  describe('calcul période irrégulière', () => {
+    beforeEach(() => {
+      component.form = TestBed.inject(FormBuilder).group({
+        horairesReguliers: [false],
+        interruptionStage: [false],
+        nbHeuresHebdo: [null],
+        dureeExceptionnelle: [null],
+        periodeStageMois: [null, [Validators.min(0), Validators.max(30)]],
+        periodeStageJours: [null, [Validators.min(0), Validators.max(31)]],
+        periodeStageHeures: [null, [Validators.min(0), Validators.max(23)]],
+      });
+      component.joursFeries = [];
+      component.interruptionsStage = [];
+      component.dureeStageManuelle = false;
+    });
+
+    it('conserve un reste déjà inférieur ou égal à 23 heures', () => {
+      component.periodesCalculHeuresStage = [
+        { dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 0, 13), nbHeuresJournalieres: 7.5 }
+      ];
+      (component as any).calculPeriodeIrreguliere(75);
+
+      expect(component.dureeStage).toEqual({ dureeMois: 0, dureeJours: 10, dureeHeures: 5 });
+    });
+
+    it('laisse inchangé un reste de 23 heures exactement', () => {
+      component.periodesCalculHeuresStage = [
+        { dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 2, 6), nbHeuresJournalieres: 7.5 }
+      ];
+      (component as any).calculPeriodeIrreguliere(345);
+
+      expect(component.dureeStage.dureeHeures).toBe(23);
+      expect(component.dureeStage.dureeMois).toBe(2);
+      expect(component.dureeStage.dureeJours).toBe(2);
+    });
+
+    it('convertit en jours un reste supérieur à 23 heures', () => {
+      component.periodesCalculHeuresStage = [
+        { dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 1, 10), nbHeuresJournalieres: 7.9 }
+      ];
+      (component as any).calculPeriodeIrreguliere(237);
+
+      expect(component.dureeStage).toEqual({ dureeMois: 1, dureeJours: 9, dureeHeures: 3 });
+    });
+
+    it('ne réécrit pas une période valide lors d\'un recalcul en arrière-plan', () => {
+      component.dureeStage = { dureeMois: 1, dureeJours: 2, dureeHeures: 3 };
+      component.form.patchValue({ periodeStageMois: 1, periodeStageJours: 2, periodeStageHeures: 3 });
+
+      component.refreshPeriodeStageFields(true);
+
+      expect(component.form.get('periodeStageHeures')!.value).toBe(3);
+    });
+
+    it('recalcule un reste enregistré supérieur à 23 heures', () => {
+      component.dureeStage = { dureeMois: 1, dureeJours: 8, dureeHeures: 42 };
+      component.form.patchValue({
+        dureeExceptionnelle: 237,
+        periodeStageMois: 1,
+        periodeStageJours: 8,
+        periodeStageHeures: 42
+      });
+      component.periodesCalculHeuresStage = [
+        { dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 1, 10), nbHeuresJournalieres: 7.9 }
+      ];
+
+      component.refreshPeriodeStageFields(true);
+
+      expect(component.dureeStage).toEqual({ dureeMois: 1, dureeJours: 9, dureeHeures: 3 });
+      expect(component.form.get('periodeStageHeures')!.valid).toBeTrue();
+    });
+  });
+
+  it('supprime en base les périodes retirées du calendrier seulement à l\'enregistrement', () => {
+    const service = TestBed.inject(PeriodeStageService) as any;
+    spyOn(service, 'delete').and.returnValue(of({}));
+    spyOn(service, 'update').and.returnValue(of({}));
+    spyOn(service, 'getByConvention').and.returnValue(of([]));
+    component.convention = { id: 9 };
+    component.periodesCalculHeuresStage = [
+      { id: 1, dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 0, 6), nbHeuresJournalieres: 7 },
+      { id: 2, dateDebut: new Date(2023, 0, 9), dateFin: new Date(2023, 0, 13), nbHeuresJournalieres: 7 }
+    ];
+
+    component.savePeriodesStage([
+      { id: 1, idConvention: 9, dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 0, 6), nbHeuresJournalieres: 7 }
+    ]);
+
+    expect(service.delete).toHaveBeenCalledOnceWith(2);
+    expect(service.update).toHaveBeenCalled();
+  });
+
+  it('passe une copie des périodes au calendrier pour préserver la détection des suppressions', () => {
+    const dialog = TestBed.inject(MatDialog) as any;
+    let dialogData: any;
+    spyOn(dialog, 'open').and.callFake((_comp: any, config: any) => {
+      dialogData = config.data;
+      return { afterClosed: () => of(null) };
+    });
+
+    component.periodesCalculHeuresStage = [
+      { id: 1, dateDebut: new Date(2023, 0, 2), dateFin: new Date(2023, 0, 6), nbHeuresJournalieres: 7 }
+    ];
+
+    component.openCalendar();
+
+    expect(dialogData.periodes).not.toBe(component.periodesCalculHeuresStage);
+    expect(dialogData.periodes[0]).not.toBe(component.periodesCalculHeuresStage[0]);
+    expect(dialogData.periodes[0].id).toBe(1);
+    expect(component.periodesCalculHeuresStage.length).toBe(1);
   });
 });

@@ -114,7 +114,7 @@
           <div class="editor-container editor-container_classic-editor editor-container_include-style" #editorContainerElement>
             <div class="editor-container__editor">
               <div #editorElement>
-                <ckeditor [editor]="Editor" [config]="config"  formControlName="activitePrincipale" *ngIf="isLayoutReady" />
+                <ckeditor [editor]="Editor" [config]="config" formControlName="activitePrincipale" *ngIf="isLayoutReady && editorActive" />
               </div>
             </div>
           </div>

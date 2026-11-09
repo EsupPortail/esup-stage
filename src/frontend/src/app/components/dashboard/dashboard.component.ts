@@ -258,7 +258,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             numEtudiant: { title: 'N° étudiant' },
             etudiantNom: { title: 'Nom Étudiant' },
             etudiantPrenom: { title: 'Prénom Étudiant' },
-            elPersoEtudiant: { title: 'Mail perso étudiant' },
+            courrielPersoEtudiant: { title: 'Mail perso étudiant' },
             mailUniEtudiant: { title: 'Mail universitaire étudiant' },
             telEtudiant: { title: 'Téléphone perso étudiant' },
             telPortableEtudiant: { title: 'Téléphone portable étudiant' },

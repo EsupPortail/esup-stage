@@ -1,5 +1,7 @@
 package org.esup_portail.esup_stage.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
@@ -22,6 +24,7 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,6 +39,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -135,13 +139,7 @@ public class SecurityConfiguration {
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            if (request.getRequestURI().startsWith("/api/")) {
-                                response.setStatus(401);
-                            } else {
-                                response.sendRedirect("/login/cas");
-                            }
-                        })
+                        .authenticationEntryPoint(this::commenceAuthentication)
                 )
                 .addFilter(casAuthenticationFilter())
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
@@ -159,6 +157,31 @@ public class SecurityConfiguration {
                 );
 
         return http.build();
+    }
+
+    /**
+     * Point d'entrée appelé lorsqu'une requête non authentifiée atteint une ressource protégée.
+     * <p>
+     * Le frontal Angular est public et détecte l'absence de session en interrogeant l'API :
+     * les appels {@code /api/**} doivent recevoir un véritable 401, sinon le navigateur suit
+     * la redirection vers CAS et l'intercepteur Angular ne reconnaît plus le 401.
+     * <p>
+     * Le chemin est calculé après le contexte de déploiement car {@code getRequestURI()}
+     * contient ce contexte ({@code /esup-stage/api/...}) alors que {@code getServletPath()}
+     * est vide avec le DispatcherServlet de Spring Boot. La redirection CAS doit elle aussi
+     * rester dans ce contexte.
+     */
+    void commenceAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                AuthenticationException authException) throws IOException {
+        String contextPath = request.getContextPath() == null ? "" : request.getContextPath();
+        String requestUri = request.getRequestURI();
+        String path = requestUri.startsWith(contextPath) ? requestUri.substring(contextPath.length()) : requestUri;
+
+        if (path.equals("/api") || path.startsWith("/api/")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            response.sendRedirect(contextPath + "/login/cas");
+        }
     }
 
     @Bean
