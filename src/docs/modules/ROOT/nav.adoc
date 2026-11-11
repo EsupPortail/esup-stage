@@ -1,3 +1,5 @@
+* xref:Liste-des-changements.adoc[]
+
 .Documentation d’installation
 * xref:Prerequis.adoc[]
 * xref:ESUP-SISCOL.adoc[]
@@ -7,7 +9,6 @@
 ** xref:ESUP-Signature.adoc[]
 ** xref:Autres-Applications-de-signature.adoc[]
 * xref:Activer-sirene.adoc[]
-* xref:Liste-des-changements.adoc[]
 
 .Autres documents
 * xref:Processus-de-creation-d-un-utilisateur.adoc[]
