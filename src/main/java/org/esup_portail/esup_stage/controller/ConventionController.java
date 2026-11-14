@@ -278,12 +278,13 @@ public class  ConventionController {
         Utilisateur utilisateur = ServiceContext.getUtilisateur();
         List<Convention> conventions;
         boolean isEnseignant = false;
-        // Récupération des conventions en attente de validation, pédagogique pour les enseignants, administrative pour les gestionnaires
-        if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
+        // Récupération des conventions en attente de validation, pédagogique pour les enseignants, administrative pour les gestionnaires.
+        // Aligné sur le filtre liste : GES/RESP_GES prime sur ENS en cas de cumul de rôles.
+        if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
+            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
+        } else if (UtilisateurHelper.isRole(utilisateur, Role.ENS)) {
             conventions = conventionJpaRepository.getConventionEnAttenteEnseignant(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
             isEnseignant = true;
-        } else if (!UtilisateurHelper.isRole(utilisateur, Role.ADM) && (UtilisateurHelper.isRole(utilisateur, Role.RESP_GES) || UtilisateurHelper.isRole(utilisateur, Role.GES))) {
-            conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee), utilisateur.getUid());
         } else {
             conventions = conventionJpaRepository.getConventionEnAttenteGestionnaire(appConfigService.getAnneeUnivLibelle(annee));
         }
@@ -415,8 +416,8 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
-        // Un enseignant n'a les droits que sur la validation pédagogique
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+        // Un enseignant sans rôle gestionnaire n'a les droits que sur la validation pédagogique
+        if (conventionService.isEnseignantSansGestionnaire(ServiceContext.getUtilisateur()) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         switch (type) {
@@ -444,8 +445,8 @@ public class  ConventionController {
             throw new AppException(HttpStatus.NOT_FOUND, "Convention non trouvée");
         }
         conventionService.canViewEditConvention(convention, ServiceContext.getUtilisateur());
-        // Un enseignant n'a les droits que sur la validation pédagogique
-        if (UtilisateurHelper.isRole(ServiceContext.getUtilisateur(), Role.ENS) && !type.equals("validationPedagogique")) {
+        // Un enseignant sans rôle gestionnaire n'a les droits que sur la validation pédagogique
+        if (conventionService.isEnseignantSansGestionnaire(ServiceContext.getUtilisateur()) && !type.equals("validationPedagogique")) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Type de validation inconnu");
         }
         switch (type) {
