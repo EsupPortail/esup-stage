@@ -178,7 +178,8 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
     const filter = this.filters.find((f: any) => f.id === id);
     const all = filter?.options ?? [];
     if (!q || q.trim() === '') {
-      this.filteredListOptions[id] = all.slice();
+      // Catalogues longs (ex. étapes) : n'afficher les options qu'après saisie
+      this.filteredListOptions[id] = filter?.requireSearch ? [] : all.slice();
       return;
     }
     const keyLib = filter?.keyLibelle ?? 'libelle';

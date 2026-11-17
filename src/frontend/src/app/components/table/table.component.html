@@ -29,7 +29,7 @@
                   @if (filter.searchable){
                     <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" (openedChange)="onListOpenedChange(filter.id, $event)" [compareWith]="compareFilterOptionValue">
                       <mat-option>
-                        <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="'Rechercher…'" [noEntriesFoundLabel]="'Aucun élément trouvé'" ></ngx-mat-select-search>
+                        <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="filter.requireSearch ? 'Taper pour rechercher…' : 'Rechercher…'" [noEntriesFoundLabel]="filter.requireSearch ? 'Saisir au moins un caractère' : 'Aucun élément trouvé'" ></ngx-mat-select-search>
                       </mat-option>
                       <mat-option
                         *ngFor="let option of (filteredListOptions[filter.id] || filter.options)"

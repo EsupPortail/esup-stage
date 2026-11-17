@@ -66,6 +66,7 @@ describe('TableComponent', () => {
         keyId: 'id',
         searchable: true,
         searchAlsoCode: true,
+        requireSearch: true,
         options: [
           { id: { code: 'ABC1', codeUniversite: 'U', codeVersionEtape: '1' }, libelle: 'Master Informatique' },
           { id: { code: 'XYZ9', codeUniversite: 'U', codeVersionEtape: '2' }, libelle: 'Licence Droit' },
@@ -84,6 +85,11 @@ describe('TableComponent', () => {
       (component as any).applyListFilter('etape.id', 'abc1');
       expect((component as any).filteredListOptions['etape.id'].length).toBe(1);
       expect((component as any).filteredListOptions['etape.id'][0].id.code).toBe('ABC1');
+    });
+
+    it('n’affiche aucune option tant que requireSearch et requête vide', () => {
+      (component as any).applyListFilter('etape.id', '');
+      expect((component as any).filteredListOptions['etape.id'].length).toBe(0);
     });
   });
 });
