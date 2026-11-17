@@ -183,10 +183,50 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
     }
     const keyLib = filter?.keyLibelle ?? 'libelle';
     const nq = this.norm(q);
-    this.filteredListOptions[id] = all.filter((o: any) =>
-      this.norm(o?.[keyLib]).includes(nq)
-    );
+    const searchAlsoCode = !!filter?.searchAlsoCode;
+    this.filteredListOptions[id] = all.filter((o: any) => {
+      if (this.norm(o?.[keyLib]).includes(nq)) {
+        return true;
+      }
+      if (!searchAlsoCode) {
+        return false;
+      }
+      const code = o?.id?.code ?? o?.code;
+      const version = o?.id?.codeVersionEtape ?? o?.codeVersionEtape;
+      const codeHaystack = [code, version].filter((v) => v != null && v !== '').join('-');
+      return this.norm(codeHaystack).includes(nq) || this.norm(code).includes(nq);
+    });
   }
+
+  /**
+   * Compare les valeurs de mat-select (scalaires ou ids composites EtapeId / UfrId).
+   * Public pour le template [compareWith].
+   */
+  compareFilterOptionValue = (a: any, b: any): boolean => {
+    if (a === b) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
+    if (typeof a !== 'object' || typeof b !== 'object') {
+      return a === b;
+    }
+    if ('code' in a || 'code' in b) {
+      const codeOk = a.code === b.code;
+      const univA = a.codeUniversite;
+      const univB = b.codeUniversite;
+      const univOk = univA === undefined || univB === undefined || univA === univB;
+      const versionA = a.codeVersionEtape;
+      const versionB = b.codeVersionEtape;
+      const versionOk = versionA === undefined || versionB === undefined || versionA === versionB;
+      return codeOk && univOk && versionOk;
+    }
+    if ('id' in a && 'id' in b) {
+      return a.id === b.id;
+    }
+    return JSON.stringify(a) === JSON.stringify(b);
+  };
 
   getPaginated(): void {
     this.service.getPaginated(this.page, this.pageSize, this.sortColumn, this.sortOrder, JSON.stringify(this.filterValuesToSend)).subscribe((results: any) => {

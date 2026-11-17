@@ -27,7 +27,7 @@
                 </ng-container>
                 <ng-container *ngSwitchCase="'list'">
                   @if (filter.searchable){
-                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
+                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" (openedChange)="onListOpenedChange(filter.id, $event)" [compareWith]="compareFilterOptionValue">
                       <mat-option>
                         <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="'Rechercher…'" [noEntriesFoundLabel]="'Aucun élément trouvé'" ></ngx-mat-select-search>
                       </mat-option>
@@ -35,11 +35,11 @@
                         *ngFor="let option of (filteredListOptions[filter.id] || filter.options)"
                         [value]="option[filter.keyId]"
                         [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">
-                        {{ option[filter.keyLibelle] || 'Valeur indisponible' }}
+                        <ng-container *ngIf="filter.searchAlsoCode && option?.id?.code">{{ option.id.code }}<ng-container *ngIf="option.id.codeVersionEtape">-{{ option.id.codeVersionEtape }}</ng-container> — </ng-container>{{ option[filter.keyLibelle] || 'Valeur indisponible' }}
                       </mat-option>
                     </mat-select>
                   } @else {
-                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()"   (openedChange)="onListOpenedChange(filter.id, $event)">
+                    <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" (openedChange)="onListOpenedChange(filter.id, $event)" [compareWith]="compareFilterOptionValue">
                       <mat-option *ngFor="let option of filter.options" [value]="option[filter.keyId]" [matTooltip]="filter.infoBulleCentre ? option[filter.keyLibelle] : ''">{{option[filter.keyLibelle]|| 'Valeur indisponible' }}</mat-option>
                     </mat-select>
                   }
