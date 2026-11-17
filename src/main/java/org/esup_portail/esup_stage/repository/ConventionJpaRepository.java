@@ -78,8 +78,18 @@ public interface ConventionJpaRepository extends JpaRepository<Convention, Integ
     @Query("SELECT COUNT(c.id) FROM Convention c WHERE c.natureTravail.id = :idNatureTravail")
     Long countConventionWithNatureTravail(@Param("idNatureTravail") int idNatureTravail);
 
-    @Query("SELECT c FROM Convention c WHERE c.loginCreation = ?1 AND c.validationCreation = FALSE AND c.creationEnMasse = FALSE")
-    Convention findBrouillon(@Param("login") String login);
+    @Query("SELECT c FROM Convention c WHERE c.loginCreation = ?1 AND c.validationCreation = FALSE AND c.creationEnMasse = FALSE ORDER BY c.id DESC")
+    List<Convention> findBrouillons(@Param("login") String login);
+
+    /**
+     * Retourne le brouillon le plus récent pour le login, ou {@code null}.
+     * Liste + ordre pour rester résilient si des doublons historiques existent encore
+     * pendant la fenêtre de migration (#716 / #742).
+     */
+    default Convention findBrouillon(String login) {
+        List<Convention> brouillons = findBrouillons(login);
+        return brouillons.isEmpty() ? null : brouillons.get(0);
+    }
 
     @Query("SELECT c FROM Convention c WHERE c.annee = :annee AND c.validationCreation = TRUE AND c.validationConvention = FALSE")
     List<Convention> getConventionEnAttenteGestionnaire(@Param("annee") String annee);

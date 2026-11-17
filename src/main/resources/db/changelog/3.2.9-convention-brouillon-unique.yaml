@@ -1,0 +1,165 @@
+databaseChangeLog:
+  # #716 / #742 — un seul brouillon actif (validationCreation=0, creationEnMasse=0) par loginCreation
+  - changeSet:
+      id: 3.2.9-purge-convention-brouillon-doublons
+      author: esup
+      comment: "Purge des brouillons Convention en doublon — conserve MAX(idConvention) par loginCreation"
+      changes:
+        - sql:
+            dbms: mysql,mariadb
+            splitStatements: true
+            stripComments: true
+            sql: |
+              -- Enfants des brouillons à supprimer (hors id conservé)
+              DELETE cn FROM ConventionNomenclature cn
+              INNER JOIN Convention c ON c.idConvention = cn.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE a FROM Avenant a
+              INNER JOIN Convention c ON c.idConvention = a.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE dce FROM ConventionDocumentEtudiant dce
+              INNER JOIN Convention c ON c.idConvention = dce.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE hv FROM HistoriqueValidation hv
+              INNER JOIN Convention c ON c.idConvention = hv.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE pis FROM PeriodeInterruptionStage pis
+              INNER JOIN Convention c ON c.idConvention = pis.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE ps FROM PeriodeStage ps
+              INNER JOIN Convention c ON c.idConvention = ps.convention_id
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE re FROM ReponseEvaluation re
+              INNER JOIN Convention c ON c.idConvention = re.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE rs FROM ReponseSupplementaire rs
+              INNER JOIN Convention c ON c.idConvention = rs.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              UPDATE EtudiantGroupeEtudiant ege
+              INNER JOIN Convention c ON c.idConvention = ege.idMergedConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              SET ege.idMergedConvention = NULL
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE ege FROM EtudiantGroupeEtudiant ege
+              INNER JOIN Convention c ON c.idConvention = ege.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE ge FROM GroupeEtudiant ge
+              INNER JOIN Convention c ON c.idConvention = ge.idConvention
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+              DELETE c FROM Convention c
+              INNER JOIN (
+                SELECT loginCreation, MAX(idConvention) AS keepId
+                FROM Convention
+                WHERE validationCreation = 0 AND creationEnMasse = 0 AND loginCreation IS NOT NULL
+                GROUP BY loginCreation
+                HAVING COUNT(*) > 1
+              ) d ON c.loginCreation = d.loginCreation AND c.idConvention <> d.keepId
+              WHERE c.validationCreation = 0 AND c.creationEnMasse = 0;
+
+  - changeSet:
+      id: 3.2.9-unique-convention-brouillon-login
+      author: esup
+      comment: "Colonne générée + index unique : au plus un brouillon actif par loginCreation"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: Convention
+                columnName: brouillonLogin
+      changes:
+        - sql:
+            dbms: mysql,mariadb
+            splitStatements: true
+            stripComments: true
+            sql: |
+              ALTER TABLE Convention
+                ADD COLUMN brouillonLogin VARCHAR(255)
+                AS (CASE WHEN validationCreation = 0 AND creationEnMasse = 0 THEN loginCreation ELSE NULL END) VIRTUAL;
+              CREATE UNIQUE INDEX uk_convention_brouillon_login ON Convention (brouillonLogin);
