@@ -27,8 +27,8 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canRevertValidation(): boolean {
-    // Un enseignant n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+    // Un enseignant sans rôle gestionnaire n'a les droits que sur la validation pédagogique
+    if (this.isEnseignantSansGestionnaire() && this.validation === 'validationConvention') {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
@@ -41,8 +41,8 @@ export class ValidationCardComponent implements OnInit {
   }
 
   canValidate(): boolean {
-    // Un enseignant n'a les droits que sur la validation pédagogique
-    if (this.authService.isEnseignant() && this.validation === 'validationConvention') {
+    // Un enseignant sans rôle gestionnaire n'a les droits que sur la validation pédagogique
+    if (this.isEnseignantSansGestionnaire() && this.validation === 'validationConvention') {
       return false;
     }
     const validationOrdre = this.convention.centreGestion[this.validation + 'Ordre'];
@@ -68,6 +68,10 @@ export class ValidationCardComponent implements OnInit {
       this.convention = response;
       this.conventionChanged.emit(this.convention);
     });
+  }
+
+  private isEnseignantSansGestionnaire(): boolean {
+    return this.authService.isEnseignant() && !this.authService.isGestionnaire() && !this.authService.isAdmin();
   }
 
 }
