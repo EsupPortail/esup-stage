@@ -244,21 +244,13 @@ public class ImpressionService {
                     break;
                 case viseur:
                     // Ajout du directeur du département
-                    if(convention.getCentreGestion().getPrenomDelegataireViseur() != null && !convention.getCentreGestion().getPrenomDelegataireViseur().isEmpty()) {
-                        otp.add(new HashMap<>() {{
-                            put(firstnameKey, convention.getCentreGestion().getPrenomDelegataireViseur());
-                            put(lastnameKey, convention.getCentreGestion().getNomDelegataireViseur());
-                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
-                        }});
-                    }else{
-                        otp.add(new HashMap<>() {{
-                            put(firstnameKey, convention.getCentreGestion().getPrenomViseur());
-                            put(lastnameKey, convention.getCentreGestion().getNomViseur());
-                            put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
-                            put(emailKey, getOtpDataEmail(convention.getCentreGestion().getMail()));
-                        }});
-                    }
+                    boolean hasDelegataireViseur = convention.getCentreGestion().getMailDelegataireViseur() != null && !convention.getCentreGestion().getMailDelegataireViseur().isEmpty();
+                    otp.add(new HashMap<>() {{
+                        put(firstnameKey, hasDelegataireViseur ? convention.getCentreGestion().getPrenomDelegataireViseur() : convention.getCentreGestion().getPrenomViseur());
+                        put(lastnameKey, hasDelegataireViseur ? convention.getCentreGestion().getNomDelegataireViseur() : convention.getCentreGestion().getNomViseur());
+                        put(phoneNumberKey, getOtpDataPhoneNumber(convention.getCentreGestion().getTelephone()));
+                        put(emailKey, getOtpDataEmail(hasDelegataireViseur ? convention.getCentreGestion().getMailDelegataireViseur() : convention.getCentreGestion().getMailViseur()));
+                    }});
                     break;
                 default:
                     break;

@@ -1,7 +1,9 @@
 package org.esup_portail.esup_stage.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.esup_portail.esup_stage.dto.ConventionFormationDto;
 import org.esup_portail.esup_stage.dto.LdapSearchDto;
+import org.esup_portail.esup_stage.exception.AppException;
 import org.esup_portail.esup_stage.model.*;
 import org.esup_portail.esup_stage.model.helper.UtilisateurHelper;
 import org.esup_portail.esup_stage.repository.CritereGestionJpaRepository;
@@ -11,6 +13,7 @@ import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeResp
 import org.esup_portail.esup_stage.service.apogee.model.EtudiantDiplomeEtapeSearch;
 import org.esup_portail.esup_stage.service.ldap.model.LdapUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EtudiantSecurityService {
 
     @Autowired
@@ -168,7 +172,17 @@ public class EtudiantSecurityService {
             return true;
         }
 
-        return isEtuInCentreGestionUtilisateur(utilisateur, etudiant.getCodEtu(), idsCentresGestionUtilisateur);
+        try {
+            return isEtuInCentreGestionUtilisateur(utilisateur, etudiant.getCodEtu(), idsCentresGestionUtilisateur);
+        } catch (AppException e) {
+            // Un annuaire LDAP commun peut remonter des étudiants absents du référentiel de la plateforme (Apogée/Pégase) :
+            // ils sont ignorés pour ne pas interrompre le filtrage des autres résultats
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND) {
+                log.info("Étudiant {} remonté par le LDAP mais absent du référentiel, ignoré", etudiant.getCodEtu());
+                return false;
+            }
+            throw e;
+        }
     }
 
     private boolean isLdapEtudiantInCriteresCentresGestionUtilisateur(LdapUser etudiant, List<CritereGestion> criteresCentresGestionUtilisateur) {

@@ -133,7 +133,7 @@
       </div>
       <div class="row mt-3" *ngIf="canEdit() || canCreate()">
           <div class="col-12 d-flex justify-content-center">
-            <button *ngIf="etab.id && !modif && canEdit()" (click)="edit()" class="valid-button" type="button" mat-button mat-stroked-button>
+            <button *ngIf="etab.id && !modif && (canEdit() || isCreatorContact(contact))" (click)="edit()" class="valid-button" type="button" mat-button mat-stroked-button>
               Modifier la fiche de ce tuteur professionnel
             </button>
           </div>

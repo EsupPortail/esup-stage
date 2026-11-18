@@ -334,6 +334,7 @@ export class StageComponent implements OnInit {
       this.initialLoading = false;
       this.refreshPeriodeStageFields(true);
       this.persistMissingCalculatedDureeExceptionnelle();
+      this.refreshStatutSiLibre();
     }, 1000);
   }
 
@@ -586,7 +587,9 @@ export class StageComponent implements OnInit {
     dialogConfig.data = {
       convention: this.convention,
       interruptionsStage: this.interruptionsStage,
-      periodes: this.periodesCalculHeuresStage,
+      // Snapshot : même si le calendrier mutait la liste reçue, la source Stage reste intacte
+      // pour que savePeriodesStage puisse calculer les delete à la validation.
+      periodes: this.periodesCalculHeuresStage.map((periode: any) => ({ ...periode })),
       joursFeries: this.joursFeries
     };
 
@@ -597,23 +600,17 @@ export class StageComponent implements OnInit {
         // Handle irregular hours
         if (this.form.get('horairesReguliers')?.value === false) {
           // Handle the case where there are new periods
-          if (dialogResponse.length > 0) {
-            const newPeriodes = dialogResponse.map((periode: any) => {
-              return {
-                id: periode.id, // Include id if it exists
-                idConvention: this.convention.id,
-                dateDebut: periode.dateDebut,
-                dateFin: periode.dateFin,
-                nbHeuresJournalieres: parseFloat(periode.nbHeuresJournalieres)
-              };
-            });
-            this.savePeriodesStage(newPeriodes);
-          } else {
-            // Handle the case where there are no periods
-            this.periodesCalculHeuresStage = [];
-            this.updateHeuresTravail();
-            this.checkPeriodesTravailValid();
-          }
+          const newPeriodes = dialogResponse.map((periode: any) => {
+            return {
+              id: periode.id, // Include id if it exists
+              idConvention: this.convention.id,
+              dateDebut: periode.dateDebut,
+              dateFin: periode.dateFin,
+              nbHeuresJournalieres: parseFloat(periode.nbHeuresJournalieres)
+            };
+          });
+          // Les suppressions faites dans la fenêtre ne sont envoyées qu'ici.
+          this.savePeriodesStage(newPeriodes);
         } else {
           // For regular hours, just update the calculation
           this.periodesCalculHeuresStage = dialogResponse;
@@ -624,23 +621,30 @@ export class StageComponent implements OnInit {
   }
 
   savePeriodesStage(periodes: any[]): void {
+    const keptIds = new Set(periodes.filter((periode: any) => periode.id).map((periode: any) => periode.id));
+    const toDelete = this.periodesCalculHeuresStage.filter((periode: any) => periode.id && !keptIds.has(periode.id));
+    const operations = toDelete.length + periodes.length;
+    if (operations === 0) {
+      this.refreshPeriodesStage();
+      return;
+    }
+
     let finished = 0;
-    for (const periode of periodes) {
-      if (periode.id) {
-        this.periodeStageService.update(periode.id, periode).subscribe((response: any) => {
-          finished++;
-          if (finished === periodes.length) {
-            this.refreshPeriodesStage();
-          }
-        });
-      } else {
-        this.periodeStageService.create(periode).subscribe((response: any) => {
-          finished++;
-          if (finished === periodes.length) {
-            this.refreshPeriodesStage();
-          }
-        });
+    const onDone = () => {
+      finished++;
+      if (finished === operations) {
+        this.refreshPeriodesStage();
       }
+    };
+
+    for (const periode of toDelete) {
+      this.periodeStageService.delete(periode.id).subscribe({ next: onDone, error: onDone });
+    }
+    for (const periode of periodes) {
+      const request = periode.id
+        ? this.periodeStageService.update(periode.id, periode)
+        : this.periodeStageService.create(periode);
+      request.subscribe({ next: onDone, error: onDone });
     }
   }
 
@@ -714,7 +718,10 @@ export class StageComponent implements OnInit {
     }
 
     const periodeDejaPresente = !!(this.dureeStage.dureeMois || this.dureeStage.dureeJours || this.dureeStage.dureeHeures);
-    if (background && periodeDejaPresente) {
+    const heuresHorsBorne = Number(this.dureeStage.dureeHeures) > 23;
+    // Une période déjà enregistrée et valide n'est pas réécrite au chargement.
+    // Un reste supérieur à 23 h est invalide : on le recalcule.
+    if (background && periodeDejaPresente && !heuresHorsBorne) {
       return;
     }
 
@@ -735,21 +742,32 @@ export class StageComponent implements OnInit {
     // Ne jamais écraser une durée explicitement saisie par l'utilisateur.
     if (this.dureeExceptionnelleManuelle) {
       this.refreshPeriodeStageFields(background);
+      this.refreshStatutSiLibre();
       return;
     }
     const valeurActuelle = this.parseDecimal(this.form.get('dureeExceptionnelle')?.value);
     if (background && !Number.isNaN(valeurActuelle)) {
       this.refreshPeriodeStageFields(background);
+      this.refreshStatutSiLibre();
       return;
     }
     if (valeurActuelle === totalHeures) {
       this.refreshPeriodeStageFields(background);
+      this.refreshStatutSiLibre();
       return;
     }
     this.convention.dureeExceptionnelle = totalHeures;
     const emitEvent = persist && !this.initialLoading;
     this.form.get('dureeExceptionnelle')?.setValue(totalHeures, { emitEvent });
     this.refreshPeriodeStageFields(background);
+    this.refreshStatutSiLibre();
+  }
+
+  private refreshStatutSiLibre(): void {
+    if (this.singleFieldUpdateLock || this.singleFieldUpdateQueue.length > 0) {
+      return;
+    }
+    this.validateForm();
   }
 
   private persistMissingCalculatedDureeExceptionnelle(): void {
@@ -978,12 +996,27 @@ export class StageComponent implements OnInit {
     // Calculer le nombre total de jours ouvrés réellement travaillés
     const totalJoursOuvres = this.calculerJoursOuvresTotal();
 
-    // Utiliser le nombre réel de jours ouvrés pour le calcul
-    this.dureeStage.dureeMois = Math.floor(totalJoursOuvres / NB_JOUR_MOIS);
-    this.dureeStage.dureeJours = totalJoursOuvres % NB_JOUR_MOIS;
+    let mois = Math.floor(totalJoursOuvres / NB_JOUR_MOIS);
+    let jours = totalJoursOuvres % NB_JOUR_MOIS;
+    let heures = this.calculerHeuresRestantesIrregulieres(nbHeures, totalJoursOuvres);
 
-    // Calculer les heures restantes
-    this.dureeStage.dureeHeures = this.calculerHeuresRestantesIrregulieres(nbHeures, totalJoursOuvres);
+    // Le champ Heure(s) est borné à 23. On ne convertit le surplus en jours
+    // de 24 h que dans ce cas, pour laisser inchangé un reste déjà valide.
+    if (heures > 23) {
+      let joursSupplementaires = Math.floor(heures / 24);
+      heures = Math.round((heures - joursSupplementaires * 24) * 100) / 100;
+      if (heures > 23) {
+        joursSupplementaires += 1;
+        heures = 0;
+      }
+      jours += joursSupplementaires;
+      mois += Math.floor(jours / NB_JOUR_MOIS);
+      jours = jours % NB_JOUR_MOIS;
+    }
+
+    this.dureeStage.dureeMois = mois;
+    this.dureeStage.dureeJours = jours;
+    this.dureeStage.dureeHeures = heures;
   }
 
   private calculerJoursOuvresTotal(): number {

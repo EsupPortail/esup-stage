@@ -6,6 +6,7 @@ import { catchError } from "rxjs/operators";
 import { TokenService } from "./token.service";
 import { Role } from "../constants/role";
 import { SILENT_REQUEST } from "../interceptors/http-context.tokens";
+import { buildCasLoginPath, buildRedirectTarget, resolveCasRedirect } from "../utils/auth-redirect.utils";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class AuthService {
   // Marqueur persistant (survit au rechargement provoqué par la redirection) empêchant
   // toute boucle de redirection vers CAS.
   private static readonly CAS_REDIRECT_FLAG = 'casRedirectAttempted';
+  private static readonly REDIRECT_URL_KEY = 'redirectUrl';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -60,16 +62,16 @@ export class AuthService {
   }
 
   private handleUnauthorized() {
-    const currentPath = window.location.pathname;
-    if (currentPath === '/login/cas') {
+    const { pathname, search, hash } = window.location;
+    if (pathname.endsWith('/login/cas')) {
       return;
     }
     if (sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1') {
       return;
     }
     sessionStorage.setItem(AuthService.CAS_REDIRECT_FLAG, '1');
-    sessionStorage.setItem('redirectUrl', currentPath);
-    window.location.href = '/login/cas';
+    sessionStorage.setItem(AuthService.REDIRECT_URL_KEY, buildRedirectTarget(pathname, search, hash));
+    window.location.href = buildCasLoginPath(pathname);
   }
 
   logout() {
@@ -98,7 +100,28 @@ export class AuthService {
 
   createUser(user: any) {
     this.userConnected = user;
+
+    // Le marqueur n'est posé que par handleUnauthorized : il garantit que la cible
+    // mémorisée provient d'un départ vers CAS et non d'une session précédente.
+    const casRedirectInProgress = sessionStorage.getItem(AuthService.CAS_REDIRECT_FLAG) === '1';
     sessionStorage.removeItem(AuthService.CAS_REDIRECT_FLAG);
+
+    const currentTarget = buildRedirectTarget(
+      window.location.pathname,
+      window.location.search,
+      window.location.hash
+    );
+    const redirectTarget = resolveCasRedirect(
+      sessionStorage.getItem(AuthService.REDIRECT_URL_KEY),
+      casRedirectInProgress,
+      window.location.origin,
+      currentTarget
+    );
+    sessionStorage.removeItem(AuthService.REDIRECT_URL_KEY);
+
+    if (redirectTarget !== null) {
+      window.location.href = redirectTarget;
+    }
   }
 
   checkRights(right: any) {

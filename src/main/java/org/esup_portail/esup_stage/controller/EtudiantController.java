@@ -68,13 +68,20 @@ public class EtudiantController {
         if (UtilisateurHelper.isRole(utilisateur, Role.ETU) && (etudiant == null || !utilisateur.getUid().equals(etudiant.getIdentEtudiant()))) {
             throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
         }
-        if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
-            if(!etudiantSecurityService.isEtuInCentreGestionUtilisateur(utilisateur,numEtudiant)){
-                logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
-                throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
+        try {
+            if(etudiantSecurityService.isGestionnaireOrResponsableGestionnaire(utilisateur)){
+                if(!etudiantSecurityService.isEtuInCentreGestionUtilisateur(utilisateur,numEtudiant)){
+                    logger.warning("Accès refusé à l'utilisateur " + utilisateur.getLogin() + " pour les données sur le numero étudiant " + numEtudiant);
+                    throw new AppException(HttpStatus.FORBIDDEN, "Accès refusé");
+                }
             }
+            return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
+        } catch (AppException e) {
+            if (e.getHttpStatus() == HttpStatus.NOT_FOUND) {
+                throw new AppException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+            }
+            throw e;
         }
-        return apogeeService.getInfoApogee(numEtudiant, appConfigService.getAnneeUniv());
     }
 
     @GetMapping("/{numEtudiant}/apogee-inscriptions")

@@ -21,6 +21,8 @@ import { TitleService } from 'src/app/services/title.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import {REGEX} from "../../../utils/regex.utils";
 import { CadreStageConventionPayload } from "../../../models/cadre-stage-convention-payload.model";
+import { AppFonction } from "../../../constants/app-fonction";
+import { Droit } from "../../../constants/droit";
 
 @Component({
     selector: 'app-convention-etudiant',
@@ -307,7 +309,7 @@ export class EtudiantComponent implements OnInit, OnChanges {
       } else {
         this.inscriptions = [];
       }
-      if (this.modifiable && this.selectedNumEtudiant) {
+      if (this.modifiable && this.selectedNumEtudiant && this.canLoadApogeeInscriptions()) {
         this.loadApogeeInscriptions(this.selectedNumEtudiant);
       }
       return;
@@ -332,14 +334,36 @@ export class EtudiantComponent implements OnInit, OnChanges {
           }
         });
 
-        this.loadApogeeInscriptions(row.codEtu);
+        if (this.canLoadApogeeInscriptions()) {
+          this.loadApogeeInscriptions(row.codEtu);
+        }
       },
-      error: (error: any) => this.handleApogeeError(error, true)
+      error: (error: any) => {
+        if (error?.status === 404) {
+          this.handleEtudiantAbsentDuSi();
+          return;
+        }
+        this.handleApogeeError(error, true);
+      }
     });
   }
 
+  private handleEtudiantAbsentDuSi(): void {
+    this.etudiant = undefined;
+    this.selectedRow = undefined;
+    this.selectedNumEtudiant = null;
+    this.inscriptions = [];
+    this.centreGestion = undefined;
+    this.formConvention.get('inscription')?.reset();
+    this.formConvention.get('inscriptionElp')?.reset();
+    this.messageService.setWarning("étudiant non trouvé");
+    if (this.searchEtudiantPanel) {
+      this.searchEtudiantPanel.expanded = true;
+    }
+  }
+
   loadApogeeInscriptionsOnDemand(isOpened: boolean = true): void {
-    if (!isOpened || !this.convention?.id || !this.modifiable || !this.selectedNumEtudiant) {
+    if (!isOpened || !this.convention?.id || !this.modifiable || !this.selectedNumEtudiant || !this.canLoadApogeeInscriptions()) {
       return;
     }
 
@@ -683,6 +707,10 @@ export class EtudiantComponent implements OnInit, OnChanges {
 
   isUserEtudiant(): boolean {
     return this.authService.isEtudiant();
+  }
+
+  canLoadApogeeInscriptions(): boolean {
+    return this.authService.checkRights({fonction: AppFonction.CONVENTION, droits: [Droit.CREATION]});
   }
 
   enableFormationEdit(): void {

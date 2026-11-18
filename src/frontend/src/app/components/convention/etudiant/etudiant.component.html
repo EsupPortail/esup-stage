@@ -216,7 +216,7 @@
                     <div class="col-sm-8 formation-display">
                       <span>{{selectedInscription.etapeInscription.codeEtp}}{{selectedInscription.etapeInscription.libComposante != null ? ' - ' + selectedInscription.etapeInscription.libComposante : ''}}</span>
                       <button
-                        *ngIf="modifiable && convention.id && !isEditingFormation"
+                        *ngIf="modifiable && convention.id && !isEditingFormation && canLoadApogeeInscriptions()"
                         type="button"
                         class="edit-button edit-formation-button"
                         mat-icon-button

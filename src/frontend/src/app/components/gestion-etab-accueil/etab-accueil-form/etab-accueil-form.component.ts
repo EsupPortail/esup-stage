@@ -92,6 +92,8 @@ import {ConfigService} from "../../../services/config.service";
 export class EtabAccueilFormComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() etab: any;
+  /** True uniquement quand l'onglet Création/Édition est affiché (montage CKEditor différé). */
+  @Input() editorActive = false;
   @Output() submitted = new EventEmitter<any>();
   @Output() canceled = new EventEmitter<boolean>();
 
