@@ -108,6 +108,7 @@
                       tabindex="0">
                     </span>
                     <span
+                      *ngIf="showValidationRight(appFonction.code)"
                       class="fa fa-check mr-2"
                       [ngClass]="{activate: hasRight(appFonction.code, Droit.VALIDATION)}"
                       (click)="toggleRight(appFonction.code, Droit.VALIDATION)"
