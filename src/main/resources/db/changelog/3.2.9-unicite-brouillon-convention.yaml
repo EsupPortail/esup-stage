@@ -1,16 +1,20 @@
 databaseChangeLog:
-  # Ticket #716 : suppression des brouillons de convention en doublon pour un même loginCreation.
+  # Ticket #716 / #742 : suppression des brouillons de convention en doublon pour un même loginCreation.
   # Un brouillon actif est une convention avec validationCreation = 0 et creationEnMasse = 0.
   # On conserve le brouillon ayant le plus grand idConvention (le plus récent) et on supprime les autres
   # ainsi que leurs données liées.
   - changeSet:
-      id: 3.2.8-suppression-brouillons-convention-doublons
+      id: 3.2.9-suppression-brouillons-convention-doublons
       author: thouveno9
+      dbms: mysql,mariadb
       comment: "Suppression des brouillons de convention en doublon (conservation du plus grand idConvention)"
       changes:
         - sql:
-            dbms: mysql,mariadb
+            splitStatements: true
+            stripComments: true
             sql: |
+              -- Table de travail : ids des brouillons à supprimer (tous sauf le plus récent).
+              -- IF NOT EXISTS + DELETE FROM rendent le changeset rejouable après un échec partiel.
               CREATE TABLE IF NOT EXISTS ConventionBrouillonDoublon (
                 idConvention INT NOT NULL PRIMARY KEY
               );
@@ -31,6 +35,7 @@ databaseChangeLog:
                 AND c.creationEnMasse = 0
                 AND c.idConvention < d.idConventionConservee;
 
+              -- Enfants : PeriodeInterruptionAvenant avant Avenant et PeriodeInterruptionStage
               DELETE pia FROM PeriodeInterruptionAvenant pia
               JOIN PeriodeInterruptionStage pis ON pis.id = pia.idPeriodeInterruptionStage
               JOIN ConventionBrouillonDoublon d ON d.idConvention = pis.idConvention;
@@ -63,6 +68,25 @@ databaseChangeLog:
               DELETE cn FROM ConventionNomenclature cn
               JOIN ConventionBrouillonDoublon d ON d.idConvention = cn.idConvention;
 
+              -- Conventions de groupe rattachées (données historiques avec creationEnMasse=0)
+              DELETE hmg FROM HistoriqueMailGroupe hmg
+              JOIN GroupeEtudiant ge ON ge.idGroupeEtudiant = hmg.idGroupeEtudiant
+              JOIN ConventionBrouillonDoublon d ON d.idConvention = ge.idConvention;
+
+              DELETE ege FROM EtudiantGroupeEtudiant ege
+              JOIN ConventionBrouillonDoublon d ON d.idConvention = ege.idConvention;
+
+              DELETE ege FROM EtudiantGroupeEtudiant ege
+              JOIN GroupeEtudiant ge ON ge.idGroupeEtudiant = ege.idGroupeEtudiant
+              JOIN ConventionBrouillonDoublon d ON d.idConvention = ge.idConvention;
+
+              UPDATE EtudiantGroupeEtudiant ege
+              JOIN ConventionBrouillonDoublon d ON d.idConvention = ege.idMergedConvention
+              SET ege.idMergedConvention = NULL;
+
+              DELETE ge FROM GroupeEtudiant ge
+              JOIN ConventionBrouillonDoublon d ON d.idConvention = ge.idConvention;
+
               DELETE c FROM Convention c
               JOIN ConventionBrouillonDoublon d ON d.idConvention = c.idConvention;
 
@@ -72,8 +96,9 @@ databaseChangeLog:
   # MariaDB/MySQL ne supportant pas les index partiels, on passe par une colonne générée qui vaut
   # loginCreation pour un brouillon actif et NULL sinon (les NULL ne sont pas soumis à l'unicité).
   - changeSet:
-      id: 3.2.8-unicite-brouillon-convention
+      id: 3.2.9-unicite-brouillon-convention
       author: thouveno9
+      dbms: mysql,mariadb
       comment: "Contrainte d'unicité d'un brouillon actif de convention par loginCreation"
       preConditions:
         - onFail: HALT
@@ -90,7 +115,8 @@ databaseChangeLog:
               ) doublons
       changes:
         - sql:
-            dbms: mysql,mariadb
+            splitStatements: true
+            stripComments: true
             sql: |
               ALTER TABLE Convention
                 ADD COLUMN loginCreationBrouillon VARCHAR(150)

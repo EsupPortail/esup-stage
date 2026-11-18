@@ -15,12 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,5 +116,63 @@ class ConventionControllerCreateTest {
                 () -> conventionController.create(new ConventionFormDto()));
 
         assertSame(violation, exception);
+    }
+
+    @Test
+    void create_convertsViolationWhenBrouillonVisibleEvenWithoutConstraintName() {
+        // Le nom de contrainte n'est pas dans le message (ex. base localisée), mais un brouillon est visible
+        when(conventionJpaRepository.findBrouillon(LOGIN)).thenReturn(null, new Convention());
+        when(conventionJpaRepository.saveAndFlush(any(Convention.class)))
+                .thenThrow(new DataIntegrityViolationException("contrainte inconnue"));
+
+        AppException exception = assertThrows(AppException.class, () -> conventionController.create(new ConventionFormDto()));
+
+        assertThat(exception.getHttpStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(exception.getMessage()).contains("convention en cours de création");
+    }
+
+    @Test
+    void getBrouillon_sansBrouillon_retourneConventionVide() {
+        when(conventionJpaRepository.findBrouillon(LOGIN)).thenReturn(null);
+
+        Convention result = conventionController.getBrouillon();
+
+        assertThat(result.getId()).isZero();
+    }
+
+    @Test
+    void getBrouillon_avecUnBrouillon_retourneCeBrouillon() {
+        Convention brouillon = new Convention();
+        brouillon.setId(66902);
+        when(conventionJpaRepository.findBrouillon(LOGIN)).thenReturn(brouillon);
+
+        Convention result = conventionController.getBrouillon();
+
+        assertThat(result.getId()).isEqualTo(66902);
+    }
+
+    @Test
+    void deleteBrouillon_supprimeSiPresent() {
+        Convention brouillon = new Convention();
+        brouillon.setId(10);
+        when(conventionJpaRepository.findBrouillon(LOGIN)).thenReturn(brouillon);
+
+        conventionController.deleteBrouillon();
+
+        verify(conventionJpaRepository).delete(brouillon);
+    }
+
+    @Test
+    void findBrouillon_default_prendLePlusRecentEtNullSiVide() {
+        ConventionJpaRepository repo = Mockito.mock(ConventionJpaRepository.class, Mockito.CALLS_REAL_METHODS);
+        Convention newer = new Convention();
+        newer.setId(66902);
+        Convention older = new Convention();
+        older.setId(66901);
+        when(repo.findBrouillons(LOGIN)).thenReturn(List.of(newer, older));
+        when(repo.findBrouillons("inconnu")).thenReturn(Collections.emptyList());
+
+        assertThat(repo.findBrouillon(LOGIN).getId()).isEqualTo(66902);
+        assertThat(repo.findBrouillon("inconnu")).isNull();
     }
 }

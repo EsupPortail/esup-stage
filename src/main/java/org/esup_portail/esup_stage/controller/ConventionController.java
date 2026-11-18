@@ -224,13 +224,26 @@ public class  ConventionController {
         try {
             convention = conventionJpaRepository.saveAndFlush(convention);
         } catch (DataIntegrityViolationException e) {
-            // Création concurrente : la contrainte d'unicité du brouillon par loginCreation a été violée
-            if (conventionJpaRepository.findBrouillon(utilisateur.getLogin()) != null) {
+            // Création concurrente (TOCTOU) : la contrainte d'unicité du brouillon par loginCreation a été violée.
+            // On ne convertit l'erreur que si elle vient bien du brouillon : les autres violations
+            // d'intégrité (FK, NOT NULL...) doivent remonter telles quelles.
+            if (isBrouillonUniqueViolation(e) || conventionJpaRepository.findBrouillon(utilisateur.getLogin()) != null) {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Vous avez déjà une convention en cours de création. Veuillez rafraichir la page.");
             }
             throw e;
         }
         return convention;
+    }
+
+    /**
+     * Détecte la violation de l'index unique {@code uk_convention_brouillon_login}.
+     * Le nom de l'index figure dans le message MySQL/MariaDB
+     * (« Duplicate entry ... for key 'Convention.uk_convention_brouillon_login' »).
+     */
+    private static boolean isBrouillonUniqueViolation(DataIntegrityViolationException e) {
+        String message = e.getMostSpecificCause().getMessage();
+        return message != null
+                && (message.contains("uk_convention_brouillon_login") || message.contains("loginCreationBrouillon"));
     }
 
     @PutMapping("/{id}")
