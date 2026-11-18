@@ -342,3 +342,6 @@ databaseChangeLog:
   - include:
         file: 3.2.0-ajout-param-mail-enseignant.yaml
         relativeToChangelogFile: true
+  - include:
+        file: 3.2.9-unicite-brouillon-convention.yaml
+        relativeToChangelogFile: true
