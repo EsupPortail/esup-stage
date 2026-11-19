@@ -177,15 +177,25 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
   private applyListFilter(id: string, q: string) {
     const filter = this.filters.find((f: any) => f.id === id);
     const all = filter?.options ?? [];
+    const keyId = filter?.keyId ?? 'id';
+    const selected = this.filterValues[id]?.value;
+    const isSelected = (o: any) => Array.isArray(selected)
+      && selected.some((v: any) => this.compareFilterOptionValue(o?.[keyId], v));
     if (!q || q.trim() === '') {
-      // Catalogues longs (ex. étapes) : n'afficher les options qu'après saisie
-      this.filteredListOptions[id] = filter?.requireSearch ? [] : all.slice();
+      // Catalogues longs (ex. étapes) : n'afficher les options qu'après saisie,
+      // tout en gardant les valeurs déjà sélectionnées pour l'affichage mat-select.
+      this.filteredListOptions[id] = filter?.requireSearch
+        ? all.filter((o: any) => isSelected(o))
+        : all.slice();
       return;
     }
     const keyLib = filter?.keyLibelle ?? 'libelle';
     const nq = this.norm(q);
     const searchAlsoCode = !!filter?.searchAlsoCode;
     this.filteredListOptions[id] = all.filter((o: any) => {
+      if (isSelected(o)) {
+        return true;
+      }
       if (this.norm(o?.[keyLib]).includes(nq)) {
         return true;
       }

@@ -12,6 +12,15 @@ describe('TableComponent', () => {
   let component: TableComponent;
   let fixture: ComponentFixture<TableComponent>;
 
+  const etapeAbc = {
+    id: { code: 'ABC1', codeUniversite: 'U', codeVersionEtape: '1' },
+    libelle: 'Master Informatique',
+  };
+  const etapeXyz = {
+    id: { code: 'XYZ9', codeUniversite: 'U', codeVersionEtape: '2' },
+    libelle: 'Licence Droit',
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TableComponent],
@@ -67,11 +76,11 @@ describe('TableComponent', () => {
         searchable: true,
         searchAlsoCode: true,
         requireSearch: true,
-        options: [
-          { id: { code: 'ABC1', codeUniversite: 'U', codeVersionEtape: '1' }, libelle: 'Master Informatique' },
-          { id: { code: 'XYZ9', codeUniversite: 'U', codeVersionEtape: '2' }, libelle: 'Licence Droit' },
-        ],
+        options: [etapeAbc, etapeXyz],
       }];
+      component.filterValues = {
+        'etape.id': { type: 'list', value: [], specific: true },
+      };
       (component as any).filteredListOptions = {};
     });
 
@@ -87,9 +96,25 @@ describe('TableComponent', () => {
       expect((component as any).filteredListOptions['etape.id'][0].id.code).toBe('ABC1');
     });
 
-    it('n’affiche aucune option tant que requireSearch et requête vide', () => {
+    it('n’affiche aucune option tant que requireSearch, requête vide et rien de sélectionné', () => {
       (component as any).applyListFilter('etape.id', '');
       expect((component as any).filteredListOptions['etape.id'].length).toBe(0);
+    });
+
+    it('conserve les options sélectionnées si requireSearch et requête vide (affichage mat-select)', () => {
+      component.filterValues['etape.id'].value = [etapeAbc.id];
+      (component as any).applyListFilter('etape.id', '');
+      const filtered = (component as any).filteredListOptions['etape.id'];
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].id.code).toBe('ABC1');
+    });
+
+    it('conserve les sélectionnées même si elles ne matchent pas la saisie', () => {
+      component.filterValues['etape.id'].value = [etapeAbc.id];
+      (component as any).applyListFilter('etape.id', 'droit');
+      const filtered = (component as any).filteredListOptions['etape.id'];
+      expect(filtered.length).toBe(2);
+      expect(filtered.map((o: any) => o.id.code).sort()).toEqual(['ABC1', 'XYZ9']);
     });
   });
 });
