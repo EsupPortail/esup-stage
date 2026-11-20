@@ -56,3 +56,4 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.4[Esup-Stage v3.2.4]
 
 === Corrections
 - Corriger la gestion des jours fériés en cas d'interruption de stage.
+- Champ « Activité principale » saisissable aussi depuis l'onglet établissement d'accueil de la convention (#753).
