@@ -4,7 +4,18 @@ https://github.com/EsupPortail/esup-stage/releases/tag/3.2.8[Esup-Stage v3.2.8]
 Pour les modèles d'avenant déjà personnalisés (#285), remplacer dans le template les variables du contact initial (`${contact.nom}`, `${contact.prenom}`, `${contact.tel}`, `${contact.mail}`) par `${avenant.contact}`, `${avenant.contact.tel}` et `${avenant.contact.mail}` (écran de personnalisation des conventions).
 
 == ESUP-Stage v3.2.9 (À venir)
-Les nouveautés, améliorations et corrections de la 3.2.9 seront détaillées très prochainement.
+=== Nouveautés
+- N/A
+
+=== Améliorations
+- Multi-sélection searchable du filtre Étape sur le tableau de bord.
+
+=== Corrections
+- Liste légère des templates pour l'onglet Personnalisation du centre de gestion (#757).
+- Masquage du droit « Validation » inutilisé sur les organismes et contacts.
+- Accès à la convention pour un utilisateur cumulant les rôles Gestionnaire et Enseignant.
+- Champ « Activité principale » saisissable aussi depuis l'onglet établissement d'accueil de la convention (#753).
+- Correction des doublons de brouillon de convention (#716, #742).
 
 == ESUP-Stage v3.3.0 (À venir)
 === Nouveautés
