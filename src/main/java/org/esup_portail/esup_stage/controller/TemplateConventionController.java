@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.esup_portail.esup_stage.dto.PaginatedResponse;
 import org.esup_portail.esup_stage.dto.TemplateConventionDto;
+import org.esup_portail.esup_stage.dto.TemplateConventionLiteDto;
 import org.esup_portail.esup_stage.enums.AppFonctionEnum;
 import org.esup_portail.esup_stage.enums.DroitEnum;
 import org.esup_portail.esup_stage.exception.AppException;
@@ -147,6 +148,16 @@ public class TemplateConventionController {
     @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL}, droits = {DroitEnum.LECTURE})
     public List<TemplateConvention> getAllTemplates() {
         return templateConventionJpaRepository.findAll();
+    }
+
+    /**
+     * Liste légère (id + libellés type/langue) pour les écrans centre de gestion.
+     * N'expose pas le contenu HTML des templates ({@code texte} / {@code texteAvenant}).
+     */
+    @GetMapping("/lite")
+    @Secure(fonctions = {AppFonctionEnum.PARAM_GLOBAL, AppFonctionEnum.PARAM_CENTRE}, droits = {DroitEnum.LECTURE})
+    public List<TemplateConventionLiteDto> getAllTemplatesLite() {
+        return templateConventionJpaRepository.findAllLite();
     }
 
     private List<String> extractChamps(String texte) {

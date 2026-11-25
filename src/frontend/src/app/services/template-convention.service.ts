@@ -46,4 +46,9 @@ export class TemplateConventionService implements PaginatedService {
   getAll(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/template-convention/all`);
   }
+
+  /** Liste légère (id + libellés) accessible avec PARAM_CENTRE — sans contenu HTML des templates. */
+  getAllLite(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/template-convention/lite`);
+  }
 }
