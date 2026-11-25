@@ -244,7 +244,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
       { id: 'langueConvention.code', libelle: 'Langue de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'code', value: [] },
-      { id: 'etape.id', libelle: 'Étape', type: 'autocomplete', autocompleteService: this.etapeService, options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, colSpan: 9 },
+      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, searchable: true, searchAlsoCode: true, requireSearch: true, colSpan: 9 },
       { id: 'typeConvention.id', libelle: 'Type de convention', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [] },
       { id: 'structure.pays.id', libelle: 'Pays de l’établissement d\'accueil', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], searchable: true },
     ];
@@ -346,7 +346,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'id', libelle: 'N° de la convention', type: 'int' },
     { id: 'etudiant', libelle: 'Étudiant', specific: true },
     { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-    { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+    { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, searchable: true, searchAlsoCode: true, requireSearch: true },
     { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date-min' },
     { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date-max' },
     { id: 'structure', libelle: 'Établissement d\'accueil', specific: true },
@@ -385,7 +385,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { id: 'dateDebutStage', libelle: 'Date début du stage', type: 'date' },
       { id: 'dateFinStage', libelle: 'Date fin du stage', type: 'date' },
       { id: 'ufr.id', libelle: 'Composante', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
-      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
+      { id: 'etape.id', libelle: 'Étape', type: 'list', options: [], keyLibelle: 'libelle', keyId: 'id', value: [], specific: true, searchable: true, searchAlsoCode: true, requireSearch: true },
       { id: 'enseignant', libelle: 'Enseignant', specific: true },
       { id: 'avenant', libelle: 'Avenant', type: 'boolean', specific: true },
       { id: 'etatValidation', libelle: 'État de validation de la convention', type: 'list', options: this.validationsOptions, keyLibelle: 'libelle', keyId: 'id', value: [], specific: true },
@@ -587,7 +587,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 .filter(Boolean);
 
               if (etapeSelectedList.length) {
-                this.appTable?.setFilterValue(key, etapeSelectedList);
+                this.appTable?.setFilter({
+                  id: 'etape.id',
+                  type: 'list',
+                  value: etapeSelectedList.map((etape: { id: any }) => etape.id),
+                  specific: true,
+                });
               }
             }
             break;
