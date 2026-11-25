@@ -21,7 +21,11 @@ apt-get install git
 
 == Java
 
-Version de java minimale : Java OpenJdk 21 (seul cette version a été testé pour ESUP Stage)
+Version de java minimale : Java OpenJdk 21.0.13.1 (seul Java 21 a été testé pour ESUP Stage)
+
+IMPORTANT: La version *21.0.13.1 ou supérieure* est obligatoire pour être protégé de la faille *Java4Shell* (CVE-2026-114938). Toutes les versions Java 21 antérieures à 21.0.13.1 sont vulnérables. Vérifiez la version réellement utilisée par le service (et non celle du `PATH`) avec `<chemin_du_jdk>/bin/java -version`, puis redémarrez le service après mise à jour.
+
+Si la mise à jour ne peut pas être appliquée immédiatement, ajoutez l'option de mitigation `-XX:-UseBASE64Intrinsics` aux options de démarrage de la JVM (voir la section Tomcat du README).
 
 === Installation java OpenJdk 21
 //-------------------------------------
@@ -37,9 +41,9 @@ Vérification de l'installation
 [,console]
 ----
 $ java -version
-openjdk version "21.0.7" 2025-04-15 LTS
-OpenJDK Runtime Environment (Red_Hat-21.0.7.0.6-1) (build 21.0.7+6-LTS)
-OpenJDK 64-Bit Server VM (Red_Hat-21.0.7.0.6-1) (build 21.0.7+6-LTS, mixed mode, sharing)
+openjdk version "21.0.13.1" 2026-11-17 LTS
+OpenJDK Runtime Environment (Red_Hat-21.0.13.1.0.1-1) (build 21.0.13.1+1-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-21.0.13.1.0.1-1) (build 21.0.13.1+1-LTS, mixed mode, sharing)
 ----
 
 Définir les variables d'environnement Java
@@ -85,9 +89,9 @@ Vous pouvez vérifier l'installation :
 [source,shell]
 ----
 java -version
-openjdk version "21.0.7" 2025-04-15
-OpenJDK Runtime Environment (build 21.0.7+6-Ubuntu-0ubuntu124.04)
-OpenJDK 64-Bit Server VM (build 21.0.7+6-Ubuntu-0ubuntu124.04, mixed mode, sharing)
+openjdk version "21.0.13.1" 2026-11-17
+OpenJDK Runtime Environment (build 21.0.13.1+1-Ubuntu-0ubuntu124.04)
+OpenJDK 64-Bit Server VM (build 21.0.13.1+1-Ubuntu-0ubuntu124.04, mixed mode, sharing)
 ----
 
 Remarque : pour changer la version par défaut (en cas de version multiple)
@@ -151,7 +155,7 @@ Apache Maven a été configuré avec succès sur votre système. Utilisez la com
 mvn -v
 Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 Maven home: /opt/maven
-Java version: 21.0.7, vendor: Ubuntu, runtime: /usr/lib/jvm/java-21-openjdk-amd64
+Java version: 21.0.13.1, vendor: Ubuntu, runtime: /usr/lib/jvm/java-21-openjdk-amd64
 Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "5.15.167.4-microsoft-standard-wsl2", arch: "amd64", family: "unix"
 ----

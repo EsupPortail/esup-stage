@@ -16,7 +16,7 @@ ESUP STAGE est la refonte de l'application PStage. L'application a été complè
 
 .Les xref:src\docs\modules\ROOT\pages\Prerequis.adoc[prérequis] sont les suivants sur votre serveur :
 * Git
-* Java OpenJdk 21
+* Java OpenJdk 21.0.13.1 ou supérieur (correctif Java4Shell, CVE-2026-114938)
 * Apache Maven
 * Installation Mariadb
 * Installation du projet Esup-SIscol (sur le même serveur ou sur un serveur dédié)
@@ -299,6 +299,17 @@ export JAVA_OPTS="-Xms1024m -Xmx1024m -Dspring.config.additional-location=/etc/e
 Cela permet d'éviter de devoir penser a remettre les options a chaque fois qu'on relance Tomcat.
 
 TIP: Vous pouvez placer le .properties dans le répertoire de votre choix, il suffit de le renseigner dans Dspring.config.location
+
+IMPORTANT: La faille *Java4Shell* (CVE-2026-114938) impose une JVM Java 21 en version *21.0.13.1 ou supérieure*. Vérifiez la version réellement chargée par Tomcat avec `<chemin_du_jdk>/bin/java -version` (le `java` du `PATH` n'est pas forcément celui du service), puis redémarrez Tomcat : tant que le processus tourne, il conserve l'ancienne JVM.
+
+Si la mise à jour ne peut pas être appliquée immédiatement, ajoutez l'option de mitigation `-XX:-UseBASE64Intrinsics` dans `JAVA_OPTS` ou `CATALINA_OPTS` :
+
+[source,shell]
+----
+export JAVA_OPTS="-Xms1024m -Xmx1024m -XX:-UseBASE64Intrinsics -Dspring.config.additional-location=/etc/estage/application.properties"
+----
+
+NOTE: Cette option désactive le chemin Base64 accéléré vulnérable et peut réduire les performances. C'est une mitigation temporaire, pas un remplacement de la mise à jour de la JVM.
 
 === Exécution avec __Tomcat__
 
