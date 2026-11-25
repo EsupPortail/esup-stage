@@ -56,7 +56,7 @@ jobs:
           password: ${{secrets.HARBOR_PASSWORD}}
 
       - name: Build the Docker image
-        run: docker build --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{vars.IMAGE_REPO}}/esup-stage:latest-${GITHUB_REF##*/} -t ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}} .
+        run: docker build --pull --build-arg VERSION=${{steps.maven_version.outputs.version}} -t ${{vars.IMAGE_REPO}}/esup-stage:latest-${GITHUB_REF##*/} -t ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}} .
 
       - name: Push the Docker image
         run: docker push ${{vars.IMAGE_REPO}}/esup-stage:${{steps.maven_version.outputs.version}}
