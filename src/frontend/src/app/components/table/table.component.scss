@@ -1,5 +1,27 @@
 .table-filters {
   margin-bottom: 0;
+
+  // Les chips Étape ne doivent pas étirer / élargir les filtres voisins (ex. Type de convention).
+  .row {
+    align-items: flex-start;
+  }
+
+  > mat-card-content .row > .mat-mdc-form-field,
+  .mat-mdc-form-field[class*='col-'] {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-select {
+    max-width: 100%;
+  }
+
+  .mat-mdc-select-trigger,
+  .mat-mdc-select-value {
+    max-width: 100%;
+    overflow: hidden;
+  }
 }
 .mat-row.selected {
   background-color: #e8eaf6;
@@ -39,8 +61,18 @@ input.mat-chip-input {
   flex-wrap: wrap;
   gap: 4px;
   max-width: 100%;
+  min-width: 0;
 
   .mat-mdc-chip {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .mdc-evolution-chip__text-label,
+  .mat-mdc-chip-action-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     max-width: 100%;
   }
 }
