@@ -116,5 +116,11 @@ describe('TableComponent', () => {
       expect(filtered.length).toBe(2);
       expect(filtered.map((o: any) => o.id.code).sort()).toEqual(['ABC1', 'XYZ9']);
     });
+
+    it('sans requireSearch, requête vide affiche tout le catalogue', () => {
+      component.filters[0].requireSearch = false;
+      (component as any).applyListFilter('etape.id', '');
+      expect((component as any).filteredListOptions['etape.id'].length).toBe(2);
+    });
   });
 });
