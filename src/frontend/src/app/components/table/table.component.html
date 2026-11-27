@@ -28,6 +28,19 @@
                 <ng-container *ngSwitchCase="'list'">
                   @if (filter.searchable){
                     <mat-select [name]="filter.id" multiple [(ngModel)]="filterValues[filter.id].value" (ngModelChange)="update()" (openedChange)="onListOpenedChange(filter.id, $event)" [compareWith]="compareFilterOptionValue">
+                      <mat-select-trigger>
+                        <mat-chip-set class="list-select-chip-set" *ngIf="filterValues[filter.id]?.value?.length">
+                          <mat-chip
+                            *ngFor="let option of getSelectedListOptions(filter)"
+                            [removable]="true"
+                            (removed)="removeListValue(filter, option)">
+                            {{ option[filter.keyLibelle] || 'Valeur indisponible' }}
+                            <button matChipRemove type="button" [attr.aria-label]="'Supprimer ' + (option[filter.keyLibelle] || '')" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+                          </mat-chip>
+                        </mat-chip-set>
+                      </mat-select-trigger>
                       <mat-option>
                         <ngx-mat-select-search [formControl]="listFilterCtrls[filter.id]" [placeholderLabel]="filter.requireSearch ? 'Taper pour rechercher…' : 'Rechercher…'" [noEntriesFoundLabel]="filter.requireSearch ? 'Saisir au moins un caractère' : 'Aucun élément trouvé'" ></ngx-mat-select-search>
                       </mat-option>

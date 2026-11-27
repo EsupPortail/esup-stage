@@ -123,4 +123,35 @@ describe('TableComponent', () => {
       expect((component as any).filteredListOptions['etape.id'].length).toBe(2);
     });
   });
+
+  describe('chips trigger list searchable', () => {
+    beforeEach(() => {
+      component.filters = [{
+        id: 'etape.id',
+        type: 'list',
+        keyLibelle: 'libelle',
+        keyId: 'id',
+        searchable: true,
+        searchAlsoCode: true,
+        options: [etapeAbc, etapeXyz],
+      }];
+      component.filterValues = {
+        'etape.id': { type: 'list', value: [etapeAbc.id], specific: true },
+      };
+      (component as any).filteredListOptions = {};
+    });
+
+    it('getSelectedListOptions résout les ids vers les options catalogue', () => {
+      const selected = component.getSelectedListOptions(component.filters[0]);
+      expect(selected.length).toBe(1);
+      expect(selected[0].libelle).toBe('Master Informatique');
+    });
+
+    it('removeListValue retire la sélection et notifie le filtre', () => {
+      const spy = spyOn(component.filterChanged, 'next');
+      component.removeListValue(component.filters[0], etapeAbc);
+      expect(component.filterValues['etape.id'].value.length).toBe(0);
+      expect(spy).toHaveBeenCalled();
+    });
+  });
 });

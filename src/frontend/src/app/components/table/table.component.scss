@@ -33,6 +33,18 @@ input.mat-chip-input {
   margin-left: 0;
 }
 
+/* Chips avec croix dans le trigger des mat-select searchable (ex. Étape) */
+.list-select-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+
+  .mat-mdc-chip {
+    max-width: 100%;
+  }
+}
+
 button:focus {
   outline: none;
 }
