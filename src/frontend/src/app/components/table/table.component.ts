@@ -425,6 +425,45 @@ export class TableComponent implements OnInit, AfterContentInit, OnDestroy {
     }
   }
 
+  /**
+   * Options sélectionnées d'un filtre list (ids → objets) pour l'affichage chips du trigger.
+   */
+  getSelectedListOptions(filter: any): any[] {
+    const selected = this.filterValues[filter?.id]?.value;
+    if (!Array.isArray(selected) || selected.length === 0) {
+      return [];
+    }
+    const keyId = filter?.keyId ?? 'id';
+    const keyLib = filter?.keyLibelle ?? 'libelle';
+    const all = filter?.options ?? [];
+    return selected.map((v: any) => {
+      const found = all.find((o: any) => this.compareFilterOptionValue(o?.[keyId], v));
+      if (found) {
+        return found;
+      }
+      // Fallback si l'option n'est plus dans le catalogue
+      return { [keyId]: v, [keyLib]: typeof v === 'object' ? (v.code || JSON.stringify(v)) : String(v) };
+    });
+  }
+
+  /** Retire une valeur d'un mat-select list via la croix du chip (sans ouvrir le panel). */
+  removeListValue(filter: any, option: any): void {
+    const keyId = filter?.keyId ?? 'id';
+    const val = option?.[keyId] ?? option;
+    const arr = this.filterValues[filter.id]?.value;
+    if (!Array.isArray(arr)) {
+      return;
+    }
+    const index = arr.findIndex((v: any) => this.compareFilterOptionValue(v, val));
+    if (index > -1) {
+      const next = arr.slice();
+      next.splice(index, 1);
+      this.filterValues[filter.id].value = next;
+      this.applyListFilter(filter.id, this.listFilterCtrls[filter.id]?.value || '');
+      this.filterChanged.next(this.filterValues);
+    }
+  }
+
   getFilters(): any {
     const f: any = {};
     for (const key of Object.keys(this.filterValues)) {
